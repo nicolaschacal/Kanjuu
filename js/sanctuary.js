@@ -21,23 +21,19 @@ import { TYPES, typeOf } from './data.js';
 let idleT, build = false, placing = null, seenGoal = '', focusId = null;
 export function viewHome(v) { return webgl() && !new URLSearchParams(location.search).has('2d') ? viewHome3d(v) : viewHome2d(v); }
 
-// Santuario 3D: la escena dibuja la grilla; la UI (objetivo, burbujas, dock) va por encima en HTML
+// Santuario 3D: la escena dibuja la grilla; la UI (burbujas, botón Editar, editor) va por encima en HTML
 function viewHome3d(v) {
-  const pend = totalPending(), nextI = ISLANDS[(S.island || 0) + 1];
   if (focusId && (build || placing || !S.creatures.some(c => c.id === focusId && c.pos))) focusId = null;
+  if (sel && !findIt(sel)?.pos) sel = null;
   const bubbles = placed().filter(it => pending(it) >= 8 || full(it)).map(it => `<button class="bubble-ink ${full(it) ? 'full' : ''}" data-c="${it.id}" data-anchor="${it.id}">墨<span>${pending(it)}</span></button>`).join('');
   v.innerHTML = `
-  <div class="home home3d">
+  <div class="home home3d ${build ? 'editing' : ''}">
     <div class="stage" id="stage">
-      <div class="stage-fx" aria-hidden="true"></div>
       <div class="stage-ov">${placing || build || focusId ? '' : bubbles}</div>
-      <div class="stage-top">${placing || focusId ? '' : goalHTML()}</div>
-      ${build && nextI ? `<button class="expand-row" id="expandRow">拡 ${nextI.name} ${nextI.n}×${nextI.n} · ${nextI.cost} 墨${S.rank.lv < nextI.rank ? ` · rango ${nextI.rank}` : ''}</button>` : ''}
-      ${build ? `<div class="build-hint"><b>匠 ${island().name} ${S.cols}×${S.rows}</b><span>獣 ${shownMons()}/${monCap()} KANJŪ · 置 ${shownObjs()}/${objCap()} objetos · 和 Armonía ${Math.round(harmony())} (+${Math.round((harmonyMult() - 1) * 100)}% tinta)</span></div>` : ''}
-      ${placing || focusId ? '' : ctrlHTML(pend)}
+      ${build || placing || focusId ? '' : `<button class="w-edit" id="editBtn" aria-label="Editar la isla">${ic('brush')}<span>Editar</span>${ic('right', 'edit-go')}</button>`}
       ${focusId ? focusHTML(findIt(focusId)) : ''}
+      ${build || placing ? editHTML() : ''}
     </div>
-    ${placing ? `<div class="place-bar">Tocá dónde colocar <b>${placing.t ? OBJS[placing.t].k : placing.k}</b><button class="btn ghost" id="cancelPlace">Cancelar</button></div>` : ''}
   </div>`;
   const stg = $('#stage', v);
   const items = placed().map(it => {
@@ -48,16 +44,10 @@ function viewHome3d(v) {
   });
   let valid = null;
   if (placing) { const [w, h] = foot(placing); valid = []; for (let y = 0; y < S.rows; y++) for (let x = 0; x < S.cols; x++) if (fits(w, h, x, y, placing)) valid.push([x, y]); }
-  mountScene(stg, { cols: S.cols, rows: S.rows, focus: focusId, items, mode: placing ? 'placing' : build ? 'build' : 'play', valid, onTap: tap3d, onCell: (x, y) => tapCell(x, y, null) });
+  mountScene(stg, { cols: S.cols, rows: S.rows, focus: focusId, items, sel: placing?.pos ? placing.id : null, mode: placing ? 'placing' : build ? 'build' : 'play', valid, onTap: tap3d, onCell: (x, y) => tapCell(x, y, null) });
   stg.querySelectorAll('.bubble-ink').forEach(b => b.onclick = e => { e.stopPropagation(); harvest([findIt(b.dataset.c)], b); });
-  // El objetivo se muestra unos segundos y se pliega a un ícono; tocarlo lo abre de nuevo
-  const gEl = stg.querySelector('.goal');
-  if (gEl) {
-    const txt = gEl.textContent;
-    if (txt === seenGoal) gEl.classList.add('min'); else { seenGoal = txt; setTimeout(() => gEl.classList.add('min'), 5000); }
-    gEl.onclick = () => gEl.classList.toggle('min');
-  }
-  bindDock(v);
+  $('#editBtn', v) && ($('#editBtn', v).onclick = () => { build = true; focusId = null; setFocus(null); buzz(6); go(); });
+  if (build || placing) bindEdit(v);
   if (focusId) bindFocus(stg, findIt(focusId));
   clearInterval(idleT);
   idleT = setInterval(() => {
@@ -67,6 +57,49 @@ function viewHome3d(v) {
     if (mons.length > 1 && Math.random() < .35) emoteAt(mons[Math.random() * mons.length | 0].id, ['♪', '♥', '！', '…', 'ｚ', '✿'][Math.random() * 6 | 0]);
     stg.querySelectorAll('.bubble-ink').forEach(b => { const n = pending(findIt(b.dataset.c)); b.querySelector('span').textContent = n; });
   }, 2500);
+}
+// ---------- Editor de la isla (como el de Rebyters): KANJŪ y objetos para poner en la isla ----------
+let sel = null, etab = 'mon';
+const nameOf = it => it.t ? `${OBJS[it.t].k} ${OBJS[it.t].name}` : `${it.k} · ${KANJI[it.k].m}`;
+function editHTML() {
+  const nextI = ISLANDS[(S.island || 0) + 1];
+  const mons = S.creatures.filter(c => !c.away).sort((a, b) => !!b.pos - !!a.pos);
+  const objs = [...S.objs].sort((a, b) => !!b.pos - !!a.pos);
+  const chipM = c => `<button class="e-chip" data-e="${c.id}" data-on="${!!c.pos}" aria-pressed="${!!c.pos}"><span class="e-art">${creatureSVG(c.k, { egg: c.egg, gold: c.gold })}</span><span>${c.egg ? 'Huevo' : `${c.k} Nv${c.lv}`}</span><small>${c.pos ? 'En la isla' : 'En el almacén'}</small></button>`;
+  const chipO = o => `<button class="e-chip e-obj" data-e="${o.id}" data-on="${!!o.pos}" aria-pressed="${!!o.pos}"><span class="e-art"><i class="st-k">${OBJS[o.t].k}</i></span><span>${OBJS[o.t].name}</span><small>${o.pos ? 'En la isla' : 'Guardado'} · Nv${o.lv}</small></button>`;
+  const chips = etab === 'mon'
+    ? mons.map(chipM).join('') + (S.gate.length ? `<button class="e-chip e-more" id="eGate"><span class="e-art"><i class="st-k">門</i></span><span>En la puerta</span><small>${S.gate.length} esperando</small></button>` : '')
+    : objs.map(chipO).join('') + `<button class="e-chip e-more" id="eShop"><span class="e-art">${ic('plus')}</span><span>Comprar</span><small>Tienda</small></button>`;
+  let foot;
+  if (placing) foot = `<span>${placing.pos ? `Mover <b>${nameOf(placing)}</b>: tocá una casilla libre` : `Tocá una casilla libre para colocar <b>${nameOf(placing)}</b>`}</span>
+    <span class="e-acts">${placing.pos ? `<button class="e-btn" id="eStore">${ic('box')}Guardar</button>${placing.t && placing.lv < OBJ_MAX ? `<button class="e-btn" id="eUp" ${S.ink < upCost(placing) ? 'disabled' : ''}>${ic('arrowUp')}Mejorar · ${upCost(placing)} 墨</button>` : ''}${placing.t ? `<button class="e-btn" id="eSell">${ic('trash')}Vender +${sellValue(placing)}</button>` : ''}` : ''}<button class="e-btn" id="eCancel">${ic('x')}${placing.pos ? 'Soltar' : 'Cancelar'}</button></span>`;
+  else foot = `<span>Tocá un KANJŪ u objeto de la isla para moverlo, o elegí algo de abajo para agregarlo.</span>${nextI ? `<span class="e-acts"><button class="e-btn" id="eExpand">${ic('expand')}${nextI.name} ${nextI.n}×${nextI.n} · ${nextI.cost} 墨${S.rank.lv < nextI.rank ? ` · rango ${nextI.rank}` : ''}</button></span>` : ''}`;
+  return `<section class="w-editor" aria-label="Editar la isla">
+    <div class="e-head"><b>Editar isla</b><span class="e-count">${island().name} · 獣 ${shownMons()}/${monCap()} · 置 ${shownObjs()}/${objCap()} · 和 ${Math.round(harmony())} (+${Math.round((harmonyMult() - 1) * 100)}% 墨)</span><button class="e-done" id="eDone">${ic('check')}Listo</button></div>
+    <div class="e-tabs" role="tablist"><button role="tab" data-et="mon" aria-selected="${etab === 'mon'}">KANJŪ</button><button role="tab" data-et="obj" aria-selected="${etab === 'obj'}">Objetos</button></div>
+    <div class="e-chips">${chips || '<small class="e-empty">Nada por acá todavía.</small>'}</div>
+    <div class="e-foot" role="status">${foot}</div>
+  </section>`;
+}
+function pick(it) {
+  if (!it) return;
+  buzz(6);
+  if (!it.pos && (it.t ? shownObjs() >= objCap() : shownMons() >= monCap())) return toast(it.t ? `置 La isla ya tiene ${objCap()} objetos · guardá uno o ampliala` : `獣 La isla ya tiene ${monCap()} KANJŪ · guardá uno o ampliala`);
+  if (!it.pos && !findSpot(...foot(it))) return toast('No hay lugar libre de ese tamaño · guardá algo o ampliá la isla');
+  placing = placing === it ? null : it; build = true; go();
+}
+function bindEdit(v) {
+  $('#eDone', v).onclick = () => { build = false; placing = null; sel = null; buzz(6); go(); };
+  v.querySelectorAll('[data-et]').forEach(b => b.onclick = () => { etab = b.dataset.et; go(); });
+  v.querySelectorAll('[data-e]').forEach(b => b.onclick = () => pick(findIt(b.dataset.e)));
+  $('#eGate', v) && ($('#eGate', v).onclick = () => openStorage('mon'));
+  $('#eShop', v) && ($('#eShop', v).onclick = () => { build = false; placing = null; ui.tab = 'shop'; go(); });
+  $('#eCancel', v) && ($('#eCancel', v).onclick = () => { placing = null; go(); });
+  $('#eExpand', v) && ($('#eExpand', v).onclick = buyRow);
+  const it = placing;
+  $('#eStore', v) && ($('#eStore', v).onclick = () => { if (!it.t && storeFree() <= 0) return toast('El almacén está lleno'); gather(it); it.pos = null; placing = null; go(); toast(`${it.t ? OBJS[it.t].k : it.k} guardado en el almacén`); });
+  $('#eUp', v) && ($('#eUp', v).onclick = () => { gather(it); S.ink -= upCost(it); it.lv++; go(); toast(`⬆ ${OBJS[it.t].k} subió a Nv${it.lv}`); buzz(20); });
+  $('#eSell', v) && ($('#eSell', v).onclick = () => { S.ink += sellValue(it); S.objs = S.objs.filter(o => o !== it); placing = null; go(); });
 }
 // Vista de primer plano (como en Rebyters): la cámara se acerca a la criatura y aparece su tarjeta
 function focusHTML(c) {
@@ -93,7 +126,7 @@ function tap3d(id) {
   const it = findIt(id);
   if (!it) { if (focusId) { focusId = null; setFocus(null); go(); } return; }
   buzz(8);
-  if (build) return itemMenu(it);
+  if (build || placing) return it.away ? toast(`${it.k} está de viaje`) : pick(it);
   if (it.t) return toast(`${OBJS[it.t].k} ${OBJS[it.t].name} Nv${it.lv} · ${OBJS[it.t].desc}`);
   if (it.away) return toast(`${it.k} está de viaje`);
   if (it.egg) {
@@ -113,29 +146,6 @@ function dockHTML(pend) {
       <button class="dk ${allDue() ? 'ready' : ''}" id="dojo"><i>修</i><span>Repaso</span>${allDue() ? `<b>${allDue()}</b>` : ''}</button>
     </div>`;
 }
-// Controles flotantes sobre la escena (estilo del tablero visual)
-function ctrlHTML(pend) {
-  const due = allDue(), acadLow = (S.acad?.day?.xp || 0) < DAILY_GOAL;
-  return `<div class="sc-ctrl">
-      ${build ? '' : `<button class="fab ${acadLow ? 'hot' : ''}" id="acadFab" aria-label="Academia">${ic('cap')}<span>Academia</span></button>`}
-      <button class="fab ${build ? 'on' : ''}" id="build" aria-label="Construir">${ic(build ? 'check' : 'hammer')}<span>${build ? 'Listo' : 'Construir'}</span></button>
-      <button class="fab" id="store" aria-label="Almacén">${ic('box')}<span>Almacén</span>${S.gate.length ? `<b>${S.gate.length}</b>` : ''}</button>
-    </div>
-    ${build ? '' : `<button class="collect-pill ${pend ? 'ready' : ''}" id="collectAll">${ic('ink')}<span>${pend ? `+${pend}` : `${totalRate()}/h`}</span></button>
-    <button class="review-pill ${due ? 'hot' : ''}" id="dojo">${ic('refresh')}<span>${due ? `Repasar · ${due}` : 'Repaso al día'}</span></button>`}`;
-}
-function bindDock(v) {
-  if (placing) { $('#cancelPlace', v).onclick = () => { placing = null; go(); }; }
-  else {
-    $('#build', v) && ($('#build', v).onclick = () => { build = !build; focusId = null; setFocus(null); buzz(6); go(); });
-    $('#store', v) && ($('#store', v).onclick = () => openStorage());
-    $('#collectAll', v) && ($('#collectAll', v).onclick = e => harvest(placed(), e.currentTarget));
-    $('#dojo', v) && ($('#dojo', v).onclick = openDojo);
-    $('#acadFab', v) && ($('#acadFab', v).onclick = () => openAcademy(acadCtx()));
-  }
-  $('#expandRow', v) && ($('#expandRow', v).onclick = buyRow);
-}
-
 function viewHome2d(v) {
   const R = S.rows, pend = totalPending();
   v.innerHTML = `
@@ -291,7 +301,7 @@ export function storedMenu(it, parent) {
     <button class="btn ok" id="put" ${findSpot(...foot(it)) && (it.t ? shownObjs() < objCap() : shownMons() < monCap()) ? '' : 'disabled'}>✥ Colocar en la isla</button>
     ${isObj ? `<button class="btn ghost" id="sell">Vender · +${sellValue(it)} 墨</button>` : `<button class="btn ghost" id="see">Ver ficha</button><button class="btn ghost" id="free" ${S.creatures.filter(c => !c.egg).length <= 1 ? 'disabled' : ''}>放 Liberar</button>`}</div>
     ${!it.t && shownMons() >= monCap() ? `<p class="r">La isla ya tiene ${monCap()} KANJŪ. Guardá uno o ampliá la isla.</p>` : it.t && shownObjs() >= objCap() ? `<p class="r">La isla ya tiene ${objCap()} objetos. Guardá uno o ampliá la isla.</p>` : findSpot(...foot(it)) ? '' : '<p class="r">No hay lugar libre de ese tamaño. Ampliá la isla o guardá algo.</p>'}`);
-  $('#put', m).onclick = () => { m.close(); parent.close(); placing = it; ui.tab = 'home'; go(); };
+  $('#put', m).onclick = () => { m.close(); parent.close(); placing = it; build = true; ui.tab = 'home'; go(); };
   $('#sell', m) && ($('#sell', m).onclick = () => { S.ink += sellValue(it); S.objs = S.objs.filter(o => o !== it); m.close(); parent.close(); go(); openStorage(); });
   $('#see', m) && ($('#see', m).onclick = () => { m.close(); parent.close(); openCreature(it.id); });
   $('#free', m) && ($('#free', m).onclick = () => { if (!confirm(`${it.k} volverá a la naturaleza. ¿Liberar?`)) return; const ink = release(it); m.close(); parent.close(); go(); toast(`+${ink} 墨`); openStorage(); });

@@ -10,16 +10,17 @@ let E = null; // motor compartido
 export const webgl = (() => { let ok; return () => ok ??= (() => { try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch { return false; } })(); })();
 
 // ---------- Hora del día ----------
+// Paleta del cielo de Rebyters (mañana, día, atardecer, noche) con transición suave según la hora
 const KEYS = [
-  { h: 0, top: '#0B0A1E', bot: '#2A2148', sun: '#8FA3FF', si: .5, amb: .75, night: 1, tint: '#5A5A9A' },
-  { h: 5, top: '#141233', bot: '#3A2C5E', sun: '#9AA8FF', si: .55, amb: .75, night: .9, tint: '#6A5F9A' },
-  { h: 6.5, top: '#3B2C6B', bot: '#F2A65A', sun: '#FFB27A', si: 1.5, amb: .85, night: .3, tint: '#C99AA8' },
-  { h: 9, top: '#3F7FD0', bot: '#BFD9E8', sun: '#FFF1D6', si: 2.3, amb: 1.05, night: 0, tint: '#FFFFFF' },
-  { h: 16, top: '#4A86D0', bot: '#F0D2A6', sun: '#FFE2B0', si: 2.2, amb: 1, night: 0, tint: '#FFF0DC' },
-  { h: 18.5, top: '#43296A', bot: '#F2A65A', sun: '#FF9A5A', si: 1.7, amb: .85, night: .25, tint: '#D89AA0' },
-  { h: 20, top: '#1A1438', bot: '#B85A78', sun: '#C07AFF', si: .7, amb: .7, night: .75, tint: '#8A6A9A' },
-  { h: 21.5, top: '#0B0A1E', bot: '#2A2148', sun: '#8FA3FF', si: .5, amb: .75, night: 1, tint: '#5A5A9A' },
-  { h: 24, top: '#0B0A1E', bot: '#2A2148', sun: '#8FA3FF', si: .5, amb: .75, night: 1, tint: '#5A5A9A' },
+  { h: 0, top: '#0B2459', bot: '#315C91', haze: '#315888', sun: '#A9CFFF', si: .55, amb: .8, night: 1, tint: '#4E6A9A' },
+  { h: 5, top: '#0B2459', bot: '#315C91', haze: '#315888', sun: '#A9CFFF', si: .55, amb: .8, night: .9, tint: '#4E6A9A' },
+  { h: 6.5, top: '#80B9DF', bot: '#FFDFBD', haze: '#B2D4E2', sun: '#FFE2B5', si: 1.6, amb: .9, night: .2, tint: '#D9C2B4' },
+  { h: 9, top: '#559FDA', bot: '#D2EDF0', haze: '#B2D4E2', sun: '#FFEFD5', si: 2.3, amb: 1.05, night: 0, tint: '#A9C4D8' },
+  { h: 16.5, top: '#559FDA', bot: '#D2EDF0', haze: '#B2D4E2', sun: '#FFEFD5', si: 2.2, amb: 1, night: 0, tint: '#A9C4D8' },
+  { h: 18.5, top: '#656FA6', bot: '#F1BC9D', haze: '#8896B2', sun: '#FFC58F', si: 1.7, amb: .9, night: .2, tint: '#9A8FB0' },
+  { h: 20.3, top: '#2A3F78', bot: '#8A86AE', haze: '#5A6C98', sun: '#C8B8FF', si: .9, amb: .82, night: .65, tint: '#6A6E9A' },
+  { h: 21.5, top: '#0B2459', bot: '#315C91', haze: '#315888', sun: '#A9CFFF', si: .55, amb: .8, night: 1, tint: '#4E6A9A' },
+  { h: 24, top: '#0B2459', bot: '#315C91', haze: '#315888', sun: '#A9CFFF', si: .55, amb: .8, night: 1, tint: '#4E6A9A' },
 ];
 export function hourNow() {
   const q = new URLSearchParams(location.search).get('hora');
@@ -30,7 +31,7 @@ function skyAt(h) {
   const i = KEYS.findIndex(k => k.h > h), a = KEYS[i - 1], b = KEYS[i], t = (h - a.h) / (b.h - a.h);
   const mix = x => new THREE.Color(a[x]).lerp(new THREE.Color(b[x]), t);
   const n = x => a[x] + (b[x] - a[x]) * t;
-  return { top: mix('top'), bot: mix('bot'), sun: mix('sun'), tint: mix('tint'), si: n('si'), amb: n('amb'), night: n('night') };
+  return { top: mix('top'), bot: mix('bot'), haze: mix('haze'), sun: mix('sun'), tint: mix('tint'), si: n('si'), amb: n('amb'), night: n('night') };
 }
 
 // ---------- Texturas pintadas ----------
@@ -231,14 +232,25 @@ function animSprite(o, t, dt, moving = false) {
 }
 
 // Cielo degradado + capas de papel de fondo
-function makeSky(scene) {
-  const sky = new THREE.Mesh(new THREE.SphereGeometry(80, 24, 12), new THREE.ShaderMaterial({
-    side: THREE.BackSide, depthWrite: false, fog: false,
+function makeSky(scene) { // cielo de Rebyters: degradado fijo al fondo, no se recorta en vertical
+  const sky = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), new THREE.ShaderMaterial({
+    side: THREE.BackSide, depthWrite: false, depthTest: false, fog: false, toneMapped: false,
     uniforms: { top: { value: new THREE.Color() }, bot: { value: new THREE.Color() } },
-    vertexShader: 'varying float vy; void main(){ vy = normalize(position).y; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.); }',
-    fragmentShader: 'uniform vec3 top; uniform vec3 bot; varying float vy; void main(){ float t = smoothstep(-.15,.45,vy); gl_FragColor = vec4(mix(bot, top, t),1.);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>\n}',
+    vertexShader: 'varying vec3 vd; void main(){ vd = position; vec3 d = mat3(viewMatrix) * position; gl_Position = projectionMatrix * vec4(d, 1.); gl_Position.z = gl_Position.w * .9999; }',
+    fragmentShader: 'uniform vec3 top; uniform vec3 bot; varying vec3 vd; void main(){ float t = smoothstep(-.5, .1, normalize(vd).y); gl_FragColor = vec4(mix(bot, top, t), 1.);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>\n}',
   }));
-  scene.add(sky); return sky;
+  sky.renderOrder = -10; sky.frustumCulled = false; scene.add(sky); return sky;
+}
+// Nubes low-poly como las de Rebyters: bultos facetados con la base plana
+const cloudMat = new THREE.MeshLambertMaterial({ color: '#FFFFFF', emissive: '#FFFFFF', emissiveIntensity: .45, flatShading: true, fog: true });
+function cloudMesh(v) {
+  const g = new THREE.Group(), r = mulberry(4177 + v * 911), n = 4 + v % 3;
+  for (let i = 0; i < n; i++) {
+    const t = i / (n - 1), hump = Math.sin(t * Math.PI), rad = .5 + hump * .42 + r() * .16;
+    const m = new THREE.Mesh(new THREE.IcosahedronGeometry(rad, 1), cloudMat);
+    m.scale.set(1.18, .82, 1); m.rotation.y = r() * Math.PI; m.position.set((t - .5) * 2.7 + (r() - .5) * .2, rad * .38, (r() - .5) * .45); g.add(m);
+  }
+  return g;
 }
 function makeLayers(scene, defs) {
   return defs.map(d => {
@@ -293,6 +305,7 @@ function loop() {
   E.raf = requestAnimationFrame(loop);
   if (!E.renderer.domElement.isConnected) { cancelAnimationFrame(E.raf); E.raf = 0; return; }
   if (document.hidden) return;
+  if (E.host && (E.host.clientWidth !== E.w || E.host.clientHeight !== E.h) && E.host.clientWidth) resize(); // el tamaño real puede llegar después del montaje
   const t = (performance.now() - E.t0) / 1000, dt = Math.min(.05, t - (E.last || t)); E.last = t;
   E.W.update(t, dt);
   E.ovEl?.querySelectorAll('[data-anchor]').forEach(el => {
@@ -427,23 +440,19 @@ function bush(s, seed) {
 
 function sanctuary() {
   if (E.worlds.sanct) return E.worlds.sanct;
-  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(34, 1, .1, 160);
-  scene.fog = new THREE.Fog('#2A2148', 26, 70);
+  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(42, 1, .1, 160);
+  scene.fog = new THREE.Fog('#B2D4E2', 26, 70);
   const sky = makeSky(scene);
   const orb = new THREE.Mesh(new THREE.CircleGeometry(1.8, 40), new THREE.MeshBasicMaterial({ color: '#FFE7B0', fog: false }));
   const ring = new THREE.Mesh(new THREE.RingGeometry(1.8, 2.05, 40), new THREE.MeshBasicMaterial({ color: CREAM, fog: false }));
   const halo = new THREE.Mesh(new THREE.CircleGeometry(6, 32), new THREE.MeshBasicMaterial({ map: dotTex(), transparent: true, opacity: .45, depthWrite: false, fog: false, color: '#FFE3A3' }));
   scene.add(halo, orb, ring);
-  const layers = makeLayers(scene, [
-    { seed: 9, peaks: 7, base: 230, amp: 150, fill: '#8C93C0', w: 110, y: 0, z: -60, fade: .45 },
-    { seed: 2, peaks: 12, base: 250, amp: 70, fill: '#3F6B5A', w: 70, y: -5, z: -34, fade: .2, extras: 'trees' },
-  ]);
+  const layers = []; // sin cordilleras: cielo limpio y nubes, como en Rebyters
   const clouds = [];
-  for (let i = 0; i < 34; i++) {
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: dotTex(), transparent: true, depthWrite: false, opacity: .95, fog: false }));
-    const a = Math.random() * Math.PI * 2, rr = 6 + Math.random() * 9, rim = i < 12;
-    m.userData = rim ? { x: (i % 2 ? 1 : -1) * (5.6 + Math.random() * 2), z: -4 + Math.random() * 9, y: -1.2 - Math.random() * .8, s: 2.2 + Math.random() * 2, v: .02 + Math.random() * .04, rim } : { x: Math.cos(a) * rr, z: Math.sin(a) * rr * .7 - 2, y: -3.2 - Math.random() * 2, s: 4 + Math.random() * 5, v: .05 + Math.random() * .1 };
-    m.scale.set(m.userData.s * 1.6, m.userData.s, 1); scene.add(m); clouds.push(m);
+  for (let i = 0; i < 16; i++) {
+    const m = cloudMesh(i), a = Math.random() * Math.PI * 2, rr = 7 + Math.random() * 9, rim = i < 6;
+    m.userData = rim ? { x: (i % 2 ? 1 : -1) * (5.2 + Math.random() * 2), z: -6 + Math.random() * 9, y: -2.2 - Math.random() * 1.2, s: .4 + Math.random() * .3, v: .02 + Math.random() * .04, rim } : { x: Math.cos(a) * rr, z: -9 - Math.random() * 8, y: -.5 + Math.random() * 2.5, s: .8 + Math.random() * .8, v: .05 + Math.random() * .1 };
+    m.scale.setScalar(m.userData.s); scene.add(m); clouds.push(m);
   }
   const hemi = new THREE.HemisphereLight('#FFFFFF', '#4A3B2A', 1), sun = new THREE.DirectionalLight('#FFFFFF', 2);
   sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); sun.shadow.bias = -.0008; sun.shadow.normalBias = .02;
@@ -474,14 +483,24 @@ function sanctuary() {
     if (mode === 'placing') {
       const hit = new THREE.Vector3(); if (!ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), -.22), hit)) return;
       const x = Math.floor(hit.x / T + W.cols / 2), y = Math.floor(hit.z / T + W.rows / 2);
+      const ok = (W.opts.valid || []).some(([a, b]) => a === x && b === y);
+      const id = !ok && hitItem(W, ray); if (id) { poke(id); return onTap?.(id); }
       if (x >= 0 && y >= 0 && x < W.cols && y < W.rows) onCell?.(x, y); return;
     }
-    const id = hitItem(W, ray); if (id) { poke(id); onTap?.(id); }
+    let id = hitItem(W, ray);
+    if (!id && mode === 'build') { // en el editor también vale tocar la casilla que ocupa
+      const hit = new THREE.Vector3();
+      if (ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), -.22), hit)) {
+        const x = Math.floor(hit.x / T + W.cols / 2), y = Math.floor(hit.z / T + W.rows / 2);
+        id = W.opts.items.find(d => x >= d.x && x < d.x + d.w && y >= d.y && y < d.y + d.h)?.id;
+      }
+    }
+    if (id) { poke(id); onTap?.(id); }
   };
   W.update = (t, dt) => {
     const sk = skyAt(hourNow()), night = sk.night, h = hourNow();
     sky.material.uniforms.top.value.copy(sk.top); sky.material.uniforms.bot.value.copy(sk.bot);
-    scene.fog.color.copy(sk.bot);
+    scene.fog.color.copy(sk.haze);
     hemi.intensity = sk.amb; hemi.color.copy(sk.top).lerp(new THREE.Color('#FFFFFF'), .65);
     sun.color.copy(sk.sun); sun.intensity = sk.si;
     const ang = ((h - 6) / 12) * Math.PI, isN = night > .6;
@@ -489,13 +508,14 @@ function sanctuary() {
     orb.material.color.set(isN ? '#E8ECFF' : '#FFE7B0'); halo.material.color.set(isN ? '#C8D0FF' : '#FFE3A3');
     const ox = isN ? 9 : -Math.cos(ang) * 16, oy = isN ? 12 : 4 + Math.max(0, Math.sin(ang)) * 9;
     [orb, ring, halo].forEach((m, i) => { m.position.set(ox, oy, -70 - i * .1); m.lookAt(camera.position); });
-    layers.forEach(m => m.material.color.copy(sk.tint).lerp(sk.bot, m.userData.fade));
-    const cc = sk.bot.clone().lerp(new THREE.Color('#FFFFFF'), .5 - night * .3);
-    clouds.forEach(m => { const u = m.userData; u.x += u.v * dt * (u.rim ? (u.x > 0 ? 1 : -1) * .3 : 1); if (!u.rim && u.x > 16) u.x = -16; if (u.rim && Math.abs(u.x) > 9) u.x = Math.sign(u.x) * 5.6; m.position.set(u.x, u.y, u.z); m.quaternion.copy(camera.quaternion); m.material.color.copy(cc); });
+    layers.forEach(m => m.material.color.copy(sk.tint).lerp(sk.haze, m.userData.fade));
+    cloudMat.color.set(night > .5 ? '#8BA3D2' : '#FFFFFF').lerp(sk.bot, .15); cloudMat.emissive.copy(cloudMat.color); cloudMat.emissiveIntensity = night > .5 ? .25 : .45;
+    clouds.forEach(m => { const u = m.userData; u.x += u.v * dt * (u.rim ? (u.x > 0 ? 1 : -1) * .3 : 1); if (!u.rim && u.x > 18) u.x = -18; if (u.rim && Math.abs(u.x) > 8) u.x = Math.sign(u.x) * 5.2; m.position.set(u.x, u.y, u.z); m.rotation.y += dt * .02; });
     // Cámara 3/4 que encuadra la isla entera
     const g = W.geo, hf = 2 * Math.atan(Math.tan(camera.fov * Math.PI / 360) * camera.aspect);
     if (!W.dragging) W.yaw += (0 - W.yaw) * Math.min(1, dt * 2.5);
-    let dist = (g.rx * 1.06) / Math.tan(hf / 2), elev = .72, tx = 0, ty = .3, tz = g.zc + W.panZ;
+    let dist = (g.rx * 1.22) / Math.tan(hf / 2), elev = .7, tx = 0, ty = .3, tz = g.zc + W.panZ;
+    if (W.opts.mode && W.opts.mode !== 'play') { elev = 1.08; dist *= 1.02; tz += g.rz * .95; } // editor: vista alta, la isla sube sobre el panel
     const fo = W.focus && W.items.get(W.focus);
     if (fo?.sprite) { // primer plano: la cámara baja y se acerca a la criatura
       const v = new THREE.Vector3(); fo.sprite.getWorldPosition(v);
@@ -617,7 +637,7 @@ function drawEditor(W) {
   const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
   W.ov.add(new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: CREAM, transparent: true, opacity: .7 })));
   const quad = (x, z, w, h, col, op) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w * T - .1, h * T - .1), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: op, depthWrite: false })); m.rotation.x = -Math.PI / 2; const [cx, cz] = cellCenter(W, x, z, w, h); m.position.set(cx, y + .003, cz); W.ov.add(m); };
-  if (mode === 'build') items.forEach(d => quad(d.x, d.y, d.w, d.h, '#F2B544', .38));
+  items.forEach(d => quad(d.x, d.y, d.w, d.h, d.id === W.opts.sel ? '#E8452C' : '#F2B544', d.id === W.opts.sel ? .6 : .32));
   (valid || []).forEach(([x, z]) => quad(x, z, 1, 1, '#FFFFFF', .42));
 }
 // =====================================================================
