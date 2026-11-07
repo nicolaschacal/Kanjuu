@@ -3,6 +3,7 @@
 // En el santuario la grilla de tiles (world.js) manda: cada ítem va al centro de sus casillas y la
 // grilla sólo se dibuja en modo construcción.
 import * as THREE from './vendor/three.module.min.js';
+import * as RB from './rbworld.js';
 
 const CREAM = '#FFF4DC';
 let E = null; // motor compartido
@@ -241,17 +242,6 @@ function makeSky(scene) { // cielo de Rebyters: degradado fijo al fondo, no se r
   }));
   sky.renderOrder = -10; sky.frustumCulled = false; scene.add(sky); return sky;
 }
-// Nubes low-poly como las de Rebyters: bultos facetados con la base plana
-const cloudMat = new THREE.MeshLambertMaterial({ color: '#FFFFFF', emissive: '#FFFFFF', emissiveIntensity: .45, flatShading: true, fog: true });
-function cloudMesh(v) {
-  const g = new THREE.Group(), r = mulberry(4177 + v * 911), n = 4 + v % 3;
-  for (let i = 0; i < n; i++) {
-    const t = i / (n - 1), hump = Math.sin(t * Math.PI), rad = .5 + hump * .42 + r() * .16;
-    const m = new THREE.Mesh(new THREE.IcosahedronGeometry(rad, 1), cloudMat);
-    m.scale.set(1.18, .82, 1); m.rotation.y = r() * Math.PI; m.position.set((t - .5) * 2.7 + (r() - .5) * .2, rad * .38, (r() - .5) * .45); g.add(m);
-  }
-  return g;
-}
 function makeLayers(scene, defs) {
   return defs.map(d => {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(d.w, d.w * .375), new THREE.MeshBasicMaterial({ map: ridge(d), transparent: true, depthWrite: false, fog: false }));
@@ -441,39 +431,18 @@ function bush(s, seed) {
 function sanctuary() {
   if (E.worlds.sanct) return E.worlds.sanct;
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(42, 1, .1, 160);
-  scene.fog = new THREE.Fog('#B2D4E2', 26, 70);
-  const sky = makeSky(scene);
-  const orb = new THREE.Mesh(new THREE.CircleGeometry(1.8, 40), new THREE.MeshBasicMaterial({ color: '#FFE7B0', fog: false }));
-  const ring = new THREE.Mesh(new THREE.RingGeometry(1.8, 2.05, 40), new THREE.MeshBasicMaterial({ color: CREAM, fog: false }));
-  const halo = new THREE.Mesh(new THREE.CircleGeometry(6, 32), new THREE.MeshBasicMaterial({ map: dotTex(), transparent: true, opacity: .45, depthWrite: false, fog: false, color: '#FFE3A3' }));
-  scene.add(halo, orb, ring);
-  const layers = []; // sin cordilleras: cielo limpio y nubes, como en Rebyters
-  const clouds = [];
-  for (let i = 0; i < 16; i++) {
-    const m = cloudMesh(i), a = Math.random() * Math.PI * 2, rr = 7 + Math.random() * 9, rim = i < 6;
-    m.userData = rim ? { x: (i % 2 ? 1 : -1) * (5.2 + Math.random() * 2), z: -6 + Math.random() * 9, y: -2.2 - Math.random() * 1.2, s: .4 + Math.random() * .3, v: .02 + Math.random() * .04, rim } : { x: Math.cos(a) * rr, z: -9 - Math.random() * 8, y: -.5 + Math.random() * 2.5, s: .8 + Math.random() * .8, v: .05 + Math.random() * .1 };
-    m.scale.setScalar(m.userData.s); scene.add(m); clouds.push(m);
-  }
-  const hemi = new THREE.HemisphereLight('#FFFFFF', '#4A3B2A', 1), sun = new THREE.DirectionalLight('#FFFFFF', 2);
-  sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); sun.shadow.bias = -.0008; sun.shadow.normalBias = .02;
-  Object.assign(sun.shadow.camera, { left: -9, right: 9, top: 9, bottom: -9, near: 1, far: 50 });
-  scene.add(hemi, sun, sun.target);
+  // Escenario de Rebyters: cielo degradado, sol/luna/estrellas, nubes facetadas, polen y luces del hábitat.
+  const mobile = matchMedia('(pointer: coarse)').matches || innerWidth <= 700;
+  scene.fog = new THREE.Fog('#B2D4E2', 40 * T, 120 * T);
+  scene.background = new THREE.Color();
+  const skyDome = RB.createSkyDome(scene);
+  const env = new THREE.Group(); env.scale.setScalar(T); env.position.y = .22; scene.add(env);
+  const rbSky = RB.createSky(scene, env), motes = RB.createMotes(env), rbLights = RB.createLights(scene, mobile);
   const world = new THREE.Group(), ov = new THREE.Group(); scene.add(world); world.add(ov);
-  // Luciérnagas / polen
-  const N = 50, pg = new THREE.BufferGeometry(), seeds = [];
-  for (let i = 0; i < N; i++) seeds.push({ x: (Math.random() - .5) * 10, y: .3 + Math.random() * 2.6, z: (Math.random() - .5) * 9, p: Math.random() * 7, s: .3 + Math.random() * .7 });
-  pg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * 3), 3));
-  const pm = new THREE.PointsMaterial({ map: dotTex(), size: .22, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, color: '#FFE08A', fog: false });
-  scene.add(new THREE.Points(pg, pm));
-  // Hojas o pétalos que caen
-  const F = 36, fg = new THREE.BufferGeometry(), falls = [];
-  for (let i = 0; i < F; i++) falls.push({ x: (Math.random() - .5) * 10, y: Math.random() * 4, z: (Math.random() - .5) * 8, v: .25 + Math.random() * .3, p: Math.random() * 7 });
-  fg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(F * 3), 3));
-  const fm = new THREE.PointsMaterial({ map: dotTex(), size: .14, transparent: true, depthWrite: false, color: '#C8D86A' });
-  scene.add(new THREE.Points(fg, fm));
   const lights = [0, 1, 2, 3, 4].map(() => { const p = new THREE.PointLight('#FFB35A', 0, 5, 1.5); scene.add(p); return p; });
 
-  const W = { name: 'sanct', scene, camera, world, ov, items: new Map(), opts: {}, cols: 0, rows: 0, stage: -1, yaw: 0, panZ: 0, dragging: false, platform: null, dress: { lights: [], banners: [], trees: [], smoke: [] }, geo: { rx: 5, rz: 4, zc: -1 } };
+  const Wsh = h => rbLights.setShadowHalf(h);
+  const W = { name: 'sanct', shadowHalf: Wsh, scene, camera, world, ov, items: new Map(), opts: {}, cols: 0, rows: 0, stage: -1, yaw: 0, panZ: 0, dragging: false, platform: null, dress: { lights: [], banners: [], trees: [], smoke: [] }, geo: { rx: 5, rz: 4, zc: -1 } };
   let drag0 = null;
   W.dragStart = () => { drag0 = { yaw: W.yaw, pan: W.panZ }; W.dragging = true; };
   W.drag = (dx, dy) => { if (!drag0) return; const lim = Math.max(0, W.geo.rz - 2.6); W.yaw = Math.max(-.3, Math.min(.3, drag0.yaw + dx * .004)); W.panZ = Math.max(-lim, Math.min(lim * .6, drag0.pan - dy * .014)); };
@@ -498,35 +467,38 @@ function sanctuary() {
     if (id) { poke(id); onTap?.(id); }
   };
   W.update = (t, dt) => {
-    const sk = skyAt(hourNow()), night = sk.night, h = hourNow();
-    sky.material.uniforms.top.value.copy(sk.top); sky.material.uniforms.bot.value.copy(sk.bot);
-    scene.fog.color.copy(sk.haze);
-    hemi.intensity = sk.amb; hemi.color.copy(sk.top).lerp(new THREE.Color('#FFFFFF'), .65);
-    sun.color.copy(sk.sun); sun.intensity = sk.si;
-    const ang = ((h - 6) / 12) * Math.PI, isN = night > .6;
-    sun.position.set(isN ? 5 : -Math.cos(ang) * 8, isN ? 10 : Math.max(4, Math.sin(ang) * 10), 7);
-    orb.material.color.set(isN ? '#E8ECFF' : '#FFE7B0'); halo.material.color.set(isN ? '#C8D0FF' : '#FFE3A3');
-    const ox = isN ? 9 : -Math.cos(ang) * 16, oy = isN ? 12 : 4 + Math.max(0, Math.sin(ang)) * 9;
-    [orb, ring, halo].forEach((m, i) => { m.position.set(ox, oy, -70 - i * .1); m.lookAt(camera.position); });
-    layers.forEach(m => m.material.color.copy(sk.tint).lerp(sk.haze, m.userData.fade));
-    cloudMat.color.set(night > .5 ? '#8BA3D2' : '#FFFFFF').lerp(sk.bot, .15); cloudMat.emissive.copy(cloudMat.color); cloudMat.emissiveIntensity = night > .5 ? .25 : .45;
-    clouds.forEach(m => { const u = m.userData; u.x += u.v * dt * (u.rim ? (u.x > 0 ? 1 : -1) * .3 : 1); if (!u.rim && u.x > 18) u.x = -18; if (u.rim && Math.abs(u.x) > 8) u.x = Math.sign(u.x) * 5.2; m.position.set(u.x, u.y, u.z); m.rotation.y += dt * .02; });
-    // Cámara 3/4 que encuadra la isla entera
-    const g = W.geo, hf = 2 * Math.atan(Math.tan(camera.fov * Math.PI / 360) * camera.aspect);
+    // Hora del día como en Rebyters: cuatro períodos de 6 h y crepúsculo dentro de la tarde.
+    const h = hourNow(), period = RB.periodOf(h), blend = RB.nightBlend(period, h);
+    const night = period === 'Night' ? 1 : period === 'Evening' ? .25 + blend * .75 : 0;
+    const pal = RB.PALETTES[period], tw = period === 'Evening' ? blend : 0;
+    skyDome.material.uniforms.topColor.value.setHex(pal.sky).lerp(new THREE.Color(RB.PALETTES.Night.sky), tw);
+    skyDome.material.uniforms.horizonColor.value.setHex(pal.horizon).lerp(new THREE.Color(RB.PALETTES.Night.horizon), tw);
+    scene.background.setHex(pal.sky);
+    scene.fog.color.setHex(RB.hazeOf(period)).lerp(new THREE.Color(0x315888), tw);
+    scene.fog.near = (period === 'Night' ? 28 : 40) * T; scene.fog.far = (period === 'Night' ? 95 : 120) * T;
+    E.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    rbLights.apply(E.renderer, period, blend);
+    // Cámara de Rebyters: FOV 42, girada 35°, inclinación 0.62 rad, a la distancia que encuadra la isla.
+    if (camera.fov !== RB.FOV) { camera.fov = RB.FOV; camera.updateProjectionMatrix(); }
     if (!W.dragging) W.yaw += (0 - W.yaw) * Math.min(1, dt * 2.5);
-    let dist = (g.rx * 1.22) / Math.tan(hf / 2), elev = .7, tx = 0, ty = .3, tz = g.zc + W.panZ;
-    if (W.opts.mode && W.opts.mode !== 'play') { elev = 1.08; dist *= 1.02; tz += g.rz * .95; } // editor: vista alta, la isla sube sobre el panel
+    const half = W.cols / 2 + .4, yaw = RB.HOME.yaw + W.yaw;
+    let dist = RB.homeDist(half, camera.aspect) * T, pitch = RB.HOME.pitch, tx = Math.sin(yaw) * -W.panZ, ty = .22 + RB.HOME.y * T, tz = Math.cos(yaw) * -W.panZ;
+    if (W.opts.mode && W.opts.mode !== 'play') { pitch = 1.08; dist *= 1.02; tx += Math.sin(yaw) * W.geo.rz * .95; tz += Math.cos(yaw) * W.geo.rz * .95; } // editor: vista alta, la isla sube sobre el panel
     const fo = W.focus && W.items.get(W.focus);
     if (fo?.sprite) { // primer plano: la cámara baja y se acerca a la criatura
       const v = new THREE.Vector3(); fo.sprite.getWorldPosition(v);
-      dist = 3.2 + fo.size * 1.4; elev = .3; tx = v.x; ty = v.y + fo.size * .45; tz = v.z;
+      dist = 3.2 + fo.size * 1.4; pitch = .24; tx = v.x; ty = v.y + fo.size * .45; tz = v.z;
     }
-    scene.fog.near = dist + 10; scene.fog.far = dist + 55;
-    const want = new THREE.Vector3(tx + Math.sin(W.yaw) * Math.cos(elev) * dist, ty + Math.sin(elev) * dist, tz + Math.cos(W.yaw) * Math.cos(elev) * dist);
-    const look = new THREE.Vector3(tx, ty, tz - (fo ? 0 : .3));
+    const cp = Math.cos(pitch);
+    const want = new THREE.Vector3(tx + Math.sin(yaw) * cp * dist, ty + Math.sin(pitch) * dist, tz + Math.cos(yaw) * cp * dist);
+    const look = new THREE.Vector3(tx, ty, tz);
     W.cam ??= { p: want.clone(), l: look.clone() };
     const k = Math.min(1, dt * 3.2); W.cam.p.lerp(want, k); W.cam.l.lerp(look, k);
-    camera.position.copy(W.cam.p); camera.lookAt(W.cam.l);
+    camera.position.copy(W.cam.p); camera.lookAt(W.cam.l); camera.updateMatrixWorld();
+    W.camYaw = yaw;
+    rbSky.update(dt, camera, period, blend);
+    motes.update(t, dt, period);
+    W.island?.update(t);
     W.floaters?.forEach(m => { m.position.y = m.userData.y + Math.sin(t * .7 + m.userData.p) * .15; m.rotation.y += dt * .2; });
     // Escenario animado
     W.dress.trees.forEach(tr => { tr.userData.canopy.rotation.z = Math.sin(t * .8 + tr.userData.ph) * .03; });
@@ -542,7 +514,7 @@ function sanctuary() {
         const vx = (w.tx - w.x) * 1.2 * dt, vz = (w.tz - w.z) * 1.2 * dt; w.x += vx; w.z += vz;
         const moving = Math.hypot(vx, vz) > .002; if (Math.abs(vx) > .0015) o.flip = vx > 0 ? 1 : -1;
         animSprite(o, t, dt, moving);
-        o.sprite.position.x = w.x; o.sprite.position.z = w.z; o.sprite.position.y += .22; o.sprite.rotation.y = W.yaw;
+        o.sprite.position.x = w.x; o.sprite.position.z = w.z; o.sprite.position.y += .22; o.sprite.rotation.y = W.camYaw ?? W.yaw;
         o.blob.position.set(w.x, .235, w.z);
         o.sprite.material.emissiveIntensity = (d.insp ? .62 : .42) - night * .14 + (d.insp ? Math.sin(t * 4) * .08 : 0);
       }
@@ -557,44 +529,23 @@ function sanctuary() {
       p.color.set(L0.color); p.position.set(L0.x, L0.y, L0.z);
       p.intensity = L0.power * (L0.always ? .6 + night * 1.6 : night * 2.2) * (1 + Math.sin(t * 7 + i) * .06);
     });
-    const P = pg.attributes.position;
-    seeds.forEach((s, i) => P.setXYZ(i, s.x + Math.sin(t * s.s + s.p) * .5, s.y + Math.sin(t * s.s * 1.3 + s.p) * .3, g.zc + s.z * .8 + Math.cos(t * s.s + s.p) * .4));
-    P.needsUpdate = true;
-    pm.color.set(night > .5 ? '#FFE08A' : '#FFF4DC'); pm.size = night > .5 ? .28 : .1; pm.opacity = night > .5 ? .5 + Math.sin(t * 3) * .4 : .4;
-    const FP = fg.attributes.position;
-    falls.forEach((f, i) => { f.y -= f.v * dt; if (f.y < .1) { f.y = 3.5 + Math.random(); f.x = (Math.random() - .5) * 2 * g.rx; } FP.setXYZ(i, f.x + Math.sin(t * 1.5 + f.p) * .4, f.y, g.zc + f.z * .7 + Math.cos(t + f.p) * .2); });
-    FP.needsUpdate = true; fm.color.set([...W.items.values()].some(o => o.d?.t === 'sakura') ? '#FFB8C8' : '#D8E07A');
   };
   return E.worlds.sanct = W;
 }
 
 // Isla básica (siempre igual): pasto, acantilados y rocas que flotan. La decoración la pone el jugador.
 function buildIsland(W, cols, rows) {
-  if (W.platform) W.world.remove(W.platform);
+  // La isla flotante de Rebyters (island.ts), del tamaño del tablero: 5, 7 o 9 baldosas.
+  W.island?.dispose();
   W.dress = { lights: [], banners: [], trees: [], smoke: [] };
-  const g = new THREE.Group(), pw = cols * T, pd = rows * T;
-  const rx = pw / 2 + .95, rz = pd / 2 + .95, zc = 0;
-  W.geo = { rx, rz, zc };
-  const seed = cols * 7 + rows;
-  const sq = (k, sd) => { // cuadrado redondeado con bultos suaves (como la isla de Rebyters)
-    const s2 = new THREE.Shape(), N = 64, r = mulberry(sd), ph = [r() * 7, r() * 7];
-    for (let i = 0; i <= N; i++) { const a = i / N * Math.PI * 2, c = Math.abs(Math.cos(a)), si = Math.abs(Math.sin(a)), base = 1 / Math.pow(Math.pow(c, 3.4) + Math.pow(si, 3.4), 1 / 3.4), n = base * (1 + Math.sin(a * 3 + ph[0]) * .025 + Math.sin(a * 7 + ph[1]) * .015);
-      const px = Math.cos(a) * rx * k * n, pz = Math.sin(a) * rz * k * n; i ? s2.lineTo(px, pz) : s2.moveTo(px, pz); }
-    return s2;
-  };
-  const top = extrudeShape(sq(1, seed), .22, [new THREE.MeshLambertMaterial({ map: grassTexture(Math.ceil(rx * 2), Math.ceil(rz * 2)) }), L('#5E8A48')]);
-  uvTop(top, -rx * 1.1, rx * 1.1, -rz * 1.1, rz * 1.1); top.position.y = .22;
-  const ct = cliffTexture();
-  const c1 = extrudeShape(sq(.985, seed), 1, [L('#4F4A42'), new THREE.MeshLambertMaterial({ map: ct })]); uvSide(c1, 1.2);
-  const c2 = extrudeShape(sq(.78, seed + 1), .9, [L('#3E3A34'), new THREE.MeshLambertMaterial({ map: ct, color: '#9A9488' })]); uvSide(c2, 1); c2.position.y = -1;
-  const c3 = extrudeShape(sq(.46, seed + 2), .9, [L('#34302B'), new THREE.MeshLambertMaterial({ map: ct, color: '#7A7468' })]); uvSide(c3, .8); c3.position.y = -1.9;
-  g.add(top, c1, c2, c3);
-  const rnd = mulberry(seed * 3);
-  for (let i = 0; i < 9; i++) { const a = rnd() * Math.PI * 2, m = mesh(new THREE.ConeGeometry(.12 + rnd() * .18, .5 + rnd() * .7, 5), L('#4A443C'), Math.cos(a) * rx * .4, -2.9 - rnd() * .3, Math.sin(a) * rz * .4); m.rotation.x = Math.PI; g.add(m); }
-  // rocas que flotan alrededor
-  W.floaters = [];
-  for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + rnd(), rr = Math.max(rx, rz) + 1 + rnd() * 1.5, m = mesh(new THREE.DodecahedronGeometry(.18 + rnd() * .25, 0), new THREE.MeshLambertMaterial({ color: '#6A5A48', flatShading: true }), Math.cos(a) * rr, -1 - rnd() * 1.5, Math.sin(a) * rr); m.userData = { y: m.position.y, p: rnd() * 7 }; g.add(m); W.floaters.push(m); }
+  const size = Math.max(cols, rows), k = (size + .8) / 5.8;
+  const g = new THREE.Group(); g.scale.setScalar(T); g.position.y = .22;
+  W.island = RB.createIsland(g, k);
+  if (W.platform) W.world.remove(W.platform);
   W.world.add(g); W.platform = g; W.cols = cols; W.rows = rows;
+  W.geo = { rx: 3.1 * k * T, rz: 3.1 * k * T, zc: 0 };
+  W.floaters = [];
+  W.shadowHalf?.(Math.max(4.5, size * .8) * T);
 }
 const cellCenter = (W, x, y, w, h) => [(x + w / 2 - W.cols / 2) * T, (y + h / 2 - W.rows / 2) * T];
 function updateItem(W, o, d) {
@@ -602,7 +553,7 @@ function updateItem(W, o, d) {
   if (key !== o.key) {
     o.group.clear(); o.sprite = o.blob = o.u = null; o.key = key;
     if (d.kind === 'mon' || d.kind === 'egg') {
-      const size = 1.45 * (1 + .34 * (Math.max(d.w, d.h) - 1) + .12 * (Math.min(d.w, d.h) - 1));
+      const size = .92 * T * d.w; // como Rebyters: la criatura llena el 92 % del ancho de sus baldosas
       const s = makeSprite(d.svg, size, d.id); Object.assign(o, { sprite: s.sprite, blob: s.blob, size, ph: s.ph, squash: 0, hop: 0, flip: 1, flash: 0 });
       o.group.add(s.group);
     } else if (d.kind === 'away') { const s = sign('旅'); s.position.y = .22; s.traverse(m => m.userData.id = d.id); o.group.add(s); o.size = .8; }
@@ -701,6 +652,7 @@ function arena() {
   const W = { name: 'arena', scene, camera, items: new Map(), opts: {}, fx: [] };
   W.tap = ray => { const id = hitItem(W, ray); if (id) W.opts.onTap?.(id); };
   W.update = (t, dt) => {
+    E.renderer.toneMapping = THREE.NeutralToneMapping; E.renderer.toneMappingExposure = 1.05;
     const hf = 2 * Math.atan(Math.tan(camera.fov * Math.PI / 360) * camera.aspect), dist = 3.35 / Math.tan(hf / 2);
     camera.position.set(Math.sin(t * .15) * .25, dist * .58, dist * .8); camera.lookAt(0, 2.1, -.2);
     lan.forEach((g, i) => { warm[i].intensity = 3 * (1 + Math.sin(t * 6 + i) * .08); });
