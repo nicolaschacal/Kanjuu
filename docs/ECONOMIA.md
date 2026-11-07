@@ -15,7 +15,7 @@ Reproducir: `node tools/exportar_kanji.mjs && python3 tools/sim_economia.py norm
 | Acumulación máxima | 8 h | 6 h | Invita a 2–3 visitas al día sin castigar |
 | Invocación | 60 / ×10 540 | 120 / ×10 1080 | Evita la avalancha de duplicados |
 | Probabilidad de kanji nuevo | 25% | 15% (piedad a las 10) | Ritmo de descubrimiento |
-| Viajes con hallazgo | 45% | 30% | Ídem |
+| Viajes con hallazgo | 45% + 1.º de cada región garantizado | Huellas 足跡: 6% + 3% por huella; 6 huellas = seguro (~1 cada 5 viajes; regiones lejanas ~1 cada 3,5) | Hallazgos más raros pero con progreso visible; los viajes sin compañero dan tinta extra u objetos |
 | Tinta por repaso acertado | 2 | 4 | Más peso al aprendizaje |
 | Tinta por entrenar | estrellas | estrellas × 2 | Ídem |
 | Evolución | nivel 7/10/13 | nivel 5/8/11 | Primer gran logro más cercano |

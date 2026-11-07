@@ -530,3 +530,7 @@ ruby.rk{cursor:pointer;border-bottom:2px dotted #c9b48a}
 .tut-bubble[data-dir=up]::after{top:-17px;border-bottom-color:var(--night)}.tut-bubble[data-dir=down]::after{bottom:-17px;border-top-color:var(--night)}
 .tut-skip{font-size:11px;color:#8fa3bd;text-decoration:underline;margin-top:4px}
 .tut-medal{width:96px;height:96px;margin:8px auto;border-radius:50%;background:radial-gradient(#ffe9a0,var(--gold));display:grid;place-items:center;font-size:48px;font-weight:900;box-shadow:0 0 0 6px #fff,0 0 30px var(--gold)}
+
+.tracks{display:block;margin-top:3px;letter-spacing:1px;color:#fff;font-weight:900}
+.tracks-big{background:var(--paper2);border-radius:14px;padding:10px;margin:10px 0;font-size:20px;font-weight:900;letter-spacing:2px;color:#8a5a2e}
+.tracks-big small{display:block;font-size:12px;letter-spacing:0;color:var(--muted);font-weight:700;margin-top:4px}

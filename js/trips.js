@@ -24,7 +24,7 @@ export function viewExp(v) {
       inner = `<div class="trip"><div class="trip-mon ${done ? '' : 'walking'}">${creatureSVG(c.k)}</div><div class="trip-info"><b>${c.k} ${done ? 'regresó' : 'explorando…'}</b>
         <div class="tbar"><i style="width:${(1 - left / (c.away.secs * 1000)) * 100}%"></i></div><small data-end="${c.away.end}">${done ? '¡Listo!' : fmt(left)}</small></div>
         ${!done && S.items.wind ? `<button class="btn ghost" data-wind="${c.id}">風 ${S.items.wind}</button>` : `<button class="btn ${done ? 'ok' : 'ghost'}" data-collect="${c.id}" ${done ? '' : 'disabled'}>Recibir</button>`}</div>`;
-    } else inner = `<div class="trip"><small>Hallazgos: ${r.drops.map(k => S.dex[k]?.seen ? k : '？').join(' ')} · ⏱ ${fmt(r.secs * fast * 1000)}</small><button class="btn ok" data-send="${r.id}">Enviar</button></div>`;
+    } else inner = `<div class="trip"><small>Hallazgos: ${r.drops.map(k => S.dex[k]?.seen ? k : '？').join(' ')} · ⏱ ${fmt(r.secs * fast * 1000)}${tracksHTML(r)}</small><button class="btn ok" data-send="${r.id}">Enviar</button></div>`;
     return `<section class="region ${lock ? 'locked' : ''}" style="--a:${r.bg[0]};--b:${r.bg[1]}"><header><span class="rk">${r.name}</span><b>${r.es}</b></header>${inner}</section>`;
   }).join('')}</div>`;
   v.querySelectorAll('[data-send]').forEach(b => b.onclick = () => pickForTrip(REGIONS.find(r => r.id === b.dataset.send), fast));
@@ -42,21 +42,38 @@ export function pickForTrip(r, fast) {
     bump('exp'); m.close(); toast(`${c.k} partió hacia ${r.name}`); go(); emit('trip');
   });
 }
+// Huellas 足跡: cada viaje sin compañero deja huellas; con TRACKS_MAX el próximo hallazgo es seguro
+export const TRACKS_MAX = 6, FIND_BASE = .06, FIND_PER_TRACK = .03;
+const tracks = r => (S.tracks ??= {})[r.id] || 0;
+const tracksHTML = r => `<span class="tracks">足跡 ${'●'.repeat(tracks(r))}${'○'.repeat(TRACKS_MAX - tracks(r))}</span>`;
 export function collect(c) {
   const r = REGIONS.find(x => x.id === c.away.region);
-  S.regionsDone ??= {};
-  const first = !S.regionsDone[r.id]; S.regionsDone[r.id] = (S.regionsDone[r.id] || 0) + 1;
-  const ink = 4 + Math.round(r.secs / 15), up = giveExp(c, r.secs / 3);
-  S.ink += ink; c.away = null; c.mood = Math.min(1, c.mood + .2);
-  let found = null;
-  if (first || Math.random() < .3) {
+  S.regionsDone ??= {}; S.tracks ??= {};
+  S.regionsDone[r.id] = (S.regionsDone[r.id] || 0) + 1;
+  const firstEver = !(S.stats.trips > 0); S.stats.trips = (S.stats.trips || 0) + 1;
+  let ink = 4 + Math.round(r.secs / 15); const up = giveExp(c, r.secs / 3);
+  c.away = null; c.mood = Math.min(1, c.mood + .2);
+  let found = null, bonus = '', gained = 0;
+  const t = tracks(r), chance = FIND_BASE + t * FIND_PER_TRACK;
+  if (firstEver || t >= TRACKS_MAX || Math.random() < chance) {
+    S.tracks[r.id] = 0;
     const fresh = r.drops.filter(k => !S.dex[k]?.owned);
     const k = fresh.length && Math.random() < .8 ? fresh[0] : r.drops[Math.random() * r.drops.length | 0];
     const res = arrive(k); found = res.c ? { k, store: res.where === 'store' } : { k, gate: true };
-  } else r.drops.forEach(k => Math.random() < .5 && see(k));
+  } else {
+    // Sin compañero: deja huellas (más en regiones lejanas) y trae algo útil
+    gained = Math.min(TRACKS_MAX - t, r.secs >= 240 ? 2 : 1);
+    S.tracks[r.id] = t + gained;
+    r.drops.forEach(k => Math.random() < .5 && see(k));
+    const roll = Math.random();
+    if (roll < .15) { S.items.scroll = (S.items.scroll || 0) + 1; bonus = '巻 Encontró un pergamino de saber'; }
+    else if (roll < .3) { S.items.wind = (S.items.wind || 0) + 1; bonus = '風 Encontró un viento veloz'; }
+    else { const extra = Math.round(ink * .6); ink += extra; bonus = `Juntó tinta extra en el camino`; }
+  }
+  S.ink += ink;
   const m = modal(`<div class="result"><h3>${c.k} volvió de ${r.name}</h3>
     <p>+${ink} 墨 · +EXP${up ? ` · <b class="g">¡Nivel ${c.lv}!</b>` : ''}</p>
-    ${found ? `<div class="newmon"><span class="new-tag">${found.gate ? '門 Espera en la puerta' : found.store ? '¡Nuevo! · está en el almacén' : '¡Nuevo KANJŪ!'}</span>${creatureSVG(found.k, { mood: 1 })}${storyHTML(found.k)}${found.gate ? '<small class="r">Santuario y almacén llenos. Liberá espacio para recibirlo.</small>' : ''}</div>` : '<p class="muted">Encontró huellas de otros kanji.</p>'}
+    ${found ? `<div class="newmon"><span class="new-tag">${found.gate ? '門 Espera en la puerta' : found.store ? '¡Nuevo! · está en el almacén' : '¡Nuevo KANJŪ!'}</span>${creatureSVG(found.k, { mood: 1 })}${storyHTML(found.k)}${found.gate ? '<small class="r">Santuario y almacén llenos. Liberá espacio para recibirlo.</small>' : ''}</div>` : `<p class="muted">No volvió acompañado, pero encontró huellas.</p><div class="tracks-big">足跡 ${'●'.repeat(tracks(r))}${'○'.repeat(TRACKS_MAX - tracks(r))}<small>${tracks(r) >= TRACKS_MAX ? '¡El próximo viaje a esta región trae un compañero seguro!' : `+${gained} · con ${TRACKS_MAX} huellas el próximo compañero es seguro`}</small></div>${bonus ? `<p class="g">${bonus}</p>` : ''}`}
     <button class="btn ok wide">Genial</button></div>`);
   $('.btn', m).onclick = () => { m.close(); go(); };
   hud();
