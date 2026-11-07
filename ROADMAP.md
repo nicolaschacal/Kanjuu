@@ -25,6 +25,7 @@ Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. El arte definitivo queda p
 - ✅ Codificación dual: criatura + glifo + audio japonés
 - ✅ Feedback inmediato con historia al fallar y reaprendizaje en la misma sesión
 - ✅ Trazo, Lecturas, Palabra, Ensamblar, Escuchar
+- ✅ Capa para principiantes: furigana en la interfaz (desactivable), romaji en lecturas, Academia con 5 lecciones y entrenador de kana
 - 🔜 Orden de trazos real con datos de KanjiVG (animación + evaluación por trazo)
 - 🔜 Mnemotecnias propias del jugador (escribir su historia; las suyas se recuerdan mejor)
 - 🔜 Oraciones de contexto con furigana y audio

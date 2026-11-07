@@ -3,6 +3,7 @@ import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
 import { GAMES, hasWord, hasParts, play, review, storyHTML, speak } from './games.js';
 import * as cloud from './cloud.js';
+import { startHelp, rr, romaji, openAcademy, lessonsNew, kanaPool, kanaDrill, helpOn } from './help.js';
 
 import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
 
@@ -49,8 +50,8 @@ function shell() {
   app.innerHTML = `
   <header class="hud">
     <div class="pill ink">墨 <b id="ink">${S.ink}</b></div>
-    <button class="rank" id="rankBtn"><span>位${S.rank.lv}</span><i><b id="rankBar" style="width:${S.rank.xp / rankNeed(S.rank.lv) * 100}%"></b></i></button>
-    <div class="hud-r"><button class="pill quest" id="questBtn">任 <b id="questN"></b></button><button class="pill acct ${cloud.user ? 'in' : ''}" id="acctBtn" aria-label="Cuenta">我</button></div>
+    <button class="rank" id="rankBtn"><span>位<em id="rankN">${S.rank.lv}</em></span><i><b id="rankBar" style="width:${S.rank.xp / rankNeed(S.rank.lv) * 100}%"></b></i></button>
+    <div class="hud-r"><button class="pill quest" id="questBtn">任 <b id="questN"></b></button><button class="pill acad-btn ${lessonsNew() ? 'glow' : ''}" id="acadBtn" aria-label="Academia">学</button><button class="pill acct ${cloud.user ? 'in' : ''}" id="acctBtn" aria-label="Cuenta">我</button></div>
   </header>
   <main id="view"></main>
   <nav class="tabs">${[['home', '苑', 'Santuario'], ['lab', '錬', 'Fusión'], ['exp', '旅', 'Viajes'], ['shop', '店', 'Tienda'], ['dex', '図', 'Atlas']]
@@ -59,6 +60,7 @@ function shell() {
   app.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { tab = b.dataset.tab; buzz(5); go(); });
   $('#questBtn').onclick = openQuests;
   $('#acctBtn').onclick = openAccount;
+  $('#acadBtn').onclick = () => openAcademy(modal, toast, () => { hud(); $('#acadBtn')?.classList.toggle('glow', !!lessonsNew()); }, startKana);
   $('#rankBtn').onclick = () => toast(`位 Rango de guardián ${S.rank.lv} · ${S.rank.xp}/${rankNeed(S.rank.lv)} · subís entrenando, repasando, recogiendo tinta y descubriendo kanji`);
   go();
 }
@@ -70,7 +72,7 @@ function go() {
 }
 function hud() {
   $('#ink').textContent = S.ink;
-  const rb = $('#rankBar'); if (rb) { rb.style.width = S.rank.xp / rankNeed(S.rank.lv) * 100 + '%'; rb.parentNode.previousElementSibling.textContent = '位' + S.rank.lv; }
+  const rb = $('#rankBar'); if (rb) { rb.style.width = S.rank.xp / rankNeed(S.rank.lv) * 100 + '%'; $('#rankN').textContent = S.rank.lv; }
   rollDaily();
   const ready = MISSIONS.filter(m => (S.daily.p[m.id] || 0) >= m.goal && !S.daily.claimed.includes(m.id)).length
     + WEEKLY.filter(m => (S.weekly.p[m.id] || 0) >= m.goal && !S.weekly.claimed.includes(m.id)).length;
@@ -245,7 +247,7 @@ function storedMenu(it, parent) {
 function rankUp(ups) {
   const r = ups[ups.length - 1];
   const m = modal(`<div class="result rank-up"><div class="rank-badge">位<b>${r}</b></div><h3>¡Rango ${r}!</h3>
-    <p>+${ups.reduce((a, l) => a + 20 + l * 10, 0)} 墨 · +${ups.length} 召符</p>
+    <p>+${ups.reduce((a, l) => a + 20 + l * 10, 0)} 墨 · +${ups.length} 札</p>
     ${ROW_RANK.includes(r) ? '<p class="g">Desbloqueaste una nueva expansión de terreno</p>' : ''}
     ${Object.values(OBJS).filter(o => o.rank === r).map(o => `<p class="g">Nuevo objeto en la tienda: ${o.k} ${o.name}</p>`).join('')}
     <button class="btn ok wide">¡Genial!</button></div>`);
@@ -257,9 +259,10 @@ function goalHTML() {
   const cs = S.creatures.filter(c => !c.egg);
   let g;
   if (S.creatures.some(c => c.egg)) g = 'Tocá el huevo 3 veces para que nazca';
+  else if (!(S.lessons || []).length) g = '¿Nuevo en japonés? Tocá 学 arriba: lecciones de 1 minuto';
   else if (totalPending() >= 20) g = `Tus KANJŪ produjeron ${totalPending()} 墨 · tocá 収 para recoger`;
   else if (S.gate.length) g = 'Almacén lleno: hay KANJŪ esperando en la puerta';
-  else if (S.tickets) g = `Tenés ${S.tickets} 召符: invocá en el altar de la Tienda`;
+  else if (S.tickets) g = `Tenés ${S.tickets} 札: invocá en el altar de la Tienda`;
   else if (!S.objs.length && S.ink >= 40) g = 'Comprá una 硯 Piedra de tinta en la Tienda para producir más';
   else if (dueList().length >= 3) g = `${dueList().length} kanji listos para repasar en el Dojo`;
   else if (S.creatures.some(c => c.away && Date.now() >= c.away.end)) g = 'Una criatura volvió de su expedición';
@@ -283,7 +286,7 @@ function openCreature(id) {
     <div class="cr-top" style="--el:${fill}">
       <button class="cr-art" id="pet">${creatureSVG(c.k, { mood: c.mood })}</button>
       <div class="cr-name"><span class="big-k">${c.k}</span><div><b>${K.m}</b><small>${ELEMENTS[element(c.k)][2]} · Nivel KANJŪ ${kLevel(c.k)}${c.gen ? ` · Gen ${c.gen}` : ''}</small></div></div>
-      <div class="reads"><button class="say" id="say">🔊</button><span>音 ${K.on.join('・') || '—'}</span><span>訓 ${K.kun.join('・') || '—'}</span><span class="mast" title="Maestría">熟 ${'★'.repeat(mastery(c.k))}${'☆'.repeat(Math.max(0, 6 - mastery(c.k)))}</span></div>
+      <div class="reads"><button class="say" id="say">🔊</button><span>音 ${K.on.map(rr).join('・') || '—'}</span><span>訓 ${K.kun.map(rr).join('・') || '—'}</span><span class="mast" title="Maestría">熟 ${'★'.repeat(mastery(c.k))}${'☆'.repeat(Math.max(0, 6 - mastery(c.k)))}</span></div>
     </div>
     <div class="bars">
       <div class="bar"><label>Lv ${c.lv}${c.lv >= MAX_LV ? ' MAX' : ''}</label><div><i style="width:${c.exp / expNeed(c.lv) * 100}%"></i></div></div>
@@ -541,11 +544,11 @@ const ITEMS = [
 ];
 function viewShop(v) {
   v.innerHTML = `<div class="shop">
-    <div class="wallet">墨 <b>${S.ink}</b> <span class="tk">召符 ${S.tickets}</span><small>Tu santuario produce ${totalRate()} 墨/h · entrená y repasá para producir más</small></div>
+    <div class="wallet">墨 <b>${S.ink}</b> <span class="tk">札 ${S.tickets}</span><small>Tu santuario produce ${totalRate()} 墨/h · entrená y repasá para producir más</small></div>
     <div class="altar-card">
       <div class="altar-top"><span class="ak">召</span><div><b>Altar de invocación</b><small>Componentes de las regiones que desbloqueaste · ${Math.round(GOLD_RATE * 100)}% dorado</small></div></div>
       <div class="pity"><span>Kanji nuevo garantizado en</span><b>${Math.max(1, PITY - S.pity)}</b><span>invocaciones</span></div>
-      <div class="row"><button class="btn ok" data-pull="1">${S.tickets ? '召符 ×1' : `${PULL} 墨`}<small>Invocar 1</small></button><button class="btn ok gold" data-pull="10">${S.tickets >= 10 ? '召符 ×10' : `${PULL10} 墨`}<small>Invocar 10 · 1 nuevo seguro</small></button></div>
+      <div class="row"><button class="btn ok" data-pull="1">${S.tickets ? '札 ×1' : `${PULL} 墨`}<small>Invocar 1</small></button><button class="btn ok gold" data-pull="10">${S.tickets >= 10 ? '札 ×10' : `${PULL10} 墨`}<small>Invocar 10 · 1 nuevo seguro</small></button></div>
     </div>
     <h4>置 Para el santuario <small>Se colocan en casillas · mejoralos hasta Nv${OBJ_MAX}</small></h4>
     ${Object.entries(OBJS).map(([t, d]) => { const lock = S.rank.lv < d.rank, n = S.objs.filter(o => o.t === t).length;
@@ -570,7 +573,7 @@ function viewShop(v) {
 }
 function doPull(n) {
   const useT = S.tickets >= n, cost = n === 1 ? PULL : PULL10;
-  if (!useT && S.ink < cost) return toast(`Te faltan ${cost - S.ink} 墨 · también podés usar 召符`);
+  if (!useT && S.ink < cost) return toast(`Te faltan ${cost - S.ink} 墨 · también podés usar 札`);
   if (useT) S.tickets -= n; else S.ink -= cost;
   const res = pull(n); bump('pull', n);
   const fx = document.createElement('div'); fx.className = 'summon';
@@ -583,14 +586,23 @@ function doPull(n) {
   save();
 }
 
+// ---------- Entrenador de kana ----------
+async function startKana() {
+  const pool = kanaPool(reads);
+  if (pool.length < 4) return toast('Conseguí más criaturas para tener sonidos que practicar');
+  const r = await kanaDrill(pool, $('#layer'));
+  const ink = r.right * 2; S.ink += ink; bump('review', r.right); const up = addXP(r.right * 2); save(); hud();
+  toast(`仮 ${r.right}/${r.total} · +${ink} 墨`); if (up.length) rankUp(up);
+}
+
 // ---------- Calendario de entrada ----------
 function openLogin() {
   const day = S.login.day % 7;
   const m = modal(`<h3>暦 Regalo del día</h3><p class="muted">Avanza cada día que entrás. Si faltás, no perdés nada: sigue donde quedó.</p>
-    <div class="cal">${LOGIN.map((r, i) => `<div class="cal-d ${i < day ? 'got' : i === day ? 'today' : ''}"><small>Día ${i + 1}</small><b>${r.ink ? `${r.ink}<i>墨</i>` : r.tickets ? `${r.tickets}<i>召符</i>` : `${r.scroll}<i>巻</i>`}</b>${r.gold ? '<em>✦ dorado</em>' : ''}</div>`).join('')}</div>
+    <div class="cal">${LOGIN.map((r, i) => `<div class="cal-d ${i < day ? 'got' : i === day ? 'today' : ''}"><small>Día ${i + 1}</small><b>${r.ink ? `${r.ink}<i>墨</i>` : r.tickets ? `${r.tickets}<i>札</i>` : `${r.scroll}<i>巻</i>`}</b>${r.gold ? '<em>✦ dorado</em>' : ''}</div>`).join('')}</div>
     <button class="btn ok wide" id="claim">Recibir</button>`, 'onacct');
   m.onclick = null;
-  $('#claim', m).onclick = () => { const r = claimLogin(); buzz([10, 40, 10]); m.close(); hud(); go(); toast(`Recibiste ${r.ink ? r.ink + ' 墨' : ''}${r.tickets ? ` ${r.tickets} 召符` : ''}${r.scroll ? ` ${r.scroll} 巻` : ''}${r.gold ? ' · ¡tu próxima invocación será dorada!' : ''}`); };
+  $('#claim', m).onclick = () => { const r = claimLogin(); buzz([10, 40, 10]); m.close(); hud(); go(); toast(`Recibiste ${r.ink ? r.ink + ' 墨' : ''}${r.tickets ? ` ${r.tickets} 札` : ''}${r.scroll ? ` ${r.scroll} 巻` : ''}${r.gold ? ' · ¡tu próxima invocación será dorada!' : ''}`); };
 }
 
 // ---------- Dojo: repaso espaciado ----------
@@ -698,6 +710,7 @@ setInterval(() => {
 }, 1000);
 
 shell();
+startHelp(toast);
 if (!S.creatures.length) onboarding();
 else if (loginReady()) setTimeout(openLogin, gift ? 1400 : 300);
 // Si hay sesión, trae la partida de la nube cuando es más nueva

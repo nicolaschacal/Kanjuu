@@ -147,7 +147,7 @@ export function claimLogin() {
   return r;
 }
 
-// --- Altar de invocación (solo tinta o boletos, nunca dinero) ---
+// --- Altar de invocación (solo tinta o boletos 札, nunca dinero) ---
 export const PULL = 60, PULL10 = 540, PITY = 10, GOLD_RATE = .04;
 export function pullPool() {
   const n = Object.values(S.dex).filter(d => d.owned).length;

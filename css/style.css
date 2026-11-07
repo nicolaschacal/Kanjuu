@@ -402,3 +402,24 @@ h4 small{font-weight:500;color:var(--muted)}
 #toasts{position:fixed;left:50%;top:calc(66px + var(--safe-t));transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;width:max-content;max-width:90vw}
 #toasts .toast{position:relative;left:auto;top:auto;transform:none;animation:toast2 2.6s forwards}
 @keyframes toast2{0%{opacity:0;transform:translateY(-14px)}10%,85%{opacity:1;transform:none}100%{opacity:0}}
+
+ruby.gl{ruby-position:over}
+ruby.gl rt{font-size:.42em;font-weight:700;letter-spacing:0;opacity:.85;line-height:1}
+.tabs ruby.gl rt,.dk ruby.gl rt{font-size:8px}
+.rmj{display:block;font-style:normal;font-size:.62em;font-weight:700;opacity:.7;line-height:1.1;font-family:system-ui,sans-serif}
+.reads .rmj{display:inline;margin-left:3px}
+.story small .rmj{display:inline;margin-left:2px}
+.acad{display:grid;gap:8px;margin:10px 0}
+.lesson{display:flex;gap:12px;align-items:center;background:#fff;border-radius:16px;padding:10px 12px;text-align:left;box-shadow:0 3px 0 #e4d3b0}
+.lesson i{font-style:normal;font-size:28px;font-weight:900;width:48px;height:48px;flex:0 0 48px;display:grid;place-items:center;background:var(--night);color:var(--gold);border-radius:12px}
+.lesson small{display:block;color:var(--red);font-weight:900;font-size:12px}.lesson.done{opacity:.6}.lesson.done small{color:var(--green)}
+.lesson-view{text-align:left}.lesson-view .lk{display:block;font-size:64px;font-weight:900;text-align:center;color:var(--red)}
+.lesson-view ul{padding-left:20px;margin:8px 0}.lesson-view li{margin:6px 0}.lesson-view p{margin:8px 0}
+.kana-row{display:flex;gap:6px;justify-content:center;align-items:center;margin:8px 0;flex-wrap:wrap}
+.kana-row span{background:#fff;border-radius:12px;padding:4px 10px;font-size:28px;font-weight:900;display:flex;flex-direction:column;align-items:center;box-shadow:0 3px 0 #e4d3b0}
+.kana-row i{font-style:normal;font-size:11px;color:var(--muted)}.kana-row em{font-style:normal;font-weight:900;color:var(--muted)}
+.toggle{display:flex;gap:8px;align-items:center;margin-top:12px;font-size:14px;font-weight:700}.toggle input{width:20px;height:20px}
+.acad-btn{width:38px;justify-content:center;padding:6px 0}
+.hud .pill{padding:6px 10px}
+.bubble .rmj{font-size:10px}
+.rank em{font-style:normal}

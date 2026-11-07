@@ -1,5 +1,6 @@
 import { KANJI, WORDS, reads, plain } from './data.js';
 import { S } from './state.js';
+import { rr, romaji, helpOn } from './help.js';
 
 const shuffle = a => a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(v => v[1]);
 const pick = a => a[Math.floor(Math.random() * a.length)];
@@ -25,7 +26,7 @@ export function speak(text) {
 // Tarjeta de historia mnemotécnica: se muestra al descubrir o al fallar
 export function storyHTML(k) {
   const K = KANJI[k];
-  return `<div class="story"><span class="story-k">${k}</span><div><b>${K.m}</b><small>${reads(k).join('・') || '—'}</small>
+  return `<div class="story"><span class="story-k">${k}</span><div><b>${K.m}</b><small>${reads(k).map(rr).join('・') || '—'}</small>
     ${K.recipes ? `<div class="story-parts">${K.recipes[0].map(p => `<span>${p}<i>${KANJI[p].m}</i></span>`).join('<em>+</em>')}</div>` : ''}
     <p>💡 ${K.mn}</p>${S.notes?.[k] ? `<p class="mine">✍ ${S.notes[k].replace(/</g, '&lt;')}</p>` : ''}</div></div>`;
 }
@@ -86,7 +87,7 @@ function bubbles(k, know, body, end) {
   const pond = body.querySelector('.pond'), bar = body.querySelector('.timer i');
   let score = 0, caught = 0, over = false;
   pool.forEach((r, i) => {
-    const b = h(`<button class="bubble" style="left:${8 + Math.random() * 70}%;animation-duration:${time * .7 + Math.random() * 3}s;animation-delay:${-Math.random() * time * .6}s">${r}</button>`);
+    const b = h(`<button class="bubble" style="left:${8 + Math.random() * 70}%;animation-duration:${time * .7 + Math.random() * 3}s;animation-delay:${-Math.random() * time * .6}s">${r}${helpOn() && know < 3 ? `<i class="rmj">${romaji(r)}</i>` : ''}</button>`);
     b.onclick = () => {
       if (over || b.disabled) return; b.disabled = true;
       if (good.includes(r)) { score++; caught++; b.classList.add('pop'); navigator.vibrate?.(8); } else { score--; b.classList.add('bad'); }
@@ -144,7 +145,7 @@ function listen(k, know, body, end) {
   const r = pick(reads(k)), opts = shuffle([k, ...shuffle(Object.keys(S.dex).filter(x => x !== k && !reads(x).includes(r))).slice(0, 3)]);
   while (opts.length < 4) { const x = pick(Object.keys(KANJI)); if (!opts.includes(x) && !reads(x).includes(r)) opts.push(x); }
   const show = !canSpeak() || know < 1;
-  body.innerHTML = `<p class="hint">¿Qué kanji se lee así?</p><button class="speaker">🔊<span>${show ? r : ''}</span></button>
+  body.innerHTML = `<p class="hint">¿Qué kanji se lee así?</p><button class="speaker">🔊<span>${show ? rr(r) : ''}</span></button>
     <div class="opts">${opts.map(o => `<button class="opt">${o}</button>`).join('')}</div>`;
   const say = () => speak(r); say();
   body.querySelector('.speaker').onclick = () => { say(); body.querySelector('.speaker span').textContent = r; };
