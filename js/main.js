@@ -5,6 +5,7 @@ import { GAMES, hasWord, hasParts, play, review, storyHTML, speak } from './game
 import * as cloud from './cloud.js';
 import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn } from './help.js';
 import { openAcademy, acadDue, DAILY_GOAL } from './academy.js';
+import { openAISettings, aiStatus } from './ai.js';
 
 import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
 
@@ -62,7 +63,7 @@ function shell() {
   app.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { tab = b.dataset.tab; buzz(5); go(); });
   $('#questBtn').onclick = openQuests;
   $('#acctBtn').onclick = openAccount;
-  $('#acadBtn').onclick = () => openAcademy({ modal, toast, hud: () => { shell(); }, addXP, rankUp, bump });
+  $('#acadBtn').onclick = () => openAcademy({ modal, toast, hud: () => { shell(); }, addXP, rankUp, bump, giveExp });
   $('#rankBtn').onclick = () => toast(`位 Rango de guardián ${S.rank.lv} · ${S.rank.xp}/${rankNeed(S.rank.lv)} · subís entrenando, repasando, recogiendo tinta y descubriendo kanji`);
   go();
 }
@@ -638,7 +639,9 @@ async function openDojo() {
 function openAccount() {
   if (cloud.user) {
     const m = modal(`<h3>我 Tu cuenta</h3><p>${esc(cloud.user.email)}</p><p class="muted">Tu santuario se guarda en la nube automáticamente.</p>
-      <div class="row"><button class="btn ghost" id="out">Cerrar sesión</button><button class="btn ok" id="sync">Guardar ahora</button></div>`);
+      <div class="row"><button class="btn ghost" id="out">Cerrar sesión</button><button class="btn ok" id="sync">Guardar ahora</button></div>
+      <button class="btn gold wide" id="aiSet">✨ ${S.aiOn ? 'Tu IA está conectada · cambiar' : 'Conectar mi IA (cuentos personalizados)'}</button>`);
+    $('#aiSet', m).onclick = () => { m.close(); openAISettings(modal, toast, shell); };
     $('#sync', m).onclick = async () => { try { await cloud.pushNow(S); toast('Partida guardada en la nube'); } catch (e) { toast(e.message); } };
     $('#out', m).onclick = async () => { await cloud.logout(); m.close(); shell(); toast('Sesión cerrada · tu partida sigue en este dispositivo'); };
     return;
@@ -722,7 +725,7 @@ cloud.me().then(async u => {
   const remote = await cloud.pull().catch(() => undefined);
   if (remote === undefined) return shell(); // sin conexión: no sincronizar
   if (remote?.creatures?.length && (remote.savedAt || 0) > loadedAt) { { replace(remote); initWorld(); } document.querySelector('.onbm')?.remove(); }
-  cloud.setReady(true); shell();
+  cloud.setReady(true); shell(); aiStatus().catch(() => {});
   if (!S.creatures.length && !document.querySelector('.onbm')) onboarding();
 });
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});

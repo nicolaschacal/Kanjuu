@@ -47,3 +47,9 @@ Ver `ROADMAP.md` para el plan hacia las tiendas.
 - Contraseñas con scrypt + sal; sesión en cookie HttpOnly firmada (HMAC, 60 días).
 - Variables de entorno en Vercel: `DATABASE_URL`, `AUTH_SECRET`.
 - El juego funciona sin cuenta y sin conexión; al iniciar sesión se compara la partida local con la de la nube.
+
+## IA propia (opcional)
+Cada jugador conecta su clave (Anthropic, Gemini, OpenAI, Groq, OpenRouter, DeepSeek o Mistral) desde 我 → ✨ o desde la Academia. Se guarda cifrada (AES-256-GCM, `AI_ENC_KEY`) y nunca vuelve al cliente. Se usa para:
+- Cuentos con las criaturas del jugador, limitados a sus kanji, su vocabulario y la gramática vista (el servidor descarta oraciones con kanji no permitidos).
+- Explicaciones de errores en la Academia.
+Endpoint: `api/ai.js`, adaptadores en `api/_ai.js`. Límite: 40 usos por día por jugador.

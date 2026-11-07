@@ -4,6 +4,7 @@ import { SRS_HOURS } from './data.js';
 import { UNITS, STORIES } from './course.js';
 import { LESSONS, romaji, helpOn } from './help.js';
 import { speak } from './games.js';
+import { aiOn, genStory, explain, openAISettings } from './ai.js';
 
 const shuffle = a => a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(v => v[1]);
 const pick = a => a[Math.random() * a.length | 0];
@@ -83,7 +84,7 @@ function storyHTML(st) {
 }
 
 // ---------- Reproductor de lecciones ----------
-function runLesson(L, root, custom) {
+export function runLesson(L, root, custom) {
   let queue;
   if (custom) queue = custom;
   else if (L.type === 'kana') queue = buildKana(L);
@@ -187,7 +188,9 @@ function runLesson(L, root, custom) {
       if (ok) { done++; combo++; best = Math.max(best, combo); foot.className = 'lp-foot good'; fb.innerHTML = `<b>${pick(['¡Excelente!', '¡Bien!', '¡Correcto!', '¡Perfecto!'])}</b>`; navigator.vibrate?.(10); }
       else {
         mistakes++; combo = 0; foot.className = 'lp-foot bad'; if (cur.key) missed.add(cur.key);
-        fb.innerHTML = `<b>Respuesta correcta:</b><span class="jp">${cur.correct}</span>${cur.t === 'k2r' || cur.t === 'r2k' || cur.t === 'listen' ? `<small>${cur.c} = ${romaji(cur.c)}</small>` : ''}`;
+        fb.innerHTML = `<b>Respuesta correcta:</b><span class="jp">${cur.correct}</span>${cur.t === 'k2r' || cur.t === 'r2k' || cur.t === 'listen' ? `<small>${cur.c} = ${romaji(cur.c)}</small>` : ''}${aiOn() ? '<button class="why">🤔 ¿Por qué?</button>' : ''}`;
+        const why = fb.querySelector('.why'), given = answer || '(armado)', qtext = body.querySelector('.lp-q')?.textContent + ' ' + (cur.jp || cur.c || cur.s || cur.q || '');
+        if (why) why.onclick = async () => { why.disabled = true; why.textContent = 'Pensando…'; try { why.outerHTML = `<p class="ai-exp">✨ ${(await explain(qtext, given, cur.correct)).replace(/</g, '&lt;')}</p>`; } catch (e) { why.textContent = e.message; } };
         if (retries < 6) { queue.push({ ...cur }); retries++; }
         navigator.vibrate?.(40);
       }
@@ -231,10 +234,13 @@ export function openAcademy(ctx) {
           return `<div class="pnode" style="--off:${[0, 1, 2, 1, 0, -1, -2, -1][i % 8]}"><button class="node ${c ? 'done' : ''} ${on && ready ? '' : 'lock'} ${isCur ? 'cur' : ''}" data-l="${l.id}">${on && ready ? icon : '🔒'}${c ? `<i class="cr">${'👑'.repeat(c)}</i>` : ''}</button>${isCur ? '<span class="start">EMPEZAR</span>' : ''}<small>${l.name}</small></div>`;
         }).join('')}</div></section>`;
       }).join('')}</div>
-      <div class="av-foot"><button class="btn ${due ? 'ok' : 'ghost'} wide" id="rev" ${due ? '' : 'disabled'}>↻ Repaso inteligente ${due ? `· ${due} listos` : '· al día ✓'}</button></div>`;
+      <div class="av-foot"><div class="row2"><button class="btn gold" id="aiStory">✨ Cuento con tus KANJŪ</button><button class="btn ghost" id="lib">📚 ${(S.library || []).length}</button></div>
+      <button class="btn ${due ? 'ok' : 'ghost'} wide" id="rev" ${due ? '' : 'disabled'}>↻ Repaso inteligente ${due ? `· ${due} listos` : '· al día ✓'}</button></div>`;
     $('.x', v).onclick = () => { v.remove(); ctx.hud(); };
     v.querySelectorAll('[data-l]').forEach(b => b.onclick = () => openNode(byId(b.dataset.l)));
     $('#rev', v).onclick = doReview;
+    $('#aiStory', v).onclick = () => aiOn() ? pickTheme() : openAISettings(ctx.modal, ctx.toast, render);
+    $('#lib', v).onclick = openLibrary;
     $('.cur', v)?.scrollIntoView({ block: 'center' });
   };
   function openNode(L) {
@@ -271,6 +277,44 @@ export function openAcademy(ctx) {
     keys.forEach(k => { const r = a.srs[k], ok = !res.missed.has(k); r.box = ok ? Math.min(SRS_HOURS.length - 1, r.box + 1) : Math.max(0, r.box - 1); r.due = Date.now() + SRS_HOURS[Math.max(1, r.box)] * 36e5; });
     const xp = 10 + (res.perfect ? 5 : 0); a.xp += xp; a.day.xp += xp; S.ink += xp * 2; ctx.addXP(xp); save();
     ctx.toast(`↻ Repaso completado · +${xp} XP · +${xp * 2} 墨`); render();
+  }
+  // ---- Cuentos con IA ----
+  const THEMES = ['una aventura en el bosque', 'la comida', 'una noche de estrellas', 'la amistad', 'un día de lluvia', 'un viaje', 'una fiesta', 'un misterio'];
+  function pickTheme() {
+    const t = [...THEMES].sort(() => Math.random() - .5).slice(0, 4);
+    const m = ctx.modal(`<h3>✨ ¿De qué trata el cuento?</h3><p class="muted">Lo escribe tu IA con tus ${Object.values(S.dex).filter(d => d.owned).length} kanji, tus palabras aprendidas y tu gramática. Protagonistas: tus KANJŪ.</p>
+      <div class="themes">${t.map(x => `<button class="btn ghost" data-t="${x}">${x}</button>`).join('')}<button class="btn ghost" data-t="">🎲 Sorpresa</button></div>
+      <button class="link" id="aiCfg">⚙ Configurar mi IA</button>`);
+    m.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { m.close(); makeStory(b.dataset.t); });
+    m.querySelector('#aiCfg').onclick = () => { m.close(); openAISettings(ctx.modal, ctx.toast, render); };
+  }
+  async function makeStory(theme) {
+    const wait = ctx.modal(`<div class="result"><div class="quill">✍</div><h3>Tu IA está escribiendo…</h3><p class="muted">Usando solo los kanji que ya tenés</p></div>`);
+    wait.onclick = null;
+    let st;
+    try { st = await genStory(theme); } catch (e) { wait.close(); return ctx.toast(e.message); }
+    wait.close();
+    S.library = [{ ...st, date: Date.now(), cast: [] }, ...(S.library || [])].slice(0, 30); save();
+    readStory(st, true);
+  }
+  async function readStory(st, fresh) {
+    const story = { kanji: [], lines: st.lines.map(l => [l.jp, l.es]) };
+    const q = [{ t: 'read', st: story }, ...(st.new_words || []).map(w => ({ t: 'vintro', jp: w.jp, es: w.es })), ...st.questions.map(x => ({ t: 'q', q: x.q, a: x.a, opts: [x.a, ...x.wrong] }))];
+    const res = await runLesson({ type: 'custom' }, document.body, q);
+    if (!res) return;
+    const used = new Set(st.lines.flatMap(l => l.jp.match(/[\u3400-\u9fff]/g) || []));
+    S.creatures.filter(c => used.has(c.k) && !c.egg).forEach(c => ctx.giveExp(c, 10));
+    (st.new_words || []).forEach(w => a.srs[`v:${w.jp}|${w.es}`] ??= { box: 0, due: Date.now() + SRS_HOURS[1] * 36e5 });
+    const xp = fresh ? 15 + (res.perfect ? 5 : 0) : 5, ink = fresh ? 30 : 5;
+    a.xp += xp; a.day.xp += xp; S.ink += ink; ctx.bump('acad'); const ups = ctx.addXP(xp); save();
+    ctx.toast(`📖 ${st.title} · +${xp} XP · +${ink} 墨${used.size ? ` · ${[...used].filter(k => S.creatures.some(c => c.k === k)).join('')} ganaron EXP` : ''}`);
+    if (ups.length) ctx.rankUp(ups);
+    render();
+  }
+  function openLibrary() {
+    const L = S.library || [];
+    const m = ctx.modal(`<h3>📚 Tu biblioteca</h3>${L.length ? L.map((st, i) => `<button class="lesson" data-b="${i}"><i>読</i><div><b>${st.title}</b><small>${new Date(st.date).toLocaleDateString()} · ${st.lines.length} oraciones</small></div></button>`).join('') : '<p class="muted">Todavía no hay cuentos. Creá uno con ✨.</p>'}`);
+    m.querySelectorAll('[data-b]').forEach(b => b.onclick = () => { m.close(); readStory(L[+b.dataset.b], false); });
   }
   render(); document.body.append(v);
 }

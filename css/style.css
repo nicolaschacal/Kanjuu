@@ -492,3 +492,11 @@ ruby.gl rt{font-size:.42em;font-weight:700;letter-spacing:0;opacity:.85;line-hei
 ruby.rk rt{font-size:.5em;color:#c33d22}
 ruby.rk.hid rt{visibility:hidden}ruby.rk.hid.show rt{visibility:visible}
 ruby.rk{cursor:pointer;border-bottom:2px dotted #c9b48a}
+
+.row2{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:8px}
+.why{display:block;margin-top:8px;background:#fff;border-radius:12px;padding:6px 12px;font-weight:900;color:#7646c2;box-shadow:0 3px 0 #0002}
+.ai-exp{margin-top:8px;background:#fff;border-radius:12px;padding:8px 10px;color:#4a2a7a;font-size:14px;font-weight:700}
+.themes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.quill{font-size:60px;animation:wiggle .8s infinite;margin:10px}
+.sel{width:100%;font:inherit;font-size:16px;padding:12px;border-radius:14px;border:3px solid #e6d6b6;background:#fff;margin-bottom:10px}
+.sheet a{color:#7646c2;font-weight:700}
