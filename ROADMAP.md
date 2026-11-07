@@ -30,7 +30,8 @@ Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. El arte definitivo queda p
 - ✅ 9 tipos de ejercicio: introducción con audio, kana↔romaji, escuchar, unir pares, significado, traducir, armar oraciones, completar partículas, tiempos verbales
 - ✅ Errores vuelven al final de la lección, combo, coronas (hasta 3), meta diaria de XP, premio por unidad, repaso espaciado de kana y vocabulario
 - ✅ Lecturas graduadas con tus kanji: furigana adaptativa (desaparece al dominar el kanji), traducción por oración, audio y preguntas de comprensión
-- ✅ IA propia del jugador (patrón heey.me): clave cifrada AES-256-GCM, detección de proveedor, Claude/Gemini/OpenAI/Groq/OpenRouter/DeepSeek/Mistral
+- ✅ IA propia del jugador (patrón heey.me): detección de proveedor, Gemini/Groq/Claude/OpenAI/OpenRouter; llamadas directas desde el dispositivo, sin costo de servidor
+- 🔜 App nativa: guardar la clave en Keychain/Keystore (plugin de almacenamiento seguro)
 - ✅ Cuentos generados con tus criaturas como protagonistas, solo con tus kanji, tu vocabulario y tu gramática; validación en servidor; biblioteca
 - ✅ "¿Por qué?": la IA explica cada error en la Academia
 - 🔜 Conversaciones guiadas con las criaturas (practicar frases en contexto)
