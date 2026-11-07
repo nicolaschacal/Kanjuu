@@ -7,6 +7,7 @@ import { addXP } from './world.js';
 import { romaji, helpOn } from './help.js';
 import { speak } from './games.js';
 import { $, buzz, toast, modal, go, hud, ui } from './main.js';
+import { scrHead } from './main.js';
 
 export const ARENAS = [
   { k: '芽', name: 'Arena del Brote', min: 0, cap: 1 },
@@ -58,9 +59,10 @@ export function viewArena(v) {
   const a = A(), ar = arenaOf(a.cups), i = ARENAS.indexOf(ar), next = ARENAS[i + 1];
   const team = myTeam(), pend = ROAD.filter(r => a.best >= r.at && !a.road.includes(r.at));
   v.innerHTML = `<div class="arena">
+    ${scrHead('闘', 'Arena', 'Duelos de kanji: ganá copas y abrí cofres estudiando', `<span class="pill-w">杯 <b>${a.cups}</b></span>`)}
     <div class="arena-card" style="--i:${i}">
       <span class="ak">${ar.k}</span><div><small>Arena ${i + 1}</small><b>${ar.name}</b>
-      <div class="cups">🏆 ${a.cups}${next ? `<div class="tbar"><i style="width:${(a.cups - ar.min) / (next.min - ar.min) * 100}%"></i></div><small>${next.min - a.cups} para ${next.name}</small>` : ''}</div></div>
+      <div class="cups">杯 ${a.cups}${next ? `<div class="tbar"><i style="width:${(a.cups - ar.min) / (next.min - ar.min) * 100}%"></i></div><small>${next.min - a.cups} para ${next.name}</small>` : ''}</div></div>
     </div>
     <div class="team-pick"><h4>Tu equipo <small>los 3 KANJŪ más fuertes · tocá para cambiar</small></h4>
       <div class="team">${team.map(c => cardHTML(c, false, 'data-swap="' + c.id + '"')).join('') || '<p class="muted">Necesitás al menos 1 KANJŪ.</p>'}</div></div>
@@ -74,7 +76,7 @@ export function viewArena(v) {
     }).join('')}</div>
     <h4>道 Camino de copas ${pend.length ? `<small class="r">¡${pend.length} premio${pend.length > 1 ? 's' : ''}!</small>` : ''}</h4>
     <div class="road">${ROAD.map(r => { const got = a.road.includes(r.at), can = a.best >= r.at;
-      return `<button class="rd ${got ? 'got' : can ? 'can' : ''}" data-rd="${r.at}" ${can && !got ? '' : 'disabled'}><small>🏆${r.at}</small><b>${r.ink ? r.ink + ' 墨' : r.piece ? '部品' : r.tickets ? '1 札' : CHESTS[r.chest].k}</b></button>`; }).join('')}</div>
+      return `<button class="rd ${got ? 'got' : can ? 'can' : ''}" data-rd="${r.at}" ${can && !got ? '' : 'disabled'}><small>杯${r.at}</small><b>${r.ink ? r.ink + ' 墨' : r.piece ? '部品' : r.tickets ? '1 札' : CHESTS[r.chest].k}</b></button>`; }).join('')}</div>
     <div class="types-help"><h4>五行 Tipos</h4><p>${Object.values(TYPES).map(t => `<span style="color:${t.col}">${t.k}</span> vence a <span style="color:${TYPES[t.beats].col}">${TYPES[t.beats].k}</span>`).join(' · ')}</p></div>
   </div>`;
   $('#fight', v).onclick = () => startDuel();
@@ -92,7 +94,7 @@ export function myTeam() {
 }
 function cardHTML(c, enemy, attrs = '') {
   const t = TYPES[typeOf(c.k)], st = stats(c);
-  return `<button class="fcard ${enemy ? 'enemy' : ''}" ${attrs} style="--t:${t.col}"><span class="tb">${t.k}</span>${creatureSVG(c.k, { gold: c.gold })}<b>${c.k}</b><small>Lv${c.lv} · ⚔${st.atk} ♥${st.hp}</small></button>`;
+  return `<button class="fcard ${enemy ? 'enemy' : ''}" ${attrs} style="--t:${t.col}"><span class="tb">${t.k}</span>${creatureSVG(c.k, { gold: c.gold })}<b>${c.k}</b><small>Lv${c.lv} · 闘${st.atk} ♥${st.hp}</small></button>`;
 }
 function pickTeam(outId) {
   const a = A(), team = myTeam(), pool = fighters().filter(c => !team.includes(c));
@@ -126,9 +128,9 @@ export function startDuel() {
   function render(msg = '') {
     if (has3d) return render3d(msg);
     const ef = alive(foes)[0];
-    w.innerHTML = `<div class="duel-head"><span>${rival} · 🏆${Math.max(0, a.cups + Math.round(Math.random() * 60 - 30))}</span><button class="x">✕</button></div>
+    w.innerHTML = `<div class="duel-head"><span>${rival} · 杯${Math.max(0, a.cups + Math.round(Math.random() * 60 - 30))}</span><button class="x">✕</button></div>
       <div class="side foes">${foes.map((f, j) => unit(f, true, f === ef)).join('')}</div>
-      <div class="duel-mid"><p>${msg || 'Elegí quién ataca'}</p><div class="sp"><i style="width:${special / 3 * 100}%"></i><span>必殺 ${special >= 3 ? '¡LISTO!' : ''}</span></div>${combo >= 2 ? `<b class="combo hot">🔥 ${combo}</b>` : ''}</div>
+      <div class="duel-mid"><p>${msg || 'Elegí quién ataca'}</p><div class="sp"><i style="width:${special / 3 * 100}%"></i><span>必殺 ${special >= 3 ? '¡LISTO!' : ''}</span></div>${combo >= 2 ? `<b class="combo hot">炎 ${combo}</b>` : ''}</div>
       <div class="side mine">${mine.map(f => unit(f, false)).join('')}</div>`;
     w.querySelector('.x').onclick = () => { if (confirm('¿Rendirte? Perdés copas.')) finish(false); };
     w.querySelectorAll('[data-atk]').forEach(b => b.onclick = () => !busy && attack(mine[+b.dataset.atk]));
@@ -136,7 +138,7 @@ export function startDuel() {
   // Arena 3D: la escena muestra a las criaturas; arriba de cada una, su nombre y vida
   function render3d(msg) {
     const ef = alive(foes)[0], ui = w.querySelector('.duel-ui'), stage = w.querySelector('.duel-stage'), ov = stage.querySelector('.stage-ov');
-    ui.innerHTML = `<div class="duel-head"><span class="rv"><i>敵</i>${rival}<small>🏆${Math.max(0, a.cups + 12)}</small></span><button class="x" aria-label="Rendirse">✕</button></div>
+    ui.innerHTML = `<div class="duel-head"><span class="rv"><i>敵</i>${rival}<small>杯${Math.max(0, a.cups + 12)}</small></span><button class="x" aria-label="Rendirse">✕</button></div>
       <div class="duel-mid"><p>${msg || 'Tocá a uno de tus KANJŪ para atacar'}</p><div class="sp"><i style="width:${special / 3 * 100}%"></i><span>必殺 ${special >= 3 ? '¡LISTO!' : ''}</span></div>${combo >= 2 ? `<b class="combo hot">連 ×${combo}</b>` : ''}</div>`;
     const lab = (f, enemy, j) => {
       const t = TYPES[typeOf(f.c.k)], mult = !enemy && ef ? typeMult(typeOf(f.c.k), typeOf(ef.c.k)) : 1;
@@ -208,7 +210,7 @@ export function startDuel() {
     const ups = addXP(win ? 15 : 5); save();
     const promoted = arenaIdx(a.cups) > ar0;
     w.innerHTML = `<div class="duel-end ${win ? 'win' : 'lose'}"><h2>${win ? '勝利 ¡Victoria!' : '敗北 Derrota'}</h2>
-      <p class="cupd">🏆 ${delta > 0 ? '+' : ''}${delta}</p>
+      <p class="cupd">杯 ${delta > 0 ? '+' : ''}${delta}</p>
       ${win ? `<p>+${ink} 墨${chest ? ` · ${CHESTS[chest].k} ${CHESTS[chest].name}` : ' · <span class="r">cofres llenos: abrí alguno estudiando</span>'}</p>` : '<p class="muted">Entrená a tus KANJŪ y estudiá sus kanji para atacar más fuerte.</p>'}
       ${promoted ? `<div class="promo"><span>${arenaOf(a.cups).k}</span><b>¡Nueva arena!</b><small>${arenaOf(a.cups).name}</small></div>` : ''}
       <button class="btn ok wide">Continuar</button></div>`;

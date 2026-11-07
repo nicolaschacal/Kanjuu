@@ -16,8 +16,8 @@ export function openAccount() {
   if (cloud.user) {
     const m = modal(`<h3>我 Tu cuenta</h3><p>${esc(cloud.user.email)}</p><p class="muted">Tu santuario se guarda en la nube automáticamente.</p>
       <div class="row"><button class="btn ghost" id="out">Cerrar sesión</button><button class="btn ok" id="sync">Guardar ahora</button></div>
-      <button class="btn gold wide" id="aiSet">✨ ${S.aiOn ? 'Tu IA está conectada · cambiar' : 'Conectar mi IA (cuentos personalizados)'}</button>
-      <h4>🔒 Seguridad</h4>
+      <button class="btn gold wide" id="aiSet">✦ ${S.aiOn ? 'Tu IA está conectada · cambiar' : 'Conectar mi IA (cuentos personalizados)'}</button>
+      <h4>封 Seguridad</h4>
       <div class="menu-acts"><button class="btn ghost" id="chPass">Cambiar contraseña</button><button class="btn ghost" id="newCode">Nuevo código de recuperación</button><button class="btn danger" id="delAcc">Borrar mi cuenta</button></div>`);
     $('#chPass', m).onclick = () => passPrompt('Cambiar contraseña', true, async (password, newPassword) => { await cloud.account('change', { password, newPassword }); toast('Contraseña cambiada'); });
     $('#newCode', m).onclick = () => passPrompt('Nuevo código de recuperación', false, async password => { const r = await cloud.account('newcode', { password }); showRecovery(r.recovery); });
@@ -46,7 +46,7 @@ export function passPrompt(title, withNew, run, warn = '') {
 // El código de recuperación reemplaza al email: se muestra una sola vez
 export function showRecovery(code) {
   return new Promise(done => {
-    const m = modal(`<h3>🔑 Tu código de recuperación</h3><p>Si olvidás tu contraseña, con este código podés recuperar tu cuenta. <b>Guardalo</b> (captura de pantalla o en tus notas): no lo vamos a volver a mostrar.</p>
+    const m = modal(`<h3>鍵 Tu código de recuperación</h3><p>Si olvidás tu contraseña, con este código podés recuperar tu cuenta. <b>Guardalo</b> (captura de pantalla o en tus notas): no lo vamos a volver a mostrar.</p>
       <div class="rcode">${code}</div><button class="btn ghost wide" id="cp">Copiar</button><button class="btn ok wide" id="ok">Ya lo guardé</button>`, 'onacct wall');
     m.onclick = null;
     $('#cp', m).onclick = () => { navigator.clipboard?.writeText(code); toast('Código copiado'); };
@@ -54,7 +54,7 @@ export function showRecovery(code) {
   });
 }
 export function recoverForm(wall) {
-  const m = modal(`<h3>🔑 Recuperar cuenta</h3><p class="muted">Usá el código de recuperación que guardaste al crear tu cuenta.</p>
+  const m = modal(`<h3>鍵 Recuperar cuenta</h3><p class="muted">Usá el código de recuperación que guardaste al crear tu cuenta.</p>
     <form class="auth"><input name="email" type="email" placeholder="Email" value="${esc(cloud.lastUser() || '')}" required><input name="code" placeholder="Código (XXXX-XXXX-XXXX)" autocapitalize="characters" required>
     <input name="password" type="password" autocomplete="new-password" placeholder="Nueva contraseña (mín. 8)" minlength="8" required><p class="err r"></p><button class="btn ok wide" type="submit">Recuperar</button></form>
     <p class="muted">¿No tenés el código? Escribinos desde tu email para verificar tu identidad.</p>`, 'onacct');

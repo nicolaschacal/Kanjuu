@@ -79,8 +79,8 @@ function buildPiece(L) {
   const p = L.piece, d = PIECES[p], others = Object.keys(PIECES).filter(x => x !== p);
   const withP = Object.keys(KANJI).filter(k => KANJI[k].recipes?.some(r => r.includes(p)));
   const without = Object.keys(KANJI).filter(k => !withP.includes(k) && KANJI[k].recipes);
-  const ex = [{ t: 'note', html: `<div class="pc-card"><span>${p}</span><b>${d.name}</b><i>${d.rom}</i><p>${d.m}</p></div><p>💡 ${d.mn}</p><p>No es un kanji que se use solo: es una <b>pieza</b> que aparece dentro de otros. Aparece en: <b class="jp">${withP.join(' ')}</b></p>` }];
-  withP.forEach(k => ex.push({ t: 'note', html: `<div class="pc-card"><span>${k}</span><b>${KANJI[k].m}</b></div><p>${KANJI[k].recipes.find(r => r.includes(p)).join(' + ')} = ${k}</p><p>💡 ${KANJI[k].mn}</p>` }));
+  const ex = [{ t: 'note', html: `<div class="pc-card"><span>${p}</span><b>${d.name}</b><i>${d.rom}</i><p>${d.m}</p></div><p>知 ${d.mn}</p><p>No es un kanji que se use solo: es una <b>pieza</b> que aparece dentro de otros. Aparece en: <b class="jp">${withP.join(' ')}</b></p>` }];
+  withP.forEach(k => ex.push({ t: 'note', html: `<div class="pc-card"><span>${k}</span><b>${KANJI[k].m}</b></div><p>${KANJI[k].recipes.find(r => r.includes(p)).join(' + ')} = ${k}</p><p>知 ${KANJI[k].mn}</p>` }));
   ex.push({ t: 'q', q: `¿Qué significa la pieza <b class="jp">${p}</b>?`, a: d.m, opts: [d.m, ...shuffle(others).slice(0, 3).map(x => PIECES[x].m)] });
   ex.push({ t: 'q', q: `¿Cómo se llama la pieza <b class="jp">${p}</b>?`, a: d.name, opts: [d.name, ...shuffle(others).slice(0, 3).map(x => PIECES[x].name)] });
   withP.forEach(k => ex.push({ t: 'q', q: `¿Qué kanji contiene ${p} (${d.m})?`, a: k, opts: [k, ...shuffle(without).slice(0, 3)] }));
@@ -95,7 +95,7 @@ const toks = line => line.replace(/([㐀-鿿々]+)\{([^}]+)\}/g, (_, k, y) => {
 });
 const plainLine = line => line.replace(/([㐀-鿿々]+)\{([^}]+)\}/g, '$2').replace(/\s/g, '');
 function storyHTML(st) {
-  return `<div class="story-read">${st.lines.map(([jp, es], i) => `<div class="sline" data-i="${i}"><button class="say-l" data-say="${i}">🔊</button><p class="jp">${toks(jp.replace(/ /g, ''))}</p><p class="es">${es}</p></div>`).join('')}
+  return `<div class="story-read">${st.lines.map(([jp, es], i) => `<div class="sline" data-i="${i}"><button class="say-l" data-say="${i}">音</button><p class="jp">${toks(jp.replace(/ /g, ''))}</p><p class="es">${es}</p></div>`).join('')}
     <p class="muted">Tocá una oración para ver su traducción. Tocá un kanji para ver su lectura. La furigana desaparece en los kanji que ya dominás.</p></div>`;
 }
 
@@ -139,7 +139,7 @@ export function runLesson(L, root, custom) {
         if (e.t === 'intro') body.innerHTML = `<p class="lp-q">Nuevo carácter</p><button class="big-kana" id="sp">${e.c}</button><p class="rom">${romaji(e.c)}</p><p class="muted">Tocá para escuchar</p>`;
         else if (e.t === 'vintro') body.innerHTML = `<p class="lp-q">Nueva palabra</p><button class="big-word" id="sp">${e.jp}</button><p class="rom">${romaji(e.jp)}</p><p class="es-big">${e.es}</p>`;
         else if (e.t === 'read') body.innerHTML = `<p class="lp-q">Leé la historia</p>${storyHTML(e.st)}`;
-        else body.innerHTML = `<div class="tipcard">💡 ${e.html}</div>`;
+        else body.innerHTML = `<div class="tipcard">知 ${e.html}</div>`;
         const sp = $('#sp', body); if (sp) { sp.onclick = () => speak(e.c || e.jp); speak(e.c || e.jp); }
         body.querySelectorAll('.sline').forEach(l => l.onclick = ev => { if (ev.target.closest('.say-l')) return; l.classList.toggle('open'); });
         body.querySelectorAll('[data-say]').forEach(b => b.onclick = () => speak(plainLine(e.st.lines[+b.dataset.say][0])));
@@ -150,9 +150,9 @@ export function runLesson(L, root, custom) {
       let q = '', opts = [], correct;
       if (e.t === 'k2r') { q = `<p class="lp-q">¿Cómo suena?</p><div class="big-kana">${e.c}</div>`; correct = romaji(e.c); opts = optsFrom(correct, e.pool.map(romaji)); }
       else if (e.t === 'r2k') { q = `<p class="lp-q">Elegí <b>${romaji(e.c)}</b></p>`; correct = e.c; opts = optsFrom(correct, e.pool); }
-      else if (e.t === 'listen') { q = `<p class="lp-q">¿Qué escuchás?</p><button class="spk" id="sp">🔊</button>`; correct = e.c; opts = optsFrom(correct, e.pool); setTimeout(() => speak(e.c), 250); }
+      else if (e.t === 'listen') { q = `<p class="lp-q">¿Qué escuchás?</p><button class="spk" id="sp">音</button>`; correct = e.c; opts = optsFrom(correct, e.pool); setTimeout(() => speak(e.c), 250); }
       else if (e.t === 'mean') { q = `<p class="lp-q">¿Qué significa?</p><button class="big-word" id="sp">${e.jp}</button>${helpOn() ? `<p class="rom">${romaji(e.jp)}</p>` : ''}`; correct = e.es; opts = optsFrom(correct, e.opts, 3); speak(e.jp); }
-      else if (e.t === 'listenv') { q = `<p class="lp-q">Escuchá y elegí: <b>${e.es}</b></p><button class="spk" id="sp">🔊</button>`; correct = e.jp; opts = optsFrom(correct, e.opts, 3); setTimeout(() => speak(e.jp), 250); }
+      else if (e.t === 'listenv') { q = `<p class="lp-q">Escuchá y elegí: <b>${e.es}</b></p><button class="spk" id="sp">音</button>`; correct = e.jp; opts = optsFrom(correct, e.opts, 3); setTimeout(() => speak(e.jp), 250); }
       else if (e.t === 'trans') { q = `<p class="lp-q">Traducí</p><button class="big-word sm" id="sp">${e.jp.replace(/ /g, '')}</button>${helpOn() ? `<p class="rom">${romaji(e.jp)}</p>` : ''}`; correct = e.es; opts = optsFrom(correct, e.opts, 3); speak(e.jp); }
       else if (e.t === 'blank') { q = `<p class="lp-q">Completá · <i>${e.es}</i></p><div class="big-word sm">${e.s.replace('_', '<span class="gap">？</span>').replace(/ /g, '')}</div>`; correct = e.a; opts = optsFrom(correct, ['は', 'を', 'に', 'で', 'の', 'か', 'が', 'います', 'あります'], 4); }
       else if (e.t === 'tense' || e.t === 'q') { q = `<p class="lp-q">${e.q}</p>`; correct = e.a; opts = shuffle([...new Set(e.opts)]); if (e.speak) setTimeout(() => speak(e.speak), 250); }
@@ -196,7 +196,7 @@ export function runLesson(L, root, custom) {
         a = null;
       });
     }
-    function showCombo() { cb.textContent = combo >= 3 ? `🔥 ${combo}` : ''; cb.classList.toggle('hot', combo >= 5); }
+    function showCombo() { cb.textContent = combo >= 3 ? `炎 ${combo}` : ''; cb.classList.toggle('hot', combo >= 5); }
     btn.onclick = () => {
       if (btn.textContent === 'Continuar') return next();
       if (!check) return;
@@ -205,9 +205,9 @@ export function runLesson(L, root, custom) {
       if (ok) { done++; combo++; best = Math.max(best, combo); foot.className = 'lp-foot good'; fb.innerHTML = `<b>${pick(['¡Excelente!', '¡Bien!', '¡Correcto!', '¡Perfecto!'])}</b>`; navigator.vibrate?.(10); }
       else {
         mistakes++; combo = 0; foot.className = 'lp-foot bad'; if (cur.key) missed.add(cur.key);
-        fb.innerHTML = `<b>Respuesta correcta:</b><span class="jp">${cur.correct}</span>${cur.t === 'k2r' || cur.t === 'r2k' || cur.t === 'listen' ? `<small>${cur.c} = ${romaji(cur.c)}</small>` : ''}${aiOn() ? '<button class="why">🤔 ¿Por qué?</button>' : ''}`;
+        fb.innerHTML = `<b>Respuesta correcta:</b><span class="jp">${cur.correct}</span>${cur.t === 'k2r' || cur.t === 'r2k' || cur.t === 'listen' ? `<small>${cur.c} = ${romaji(cur.c)}</small>` : ''}${aiOn() ? '<button class="why">？ ¿Por qué?</button>' : ''}`;
         const why = fb.querySelector('.why'), given = answer || '(armado)', qtext = body.querySelector('.lp-q')?.textContent + ' ' + (cur.jp || cur.c || cur.s || cur.q || '');
-        if (why) why.onclick = async () => { why.disabled = true; why.textContent = 'Pensando…'; try { why.outerHTML = `<p class="ai-exp">✨ ${(await explain(qtext, given, cur.correct)).replace(/</g, '&lt;')}</p>`; } catch (e) { why.textContent = e.message; } };
+        if (why) why.onclick = async () => { why.disabled = true; why.textContent = 'Pensando…'; try { why.outerHTML = `<p class="ai-exp">✦ ${(await explain(qtext, given, cur.correct)).replace(/</g, '&lt;')}</p>`; } catch (e) { why.textContent = e.message; } };
         if (retries < 6) { queue.push({ ...cur }); retries++; }
         navigator.vibrate?.(40);
       }
@@ -258,11 +258,11 @@ export function openAcademy(ctx) {
         <div class="path">${u.lessons.map((l0, i) => { const l = byId(l0.id);
           const on = unlocked(l), c = crowns(l.id), st = l.type === 'story' ? STORIES[l.story] : null, ready = !st || storyReady(st);
           const isCur = on && !c && firstOpen && ready; if (isCur) firstOpen = false;
-          const icon = l.type === 'kana' ? chars(l)[0] : l.type === 'piece' ? l.piece : { tip: '💡', phrase: '語', tense: '時', review: '↻', story: '読' }[l.type];
-          return `<div class="pnode" style="--off:${[0, 1, 2, 1, 0, -1, -2, -1][i % 8]}"><button class="node ${c ? 'done' : ''} ${on && ready ? '' : 'lock'} ${isCur ? 'cur' : ''}" data-l="${l.id}">${on && ready ? icon : '🔒'}${c ? `<i class="cr">${'👑'.repeat(c)}</i>` : ''}</button>${isCur ? '<span class="start">EMPEZAR</span>' : ''}<small>${l.name}</small></div>`;
+          const icon = l.type === 'kana' ? chars(l)[0] : l.type === 'piece' ? l.piece : { tip: '知', phrase: '語', tense: '時', review: '↻', story: '読' }[l.type];
+          return `<div class="pnode" style="--off:${[0, 1, 2, 1, 0, -1, -2, -1][i % 8]}"><button class="node ${c ? 'done' : ''} ${on && ready ? '' : 'lock'} ${isCur ? 'cur' : ''}" data-l="${l.id}">${on && ready ? icon : '封'}${c ? `<i class="cr">${'冠'.repeat(c)}</i>` : ''}</button>${isCur ? '<span class="start">EMPEZAR</span>' : ''}<small>${l.name}</small></div>`;
         }).join('')}</div></section>`;
       }).join('')}</div>
-      <div class="av-foot"><div class="row2"><button class="btn gold" id="aiStory">✨ Cuento con tus KANJŪ</button><button class="btn ghost" id="lib">📚 ${(S.library || []).length}</button></div>
+      <div class="av-foot"><div class="row2"><button class="btn gold" id="aiStory">✦ Cuento con tus KANJŪ</button><button class="btn ghost" id="lib">本 ${(S.library || []).length}</button></div>
       <button class="btn ${due + ctx.kanjiDue() ? 'ok' : 'ghost'} wide" id="rev" ${due + ctx.kanjiDue() ? '' : 'disabled'}>修 Repaso del día ${due + ctx.kanjiDue() ? `· ${due + ctx.kanjiDue()} listos` : '· al día ✓'}</button></div>`;
     $('.x', v).onclick = () => { v.remove(); ctx.hud(); };
     v.querySelectorAll('[data-l]').forEach(b => b.onclick = () => openNode(byId(b.dataset.l)));
@@ -289,13 +289,13 @@ export function openAcademy(ctx) {
     const ink = xp * 2; S.ink += ink; ctx.bump('acad'); emit('lesson'); const ups = ctx.addXP(xp);
     let unitMsg = '';
     const u = L.unit;
-    if (!a.units.includes(u.id) && u.lessons.every(l => crowns(l.id))) { a.units.push(u.id); S.tickets += u.reward.tickets; unitMsg = `<p class="g">🎉 ¡Unidad completada! +${u.reward.tickets} 札 para el altar</p>`; }
+    if (!a.units.includes(u.id) && u.lessons.every(l => crowns(l.id))) { a.units.push(u.id); S.tickets += u.reward.tickets; unitMsg = `<p class="g">祝 ¡Unidad completada! +${u.reward.tickets} 札 para el altar</p>`; }
     const goalHit = a.day.xp >= DAILY_GOAL && a.day.xp - xp < DAILY_GOAL;
     if (goalHit) S.ink += 30;
     save();
     const m = ctx.modal(`<div class="result"><h3>${res.perfect ? '¡Lección perfecta!' : '¡Lección completada!'}</h3>
       <div class="lr-stats"><div><b>+${xp}</b><small>XP</small></div><div><b>${Math.round((1 - res.mistakes / Math.max(res.total, res.mistakes + 1)) * 100)}%</b><small>precisión</small></div><div><b>${res.best}</b><small>mejor racha</small></div></div>
-      <p><b>+${ink} 墨</b>${first ? '' : ` · 👑 ${crowns(L.id)}/3`}</p>${pieceMsg}${unitMsg}${goalHit ? '<p class="g">🎯 ¡Meta diaria cumplida! +30 墨</p>' : ''}
+      <p><b>+${ink} 墨</b>${first ? '' : ` · 冠 ${crowns(L.id)}/3`}</p>${pieceMsg}${unitMsg}${goalHit ? '<p class="g">的 ¡Meta diaria cumplida! +30 墨</p>' : ''}
       <button class="btn ok wide">Continuar</button></div>`);
     $('.btn', m).onclick = () => { m.close(); render(); if (ups.length) ctx.rankUp(ups); };
   }
@@ -305,14 +305,14 @@ export function openAcademy(ctx) {
   const THEMES = ['una aventura en el bosque', 'la comida', 'una noche de estrellas', 'la amistad', 'un día de lluvia', 'un viaje', 'una fiesta', 'un misterio'];
   function pickTheme() {
     const t = [...THEMES].sort(() => Math.random() - .5).slice(0, 4);
-    const m = ctx.modal(`<h3>✨ ¿De qué trata el cuento?</h3><p class="muted">Lo escribe tu IA con tus ${Object.values(S.dex).filter(d => d.owned).length} kanji, tus palabras aprendidas y tu gramática. Protagonistas: tus KANJŪ.</p>
-      <div class="themes">${t.map(x => `<button class="btn ghost" data-t="${x}">${x}</button>`).join('')}<button class="btn ghost" data-t="">🎲 Sorpresa</button></div>
-      <button class="link" id="aiCfg">⚙ Configurar mi IA</button>`);
+    const m = ctx.modal(`<h3>✦ ¿De qué trata el cuento?</h3><p class="muted">Lo escribe tu IA con tus ${Object.values(S.dex).filter(d => d.owned).length} kanji, tus palabras aprendidas y tu gramática. Protagonistas: tus KANJŪ.</p>
+      <div class="themes">${t.map(x => `<button class="btn ghost" data-t="${x}">${x}</button>`).join('')}<button class="btn ghost" data-t="">運 Sorpresa</button></div>
+      <button class="link" id="aiCfg">設 Configurar mi IA</button>`);
     m.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { m.close(); makeStory(b.dataset.t); });
     m.querySelector('#aiCfg').onclick = () => { m.close(); openAISettings(ctx.modal, ctx.toast, render); };
   }
   async function makeStory(theme) {
-    const wait = ctx.modal(`<div class="result"><div class="quill">✍</div><h3>Tu IA está escribiendo…</h3><p class="muted">Usando solo los kanji que ya tenés</p></div>`);
+    const wait = ctx.modal(`<div class="result"><div class="quill">筆</div><h3>Tu IA está escribiendo…</h3><p class="muted">Usando solo los kanji que ya tenés</p></div>`);
     wait.onclick = null;
     let st;
     try { st = await genStory(theme); } catch (e) { wait.close(); return ctx.toast(e.message); }
@@ -330,13 +330,13 @@ export function openAcademy(ctx) {
     (st.new_words || []).forEach(w => a.srs[`v:${w.jp}|${w.es}`] ??= { box: 0, due: Date.now() + SRS_HOURS[1] * 36e5 });
     const xp = fresh ? 15 + (res.perfect ? 5 : 0) : 5, ink = fresh ? 30 : 5;
     a.xp += xp; a.day.xp += xp; S.ink += ink; ctx.bump('acad'); const ups = ctx.addXP(xp); save();
-    ctx.toast(`📖 ${st.title} · +${xp} XP · +${ink} 墨${used.size ? ` · ${[...used].filter(k => S.creatures.some(c => c.k === k)).join('')} ganaron EXP` : ''}`);
+    ctx.toast(`書 ${st.title} · +${xp} XP · +${ink} 墨${used.size ? ` · ${[...used].filter(k => S.creatures.some(c => c.k === k)).join('')} ganaron EXP` : ''}`);
     if (ups.length) ctx.rankUp(ups);
     render();
   }
   function openLibrary() {
     const L = S.library || [];
-    const m = ctx.modal(`<h3>📚 Tu biblioteca</h3>${L.length ? L.map((st, i) => `<button class="lesson" data-b="${i}"><i>読</i><div><b>${st.title}</b><small>${new Date(st.date).toLocaleDateString()} · ${st.lines.length} oraciones</small></div></button>`).join('') : '<p class="muted">Todavía no hay cuentos. Creá uno con ✨.</p>'}`);
+    const m = ctx.modal(`<h3>本 Tu biblioteca</h3>${L.length ? L.map((st, i) => `<button class="lesson" data-b="${i}"><i>読</i><div><b>${st.title}</b><small>${new Date(st.date).toLocaleDateString()} · ${st.lines.length} oraciones</small></div></button>`).join('') : '<p class="muted">Todavía no hay cuentos. Creá uno con ✦.</p>'}`);
     m.querySelectorAll('[data-b]').forEach(b => b.onclick = () => { m.close(); readStory(L[+b.dataset.b], false); });
   }
   render(); document.body.append(v);

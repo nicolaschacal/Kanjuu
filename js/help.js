@@ -104,7 +104,7 @@ export const LESSONS = [
     <p>Las conseguís en la Tienda, en los viajes y completando estas lecciones.</p>` },
   { k: '語', t: 'Palabras con dos kanji', ink: 25, body: `<p>Juntando kanji se forman palabras: <b>日</b> (sol) + <b>本</b> (origen) = <b>日本</b> <i>nihon</i>, Japón: "el origen del sol".</p>
     <p>El juego Palabra 語 te entrena en esto. Leer las piezas te da una pista del significado.</p>
-    <p>Para recordar mejor: escribí tu propia historia en la ficha de cada criatura (💡).</p>` },
+    <p>Para recordar mejor: escribí tu propia historia en la ficha de cada criatura (知).</p>` },
 ];
 export const lessonsNew = () => LESSONS.filter((_, i) => !(S.lessons || []).includes(i)).length;
 export function openAcademy(modal, toast, hud, kana) {

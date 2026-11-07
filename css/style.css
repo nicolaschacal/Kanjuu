@@ -891,3 +891,93 @@ ruby.rk{cursor:pointer;border-bottom:2px dotted #c9b48a}
 .isle-card{display:flex;gap:12px;align-items:center;background:var(--night);color:var(--paper);border-radius:22px;padding:14px;margin:14px 0 4px;box-shadow:0 5px 0 #0005;border:2px solid var(--gold)}
 .isle-card .ak{width:52px;height:52px;border-radius:16px;background:var(--gold);color:var(--night);display:grid;place-items:center;font-size:28px}
 .isle-card>div{flex:1}.isle-card b{display:block;font-size:16px}.isle-card small{color:#CFC3AA;font-size:12px}
+
+/* =====================================================================
+   INTERFAZ UNIFICADA · mismo formato en todas las pantallas
+   (sin cambios de estética: misma paleta, formas y sombras)
+   ===================================================================== */
+/* Ritmo único: margen 16, separación 10, títulos de sección iguales */
+.view>div:not(.home):not(.duel){padding:12px 16px calc(24px + var(--safe-b))}
+.view h4{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;margin:20px 0 10px;font-size:15px;font-weight:900;line-height:1.3}
+.view h4 small{font-size:12px;font-weight:600;color:var(--muted)}
+.v-arena h4,.v-arena h4 small{color:#F6EBD0}.v-arena h4 small{opacity:.7}
+.sheet h4{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;margin:18px 0 10px;font-size:15px;font-weight:900}
+.sheet h4 small{font-size:12px;font-weight:600;color:var(--muted)}
+.lead{display:none}
+
+/* Encabezado de pantalla */
+.scr-h{display:flex;align-items:center;gap:12px;margin:0 0 14px}
+.scr-k{flex:0 0 48px;width:48px;height:54px;border-radius:15px;background:var(--night);color:var(--paper);display:grid;place-items:center;box-shadow:0 4px 0 #0003}
+.scr-k i{font-style:normal;font-family:var(--brush);font-size:25px;line-height:1;display:flex;flex-direction:column;align-items:center}
+.scr-k i ruby.gl{display:inline-flex;flex-direction:column;align-items:center;line-height:1}
+.scr-k i ruby.gl rt{display:block;order:-1;font-family:'M PLUS Rounded 1c',sans-serif;font-size:8px;font-weight:800;line-height:9px;height:9px;margin-bottom:2px;opacity:.75}
+.scr-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.scr-t b{font-family:var(--title);font-weight:800;font-size:24px;line-height:1.1}
+.scr-t small{font-size:12.5px;color:var(--muted);line-height:1.35}
+.scr-r{display:flex;gap:6px;flex-shrink:0}
+.pill-w{height:34px;border-radius:12px;background:var(--night);color:var(--paper);display:flex;align-items:center;gap:5px;padding:0 10px;font-size:13px;font-weight:800;white-space:nowrap}
+.pill-w b{font-size:14px;color:var(--gold)}
+.v-arena .scr-k{background:var(--red);color:#FFF6E3}.v-arena .scr-t b{color:#F6EBD0}.v-arena .scr-t small{color:#CFC3AA}
+.v-arena .pill-w{background:#F6EBD0;color:var(--night)}.v-arena .pill-w b{color:var(--night)}
+
+/* Selector segmentado (Tienda, Almacén…) */
+.seg{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;background:var(--paper2);border-radius:16px;padding:5px;margin-bottom:14px}
+.seg button{border-radius:12px;padding:6px 2px 5px;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:11px;font-weight:800;color:#6B5A45;background:none}
+.seg button i{font-style:normal;font-family:var(--brush);font-size:20px;line-height:1.1}
+.seg button.on{background:var(--night);color:var(--paper);box-shadow:0 3px 0 #0003}
+.st-tabs{background:var(--paper2);border-radius:16px;padding:5px;gap:5px}
+.st-tabs button{background:none}.st-tabs button.on{box-shadow:0 3px 0 #0003}
+
+/* Filas de lista: una sola medida en Tienda, Misiones, Almacén, Logros */
+.shop-row,.quest-row,.deco-row{display:flex;align-items:center;gap:12px;min-height:64px;padding:10px 12px;border-radius:18px;margin-bottom:10px}
+.shop-row>i,.deco-row>i{flex:0 0 44px;width:44px;height:48px;border-radius:13px;display:grid;place-items:center;font-size:22px}
+.shop-row>div,.deco-row>div{flex:1;min-width:0}
+.shop-row b{display:block;font-size:14px;line-height:1.25}
+.shop-row small{display:block;font-size:12px;line-height:1.35;color:var(--muted);margin-top:2px}
+.shop-row .btn{flex-shrink:0;min-width:76px;height:42px;padding:0 12px;font-size:13px;margin:0}
+.shop-row.locked{opacity:.6}
+.wallet{display:none}
+.isle-card{margin:0 0 6px}
+.altar-card{margin:0}
+
+/* Atlas compacto: menos espacio muerto */
+.dex-bar{margin:-4px 0 4px}
+.dex-grid{grid-template-columns:repeat(6,1fr)!important;gap:6px!important}
+.dex-c{min-height:0!important;aspect-ratio:1/1.1;padding:3px!important;border-radius:12px!important}
+.dex-c svg{width:100%;height:auto}
+.dex-c .sil{font-size:18px!important}
+.dex-c small{font-size:10px!important}
+.dex-c:not(.own):not(.seen){background:#00000008!important;box-shadow:none!important}
+.dex-c:not(.own):not(.seen) small{display:none}
+.fams{display:grid;gap:8px}
+.achs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+
+/* Ficha: evoluciones compactas en dos columnas */
+.evos{grid-template-columns:repeat(2,1fr);gap:8px}
+.evo{flex-direction:column;align-items:flex-start;gap:6px;padding:10px;min-height:0;text-align:left}
+.evo-top{display:flex;gap:8px;align-items:center}
+.evo .evo-k{width:42px;height:46px;font-size:24px;border-radius:12px}
+.evo-b{display:flex;flex-direction:column;gap:3px;min-width:0;width:100%}
+.evo-b b{font-size:13px;line-height:1.2}
+.evo-r{font-size:12px!important;color:var(--muted)}
+.evo-q{display:flex;flex-wrap:wrap;gap:4px}
+.evo-q em{font-style:normal;font-size:10.5px;font-weight:800;background:#E9DCC0;color:#6B5A45;border-radius:7px;padding:2px 6px}
+.evo-q em.ok{background:#DDEFD2;color:#2F7A2A}
+.evo{display:grid;grid-template-columns:42px 1fr;column-gap:8px;align-items:start}
+
+/* Viajes y Fusión: tarjetas con el mismo margen */
+.exps{display:block}
+.exp-card,.region{margin-bottom:10px}
+.lab .altar{margin-bottom:4px}
+.roster{gap:8px;padding-bottom:4px}
+.recipes{display:grid;gap:8px}
+
+/* Hojas modales: mismo encabezado */
+.sheet h3{display:flex;align-items:center;gap:8px;font-size:22px;margin:4px 0 12px}
+.muted{font-size:12.5px;line-height:1.4}
+.seg{grid-template-columns:repeat(auto-fit,minmax(0,1fr))}
+.evo-q{display:flex!important;flex-direction:row!important;flex-wrap:wrap}
+.evo-q em{display:inline-block!important;width:auto!important}
+.recipes:not(.all) .recipe:nth-child(n+9){display:none}
+.recipe{margin:0}
+#recAll{margin-top:10px}

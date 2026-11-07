@@ -111,6 +111,8 @@ export function hud() {
   app.querySelector('[data-tab=dex]')?.classList.toggle('dot', ACHIEVEMENTS.some(a => a[2]() && !S.ach.includes(a[0])));
   save();
 }
+// Encabezado común de pantalla: sello con kanji · título · una línea · dato a la derecha
+export const scrHead = (k, title, sub, right = '') => `<header class="scr-h"><span class="scr-k"><i>${k}</i></span><div class="scr-t"><b>${title}</b><small>${sub}</small></div>${right ? `<div class="scr-r">${right}</div>` : ''}</header>`;
 export function toast(msg) {
   const box = document.getElementById('toasts') || Object.assign(document.body.appendChild(document.createElement('div')), { id: 'toasts' });
   const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = msg;

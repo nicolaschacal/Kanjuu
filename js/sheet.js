@@ -24,7 +24,7 @@ export function openCreature(id) {
     <div class="cr-top" style="--el:${fill}">
       <button class="cr-art" id="pet">${creatureSVG(c.k, { mood: c.mood, gold: c.gold })}${c.acc ? `<span class="acc-hat big">${c.acc}</span>` : ''}</button>
       <div class="cr-name"><span class="big-k">${c.k}</span><div><b>${K.m}</b><small><b class="tbadge" style="--t:${TYPES[typeOf(c.k)].col}">${TYPES[typeOf(c.k)].k} ${TYPES[typeOf(c.k)].name}</b> fuerte contra ${TYPES[TYPES[typeOf(c.k)].beats].k} · ${ELEMENTS[element(c.k)][2]} · Nivel KANJŪ ${kLevel(c.k)}${c.gen ? ` · Gen ${c.gen}` : ''}</small></div></div>
-      <div class="reads"><button class="say" id="say">🔊</button><span>音 ${K.on.map(rr).join('・') || '—'}</span><span>訓 ${K.kun.map(rr).join('・') || '—'}</span><span class="mast" title="Maestría">熟 ${'★'.repeat(mastery(c.k))}${'☆'.repeat(Math.max(0, 6 - mastery(c.k)))}</span></div>
+      <div class="reads"><button class="say" id="say">音</button><span>音 ${K.on.map(rr).join('・') || '—'}</span><span>訓 ${K.kun.map(rr).join('・') || '—'}</span><span class="mast" title="Maestría">熟 ${'★'.repeat(mastery(c.k))}${'☆'.repeat(Math.max(0, 6 - mastery(c.k)))}</span></div>
     </div>
     <div class="bars">
       <div class="bar"><label>Lv ${c.lv}${c.lv >= MAX_LV ? ' MAX' : ''}</label><div><i style="width:${c.exp / expNeed(c.lv) * 100}%"></i></div></div>
@@ -39,11 +39,11 @@ export function openCreature(id) {
     ${c.pos ? `<p class="prod">収 Produce <b>${rate(c).toFixed(1)} 墨/h</b>${c.insp > Date.now() ? ' · <b class="g">inspirado ×2</b>' : ' · entrenalo para inspirarlo ×2'}${neighbors(c).length ? ` · aura ${neighbors(c).map(o => OBJS[o.t].k).join('')}` : ''}</p>` : '<p class="r">En el almacén: colocalo en el santuario para entrenar y producir</p>'}
     ${dupesOf(c).length && (c.stars || 0) < 5 ? `<button class="btn ok wide gold" id="awaken">覚 Despertar ★${(c.stars || 0) + 1} · usa un ${c.k} duplicado (+20% tinta y EXP)</button>` : ''}
     ${S.items.scroll ? `<button class="btn ghost wide" id="scroll">巻 Usar pergamino (+60 EXP) · ${S.items.scroll}</button>` : ''}
-    <details class="story-d"><summary>💡 Historia para recordarlo</summary>${storyHTML(c.k)}
+    <details class="story-d"><summary>知 Historia para recordarlo</summary>${storyHTML(c.k)}
       <textarea id="note" maxlength="160" placeholder="Escribí tu propia historia: las que inventás vos se recuerdan mejor">${esc(S.notes?.[c.k] || '')}</textarea></details>
     ${accHTML(c)}
-    <h4>進化 Evoluciones</h4>
-    <div class="evos">${evos.length ? evos.map(t => evoCard(c, t)).join('') : '<p class="muted">Forma final en este santuario. Llegá a Lv MAX para renacer.</p>'}</div>
+    <h4>進化 Evoluciones <small>${evos.length} caminos · 知 = dominio en el repaso</small></h4>
+    <div class="evos">${evos.length ? [...evos].sort((a, b) => (!!S.dex[b]?.seen - !!S.dex[a]?.seen) || evoLevel(a) - evoLevel(b)).map(t => evoCard(c, t)).join('') : '<p class="muted">Forma final en este santuario. Llegá a Lv MAX para renacer.</p>'}</div>
     ${K.recipes ? `<p class="muted">Composición: ${K.recipes.map(r => r.join(' + ')).join('  ·  ')}${K.note ? ` — ${K.note}` : ''}</p>` : ''}
     <p class="hist">${c.hist.join(' → ')}</p>`, 'cr');
 
@@ -56,7 +56,7 @@ export function openCreature(id) {
   $('#train', m).onclick = () => openTraining(c, m);
   $('#awaken', m) && ($('#awaken', m).onclick = () => { if (!confirm(`Se consumirá otro ${c.k}. ¿Despertar?`)) return; awaken(c); m.close(); go(); buzz([20, 60, 20]); toast(`覚 ${c.k} despertó: ★${c.stars}`); setTimeout(() => openCreature(id), 260); });
   $('#say', m).onclick = () => speak(reads(c.k)[0] || '');
-  $('#note', m).onchange = e => { S.notes ??= {}; S.notes[c.k] = e.target.value.trim(); save(); toast('✍ Historia guardada'); };
+  $('#note', m).onchange = e => { S.notes ??= {}; S.notes[c.k] = e.target.value.trim(); save(); toast('筆 Historia guardada'); };
   $('#free', m).onclick = () => {
     if (!confirm(`${c.k} volverá a la naturaleza y te dejará tinta. Su entrada en el atlas se conserva. ¿Liberar?`)) return;
     const ink = release(c); m.close(); go(); toast(`${c.k} se despidió · +${ink} 墨`); };
@@ -81,10 +81,13 @@ export function evoCard(c, t) {
   const gate = learnGate(t), learned = mastery(c.k) >= gate, room = true;
   const ok = c.lv >= need && !missing.length && learned && room && pieceOk;
   const known = S.dex[t]?.seen;
+  // Tarjeta compacta: kanji · nombre · receta · requisitos como chips (✓ cumplido / pendiente)
+  const q = (okk, txt) => `<em class="${okk ? 'ok' : ''}">${okk ? '✓ ' : ''}${txt}</em>`;
   return `<button class="evo ${ok ? 'ready' : ''}" data-evo="${t}" ${ok ? '' : 'disabled'}>
     <div class="evo-k ${known ? '' : 'unk'}">${known ? t : '？'}</div>
-    <div><b>${known ? KANJI[t].m : 'Desconocido'}</b><small>${c.k} + ${others.join(' + ')}</small>
-    <small class="${c.lv >= need ? 'g' : ''}">Lv ${need}</small>${missing.length ? `<small class="r">Conocé: ${missing.join(' ')}</small>` : ''}${pieceOk ? '' : `<small class="r">Equipá la pieza ${piece} ${PIECES[piece].m} (${S.pieces[piece] ? `tenés ${S.pieces[piece]}` : 'conseguila en la Tienda, viajes o la Academia'})</small>`}${learned ? '' : `<small class="r">Dominá ${c.k}: maestría ${mastery(c.k)}/${gate} (repasalo en el Dojo en días distintos)</small>`}${room ? '' : `<small class="r">Necesitás ${size(t) - size(c.k)} espacio más</small>`}</div></button>`;
+    <div class="evo-b"><b>${known ? KANJI[t].m : 'Por descubrir'}</b><small class="evo-r">${c.k} + ${others.join(' + ')}</small>
+    <span class="evo-q">${q(c.lv >= need, `Nv ${need}`)}${q(learned, `知 ${Math.min(mastery(c.k), gate)}/${gate}`)}${missing.length ? q(false, `Conocé ${missing.join(' ')}`) : ''}${piece ? q(pieceOk, `Pieza ${piece}`) : ''}</span></div>
+  </button>`;
 }
 export function openTraining(c, parent) {
   const games = Object.entries(GAMES).filter(([id]) => (id !== 'word' || hasWord(c.k)) && (id !== 'parts' || hasParts(c.k)) && (id !== 'trace' || STROKES[c.k]?.length));
@@ -119,7 +122,7 @@ export function evolveFX(c, to, from = c.acc && KANJI[to].recipes.some(r => r.in
   const fx = document.createElement('div'); fx.className = 'evofx';
   fx.innerHTML = `<div class="rays"></div><div class="parts">${from.map(k => `<span>${k}</span>`).join('')}</div>
     <div class="old">${creatureSVG(from[0])}</div><div class="new">${creatureSVG(to, { mood: 1 })}</div>
-    <div class="evo-cap"><span class="big-k">${to}</span><b>${KANJI[to].m}</b><small>${KANJI[to].on.join('・')} · ${KANJI[to].kun.join('・')}</small><small>${from.join(' + ')} = ${to} · Nivel KANJŪ ${kLevel(to)}</small><p class="evo-mn">💡 ${KANJI[to].mn}</p><button class="btn ok">¡Genial!</button></div>`;
+    <div class="evo-cap"><span class="big-k">${to}</span><b>${KANJI[to].m}</b><small>${KANJI[to].on.join('・')} · ${KANJI[to].kun.join('・')}</small><small>${from.join(' + ')} = ${to} · Nivel KANJŪ ${kLevel(to)}</small><p class="evo-mn">知 ${KANJI[to].mn}</p><button class="btn ok">¡Genial!</button></div>`;
   if (from[0] === c.k && byId(c.id)) { evolve(c, to); if (settle(c) === 'store') setTimeout(() => toast(`${to} creció y no entra en su lugar: está en el almacén`), 2600); }
   addXP(40);
   document.body.append(fx); buzz([20, 60, 40]); bump('evo');

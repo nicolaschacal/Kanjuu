@@ -9,7 +9,7 @@ import { openAcademy, acadDue, reviewAcademy, DAILY_GOAL } from './academy.js';
 import { openAISettings, aiStatus } from './ai.js';
 import { startTutorial, emit } from './tutorial.js';
 import { ISLANDS, island, buyIsland, harmony, COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
-import { $, buzz, go, hud, toast, modal } from './main.js';
+import { $, buzz, go, hud, toast, modal, scrHead } from './main.js';
 import { rankUp } from './sanctuary.js';
 
 // ---------- Tienda y Altar ----------
@@ -24,24 +24,33 @@ function shopObjs(decor) {
     return `<div class="shop-row ${lock ? 'locked' : ''}"><i>${d.k}</i><div><b>${d.name}${n ? ` · tenés ${n}` : ''}</b><small>${d.kind === 'decor' ? d.desc : d.desc} · ${d.w}×${d.h} · 和+${d.har}</small></div>
       <button class="btn ok" data-obj="${t}" ${lock || S.ink < objCost(t) ? 'disabled' : ''}>${lock ? `Rango ${d.rank}` : objCost(t) + ' 墨'}</button></div>`; }).join('');
 }
+let shopTab = 'inv';
+const SHOP_TABS = [['inv', '召', 'Invocar'], ['dec', '飾', 'Decorar'], ['bld', '建', 'Edificios'], ['pcs', '部', 'Piezas']];
 export function viewShop(v) {
   v.innerHTML = `<div class="shop">
-    <div class="wallet">墨 <b>${S.ink}</b> <span class="tk">札 ${S.tickets}</span><small>Tu santuario produce ${totalRate()} 墨/h · entrená y repasá para producir más</small></div>
+    ${scrHead('店', 'Tienda', `Tu santuario produce ${totalRate()} 墨/h`, `<span class="pill-w">墨 <b>${S.ink}</b></span><span class="pill-w">札 <b>${S.tickets}</b></span>`)}
+    <div class="seg">${SHOP_TABS.map(([id, k, l]) => `<button class="${shopTab === id ? 'on' : ''}" data-st="${id}"><i>${k}</i><span>${l}</span></button>`).join('')}</div>
+    ${shopTab === 'inv' ? `
     <div class="altar-card">
       <div class="altar-top"><span class="ak">召</span><div><b>Altar de invocación</b><small>Componentes de las regiones que desbloqueaste · ${Math.round(GOLD_RATE * 100)}% dorado</small></div></div>
       <div class="pity"><span>Kanji nuevo garantizado en</span><b>${Math.max(1, PITY - S.pity)}</b><span>invocaciones</span></div>
       <div class="row"><button class="btn ok" data-pull="1">${S.tickets ? '札 ×1' : `${PULL} 墨`}<small>Invocar 1</small></button><button class="btn ok gold" data-pull="10">${S.tickets >= 10 ? '札 ×10' : `${PULL10} 墨`}<small>Invocar 10 · 1 nuevo seguro</small></button></div>
     </div>
+    ` : ''}
+    ${shopTab === 'dec' ? `
     ${(() => { const nx = ISLANDS[(S.island || 0) + 1]; return nx ? `<div class="isle-card"><span class="ak">拡</span><div><b>${nx.name} ${nx.n}×${nx.n}</b><small>${nx.mons} KANJŪ y ${nx.objs} objetos en la isla (ahora ${island().mons} y ${island().objs})</small></div><button class="btn ok gold" id="buyIsle" ${S.rank.lv < nx.rank || S.ink < nx.cost ? 'disabled' : ''}>${S.rank.lv < nx.rank ? `Rango ${nx.rank}` : nx.cost + ' 墨'}</button></div>` : ''; })()}
-    <h4>建 Edificios <small>tienen efecto · mejoralos hasta Nv${OBJ_MAX}</small></h4>
-    ${shopObjs(false)}
-    <h4>飾 Decoración <small>cada objeto suma 和 Armonía: +1% de tinta por punto (hasta +60%) · tenés ${Math.round(harmony())}</small></h4>
-    ${shopObjs(true)}
-    <h4>部品 Piezas <small>accesorios para evolucionar y fusionar</small></h4>
+    <h4>和 Armonía ${Math.round(harmony())} <small>cada objeto suma armonía: +1% de tinta por punto (hasta +60%)</small></h4>
+    ${shopObjs(true)}` : ''}
+    ${shopTab === 'bld' ? `<h4>Edificios <small>tienen efecto sobre sus vecinos · mejoralos hasta Nv${OBJ_MAX}</small></h4>
+    ${shopObjs(false)}` : ''}
+    ${shopTab === 'pcs' ? `<h4>Piezas 部品 <small>accesorios para evolucionar y fusionar</small></h4>
     ${Object.entries(PIECES).map(([p, d]) => `<div class="shop-row"><i class="pc-i">${p}</i><div><b>${d.name} <small class="rmj">${d.rom}</small> · ${d.m}${S.pieces[p] ? ` · tenés ${S.pieces[p]}` : ''}</b><small>Forma ${d.ex}</small></div><button class="btn ok" data-piece="${p}" ${S.ink < d.cost ? 'disabled' : ''}>${d.cost} 墨</button></div>`).join('')}
-    <h4>品 Consumibles</h4>
+` : ''}
+    ${shopTab === 'inv' ? `<h4>Consumibles <small>se usan una vez</small></h4>
     ${ITEMS.map(it => `<div class="shop-row"><i>${it.k}</i><div><b>${it.name}${S.items[it.id] ? ` · tenés ${S.items[it.id]}` : ''}</b><small>${it.desc}</small></div><button class="btn ok" data-buy="${it.id}" ${S.ink < it.cost ? 'disabled' : ''}>${it.cost} 墨</button></div>`).join('')}
+` : ''}
   </div>`;
+  v.querySelectorAll('[data-st]').forEach(b => b.onclick = () => { shopTab = b.dataset.st; buzz(5); go(); });
   v.querySelectorAll('[data-piece]').forEach(b => b.onclick = () => {
     const p = b.dataset.piece; S.ink -= PIECES[p].cost; S.pieces[p] = (S.pieces[p] || 0) + 1; buzz(10);
     toast(`部品 ${p} ${PIECES[p].name} guardada · equipala desde la ficha de una criatura`); go();

@@ -11,13 +11,15 @@ import { openAISettings, aiStatus } from './ai.js';
 import { startTutorial, emit } from './tutorial.js';
 import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
 import { $, buzz, MISSIONS, WEEKLY, ACHIEVEMENTS, owned, hud, toast, modal, floatText } from './main.js';
+import { scrHead } from './main.js';
 
 // ---------- Códice ----------
 export function viewDex(v) {
   const all = Object.keys(KANJI).sort((a, b) => depth(a) - depth(b));
   v.innerHTML = `<div class="dex">
-    <div class="dex-head"><b>${owned()}</b>/${all.length} kanji<div class="tbar"><i style="width:${owned() / all.length * 100}%"></i></div></div>
-    ${[...new Set(all.map(kLevel))].map(L => `<h4>Nivel KANJŪ ${L} <small>${['Componentes fundamentales', 'Primera composición', 'Composición intermedia', 'Composición compleja', 'Composición avanzada'][L - 1]}</small></h4>
+    ${scrHead('図', 'Atlas', 'Todos los kanji, sus familias y tus logros', `<span class="pill-w"><b>${owned()}</b>/${all.length}</span>`)}
+    <div class="tbar dex-bar"><i style="width:${owned() / all.length * 100}%"></i></div>
+    ${[...new Set(all.map(kLevel))].map(L => `<h4>Nivel KANJŪ ${L} <small>${['Componentes fundamentales', 'Primera composición', 'Composición intermedia', 'Composición compleja', 'Composición avanzada'][L - 1]} · ${all.filter(k => kLevel(k) === L && S.dex[k]?.owned).length}/${all.filter(k => kLevel(k) === L).length}</small></h4>
     <div class="dex-grid">${all.filter(k => kLevel(k) === L).map(k => {
       const d = S.dex[k];
       return `<button class="dex-c ${d?.owned ? 'own' : d?.seen ? 'seen' : ''}" data-k="${k}">${d?.owned ? creatureSVG(k) : `<span class="sil">${d?.seen ? k : '？'}</span>`}<small>${d?.seen ? k : '—'}</small>${d?.owned ? `<i class="mdots">${'●'.repeat(Math.min(6, mastery(k)))}</i>` : ''}</button>`;
@@ -37,7 +39,7 @@ export function viewDex(v) {
     const k = b.dataset.k, d = S.dex[k]; if (!d?.seen) return toast('Aún no descubierto');
     const K = KANJI[k];
     modal(`<div class="dex-detail">${d.owned ? creatureSVG(k) : `<span class="sil big">${k}</span>`}
-      ${storyHTML(k)}<button class="btn ghost" id="say2">🔊 Escuchar</button>
+      ${storyHTML(k)}<button class="btn ghost" id="say2">音 Escuchar</button>
       <p class="muted">Nivel KANJŪ ${kLevel(k)} · composition_depth ${depth(k)}</p>
       ${K.recipes ? `<p>${K.recipes.map(r => r.join(' + ') + ' = ' + k).join('<br>')}</p>` : '<p class="muted">Componente fundamental</p>'}
       ${evolutionsOf(k).length ? `<p class="muted">Forma parte de: ${evolutionsOf(k).map(t => S.dex[t]?.seen ? t : '？').join(' ')}</p>` : ''}

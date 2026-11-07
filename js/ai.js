@@ -97,7 +97,7 @@ export async function explain(question, given, correct) {
 // ---- Pantalla de configuración ----
 export async function openAISettings(modal, toast, onChange) {
   const c = cfg(), uses = S.aiUses?.day === new Date().toISOString().slice(0, 10) ? S.aiUses.n : 0;
-  const m = modal(`<h3>✨ Tu IA</h3>
+  const m = modal(`<h3>✦ Tu IA</h3>
     <p class="muted">Conectá tu propia clave y KANJŪ escribirá cuentos con tus criaturas, usando solo los kanji y la gramática que ya conocés. También te explicará tus errores.</p>
     ${c ? `<div class="shop-row"><i>✓</i><div><b>${PROVIDERS[c.provider].label}</b><small>${c.model} · ${hint(c.key)} · ${uses} usos hoy</small></div><button class="btn ghost" id="del">Quitar</button></div>` : ''}
     <form class="auth" id="kf">
@@ -106,7 +106,7 @@ export async function openAISettings(modal, toast, onChange) {
       <select name="model" class="sel"></select>
       <p class="err r"></p><button class="btn ok wide" type="submit">Conectar</button>
     </form>
-    <p class="muted">🔒 La clave queda guardada <b>solo en este dispositivo</b>: la app habla directo con tu proveedor y nunca la envía a KANJŪ. Cada historia se cobra en tu cuenta del proveedor (centavos). Gratis: <a href="${PROVIDERS.gemini.keyUrl}" target="_blank" rel="noopener">clave de Gemini</a> · <a href="${PROVIDERS.groq.keyUrl}" target="_blank" rel="noopener">clave de Groq</a>.</p>`);
+    <p class="muted">封 La clave queda guardada <b>solo en este dispositivo</b>: la app habla directo con tu proveedor y nunca la envía a KANJŪ. Cada historia se cobra en tu cuenta del proveedor (centavos). Gratis: <a href="${PROVIDERS.gemini.keyUrl}" target="_blank" rel="noopener">clave de Gemini</a> · <a href="${PROVIDERS.groq.keyUrl}" target="_blank" rel="noopener">clave de Groq</a>.</p>`);
   const f = m.querySelector('#kf'), sel = f.provider, ms = f.model;
   const fill = () => { const id = sel.value || detect(f.key.value.trim()); ms.innerHTML = id ? PROVIDERS[id].models.map(x => `<option>${x}</option>`).join('') : '<option value="">Modelo (según el proveedor)</option>'; };
   f.key.oninput = fill; sel.onchange = fill; fill();
@@ -116,7 +116,7 @@ export async function openAISettings(modal, toast, onChange) {
     if (!provider) { err.textContent = 'No reconocimos el proveedor: elegilo de la lista.'; return; }
     const next = { provider, key, model: ms.value || PROVIDERS[provider].models[0] };
     b.disabled = true; b.textContent = 'Probando la clave…'; err.textContent = '';
-    try { await call(next, { system: 'Respondé solo: ok', user: 'ok', maxTokens: 20, timeoutMs: 15000 }); setCfg(next); S.aiOn = true; save(); m.close(); toast('✨ IA conectada · ¡probá un cuento en la Academia!'); onChange?.(); }
+    try { await call(next, { system: 'Respondé solo: ok', user: 'ok', maxTokens: 20, timeoutMs: 15000 }); setCfg(next); S.aiOn = true; save(); m.close(); toast('✦ IA conectada · ¡probá un cuento en la Academia!'); onChange?.(); }
     catch (x) { err.textContent = x.message; b.disabled = false; b.textContent = 'Conectar'; }
   };
   m.querySelector('#del')?.addEventListener('click', () => { setCfg(null); S.aiOn = false; save(); m.close(); toast('Clave quitada de este dispositivo'); onChange?.(); });
