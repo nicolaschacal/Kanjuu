@@ -13,7 +13,7 @@ Revisión como diseñador de videojuegos para dos públicos: quien quiere aprend
 2. **Faltaba un verbo central para fans de monstruos:** las criaturas no se usaban en desafíos donde importe cuáles elegiste.
 3. **Muro a mitad de juego:** tras la semana 1 el ritmo de novedades cae; faltaban metas intermedias.
 4. **La maestría frena a quien solo quiere jugar:** es intencional (repetición espaciada), pero hacía falta algo para hacer mientras tanto.
-5. **La fusión chocaba con el apego:** fusionar consumía a tus criaturas.
+5. **Fusión y apego:** se decidió mantener la fusión como en Digimon (nace una criatura nueva y las otras se consumen). Quien quiera conservar a su criatura, la evoluciona. Esto también evita acumular cientos de criaturas.
 
 ## Decisiones (implementadas)
 | Problema | Solución |
@@ -23,7 +23,6 @@ Revisión como diseñador de videojuegos para dos públicos: quien quiere aprend
 | 2 | **Estadísticas que importan:** ataque y vida según nivel, nivel KANJŪ, estrellas, vínculo, variante dorada y **maestría del kanji**. |
 | 4 | **Cofres que se abren estudiando** (no esperando): cada acierto en Repaso, Academia o entrenamiento suma. 4 espacios; si están llenos, ganar solo da copas. |
 | 3 | **Familias 族:** kanji que comparten pieza o base (寺: 寺 時 持 待; 喿; 辶…), con premio al completarlas. Arenas y camino de copas como metas de semanas. |
-| 5 | **Fusión sin pérdida:** la criatura principal se transforma y conserva su identidad, historia, vínculo y estrellas. |
 
 ## Pendiente (etapa gráfica)
 - Desbloqueo progresivo de sistemas y simplificación de monedas/medidores en pantalla.

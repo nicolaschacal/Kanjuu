@@ -78,19 +78,16 @@ export function evolve(c, to) {
   c.k = to; c.lv = 1; c.exp = 0; c.hist.push(to); own(to); S.stats.evolutions++; return true;
 }
 
-// Fusión: consume las criaturas y crea el carácter resultante
+// Fusión (como en Digimon): las criaturas se consumen y nace una nueva. Para conservar a la tuya, evolucionala.
 export function fuse(ids, to, pieces = []) {
   const used = ids.map(byId);
   pieces.forEach(p => S.pieces[p]--);
-  // La criatura principal (la de más vínculo y nivel) no desaparece: se transforma y conserva su historia
-  const main = [...used].sort((a, b) => (b.bond + b.lv) - (a.bond + a.lv))[0];
   used.forEach(c => { if (c.acc) { S.pieces[c.acc] = (S.pieces[c.acc] || 0) + 1; c.acc = null; } });
   S.creatures = S.creatures.filter(c => !ids.includes(c.id));
   S.stats.fusions++;
   return addCreature(to, {
-    id: main.id, gold: used.some(c => c.gold), stars: main.stars || 0,
     gen: Math.max(...used.map(c => c.gen)),
-    bond: Math.max(...used.map(c => c.bond || 0)),
+    bond: Math.round(used.reduce((a, c) => a + (c.bond || 0), 0) / used.length),
     hist: [...new Set(used.flatMap(c => c.hist)), to],
   });
 }
