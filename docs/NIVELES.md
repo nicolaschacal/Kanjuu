@@ -6,24 +6,36 @@ Nivel KANJŪ = composition_depth + 1 (máximo 5).
 
 **Fuente de las composiciones:** [KanjiVG](http://kanjivg.tagaini.net) (Ulrich Apel, CC BY-SA 3.0). Cada receta coincide con el árbol de elementos (`kvg:element`) del archivo del kanji.
 
-**Variantes = mismo kanji.** 氵 es 水, 扌 es 手, 艹 es 艸, 衤 es 衣, 礻 es 示, 亻 es 人, 忄 es 心: se usa la misma criatura y la receta indica la forma.
+**Variantes = mismo kanji.** 氵 es 水, 扌 es 手, 艹 es 艸, 衤 es 衣, 礻 es 示, 亻 es 人, 忄 es 心.
 
-**Piezas 部品 (accesorios).** Los componentes que no se usan como kanji solos no son criaturas: son piezas que se equipan a una criatura para evolucionar o se suman en la fusión. Para el nivel cuentan como nivel 1.
+**Radicales vs. componentes.** Componente es cualquier parte de un kanji. Radical (部首) es el único componente que clasifica al kanji en el diccionario (214 en la lista de Kangxi). Muchos radicales son kanji completos y en el juego son criaturas.
+
+**Piezas 部品 (accesorios).** Los componentes que no se usan como kanji solos no son criaturas: se equipan para evolucionar o se suman en la fusión. Cuentan como nivel 1.
 
 | Pieza | Nombre | Significado | Forma |
 |---|---|---|---|
 | 宀 | うかんむり (ukanmuri) | techo | 字 安 案 |
 | 儿 | ひとあし (hitoashi) | piernas | 見 兄 視 |
 | 攵 | のぶん (nobun) | golpear · actuar | 枚 故 |
-| 辶 | しんにょう (shinnyō) | camino · avanzar | 近 |
+| 辶 | しんにょう (shinnyō) | camino · avanzar | 近 連 運 |
 | 广 | まだれ (madare) | techo abierto | 床 |
 | 亠 | なべぶた (nabebuta) | tapa | 享 |
+| 冖 | わかんむり (wakanmuri) | cubierta | 軍 運 |
+| 疒 | やまいだれ (yamaidare) | enfermedad | 疲 症 |
+| 彳 | ぎょうにんべん (gyōninben) | ir · paso | 待 |
+| 尸 | しかばね (shikabane) | cuerpo | 居 尾 |
+| 厂 | がんだれ (gandare) | acantilado | 圧 厚 |
+| 冂 | けいがまえ (keigamae) | marco | 同 内 |
+| 勹 | つつみがまえ (tsutsumigamae) | envolver | 句 旬 |
+| 彡 | さんづくり (sanzukuri) | pelo · adorno | 杉 |
+| 癶 | はつがしら (hatsugashira) | pasos | 登 |
+| 廴 | えんにょう (ennyō) | camino largo | 延 |
 
-## Nivel 1 · Componentes fundamentales (24)
+## Nivel 1 · Componentes fundamentales (31)
 
-一 木 人 日 月 火 田 力 女 子 口 十 目 生 心 皿 水 艸 手 糸 示 衣 立 斤 + piezas 宀 儿 攵 辶 广 亠
+一 木 人 日 月 火 田 力 女 子 口 十 目 生 心 皿 水 艸 手 糸 示 衣 立 車 止 土 寸 皮 毛 豆 斤
 
-## Nivel 2 · Primera composición (28)
+## Nivel 2 · Primera composición (42)
 
 | Kanji | Significado | Receta | Profundidad |
 |---|---|---|---|
@@ -55,8 +67,22 @@ Nivel KANJŪ = composition_depth + 1 (máximo 5).
 | 享 | recibir · disfrutar | 亠 + 口 + 子 (tres piezas: 亠, 口 y 子) | 1 |
 | 音 | sonido | 立 + 日 | 1 |
 | 新 | nuevo | 立 + 木 + 斤 (tres piezas: 立 y 木 a la izquierda, 斤 a la derecha) | 1 |
+| 軍 | ejército | 冖 + 車 | 1 |
+| 連 | conectar · llevar | 車 + 辶 | 1 |
+| 疲 | cansarse | 疒 + 皮 | 1 |
+| 正 | correcto | 一 + 止 | 1 |
+| 寺 | templo | 土 + 寸 | 1 |
+| 尾 | cola | 尸 + 毛 | 1 |
+| 圧 | presión | 厂 + 土 | 1 |
+| 厚 | grueso · amable | 厂 + 日 + 子 (tres piezas: 厂, 日 y 子) | 1 |
+| 同 | igual | 冂 + 一 + 口 (tres piezas: 冂, 一 y 口) | 1 |
+| 内 | dentro | 冂 + 人 | 1 |
+| 句 | frase | 勹 + 口 | 1 |
+| 旬 | temporada | 勹 + 日 | 1 |
+| 杉 | cedro japonés | 木 + 彡 | 1 |
+| 登 | subir | 癶 + 豆 | 1 |
 
-## Nivel 3 · Composición intermedia (13)
+## Nivel 3 · Composición intermedia (20)
 
 | Kanji | Significado | Receta | Profundidad |
 |---|---|---|---|
@@ -69,6 +95,13 @@ Nivel KANJŪ = composition_depth + 1 (máximo 5).
 | 案 | plan · propuesta | 安 + 木 | 2 |
 | 視 | mirar con atención | 示 + 見 (示 aparece como 礻) | 2 |
 | 故 | razón · difunto | 古 + 攵 | 2 |
+| 運 | transportar · suerte | 軍 + 辶 | 2 |
+| 症 | síntoma | 疒 + 正 | 2 |
+| 待 | esperar | 彳 + 寺 | 2 |
+| 持 | tener · sostener | 手 + 寺 (手 aparece como 扌) | 2 |
+| 時 | tiempo · hora | 日 + 寺 | 2 |
+| 居 | residir | 尸 + 古 | 2 |
+| 延 | extender | 正 + 廴 (en KanjiVG la parte izquierda figura como 正) | 2 |
 | 喿 | piar de pájaros | 品 + 木 (carácter componente, casi no se usa solo) | 2 |
 | 禁 | prohibir | 林 + 示 | 2 |
 | 意 | intención · mente | 音 + 心 | 2 |

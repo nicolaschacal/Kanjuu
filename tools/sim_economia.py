@@ -93,6 +93,6 @@ H=[run(s,kind)[0] for s in range(20)]
 print(f'== {kind} {P}')
 for i,row in enumerate(H[0]):
     avg=[sum(h[i][j] for h in H)/len(H) for j in range(6)]
-    print(f"día {row[0]:2}: kanji {avg[1]:4.1f}/40 (compuestos {avg[2]:4.1f}) · rango {avg[3]:4.1f} · tinta guardada {avg[4]:6.0f} · ingreso/día {avg[5]:5.0f}")
+    print(f"día {row[0]:2}: kanji {avg[1]:4.1f}/{len(K)} (compuestos {avg[2]:4.1f}) · rango {avg[3]:4.1f} · tinta guardada {avg[4]:6.0f} · ingreso/día {avg[5]:5.0f}")
 _,e=run(1,kind); tot=sum(v for k,v in e.items() if v>0)
 print('origen tinta:', {k:f"{v/tot*100:.0f}%" for k,v in sorted(e.items(),key=lambda x:-x[1]) if v>0})

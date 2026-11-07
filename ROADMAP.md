@@ -5,7 +5,7 @@ Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. El arte definitivo queda p
 ## 1. Núcleo jugable
 - ✅ Santuario vivo, criaturas SVG procedurales, interacción directa
 - ✅ Evolución ramificada por EXP, fusión con recetas verificadas, renacimiento con legado
-- ✅ Expediciones asíncronas (7 regiones, desbloqueo por colección, huellas y exploraciones diarias por región)
+- ✅ Expediciones asíncronas (9 regiones, desbloqueo por colección, huellas y exploraciones diarias por región)
 - ✅ Santuario en grilla de tiles: criaturas (1×1, 2×1, 2×2) y objetos ocupan casillas; modo construcción para mover
 - ✅ Almacén para criaturas y objetos fuera de juego; puerta como desborde; expandir terreno y almacén
 - ✅ Producción idle de tinta por criatura (sube con nivel, maestría, ánimo, estrellas, auras); se acumula hasta 8 h
@@ -43,9 +43,9 @@ Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. El arte definitivo queda p
 - ⬜ Estadísticas de retención para el jugador (curva del olvido personal)
 
 ## 3. Contenido
-- ✅ 73 kanji en los 5 niveles KANJŪ (24 fundamentales; recetas verificadas con KanjiVG, ver docs/NIVELES.md)
-- ✅ Piezas 部品 como accesorios (宀 儿 攵 辶 广 亠): se equipan para evolucionar o se suman en la fusión; se consiguen en Tienda, viajes y Academia
-- 🔜 Más piezas (冖 疒 彳 尸 门…) y los kanji comunes que habilitan
+- ✅ 101 kanji en los 5 niveles KANJŪ (24 fundamentales; recetas verificadas con KanjiVG, ver docs/NIVELES.md)
+- ✅ 16 piezas 部品 como accesorios (宀 儿 攵 辶 广 亠 冖 疒 彳 尸 厂 冂 勹 彡 癶 廴): se equipan para evolucionar o se suman en la fusión; se consiguen en Tienda, viajes y Academia
+- 🔜 Más piezas y los kanji comunes que habilitan (objetivo: N5 completo)
 - 🔜 Pipeline de datos: kanji + componentes + lecturas desde KANJIDIC2 / KanjiVG, revisión humana de recetas
 - 🔜 Llevar a 100 kanji (todo N5) con niveles KANJŪ 4–5
 - ⬜ Temporadas temáticas (estaciones del año, festivales) con regiones nuevas
