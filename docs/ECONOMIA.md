@@ -20,6 +20,7 @@ Reproducir: `node tools/exportar_kanji.mjs && python3 tools/sim_economia.py norm
 | Tinta por entrenar | estrellas | estrellas × 2 | Ídem |
 | Evolución | nivel 7/10/13 | nivel 5/8/11 | Primer gran logro más cercano |
 | Maestría para evolucionar/fusionar | 1 | 2 (nivel 2) · profundidad+2 (nivel 3+) | **El Atlas exige repasar en días distintos** |
+| Viajes por día | sin límite | 6/5/4/4/3/3/3 por región (se renuevan a medianoche) | Evita farmear la región corta; desbloquear regiones da más viajes |
 | Objetos repetidos | precio fijo | +50% por copia | Sumidero de tinta a largo plazo |
 
 ## Resultado (jugador normal: 3 sesiones/día)
@@ -33,3 +34,5 @@ Reproducir: `node tools/exportar_kanji.mjs && python3 tools/sim_economia.py norm
 Jugador casual (1 sesión/día): ~19/40 al día 7 y ~30/40 al día 14.
 
 Con más contenido (100+ kanji) la curva se alarga sola, porque los compuestos dependen de la maestría.
+
+Con 62 kanji y niveles 4–5 (evolución a Lv 11 y 14, maestría 5 y 6), el Atlas completo pasa a ser una meta de varias semanas.

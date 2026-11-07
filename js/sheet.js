@@ -11,6 +11,7 @@ import { startTutorial, emit } from './tutorial.js';
 import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
 import { $, buzz, esc, home, ui, go, hud, toast, modal, floatText } from './main.js';
 import { rankUp } from './sanctuary.js';
+import { STROKES } from './strokes.js';
 
 // ---------- Hoja de criatura ----------
 export function openCreature(id) {
@@ -77,7 +78,7 @@ export function evoCard(c, t) {
     <small class="${c.lv >= need ? 'g' : ''}">Lv ${need}</small>${missing.length ? `<small class="r">Conocé: ${missing.join(' ')}</small>` : ''}${learned ? '' : `<small class="r">Dominá ${c.k}: maestría ${mastery(c.k)}/${gate} (repasalo en el Dojo en días distintos)</small>`}${room ? '' : `<small class="r">Necesitás ${size(t) - size(c.k)} espacio más</small>`}</div></button>`;
 }
 export function openTraining(c, parent) {
-  const games = Object.entries(GAMES).filter(([id]) => (id !== 'word' || hasWord(c.k)) && (id !== 'parts' || hasParts(c.k)));
+  const games = Object.entries(GAMES).filter(([id]) => (id !== 'word' || hasWord(c.k)) && (id !== 'parts' || hasParts(c.k)) && (id !== 'trace' || STROKES[c.k]?.length));
   const m = modal(`<h3>練 Entrenar con ${c.k}</h3><div class="games">${games.map(([id, g]) =>
     `<button class="gcard" data-g="${id}"><i>${g.k}</i><b>${g.name}</b><small>${g.desc}</small></button>`).join('')}</div>
     <p class="muted">Saber: ${'●'.repeat(Math.min(5, c.know))}${'○'.repeat(Math.max(0, 5 - c.know))} · la dificultad se adapta</p>`);

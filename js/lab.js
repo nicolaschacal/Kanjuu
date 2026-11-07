@@ -24,7 +24,7 @@ export function viewLab(v) {
   v.innerHTML = `
   <div class="lab">
     <div class="altar">
-      <div class="slots">${[0, 1, 2].map(i => sel[i] ? `<button class="slot full" data-rm="${sel[i].id}">${creatureSVG(sel[i].k)}</button>` : `<div class="slot">＋</div>`).join('<span class="plus">+</span>')}</div>
+      <div class="slots">${Array.from({ length: Math.min(4, Math.max(2, sel.length + 1)) }, (_, i) => i).map(i => sel[i] ? `<button class="slot full" data-rm="${sel[i].id}">${creatureSVG(sel[i].k)}</button>` : `<div class="slot">＋</div>`).join('<span class="plus">+</span>')}</div>
       <div class="arrow">↓</div>
       <div class="result-slot ${match ? 'ok' : ''}">${match ? `<span class="big-k">${match}</span><small>${KANJI[match].m} · ${KANJI[match].form}</small>` : `<span class="big-k dim">？</span><small>${sel.length ? 'Sin composición conocida' : 'Elegí criaturas'}</small>`}</div>
       ${weak.length ? `<p class="gate-msg">📖 Para fusionar necesitás dominar ${weak.map(k => `<b>${k}</b> ${mastery(k)}/${learnGate(match)}`).join(' · ')}. Repasalos en el Dojo en días distintos.</p>` : ''}
@@ -46,7 +46,7 @@ export function viewLab(v) {
   </div>`;
   v.querySelectorAll('.chip-mon').forEach(b => b.onclick = () => {
     const id = b.dataset.id; buzz(5);
-    labSel = labSel.includes(id) ? labSel.filter(x => x !== id) : labSel.length < 3 ? [...labSel, id] : labSel;
+    labSel = labSel.includes(id) ? labSel.filter(x => x !== id) : labSel.length < 4 ? [...labSel, id] : labSel;
     viewLab(v);
   });
   v.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { labSel = labSel.filter(x => x !== b.dataset.rm); viewLab(v); });

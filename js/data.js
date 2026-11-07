@@ -19,6 +19,14 @@ export const KANJI = {
   '生': { m: 'vida · nacer', on: ['セイ', 'ショウ'], kun: ['い(きる)', 'う(まれる)'], el: 'life', mn: 'Un brote que asoma de la tierra: la vida.' },
   '心': { m: 'corazón', on: ['シン'], kun: ['こころ'], el: 'heart', mn: 'Un corazón con sus gotas latiendo alrededor.' },
   '皿': { m: 'plato', on: [], kun: ['さら'], el: 'earth', mn: 'Un plato visto de costado, sobre su base.' },
+  '水': { m: 'agua', on: ['スイ'], kun: ['みず'], el: 'water', note: 'como componente se escribe 氵', mn: 'Un chorro de agua al centro con salpicaduras a los lados.' },
+  '艸': { m: 'hierba', on: ['ソウ'], kun: ['くさ'], el: 'life', note: 'como componente se escribe 艹 (くさかんむり)', mn: 'Dos brotes de hierba lado a lado.' },
+  '手': { m: 'mano', on: ['シュ'], kun: ['て'], el: 'power', note: 'como componente se escribe 扌', mn: 'Una mano con los dedos extendidos.' },
+  '糸': { m: 'hilo', on: ['シ'], kun: ['いと'], el: 'thread', mn: 'Un ovillo de hilo retorcido que cuelga.' },
+  '示': { m: 'mostrar · altar', on: ['ジ', 'シ'], kun: ['しめ(す)'], el: 'spirit', mn: 'Un altar con ofrendas: lo que se muestra a los dioses.' },
+  '衣': { m: 'ropa', on: ['イ'], kun: ['ころも'], el: 'thread', note: 'como componente se escribe 衤', mn: 'Una prenda con su cuello y sus faldones.' },
+  '立': { m: 'estar de pie', on: ['リツ', 'リュウ'], kun: ['た(つ)'], el: 'person', mn: 'Una persona parada firme sobre el suelo.' },
+  '斤': { m: 'hacha', on: ['キン'], kun: [], el: 'metal', mn: 'Un hacha colgada, lista para cortar.' },
   // — Primera composición —
   '林': { m: 'arboleda', on: ['リン'], kun: ['はやし'], recipes: [['木', '木']], form: 'izquierda-derecha', mn: 'Dos árboles juntos ya son una arboleda.' },
   '休': { m: 'descansar', on: ['キュウ'], kun: ['やす(む)'], recipes: [['人', '木']], form: 'izquierda-derecha', note: '人 aparece como 亻', mn: 'Una persona apoyada en un árbol: descansa.' },
@@ -38,6 +46,8 @@ export const KANJI = {
   '相': { m: 'mutuo', on: ['ソウ', 'ショウ'], kun: ['あい'], recipes: [['木', '目']], form: 'izquierda-derecha', mn: 'Un ojo mira al árbol y el árbol le devuelve la mirada.' },
   '思': { m: 'pensar', on: ['シ'], kun: ['おも(う)'], recipes: [['田', '心']], form: 'arriba-abajo', note: 'componente con forma de 田', mn: 'Un campo de ideas sobre el corazón: pensar.' },
   '加': { m: 'añadir', on: ['カ'], kun: ['くわ(える)'], recipes: [['力', '口']], form: 'izquierda-derecha', mn: 'La fuerza de una voz de aliento: añadir.' },
+  '音': { m: 'sonido', on: ['オン', 'イン'], kun: ['おと', 'ね'], recipes: [['立', '日']], form: 'arriba-abajo', mn: 'Alguien de pie bajo el sol, cantando: un sonido.' },
+  '新': { m: 'nuevo', on: ['シン'], kun: ['あたら(しい)', 'あら(た)'], recipes: [['立', '木', '斤']], form: 'izquierda-derecha', note: 'tres piezas: 立 y 木 a la izquierda, 斤 a la derecha', mn: 'Cortar un árbol con el hacha: madera nueva.' },
   // — Composición intermedia —
   '森': { m: 'bosque', on: ['シン'], kun: ['もり'], recipes: [['林', '木'], ['木', '木', '木']], form: 'arriba-abajo', mn: 'Tres árboles: tantos que es un bosque.' },
   '体': { m: 'cuerpo', on: ['タイ', 'テイ'], kun: ['からだ'], recipes: [['人', '本']], form: 'izquierda-derecha', note: '人 aparece como 亻', mn: 'Una persona y su origen: el cuerpo.' },
@@ -45,6 +55,20 @@ export const KANJI = {
   '盟': { m: 'alianza', on: ['メイ'], kun: [], recipes: [['明', '皿']], form: 'arriba-abajo', mn: 'Una promesa brillante sellada sobre un plato.' },
   '枯': { m: 'marchitarse', on: ['コ'], kun: ['か(れる)'], recipes: [['木', '古']], form: 'izquierda-derecha', mn: 'Un árbol muy antiguo se marchita.' },
   '想': { m: 'imaginar', on: ['ソウ', 'ソ'], kun: [], recipes: [['相', '心']], form: 'arriba-abajo', mn: 'Mirar con el corazón: imaginar.' },
+  '喿': { m: 'piar de pájaros', on: ['ソウ'], kun: [], recipes: [['品', '木']], form: 'arriba-abajo', note: 'carácter componente, casi no se usa solo', mn: 'Tres bocas sobre un árbol: pájaros cantando en las ramas.' },
+  '禁': { m: 'prohibir', on: ['キン'], kun: [], recipes: [['林', '示']], form: 'arriba-abajo', mn: 'Una arboleda sagrada sobre un altar: está prohibido entrar.' },
+  '意': { m: 'intención · mente', on: ['イ'], kun: [], recipes: [['音', '心']], form: 'arriba-abajo', mn: 'El sonido del corazón: lo que querés decir.' },
+  '薪': { m: 'leña', on: ['シン'], kun: ['たきぎ'], recipes: [['艸', '新']], form: 'arriba-abajo', note: '艸 aparece como 艹', mn: 'Hierba sobre madera recién cortada: leña.' },
+  // — Composición compleja (nivel 4) —
+  '操': { m: 'manejar', on: ['ソウ'], kun: ['あやつ(る)', 'みさお'], recipes: [['手', '喿']], form: 'izquierda-derecha', note: '手 aparece como 扌', mn: 'Una mano que controla el alboroto de los pájaros: manejar.' },
+  '燥': { m: 'secar', on: ['ソウ'], kun: [], recipes: [['火', '喿']], form: 'izquierda-derecha', mn: 'Fuego junto al árbol de los pájaros: todo se seca.' },
+  '繰': { m: 'devanar · enrollar', on: ['ソウ'], kun: ['く(る)'], recipes: [['糸', '喿']], form: 'izquierda-derecha', mn: 'Hilo que se enrolla al ritmo del canto de los pájaros.' },
+  '澡': { m: 'lavar', on: ['ソウ'], kun: [], recipes: [['水', '喿']], form: 'izquierda-derecha', note: '水 aparece como 氵 · carácter poco común', mn: 'Agua para lavar el árbol ruidoso.' },
+  '襟': { m: 'cuello (de ropa)', on: ['キン'], kun: ['えり'], recipes: [['衣', '禁']], form: 'izquierda-derecha', note: '衣 aparece como 衤', mn: 'La parte de la ropa que nadie toca: el cuello.' },
+  '億': { m: 'cien millones', on: ['オク'], kun: [], recipes: [['人', '意']], form: 'izquierda-derecha', note: '人 aparece como 亻', mn: 'Una persona con incontables ideas: cien millones.' },
+  '憶': { m: 'recordar', on: ['オク'], kun: [], recipes: [['心', '意']], form: 'izquierda-derecha', note: '心 aparece como 忄', mn: 'Un corazón que guarda una idea: recordar.' },
+  // — Composición avanzada (nivel 5) —
+  '藻': { m: 'alga', on: ['ソウ'], kun: ['も'], recipes: [['艸', '澡']], form: 'arriba-abajo', note: '艸 aparece como 艹', mn: 'La hierba que vive en el agua: un alga.' },
 };
 
 export const WORDS = [
@@ -59,6 +83,9 @@ export const WORDS = [
   ['古木', 'こぼく', 'árbol viejo'], ['古本', 'ふるほん', 'libro usado'], ['思想', 'しそう', 'ideología'],
   ['一旦', 'いったん', 'por un momento'], ['一品', 'いっぴん', 'un plato'], ['生木', 'なまき', 'madera verde'],
   ['一体', 'いったい', 'un solo cuerpo'], ['口火', 'くちび', 'chispa inicial'],
+  ['水田', 'すいでん', 'arrozal inundado'], ['手本', 'てほん', 'modelo / ejemplo'], ['新人', 'しんじん', 'novato'],
+  ['本音', 'ほんね', 'verdadera intención'], ['一億', 'いちおく', 'cien millones'], ['人手', 'ひとで', 'mano de obra'],
+  ['水力', 'すいりょく', 'fuerza hidráulica'], ['新月', 'しんげつ', 'luna nueva'], ['木立', 'こだち', 'arboleda'],
 ];
 
 export const ELEMENTS = {
@@ -67,14 +94,18 @@ export const ELEMENTS = {
   power: ['#ffa94d', '#c76a10', 'Fuerza'], heart: ['#ff98bf', '#c9497b', 'Corazón'], sky: ['#7fd6f2', '#2f93b8', 'Cielo'],
   void: ['#efe9dd', '#a69c88', 'Vacío'], voice: ['#5fd6c0', '#1f8f7d', 'Voz'], metal: ['#c9d3de', '#6b7a8c', 'Metal'],
   eye: ['#c49bff', '#7646c2', 'Visión'], life: ['#b8ef7a', '#5c9a24', 'Vida'],
+  water: ['#6cc4ff', '#2a6fb0', 'Agua'], thread: ['#e6b8ff', '#8a4fc2', 'Hilo'], spirit: ['#fff0b8', '#c9a020', 'Espíritu'],
 };
 
+// daily: exploraciones por día en cada región (se renuevan cada día)
 export const REGIONS = [
-  { id: 'forest', name: '森の小道', es: 'Sendero del bosque', secs: 45, drops: ['木', '人', '一'], need: 0, bg: ['#2f6b4a', '#a7d68a'] },
-  { id: 'hill', name: '日月の丘', es: 'Colina del sol y la luna', secs: 120, drops: ['日', '月', '子'], need: 3, bg: ['#3b3f8f', '#ffcf7a'] },
-  { id: 'valley', name: '火の谷', es: 'Valle de fuego', secs: 240, drops: ['火', '田', '力', '女'], need: 6, bg: ['#7a2420', '#ffae5e'] },
-  { id: 'spring', name: '心の泉', es: 'Manantial del corazón', secs: 360, drops: ['口', '目', '心'], need: 10, bg: ['#1f6f8b', '#9fe8d8'] },
-  { id: 'ruins', name: '古の遺跡', es: 'Ruinas antiguas', secs: 480, drops: ['十', '生', '皿'], need: 15, bg: ['#4a3b2a', '#d9b77a'] },
+  { id: 'forest', name: '森の小道', es: 'Sendero del bosque', secs: 45, drops: ['木', '人', '一'], need: 0, daily: 6, bg: ['#2f6b4a', '#a7d68a'] },
+  { id: 'hill', name: '日月の丘', es: 'Colina del sol y la luna', secs: 120, drops: ['日', '月', '子'], need: 3, daily: 5, bg: ['#3b3f8f', '#ffcf7a'] },
+  { id: 'valley', name: '火の谷', es: 'Valle de fuego', secs: 240, drops: ['火', '田', '力', '女'], need: 6, daily: 4, bg: ['#7a2420', '#ffae5e'] },
+  { id: 'spring', name: '心の泉', es: 'Manantial del corazón', secs: 360, drops: ['口', '目', '心'], need: 10, daily: 4, bg: ['#1f6f8b', '#9fe8d8'] },
+  { id: 'ruins', name: '古の遺跡', es: 'Ruinas antiguas', secs: 480, drops: ['十', '生', '皿', '立', '斤'], need: 15, daily: 3, bg: ['#4a3b2a', '#d9b77a'] },
+  { id: 'lake', name: '水の里', es: 'Aldea del agua', secs: 600, drops: ['水', '艸', '糸'], need: 22, daily: 3, bg: ['#1e4f7a', '#7fd6f2'] },
+  { id: 'shrine', name: '禁の社', es: 'Templo prohibido', secs: 720, drops: ['手', '衣', '示'], need: 30, daily: 3, bg: ['#5a1f2e', '#e8a0b0'] },
 ];
 
 export const DECOR = [

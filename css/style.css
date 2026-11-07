@@ -534,3 +534,5 @@ ruby.rk{cursor:pointer;border-bottom:2px dotted #c9b48a}
 .tracks{display:block;margin-top:3px;letter-spacing:1px;color:#fff;font-weight:900}
 .tracks-big{background:var(--paper2);border-radius:14px;padding:10px;margin:10px 0;font-size:20px;font-weight:900;letter-spacing:2px;color:#8a5a2e}
 .tracks-big small{display:block;font-size:12px;letter-spacing:0;color:var(--muted);font-weight:700;margin-top:4px}
+.tleft{display:inline-block;margin-left:8px;background:#0003;border-radius:8px;padding:0 6px}
+.region.rest{filter:saturate(.4) brightness(.85)}

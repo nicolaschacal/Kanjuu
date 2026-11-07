@@ -12,6 +12,13 @@ import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCos
 import { $, home, owned, go, hud, toast, modal } from './main.js';
 
 // ---------- Expediciones ----------
+// Exploraciones por día de cada región: se renuevan a medianoche; las demás regiones siguen abiertas
+const dayKey = () => new Date().toISOString().slice(0, 10);
+export function tripsLeft(r) {
+  if (S.tripDay?.date !== dayKey()) S.tripDay = { date: dayKey(), n: {} };
+  return r.daily - (S.tripDay.n[r.id] || 0);
+}
+const untilTomorrow = () => { const d = new Date(); d.setHours(24, 0, 0, 0); const m = Math.ceil((d - Date.now()) / 60000); return m >= 60 ? `${m / 60 | 0} h ${m % 60} min` : `${m} min`; };
 export function viewExp(v) {
   const n = owned(), fast = tripMult();
   v.innerHTML = `<div class="exps"><p class="lead">Enviá a tus KANJŪ a explorar. Vuelven con tinta, experiencia y, a veces, nuevos amigos.</p>
@@ -24,8 +31,9 @@ export function viewExp(v) {
       inner = `<div class="trip"><div class="trip-mon ${done ? '' : 'walking'}">${creatureSVG(c.k)}</div><div class="trip-info"><b>${c.k} ${done ? 'regresó' : 'explorando…'}</b>
         <div class="tbar"><i style="width:${(1 - left / (c.away.secs * 1000)) * 100}%"></i></div><small data-end="${c.away.end}">${done ? '¡Listo!' : fmt(left)}</small></div>
         ${!done && S.items.wind ? `<button class="btn ghost" data-wind="${c.id}">風 ${S.items.wind}</button>` : `<button class="btn ${done ? 'ok' : 'ghost'}" data-collect="${c.id}" ${done ? '' : 'disabled'}>Recibir</button>`}</div>`;
-    } else inner = `<div class="trip"><small>Hallazgos: ${r.drops.map(k => S.dex[k]?.seen ? k : '？').join(' ')} · ⏱ ${fmt(r.secs * fast * 1000)}${tracksHTML(r)}</small><button class="btn ok" data-send="${r.id}">Enviar</button></div>`;
-    return `<section class="region ${lock ? 'locked' : ''}" style="--a:${r.bg[0]};--b:${r.bg[1]}"><header><span class="rk">${r.name}</span><b>${r.es}</b></header>${inner}</section>`;
+    } else if (tripsLeft(r) <= 0) inner = `<div class="trip"><small>🌙 Esta región descansa hasta mañana (en ${untilTomorrow()})${tracksHTML(r)}</small></div>`;
+    else inner = `<div class="trip"><small>Hallazgos: ${r.drops.map(k => S.dex[k]?.seen ? k : '？').join(' ')} · ⏱ ${fmt(r.secs * fast * 1000)}<span class="tleft">🧭 ${tripsLeft(r)}/${r.daily} hoy</span>${tracksHTML(r)}</small><button class="btn ok" data-send="${r.id}">Enviar</button></div>`;
+    return `<section class="region ${lock ? 'locked' : ''} ${!lock && !c && tripsLeft(r) <= 0 ? 'rest' : ''}" style="--a:${r.bg[0]};--b:${r.bg[1]}"><header><span class="rk">${r.name}</span><b>${r.es}</b></header>${inner}</section>`;
   }).join('')}</div>`;
   v.querySelectorAll('[data-send]').forEach(b => b.onclick = () => pickForTrip(REGIONS.find(r => r.id === b.dataset.send), fast));
   v.querySelectorAll('[data-collect]').forEach(b => b.onclick = () => collect(byId(b.dataset.collect)));
@@ -37,7 +45,9 @@ export function pickForTrip(r, fast) {
   const m = modal(`<h3>旅 ${r.es}</h3><p class="muted">¿Quién va? Las criaturas fuera no pueden entrenar ni fusionarse.</p>
     <div class="roster">${free.map(c => `<button class="chip-mon" data-id="${c.id}">${creatureSVG(c.k)}<small>${c.k} Lv${c.lv}</small></button>`).join('')}</div>`);
   m.querySelectorAll('[data-id]').forEach(b => b.onclick = () => {
+    if (tripsLeft(r) <= 0) { m.close(); return toast('Esta región descansa hasta mañana'); }
     const c = byId(b.dataset.id), secs = Math.round(r.secs * fast);
+    S.tripDay.n[r.id] = (S.tripDay.n[r.id] || 0) + 1;
     c.away = { region: r.id, end: Date.now() + secs * 1000, secs };
     bump('exp'); m.close(); toast(`${c.k} partió hacia ${r.name}`); go(); emit('trip');
   });

@@ -29,7 +29,7 @@ export const rows = () => S.rows;
 export function foot(it) {
   if (it.t) return [OBJS[it.t].w, OBJS[it.t].h];
   if (it.egg) return [1, 1];
-  const L = kLevel(it.k); return L === 1 ? [1, 1] : L === 2 ? [2, 1] : [2, 2];
+  const L = kLevel(it.k); return [[1, 1], [2, 1], [2, 2], [3, 2], [3, 3]][L - 1];
 }
 export const placed = () => [...S.creatures.filter(c => c.pos), ...S.objs.filter(o => o.pos)];
 export const tilesUsed = () => placed().reduce((a, it) => { const [w, h] = foot(it); return a + w * h; }, 0);
