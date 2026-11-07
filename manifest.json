@@ -1,0 +1,10 @@
+{
+  "name": "KANJŪ Santuario",
+  "short_name": "KANJŪ",
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1d2a3a",
+  "theme_color": "#1d2a3a",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}
