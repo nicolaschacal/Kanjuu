@@ -15,7 +15,7 @@ import { allDue, openDojo } from './dojo.js';
 import { webgl, mountScene, emoteAt, hopAll, poke } from './scene3d.js';
 
 // ---------- Santuario (grilla de tiles) ----------
-let idleT, build = false, placing = null;
+let idleT, build = false, placing = null, seenGoal = '';
 export function viewHome(v) { return webgl() && !new URLSearchParams(location.search).has('2d') ? viewHome3d(v) : viewHome2d(v); }
 
 // Santuario 3D: la escena dibuja la grilla; la UI (objetivo, burbujas, dock) va por encima en HTML
@@ -25,6 +25,7 @@ function viewHome3d(v) {
   v.innerHTML = `
   <div class="home home3d">
     <div class="stage" id="stage">
+      <div class="stage-fx" aria-hidden="true"></div>
       <div class="stage-ov">${placing || build ? '' : bubbles}</div>
       <div class="stage-top">${placing ? '' : goalHTML()}</div>
       ${build && canGrow ? `<button class="expand-row" id="expandRow">＋ Expandir terreno · ${ROW_COSTS[S.rows - BASE_ROWS]} 墨 · Rango ${ROW_RANK[S.rows - BASE_ROWS]}</button>` : ''}
@@ -44,6 +45,13 @@ function viewHome3d(v) {
   if (placing) { const [w, h] = foot(placing); valid = []; for (let y = 0; y < S.rows; y++) for (let x = 0; x < COLS; x++) if (fits(w, h, x, y, placing)) valid.push([x, y]); }
   mountScene(stage, { cols: COLS, rows: S.rows, items, mode: placing ? 'placing' : build ? 'build' : 'play', valid, onTap: tap3d, onCell: (x, y) => tapCell(x, y, null) });
   stage.querySelectorAll('.bubble-ink').forEach(b => b.onclick = e => { e.stopPropagation(); harvest([findIt(b.dataset.c)], b); });
+  // El objetivo se muestra unos segundos y se pliega a un ícono; tocarlo lo abre de nuevo
+  const gEl = stage.querySelector('.goal');
+  if (gEl) {
+    const txt = gEl.textContent;
+    if (txt === seenGoal) gEl.classList.add('min'); else { seenGoal = txt; setTimeout(() => gEl.classList.add('min'), 5000); }
+    gEl.onclick = () => gEl.classList.toggle('min');
+  }
   bindDock(v);
   clearInterval(idleT);
   idleT = setInterval(() => {
@@ -269,5 +277,5 @@ export function goalHTML() {
     else if (!S.creatures.some(c => c.away) && owned() < 3) g = 'Enviá una criatura de expedición para encontrar nuevos kanji';
     else { const c = cs.sort((a, b) => b.lv - a.lv)[0]; const t = c && evolutionsOf(c.k)[0]; g = t ? `Entrená a ${c.k} hasta Lv ${evoLevel(t)}` : 'Llevá una criatura a Lv MAX para renacer'; }
   }
-  return `<div class="goal"><i>目標</i><span>${g}</span></div>`;
+  return `<button class="goal" aria-label="Objetivo"><i>目</i><span>${g}</span></button>`;
 }

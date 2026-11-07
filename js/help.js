@@ -24,13 +24,15 @@ const RX = new RegExp(KEYS.join('|'), 'g');
 const SEL = '.tabs i,.dk i,.act i,.shop-row>i,.gcard i,.chip,.pill,.ak,.rank span,.sheet h3,.sheet h4,.v-shop h4,.v-dex h4,.v-lab h4,.wallet,.goal i,.mast,.reads span,.bar label,.btn,.story-d summary,.new-tag,.cal-d b i,.ach i,.deco-row>i,.place-bar,.acad-btn';
 
 export const helpOn = () => S.help !== false;
+// Íconos y glifos de navegación no llevan furigana: ya tienen su etiqueta y la ruby los desalinea
+const NOFURI = 'rt,ruby,svg,i,.tabs,.hud,.fab,.collect-pill,.review-pill,.big-k,.evo-k,.ck,.unit,.goal-k,.tb,.ak,.dmg,.stage-ov,.no-furi';
 function annotate(root) {
   if (!helpOn()) return;
   const els = root.matches?.(SEL) ? [root, ...root.querySelectorAll(SEL)] : root.querySelectorAll?.(SEL) || [];
   for (const el of els) {
     if (el.dataset.ann) continue; el.dataset.ann = 1;
     const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), nodes = [];
-    while (walk.nextNode()) if (!walk.currentNode.parentElement.closest('rt,ruby,svg')) nodes.push(walk.currentNode);
+    while (walk.nextNode()) if (!walk.currentNode.parentElement.closest(NOFURI)) nodes.push(walk.currentNode);
     for (const n of nodes) {
       if (!RX.test(n.data)) continue; RX.lastIndex = 0;
       const span = document.createElement('span');

@@ -1,4 +1,5 @@
 // KANJŪ · arena.js — Duelos 3 contra 3 con copas, arenas, cofres que se abren estudiando y camino de copas.
+import { webgl, mountArena, arenaHit, emoteAt } from './scene3d.js';
 import { KANJI, TYPES, typeOf, typeMult, kLevel, reads, PIECES } from './data.js';
 import { S, save, bump, mastery } from './state.js';
 import { creatureSVG } from './creature.js';
@@ -120,7 +121,10 @@ export function startDuel() {
   const w = document.createElement('div'); w.className = 'duel';
   document.body.append(w);
   const alive = s => s.filter(x => x.hp > 0);
+  const has3d = webgl();
+  if (has3d) { w.classList.add('d3'); w.innerHTML = `<div class="duel-stage"><div class="stage-ov"></div></div><div class="duel-ui"></div>`; }
   function render(msg = '') {
+    if (has3d) return render3d(msg);
     const ef = alive(foes)[0];
     w.innerHTML = `<div class="duel-head"><span>${rival} · 🏆${Math.max(0, a.cups + Math.round(Math.random() * 60 - 30))}</span><button class="x">✕</button></div>
       <div class="side foes">${foes.map((f, j) => unit(f, true, f === ef)).join('')}</div>
@@ -128,6 +132,27 @@ export function startDuel() {
       <div class="side mine">${mine.map(f => unit(f, false)).join('')}</div>`;
     w.querySelector('.x').onclick = () => { if (confirm('¿Rendirte? Perdés copas.')) finish(false); };
     w.querySelectorAll('[data-atk]').forEach(b => b.onclick = () => !busy && attack(mine[+b.dataset.atk]));
+  }
+  // Arena 3D: la escena muestra a las criaturas; arriba de cada una, su nombre y vida
+  function render3d(msg) {
+    const ef = alive(foes)[0], ui = w.querySelector('.duel-ui'), stage = w.querySelector('.duel-stage'), ov = stage.querySelector('.stage-ov');
+    ui.innerHTML = `<div class="duel-head"><span class="rv"><i>敵</i>${rival}<small>🏆${Math.max(0, a.cups + 12)}</small></span><button class="x" aria-label="Rendirse">✕</button></div>
+      <div class="duel-mid"><p>${msg || 'Tocá a uno de tus KANJŪ para atacar'}</p><div class="sp"><i style="width:${special / 3 * 100}%"></i><span>必殺 ${special >= 3 ? '¡LISTO!' : ''}</span></div>${combo >= 2 ? `<b class="combo hot">連 ×${combo}</b>` : ''}</div>`;
+    const lab = (f, enemy, j) => {
+      const t = TYPES[typeOf(f.c.k)], mult = !enemy && ef ? typeMult(typeOf(f.c.k), typeOf(ef.c.k)) : 1;
+      return `<button class="ulabel ${enemy ? 'e' : 'm'} ${f.hp <= 0 ? 'down' : ''}" data-anchor="${enemy ? 'e' : 'm'}${j}" ${enemy ? '' : 'data-foot'} ${!enemy && f.hp > 0 ? `data-atk="${j}"` : 'disabled'} style="--t:${t.col}">
+        <span class="lt"><span class="tb">${t.k}</span><b>${f.c.k}</b><small>Nv${f.c.lv}</small>${!enemy && mult !== 1 && f.hp > 0 ? `<em class="${mult > 1 ? 'up' : 'dn'}">${mult > 1 ? '▲' : '▼'}</em>` : ''}</span>
+        <span class="hp"><i style="width:${Math.max(0, f.hp / f.max * 100)}%"></i></span></button>`;
+    };
+    ov.innerHTML = foes.map((f, j) => lab(f, true, j)).join('') + mine.map((f, j) => lab(f, false, j)).join('');
+    const it = (f, side, j) => ({ id: side + j, side, slot: j, svg: creatureSVG(f.c.k, { mood: f.hp / f.max > .3 ? 1 : .2, gold: f.c.gold }), down: f.hp <= 0, target: side === 'e' && f === ef });
+    mountArena(stage, { items: [...foes.map((f, j) => it(f, 'e', j)), ...mine.map((f, j) => it(f, 'm', j))], onTap: id => { if (id[0] === 'm' && !busy && mine[+id[1]].hp > 0) attack(mine[+id[1]]); } });
+    ui.querySelector('.x').onclick = () => { if (confirm('¿Rendirte? Perdés copas.')) finish(false); };
+    ov.querySelectorAll('[data-atk]').forEach(b => b.onclick = () => !busy && attack(mine[+b.dataset.atk]));
+  }
+  function fx(fromSel, toSel, cls1, txt, from, to, k) {
+    if (!has3d) { hit(fromSel, cls1); hit(toSel, 'shake', txt); return; }
+    arenaHit(from, to, TYPES[typeOf(k)].col).then(() => emoteAt(to, txt, 'dmg3d', 950));
   }
   function unit(f, enemy, target) {
     const t = TYPES[typeOf(f.c.k)], ef = alive(foes)[0];
@@ -149,17 +174,17 @@ export function startDuel() {
     dmg = Math.max(1, Math.round(dmg * (1 + Math.min(combo, 5) * .05)));
     foe.hp -= dmg;
     render(`${me.c.k} → ${foe.c.k}: <b>${dmg}</b> ${note}${mult > 1 ? ' · ¡Muy efectivo!' : mult < 1 ? ' · Poco efectivo' : ''}`);
-    hit(`[data-u="m${mine.indexOf(me)}"]`, 'lunge'); hit(`[data-u="e${foes.indexOf(foe)}"]`, 'shake', `-${dmg}`);
+    fx(`[data-u="m${mine.indexOf(me)}"]`, `[data-u="e${foes.indexOf(foe)}"]`, 'lunge', `-${dmg}`, 'm' + mine.indexOf(me), 'e' + foes.indexOf(foe), me.c.k);
     buzz(res.ok ? 20 : 8);
-    await wait(900);
+    await wait(has3d ? 1200 : 900);
     if (!alive(foes).length) return finish(true);
     // Turno rival
     const ef = alive(foes)[0], targets = alive(mine), tg = targets[Math.random() * targets.length | 0];
     const em = typeMult(typeOf(ef.c.k), typeOf(tg.c.k)), ed = Math.max(1, Math.round(ef.atk * em * (.8 + Math.random() * .3)));
     tg.hp -= ed;
     render(`${ef.c.k} ataca a ${tg.c.k}: <b>${ed}</b>${em > 1 ? ' · ¡Muy efectivo!' : em < 1 ? ' · Poco efectivo' : ''}`);
-    hit(`[data-u="e${foes.indexOf(ef)}"]`, 'lunge2'); hit(`[data-u="m${mine.indexOf(tg)}"]`, 'shake', `-${ed}`);
-    await wait(900);
+    fx(`[data-u="e${foes.indexOf(ef)}"]`, `[data-u="m${mine.indexOf(tg)}"]`, 'lunge2', `-${ed}`, 'e' + foes.indexOf(ef), 'm' + mine.indexOf(tg), ef.c.k);
+    await wait(has3d ? 1200 : 900);
     if (!alive(mine).length) return finish(false);
     busy = false; render();
   }

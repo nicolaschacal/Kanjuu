@@ -765,3 +765,56 @@ ruby.rk{cursor:pointer;border-bottom:2px dotted #c9b48a}
 .modal.cr .cr-name small b.tbadge{display:inline;font-size:11px;font-family:'M PLUS Rounded 1c',sans-serif}
 .modal.cr .cr-name small{color:#6B5A45}
 .unit.target{background:none}
+
+/* ===== v1.1: orden, sutileza y Arena 3D ===== */
+.pill.ink,.goal,.build-hint{transform:none}
+/* Glifos centrados: Yuji Syuku tiene la línea base alta */
+.tabs i,.tok i,.fab i,.pill.ink i,.rk-badge,.collect-pill i,.review-pill i,.act i,.goal i,.tb{line-height:1;padding-top:.08em}
+.act i{display:block}
+/* Objetivo: ficha discreta de vidrio oscuro, se pliega a un ícono */
+.goal{display:flex;align-items:center;gap:8px;max-width:100%;background:#16132AB8;color:#F6EBD0;border-radius:14px;padding:6px 12px 6px 6px;box-shadow:none;border:1px solid #F6EBD033;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-size:12px;font-weight:700;line-height:1.35;text-align:left;transition:max-width .35s ease,padding .35s ease;overflow:hidden;animation:none}
+.goal::before{display:none}
+.goal i{flex:0 0 28px;width:28px;height:28px;border-radius:9px;background:var(--gold);color:var(--night);display:grid;place-items:center;font-style:normal;font-size:16px;padding:0}
+.goal span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.goal.min{max-width:40px;padding:6px}.goal.min span{display:none}
+/* Viñeta y follaje desenfocado en primer plano (profundidad de campo) */
+.stage-fx{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 45%,transparent 55%,#0E0C1C88 100%),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M20 190C40 110 100 60 180 40C150 110 100 160 20 190Z' fill='%230F2B24'/%3E%3Cpath d='M0 140C30 90 70 70 120 66C100 110 60 130 0 140Z' fill='%23163A2E'/%3E%3C/svg%3E") -60px calc(100% + 30px)/190px no-repeat,
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Cpath d='M150 10C110 30 60 70 30 140C90 120 130 80 150 10Z' fill='%23231A3E'/%3E%3C/svg%3E") calc(100% + 50px) 38%/150px no-repeat;
+  filter:blur(.5px)}
+.stage-fx::after{content:'';position:absolute;left:-40px;bottom:-20px;width:200px;height:200px;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);mask:radial-gradient(circle at 20% 80%,#000 30%,transparent 70%);-webkit-mask:radial-gradient(circle at 20% 80%,#000 30%,transparent 70%)}
+.stage-ov{z-index:2}.sc-ctrl,.collect-pill,.review-pill{z-index:5}
+.stage-ov .bubble-ink{padding:3px 9px;font-size:12px;border-radius:12px}
+
+/* Duelo 3D */
+.duel.d3{padding:0;background:#1C0F24}
+.duel.d3::before,.duel.d3::after{display:none}
+.duel-stage{position:absolute;inset:0}
+.duel-ui{position:absolute;inset:0;z-index:3;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:calc(10px + var(--safe-t)) 12px calc(14px + var(--safe-b))}
+.duel-ui>*{pointer-events:auto}
+.duel.d3 .duel-head{color:var(--paper)}
+.rv{display:flex;align-items:center;gap:8px;background:#0A040ACC;border-radius:999px;padding:4px 14px 4px 4px;font-weight:900;font-size:13px}
+.rv i{font-style:normal;width:30px;height:30px;border-radius:50%;background:var(--red);color:#FFF6E3;display:grid;place-items:center;font-family:var(--brush);font-size:16px;line-height:1}
+.rv small{color:var(--gold);font-weight:800}
+.duel.d3 .x{width:40px;height:40px;border-radius:50%;background:#0A040ACC;color:var(--paper);font-size:16px}
+.duel.d3 .duel-mid{flex:0;gap:8px;margin:0 auto;width:100%;max-width:360px}
+.duel.d3 .duel-mid p{background:#0A040ACC;color:var(--paper);border-radius:14px;padding:8px 14px;font-weight:700;font-size:14px}
+.duel.d3 .sp{width:100%}
+.ulabel{display:flex;flex-direction:column;align-items:center;gap:3px;padding:0 0 8px;background:none;color:var(--paper);min-width:76px}
+.ulabel .lt{display:flex;align-items:center;gap:4px;background:#0A040AD0;border-radius:999px;padding:2px 8px 2px 2px;font-size:11px;font-weight:800;white-space:nowrap}
+.ulabel .tb{width:20px;height:20px;border-radius:50%;background:var(--t);color:#0F0A08;display:grid;place-items:center;font-size:12px;position:static}
+.ulabel b{font-family:var(--brush);font-weight:400;font-size:15px;line-height:1}
+.ulabel small{color:#CFC3AA;font-size:10px}
+.ulabel em{font-style:normal;font-size:10px;border-radius:6px;padding:0 4px;color:#0F0A08}.ulabel em.up{background:var(--green)}.ulabel em.dn{background:#B9A8E8}
+.ulabel .hp{display:block;width:70px;height:7px;border-radius:4px;background:#1A0C14;border:1.5px solid var(--paper);overflow:hidden;margin:0}
+.ulabel .hp i{display:block;height:100%;background:linear-gradient(90deg,#5DB84F,#9BE36D);transition:width .4s}
+.ulabel.e .hp i{background:linear-gradient(90deg,#E8452C,#FF8A5A)}
+.ulabel.down{opacity:.35}
+.dmg3d{font-weight:900;font-size:34px;color:#FFF6E3;-webkit-text-stroke:2px #16132A;text-shadow:0 4px 0 #16132A;pointer-events:none;animation:dmg3d .95s ease-out forwards}
+@keyframes dmg3d{0%{opacity:0;margin-top:10px;scale:.6}20%{opacity:1;margin-top:-10px;scale:1.15}100%{opacity:0;margin-top:-50px;scale:1}}
+.duel.d3 .chal{z-index:6}
+.duel.d3 .duel-end{position:relative;z-index:4;background:#16132AEE;border-radius:24px;padding:24px 18px;margin:auto 14px;width:auto;color:var(--paper)}
+.duel.d3 .chal{top:auto!important;bottom:0!important;left:0!important;right:0!important;transform:none!important}
+.duel.d3 .duel-mid p{display:inline-block}
+.duel>.chal{position:absolute}
