@@ -483,7 +483,7 @@ function sanctuary() {
     if (!W.dragging) W.yaw += (0 - W.yaw) * Math.min(1, dt * 2.5);
     const half = W.cols / 2 + .4, yaw = RB.HOME.yaw + W.yaw;
     let dist = RB.homeDist(half, camera.aspect) * T, pitch = RB.HOME.pitch, tx = Math.sin(yaw) * -W.panZ, ty = .22 + RB.HOME.y * T, tz = Math.cos(yaw) * -W.panZ;
-    if (W.opts.mode && W.opts.mode !== 'play') { pitch = 1.08; dist *= 1.02; tx += Math.sin(yaw) * W.geo.rz * .95; tz += Math.cos(yaw) * W.geo.rz * .95; } // editor: vista alta, la isla sube sobre el panel
+    if (W.opts.mode && W.opts.mode !== 'play') { pitch = 1.08; dist *= 1.3; tx += Math.sin(yaw) * W.geo.rz * .75; tz += Math.cos(yaw) * W.geo.rz * .75; } // editor: vista alta, la isla sube sobre el panel
     const fo = W.focus && W.items.get(W.focus);
     if (fo?.sprite) { // primer plano: la cámara baja y se acerca a la criatura
       const v = new THREE.Vector3(); fo.sprite.getWorldPosition(v);
