@@ -643,15 +643,27 @@ function openAccount() {
       <button class="btn gold wide" id="aiSet">✨ ${S.aiOn ? 'Tu IA está conectada · cambiar' : 'Conectar mi IA (cuentos personalizados)'}</button>`);
     $('#aiSet', m).onclick = () => { m.close(); openAISettings(modal, toast, shell); };
     $('#sync', m).onclick = async () => { try { await cloud.pushNow(S); toast('Partida guardada en la nube'); } catch (e) { toast(e.message); } };
-    $('#out', m).onclick = async () => { await cloud.logout(); m.close(); shell(); toast('Sesión cerrada · tu partida sigue en este dispositivo'); };
+    $('#out', m).onclick = async () => {
+      if (!confirm('¿Cerrar sesión? Tu santuario queda guardado en tu cuenta.')) return;
+      try { await cloud.pushNow(S); } catch { return toast('Sin conexión: no se pudo guardar. Probá de nuevo antes de salir.'); }
+      await cloud.logout(); try { localStorage.removeItem('kanjuu.save.v1'); } catch {} location.reload();
+    };
     return;
   }
-  let mode = 'login';
-  const m = modal(`<h3>我 Cuenta KANJŪ</h3><p class="muted">Guardá tu santuario en la nube y jugá desde cualquier dispositivo.</p>
-    <div class="seg"><button data-m="login" class="on">Entrar</button><button data-m="register">Crear cuenta</button></div>
-    <form class="auth" autocomplete="on"><input name="email" type="email" inputmode="email" autocomplete="email" placeholder="Email" required>
-    <input name="password" type="password" autocomplete="current-password" placeholder="Contraseña (mín. 8)" minlength="8" required>
-    <p class="err r"></p><button class="btn ok wide" type="submit">Entrar</button></form>`, 'onacct');
+  authWall();
+}
+// Pantalla de acceso obligatoria: no se puede cerrar sin iniciar sesión
+function authWall(note = '') {
+  if (document.querySelector('.wall')) return;
+  let mode = S.creatures.length || cloud.lastUser() ? 'login' : 'register';
+  const m = modal(`<div class="wall-top"><div class="onb-k">漢獣</div><h2>KANJŪ</h2><p class="muted">El mundo vivo de los kanji</p></div>
+    ${note ? `<p class="r">${note}</p>` : ''}
+    <div class="seg"><button data-m="login" class="${mode === 'login' ? 'on' : ''}">Entrar</button><button data-m="register" class="${mode === 'register' ? 'on' : ''}">Crear cuenta</button></div>
+    <form class="auth" autocomplete="on"><input name="email" type="email" inputmode="email" autocomplete="email" placeholder="Email" value="${esc(cloud.lastUser() || '')}" required>
+    <input name="password" type="password" autocomplete="${mode === 'login' ? 'current-password' : 'new-password'}" placeholder="Contraseña (mín. 8)" minlength="8" required>
+    <p class="err r"></p><button class="btn ok wide" type="submit">${mode === 'login' ? 'Entrar' : 'Crear cuenta'}</button></form>
+    <p class="muted">Tu cuenta guarda tu santuario, tu colección y tu progreso de estudio en la nube.</p>`, 'onacct wall');
+  m.onclick = null;
   const f = $('form', m), sub = $('[type=submit]', f);
   m.querySelectorAll('[data-m]').forEach(b => b.onclick = () => {
     mode = b.dataset.m; m.querySelectorAll('[data-m]').forEach(x => x.classList.toggle('on', x === b));
@@ -663,9 +675,9 @@ function openAccount() {
     try {
       await cloud.auth(mode, f.email.value, f.password.value);
       await syncAfterLogin(mode === 'register');
-      m.close(); document.querySelector('.onbm')?.remove(); shell();
-      if (!S.creatures.length) onboarding();
-      toast(mode === 'login' ? '¡Bienvenido de vuelta!' : 'Cuenta creada · tu santuario ya está en la nube');
+      m.close(); shell(); aiStatus().catch(() => {});
+      toast(mode === 'login' ? '¡Bienvenido de vuelta!' : '¡Cuenta creada! Bienvenido al santuario');
+      setTimeout(startGame, 400);
     } catch (err) { $('.err', f).textContent = err.message; sub.disabled = false; }
   };
 }
@@ -686,10 +698,8 @@ function onboarding() {
   const m = modal(`<div class="onb"><div class="onb-k">漢獣</div><h2>Bienvenido al santuario</h2>
     <p>Cada kanji es una criatura viva. Criala, entrenala y descubrí en qué se convierte.</p>
     <p class="muted">Elegí tu primer huevo</p>
-    <button class="link" id="haveAcct" style="margin:0 auto 6px">Ya tengo cuenta</button>
     <div class="eggs">${starters.map(k => `<button class="egg-pick" data-k="${k}">${creatureSVG(k, { egg: true })}<small>${ELEMENTS[element(k)][2]}</small></button>`).join('')}</div></div>`, 'onbm');
   m.onclick = null;
-  $('#haveAcct', m).onclick = openAccount;
   m.querySelectorAll('.egg-pick').forEach(b => b.onclick = () => {
     b.classList.add('hatch'); buzz([10, 40, 10]);
     setTimeout(() => {
@@ -715,17 +725,20 @@ setInterval(() => {
   document.querySelectorAll('[data-end]').forEach(el => { const l = +el.dataset.end - Date.now(); if (l <= 0) go(); else el.textContent = fmt(l); });
 }, 1000);
 
+function startGame() {
+  if (!S.creatures.length) onboarding();
+  else if (loginReady()) setTimeout(openLogin, gift ? 1400 : 300);
+}
 shell();
 startHelp(toast);
-if (!S.creatures.length) onboarding();
-else if (loginReady()) setTimeout(openLogin, gift ? 1400 : 300);
-// Si hay sesión, trae la partida de la nube cuando es más nueva
+// Se necesita cuenta para jugar. Sin conexión, quien ya inició sesión en este dispositivo puede seguir.
 cloud.me().then(async u => {
-  if (!u) return;
+  if (u === undefined) return cloud.lastUser() ? startGame() : authWall('Sin conexión: conectate a internet para crear tu cuenta o entrar.');
+  if (!u) return authWall();
   const remote = await cloud.pull().catch(() => undefined);
-  if (remote === undefined) return shell(); // sin conexión: no sincronizar
-  if (remote?.creatures?.length && (remote.savedAt || 0) > loadedAt) { { replace(remote); initWorld(); } document.querySelector('.onbm')?.remove(); }
-  cloud.setReady(true); shell(); aiStatus().catch(() => {});
-  if (!S.creatures.length && !document.querySelector('.onbm')) onboarding();
+  if (remote?.creatures?.length && (remote.savedAt || 0) > loadedAt) { replace(remote); initWorld(); }
+  if (remote !== undefined) cloud.setReady(true);
+  shell(); aiStatus().catch(() => {});
+  startGame();
 });
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});

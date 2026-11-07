@@ -11,12 +11,20 @@ async function api(path, opts = {}) {
   if (!r.ok) throw new Error(j.error || 'Sin conexión');
   return j;
 }
-export async function me() { try { user = (await api('/api/auth')).user; } catch { user = null; } return user; }
-export async function auth(action, email, password) {
-  user = (await api('/api/auth', { method: 'POST', body: JSON.stringify({ action, email, password }) })).user;
+const LAST = 'kanjuu.user';
+// null = sin sesión; undefined = sin conexión (no se sabe)
+export async function me() {
+  try { user = (await api('/api/auth')).user; } catch { return undefined; }
+  try { user ? localStorage.setItem(LAST, user.email) : localStorage.removeItem(LAST); } catch {}
   return user;
 }
-export async function logout() { ready = false; await api('/api/auth', { method: 'POST', body: '{"action":"logout"}' }).catch(() => {}); user = null; }
+export const lastUser = () => { try { return localStorage.getItem(LAST); } catch { return null; } };
+export async function auth(action, email, password) {
+  user = (await api('/api/auth', { method: 'POST', body: JSON.stringify({ action, email, password }) })).user;
+  try { localStorage.setItem(LAST, user.email); } catch {}
+  return user;
+}
+export async function logout() { ready = false; try { localStorage.removeItem(LAST); } catch {} await api('/api/auth', { method: 'POST', body: '{"action":"logout"}' }).catch(() => {}); user = null; }
 export async function pull() { return (await api('/api/save')).data; }
 export async function pushNow(data) { if (user) await api('/api/save', { method: 'PUT', body: JSON.stringify({ data }) }); }
 // Agrupa los guardados para no hacer una petición por cada toque
