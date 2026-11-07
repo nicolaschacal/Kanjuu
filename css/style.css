@@ -1,7 +1,7 @@
-:root{--ink:#2b2018;--paper:#fff7e8;--paper2:#f3e6cc;--night:#1d2a3a;--night2:#2c3f57;--red:#e8503a;--gold:#ffc23d;--green:#4fbf6a;--muted:#8a7a66;--r:18px;--safe-b:env(safe-area-inset-bottom,0px);--safe-t:env(safe-area-inset-top,0px)}
+:root{--ink:#2B1D16;--paper:#F6EBD0;--paper2:#E9DCC0;--night:#16132A;--night2:#2A2148;--red:#E8452C;--gold:#F2B544;--green:#5DB84F;--blue:#4AA3E8;--muted:#8A6E4B;--r:18px;--safe-b:env(safe-area-inset-bottom,0px);--safe-t:env(safe-area-inset-top,0px);--brush:'Yuji Syuku',serif;--title:'Shippori Mincho B1',serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0}
-html,body{height:100%;background:#0f1722;overscroll-behavior:none}
-body{font-family:'Zen Maru Gothic',system-ui,sans-serif;color:var(--ink);user-select:none;-webkit-user-select:none;touch-action:manipulation}
+html,body{height:100%;background:#0E0C1C;overscroll-behavior:none}
+body{font-family:'M PLUS Rounded 1c',system-ui,sans-serif;color:var(--ink);user-select:none;-webkit-user-select:none;touch-action:manipulation}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 button:disabled{cursor:default}
 #app{position:relative;height:100dvh;max-width:480px;margin:auto;display:flex;flex-direction:column;overflow:hidden;background:var(--night)}
@@ -626,3 +626,142 @@ ruby.rk{cursor:pointer;border-bottom:2px dotted #c9b48a}
 .stage-top .goal{position:static;pointer-events:auto}
 .stage .expand-row{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);margin:0;z-index:3;background:#F6EBD0;border:0;color:#16132A;box-shadow:0 4px 0 #0006;white-space:nowrap}
 .build-hint{position:absolute;left:10px;right:10px;top:8px;z-index:4;background:#F2B544;color:#16132A;font-weight:900;font-size:12px;border-radius:12px;padding:8px 12px;box-shadow:0 3px 0 #0005}
+
+
+/* =====================================================================
+   DIRECCIÓN VISUAL v1 · "Papel vivo en un mundo de tinta"
+   Tinta noche + washi + bermellón + oro. Kanji con pincel (Yuji Syuku),
+   títulos en Shippori Mincho, interfaz en M PLUS Rounded.
+   ===================================================================== */
+#app{background:var(--night)}
+/* Kanji como glifo de pincel en toda la interfaz */
+.tabs i,.tok i,.pill i,.rk-badge,.big-k,.evo-k,.gcard i,.act i,.dk i,.fab i,.ak,.lesson i,.deco-row>i,.shop-row>i,.ach i,.sil,.word,.opt,.tile,.parts span,.onb-k,.ck,.unit b,.fcard b,.tb,.slot,.result-slot b,.dex-c b,.rk,.collect-pill i,.review-pill i,.goal i,.evo-cap .big-k,.chest span,.recipe,.pslot{font-family:var(--brush);font-weight:400}
+.sheet h3,.v-lab h3,.v-dex h3,.duel-end h2,.onb h2,.wall-top h2,.dex-head b{font-family:var(--title);font-weight:800;letter-spacing:0}
+
+/* HUD de fichas de papel */
+.hud{gap:8px;padding:calc(12px + var(--safe-t)) 12px 10px;background:var(--night)}
+#app.on-home .hud{position:absolute;left:0;right:0;top:0;background:linear-gradient(#16132ACC,#16132A00);padding-bottom:22px;z-index:20}
+.rank{display:flex;align-items:center;gap:8px;color:#F6EBD0;text-align:left;min-width:0}
+.rk-badge{flex:0 0 42px;width:42px;height:42px;border-radius:50%;background:var(--night);border:3px solid var(--gold);display:grid;place-items:center;font-size:21px;color:#F6EBD0;box-shadow:0 3px 0 #0006}
+.rk-txt{display:flex;flex-direction:column;gap:3px;text-shadow:0 2px 0 #0005}
+.rk-txt>b{font-size:13px;font-weight:900;white-space:nowrap}.rk-txt em{font-style:normal;color:var(--gold)}
+.rk-txt>i{width:64px;height:6px;border-radius:3px;background:#F6EBD040;overflow:hidden;display:block}.rk-txt>i b{display:block;height:100%;background:var(--gold);transition:width .5s}
+.hud-r{display:flex;align-items:center;gap:6px}
+.pill.ink{background:var(--paper);color:var(--ink);padding:4px 11px 4px 4px;gap:5px;box-shadow:0 3px 0 #0006;transform:rotate(-1.5deg)}
+.pill.ink i{font-style:normal;width:26px;height:26px;border-radius:50%;background:var(--night);color:var(--paper);display:grid;place-items:center;font-size:15px}
+.pill.ink b{color:var(--ink);font-size:15px}
+.tok{position:relative;width:36px;height:36px;border-radius:50%;background:var(--paper);color:var(--ink);display:grid;place-items:center;box-shadow:0 3px 0 #0006}
+.tok i{font-style:normal;font-size:18px;line-height:1}
+.tok.on{background:var(--gold)}.tok.acct.in{box-shadow:0 3px 0 #0006,inset 0 0 0 2px var(--green)}
+.tok b{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;border-radius:9px;background:var(--red);color:#fff;font-size:11px;font-weight:900;display:grid;place-items:center;padding:0 4px;box-shadow:0 0 0 2px var(--night)}
+.tok b:empty{display:none}
+.tok.glow{animation:glow 1.2s infinite;background:var(--gold)}
+
+/* Navegación: tira de papel con la Arena al centro */
+.tabs{grid-template-columns:repeat(5,1fr)!important;background:var(--paper);border-radius:26px 26px 0 0;box-shadow:0 -5px 0 #0004;padding:8px 6px calc(8px + var(--safe-b));gap:0;position:relative;z-index:30}
+.tabs button{color:#6B5A45;padding:2px 0;border-radius:0;transform:none!important;background:none!important;box-shadow:none!important;gap:1px}
+.tabs i{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:24px;transition:.2s}
+.tabs span{font-size:10.5px;font-weight:800}
+.tabs button.on{color:var(--night)}.tabs button.on i{background:var(--night);color:var(--paper);font-size:22px}.tabs button.on span{font-weight:900}
+.tabs button.center{margin-top:-28px}
+.tabs button.center i{width:62px;height:62px;border-radius:50%;background:var(--red)!important;color:#FFF6E3!important;border:4px solid var(--paper);box-shadow:0 5px 0 #8E2412;font-size:30px}
+.tabs button.center.on i{transform:scale(1.06)}
+.tabs button.dot::after{top:2px;right:20%;box-shadow:0 0 0 2px var(--paper)}
+
+/* Superficies de papel */
+.v-lab,.v-exp,.v-dex,.v-shop{background-color:#EFE3C8;background-image:radial-gradient(#7A5A3218 1px,transparent 1px);background-size:7px 7px}
+.modal{background:#0E0C1CB0}
+.modal .sheet{background-color:var(--paper);background-image:radial-gradient(#7A5A3214 1px,transparent 1px);background-size:7px 7px;box-shadow:0 -6px 0 #0004}
+.btn{background:#FFFDF6;color:var(--ink);border-radius:16px;box-shadow:0 5px 0 #C9B48A;font-weight:900}
+.btn.ok{background:var(--red);color:#FFF6E3;box-shadow:0 5px 0 #8E2412}
+.btn.ok.gold,.btn.gold{background:var(--gold);color:var(--ink);box-shadow:0 5px 0 #8A5A10}
+.btn.ghost{background:var(--paper2);box-shadow:0 5px 0 #C9B48A}
+.act{background:#FFFDF6;border-radius:18px;box-shadow:0 5px 0 #C9B48A}
+.act i{font-size:28px;line-height:1.15}
+.bar div,.tbar{background:#E3D3B0;height:10px}
+.bar i,.tbar i{background:var(--gold)}
+.toast{background:var(--night);color:var(--paper);border:2px solid var(--gold);box-shadow:0 4px 0 #0006}
+.chip{background:var(--gold);color:var(--ink)}
+.float{color:var(--gold);text-shadow:0 2px 0 #16132A,0 0 8px #0008;font-family:'M PLUS Rounded 1c',sans-serif}
+.gcard,.recipe,.quest-row,.deco-row,.dex-c,.chip-mon,.egg-pick,.shop-row,.lesson{box-shadow:0 4px 0 #C9B48A}
+.gcard i,.deco-row>i,.shop-row>i,.lesson i{background:var(--night);color:var(--paper)}
+.ach.got i{background:var(--gold);color:var(--night)}
+
+/* Objetivo: nota de papel con chinche */
+.goal{background:var(--paper);border-radius:14px;padding:10px 12px 10px 12px;box-shadow:0 5px 0 #0005;transform:rotate(-1.2deg);font-size:13px;font-weight:800;color:var(--ink);position:relative}
+.goal::before{content:'';position:absolute;top:-6px;left:50%;width:12px;height:12px;border-radius:50%;background:var(--red);box-shadow:0 2px 0 #0005}
+.goal i{background:var(--night);color:var(--paper);font-size:15px;padding:3px 8px;border-radius:9px}
+
+/* Santuario: controles flotantes sobre la escena */
+#app.on-home .stage-top{top:calc(72px + var(--safe-t))}
+#app.on-home .build-hint{top:calc(72px + var(--safe-t))}
+.sc-ctrl{position:absolute;right:12px;top:calc(150px + var(--safe-t));z-index:4;display:flex;flex-direction:column;gap:12px}
+.fab{position:relative;width:52px;height:52px;border-radius:18px;background:var(--paper);color:var(--ink);box-shadow:0 4px 0 #0006;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.fab i{font-style:normal;font-size:22px}.fab span{font-size:9px;font-weight:900;margin-top:2px}
+.fab.on{background:var(--gold)}
+.fab b{position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;border-radius:9px;min-width:18px;height:18px;font-size:11px;display:grid;place-items:center}
+.collect-pill,.review-pill{position:absolute;bottom:16px;z-index:4;height:52px;border-radius:26px;display:flex;align-items:center;gap:8px;padding:0 16px 0 7px;font-weight:900;font-size:15px}
+.collect-pill{left:14px;background:var(--paper);color:var(--ink);box-shadow:0 5px 0 #0006}
+.collect-pill i,.review-pill i{font-style:normal;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:20px}
+.collect-pill i{background:var(--night);color:var(--paper)}
+.collect-pill.ready{background:var(--gold);box-shadow:0 5px 0 #8A5A10;animation:glow 1.6s infinite}
+.review-pill{right:14px;background:var(--paper);color:var(--ink);box-shadow:0 5px 0 #0006}
+.review-pill i{background:var(--red);color:#FFF6E3}
+.review-pill.hot{background:var(--red);color:#FFF6E3;box-shadow:0 5px 0 #8E2412;animation:pulse 1.6s ease-out infinite}
+.review-pill.hot i{background:#FFF6E3;color:var(--red)}
+@keyframes pulse{0%{box-shadow:0 5px 0 #8E2412,0 0 0 0 #E8452C99}100%{box-shadow:0 5px 0 #8E2412,0 0 0 16px #E8452C00}}
+.build-hint{display:flex;flex-direction:column;gap:2px;background:var(--gold);transform:rotate(-1deg)}
+.build-hint b{font-size:14px}.build-hint span{font-weight:700}
+.place-bar{background:var(--paper);color:var(--ink);border-radius:22px 22px 0 0;box-shadow:0 -4px 0 #0004}
+.stage .expand-row{bottom:84px}
+
+/* Ficha de criatura: escenario oscuro con pedestal */
+.modal.cr .sheet{padding-top:0;overflow-x:hidden}
+.modal.cr .cr-top{margin:0 -18px 0;padding:16px 18px 18px;border-radius:28px 28px 0 0;color:var(--paper);
+  background:radial-gradient(90% 70% at 50% 30%,color-mix(in srgb,var(--el) 40%,#2F5A3E) 0%,#14281E 60%,#0B1611 100%)}
+.modal.cr .cr-art{position:relative;width:190px;padding-bottom:18px;background:radial-gradient(ellipse 48% 9% at 50% 92%,#7BA65A 0 96%,transparent 100%),radial-gradient(ellipse 50% 11% at 50% 94%,#5C3D2A 0 96%,transparent 100%)}
+.modal.cr .cr-art::before{content:'';position:absolute;inset:-6% 2% 18%;border-radius:50%;border:1.5px dashed color-mix(in srgb,var(--el) 70%,#fff);opacity:.5;animation:spin 40s linear infinite}
+.modal.cr .cr-name{background:var(--paper);color:var(--ink);border-radius:20px;padding:12px 14px;margin-top:4px;box-shadow:0 5px 0 #0006}
+.modal.cr .cr-name .big-k{font-size:54px;color:var(--night)}
+.modal.cr .cr-name b{font-family:var(--title);font-size:22px}
+.modal.cr .reads span{background:#FFFFFF14;color:var(--paper);border:1px solid #F6EBD033}
+.modal.cr .reads .say{background:var(--paper);border-radius:10px;width:34px}
+.tbadge{background:var(--t);color:#0F0A08;border-radius:999px;padding:1px 8px;font-weight:900}
+.modal.cr .acts .act:first-child{background:var(--green);color:#0F240C;box-shadow:0 5px 0 #2F7A2A}
+.evo{background:#FFFDF6;border-radius:18px;box-shadow:0 4px 0 #C9B48A;border:3px solid transparent}
+.evo.ready{border-color:var(--gold)}
+.evo-k{background:var(--night);color:var(--paper);border-radius:14px;font-size:30px}
+.evo-k.unk{background:#2A2148;color:#F06A3B}
+
+/* Arena: templo de noche con faroles */
+.v-arena{background:radial-gradient(120% 60% at 50% 0%,#5A2232 0%,#3A1630 35%,#1C0F24 75%)!important;color:var(--paper)}
+.arena-card{background:linear-gradient(160deg,#2A2148,#16132A)!important;border:2px solid var(--gold);box-shadow:0 6px 0 #0008}
+.arena-card .ak{background:var(--red);color:#FFF6E3;border-radius:50%;box-shadow:0 4px 0 #8E2412}
+.battle-btn{background:var(--red)!important;font-size:20px!important;letter-spacing:1px}
+.chest{border-radius:16px;border-width:2px}
+.duel{background:linear-gradient(180deg,#1C0F24 0%,#3A1630 38%,#5A2232 55%,#24101A 100%)}
+.duel::before{content:'';position:absolute;left:12%;right:12%;top:12%;height:34%;pointer-events:none;opacity:.55;
+  background:linear-gradient(#B8322A,#B8322A) 0 0/100% 12px no-repeat,linear-gradient(#B8322A,#B8322A) 6% 22px/88% 8px no-repeat,linear-gradient(#B8322A,#B8322A) 12% 0/14px 100% no-repeat,linear-gradient(#B8322A,#B8322A) 88% 0/14px 100% no-repeat;filter:blur(1px)}
+.duel::after{content:'';position:absolute;left:0;right:0;top:44%;height:30%;pointer-events:none;background:linear-gradient(#8A5A3A,#6B4430);clip-path:polygon(16% 0,84% 0,100% 100%,0 100%);opacity:.9;z-index:0}
+.duel>*{position:relative;z-index:1}
+.unit{background:none;border:0;padding:2px}
+.unit svg{width:84px;filter:drop-shadow(0 4px 0 #0006)}
+.unit b{font-size:18px}
+.mine .unit:not(.down){animation:none}
+.mine .unit:not(.down) svg{animation:hop 1.8s ease-in-out infinite}
+.unit .hp{height:8px;border:2px solid var(--paper);background:#1A0C14}
+.unit.target svg{filter:drop-shadow(0 0 10px #E8452C) drop-shadow(0 4px 0 #0006)}
+.chal{top:auto;bottom:0;left:0;right:0;transform:none;border-radius:28px 28px 0 0;padding:18px 16px calc(18px + var(--safe-b));background:var(--paper);box-shadow:0 -6px 0 #0006;animation:up .25s cubic-bezier(.2,1.3,.4,1)}
+.chal p{font-size:17px}.ck{font-size:72px;color:var(--night);line-height:1.1}
+.ctime{height:10px;background:#E3D3B0}
+.copts{gap:10px}.co{background:#FFFDF6;border:0;border-radius:16px;padding:16px 6px;font-size:17px;box-shadow:0 5px 0 #C9B48A}
+.co.right{background:var(--green);color:#0F240C;box-shadow:0 5px 0 #2F7A2A}.co.wrong{background:var(--red);box-shadow:0 5px 0 #8E2412}
+.sp{background:#1A0C14;border:2px solid var(--paper)}
+.combo{background:var(--gold);color:var(--night);border-radius:12px;padding:4px 10px;box-shadow:0 4px 0 #8A5A10}
+.dmg{color:#FFF6E3;-webkit-text-stroke:2px #16132A;text-shadow:0 4px 0 #16132A;font-size:34px}
+.hud .rank{flex-direction:row;font-size:13px;min-width:0}
+.hud .rank .rk-txt>b{background:none;height:auto;display:block;color:#F6EBD0}
+.hud .rank .rk-txt>i{width:64px;height:6px;background:#F6EBD040}
+.modal.cr .cr-name small b.tbadge{display:inline;font-size:11px;font-family:'M PLUS Rounded 1c',sans-serif}
+.modal.cr .cr-name small{color:#6B5A45}
+.unit.target{background:none}

@@ -28,9 +28,10 @@ function viewHome3d(v) {
       <div class="stage-ov">${placing || build ? '' : bubbles}</div>
       <div class="stage-top">${placing ? '' : goalHTML()}</div>
       ${build && canGrow ? `<button class="expand-row" id="expandRow">＋ Expandir terreno · ${ROW_COSTS[S.rows - BASE_ROWS]} 墨 · Rango ${ROW_RANK[S.rows - BASE_ROWS]}</button>` : ''}
-      ${build ? `<div class="build-hint">匠 Modo construcción · tocá un ítem para moverlo, guardarlo o mejorarlo</div>` : ''}
+      ${build ? `<div class="build-hint"><b>匠 Modo construcción</b><span>Tocá un ítem para moverlo, guardarlo o mejorarlo · 空 ${tilesUsed()}/${tilesTotal()} casillas</span></div>` : ''}
+      ${placing ? '' : ctrlHTML(pend)}
     </div>
-    ${placing ? `<div class="place-bar">Tocá dónde colocar <b>${placing.t ? OBJS[placing.t].k : placing.k}</b><button class="btn ghost" id="cancelPlace">Cancelar</button></div>` : dockHTML(pend)}
+    ${placing ? `<div class="place-bar">Tocá dónde colocar <b>${placing.t ? OBJS[placing.t].k : placing.k}</b><button class="btn ghost" id="cancelPlace">Cancelar</button></div>` : ''}
   </div>`;
   const stage = $('#stage', v);
   const items = placed().map(it => {
@@ -76,14 +77,23 @@ function dockHTML(pend) {
       <button class="dk ${allDue() ? 'ready' : ''}" id="dojo"><i>修</i><span>Repaso</span>${allDue() ? `<b>${allDue()}</b>` : ''}</button>
     </div>`;
 }
+// Controles flotantes sobre la escena (estilo del tablero visual)
+function ctrlHTML(pend) {
+  const due = allDue();
+  return `<div class="sc-ctrl">
+      <button class="fab ${build ? 'on' : ''}" id="build" aria-label="Construir"><i>${build ? '✓' : '匠'}</i><span>${build ? 'Listo' : 'Construir'}</span></button>
+      <button class="fab" id="store" aria-label="Almacén"><i>蔵</i><span>${stored().length}/${S.storeCap}</span>${S.gate.length ? `<b>${S.gate.length}</b>` : ''}</button>
+    </div>
+    ${build ? '' : `<button class="collect-pill ${pend ? 'ready' : ''}" id="collectAll"><i>墨</i><span>${pend ? `+${pend}` : `${totalRate()}/h`}</span></button>
+    <button class="review-pill ${due ? 'hot' : ''}" id="dojo"><i>復</i>${due ? `Repasar · ${due}` : 'Repaso al día'}</button>`}`;
+}
 function bindDock(v) {
   if (placing) { $('#cancelPlace', v).onclick = () => { placing = null; go(); }; }
   else {
     $('#build', v).onclick = () => { build = !build; buzz(6); go(); };
     $('#store', v).onclick = openStorage;
-    $('#collectAll', v).onclick = e => harvest(placed(), e.currentTarget);
-    $('#tiles', v).onclick = () => toast(`空 ${tilesUsed()} de ${tilesTotal()} casillas ocupadas · Nivel 1 ocupa 1, nivel 2 ocupa 2×1, nivel 3 ocupa 2×2`);
-    $('#dojo', v).onclick = openDojo;
+    $('#collectAll', v) && ($('#collectAll', v).onclick = e => harvest(placed(), e.currentTarget));
+    $('#dojo', v) && ($('#dojo', v).onclick = openDojo);
   }
   $('#expandRow', v) && ($('#expandRow', v).onclick = buyRow);
 }
@@ -117,9 +127,8 @@ function viewHome2d(v) {
   else {
     $('#build', v).onclick = () => { build = !build; buzz(6); go(); };
     $('#store', v).onclick = openStorage;
-    $('#collectAll', v).onclick = e => harvest(placed(), e.currentTarget);
-    $('#tiles', v).onclick = () => toast(`空 ${tilesUsed()} de ${tilesTotal()} casillas ocupadas · Nivel 1 ocupa 1, nivel 2 ocupa 2×1, nivel 3 ocupa 2×2`);
-    $('#dojo', v).onclick = openDojo;
+    $('#collectAll', v) && ($('#collectAll', v).onclick = e => harvest(placed(), e.currentTarget));
+    $('#dojo', v) && ($('#dojo', v).onclick = openDojo);
   }
   $('#expandRow', v) && ($('#expandRow', v).onclick = buyRow);
   clearInterval(idleT);

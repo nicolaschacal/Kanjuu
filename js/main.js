@@ -67,16 +67,22 @@ export const ui = { tab: 'home' };
 export function shell() {
   app.innerHTML = `
   <header class="hud">
-    <div class="pill ink">墨 <b id="ink">${S.ink}</b></div>
-    <button class="rank" id="rankBtn"><span>位<em id="rankN">${S.rank.lv}</em></span><i><b id="rankBar" style="width:${S.rank.xp / rankNeed(S.rank.lv) * 100}%"></b></i></button>
-    <div class="hud-r"><button class="pill quest" id="questBtn">任 <b id="questN"></b></button><button class="pill acad-btn ${(S.acad?.day?.xp || 0) < DAILY_GOAL ? 'glow' : ''}" id="acadBtn" aria-label="Academia">学</button><button class="pill acct ${cloud.user ? 'in' : ''}" id="acctBtn" aria-label="Cuenta">我</button></div>
+    <button class="rank" id="rankBtn" aria-label="Rango de guardián"><span class="rk-badge">守</span><span class="rk-txt"><b>Nv <em id="rankN">${S.rank.lv}</em></b><i><b id="rankBar" style="width:${S.rank.xp / rankNeed(S.rank.lv) * 100}%"></b></i></span></button>
+    <div class="hud-r">
+      <div class="pill ink"><i>墨</i><b id="ink">${S.ink}</b></div>
+      <button class="tok quest" id="questBtn" aria-label="Misiones"><i>任</i><b id="questN"></b></button>
+      <button class="tok acad-btn ${(S.acad?.day?.xp || 0) < DAILY_GOAL ? 'glow' : ''}" id="acadBtn" aria-label="Academia"><i>学</i></button>
+      <button class="tok" id="shopBtn" aria-label="Tienda"><i>店</i></button>
+      <button class="tok acct ${cloud.user ? 'in' : ''}" id="acctBtn" aria-label="Cuenta"><i>我</i></button>
+    </div>
   </header>
   <main id="view"></main>
-  <nav class="tabs">${[['home', '苑', 'Santuario'], ['lab', '錬', 'Fusión'], ['exp', '旅', 'Viajes'], ['arena', '闘', 'Arena'], ['shop', '店', 'Tienda'], ['dex', '図', 'Atlas']]
-      .map(([id, k, l]) => `<button data-tab="${id}" class="${ui.tab === id ? 'on' : ''}"><i>${k}</i><span>${l}</span></button>`).join('')}</nav>
+  <nav class="tabs">${[['home', '庭', 'Santuario'], ['lab', '錬', 'Fusión'], ['arena', '闘', 'Arena'], ['exp', '旅', 'Viajes'], ['dex', '図', 'Atlas']]
+      .map(([id, k, l]) => `<button data-tab="${id}" class="${ui.tab === id ? 'on' : ''} ${id === 'arena' ? 'center' : ''}"><i>${k}</i><span>${l}</span></button>`).join('')}</nav>
   <div id="layer"></div>`;
   app.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { ui.tab = b.dataset.tab; buzz(5); go(); });
   $('#questBtn').onclick = openQuests;
+  $('#shopBtn').onclick = () => { ui.tab = 'shop'; buzz(5); go(); };
   $('#acctBtn').onclick = openAccount;
   $('#acadBtn').onclick = () => openAcademy(acadCtx());
   $('#rankBtn').onclick = () => toast(`位 Rango de guardián ${S.rank.lv} · ${S.rank.xp}/${rankNeed(S.rank.lv)} · subís entrenando, repasando, recogiendo tinta y descubriendo kanji`);
@@ -85,6 +91,7 @@ export function shell() {
 export function go() {
   app.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === ui.tab));
   const v = $('#view'); v.className = 'view v-' + ui.tab;
+  app.classList.toggle('on-home', ui.tab === 'home'); $('#shopBtn')?.classList.toggle('on', ui.tab === 'shop');
   ({ home: viewHome, lab: viewLab, exp: viewExp, arena: viewArena, shop: viewShop, dex: viewDex })[ui.tab](v);
   hud();
 }
@@ -94,7 +101,7 @@ export function hud() {
   rollDaily();
   const ready = MISSIONS.filter(m => (S.daily.p[m.id] || 0) >= m.goal && !S.daily.claimed.includes(m.id)).length
     + WEEKLY.filter(m => (S.weekly.p[m.id] || 0) >= m.goal && !S.weekly.claimed.includes(m.id)).length;
-  $('#questN').textContent = ready ? `${ready}!` : `${S.daily.claimed.length}/${MISSIONS.length}`;
+  $('#questN').textContent = ready || '';
   $('#questBtn').classList.toggle('glow', !!ready);
   const expDone = S.creatures.some(c => c.away && Date.now() >= c.away.end);
   app.querySelector('[data-tab=exp]')?.classList.toggle('dot', expDone);

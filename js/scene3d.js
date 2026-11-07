@@ -15,8 +15,8 @@ const KEYS = [
   { h: 0, top: '#0B0A1E', bot: '#1E1A40', sun: '#8FA3FF', si: .45, amb: .7, night: 1 },
   { h: 5, top: '#141233', bot: '#3A2C5E', sun: '#9AA8FF', si: .5, amb: .7, night: .9 },
   { h: 6.5, top: '#3B2C6B', bot: '#F2A65A', sun: '#FFB27A', si: 1.4, amb: .8, night: .3 },
-  { h: 9, top: '#5FA8E8', bot: '#CFE8F0', sun: '#FFF1D6', si: 2.4, amb: 1.1, night: 0 },
-  { h: 16, top: '#5A9FE0', bot: '#E8E0C8', sun: '#FFE6B8', si: 2.3, amb: 1.05, night: 0 },
+  { h: 9, top: '#4F8FD8', bot: '#A9CDE6', sun: '#FFF1D6', si: 2.4, amb: 1.1, night: 0 },
+  { h: 16, top: '#4F8FD8', bot: '#E6CFA8', sun: '#FFE6B8', si: 2.3, amb: 1.05, night: 0 },
   { h: 18.5, top: '#43296A', bot: '#F2A65A', sun: '#FF9A5A', si: 1.6, amb: .8, night: .25 },
   { h: 20, top: '#1A1438', bot: '#B85A78', sun: '#C07AFF', si: .6, amb: .55, night: .75 },
   { h: 21.5, top: '#0B0A1E', bot: '#2A2148', sun: '#8FA3FF', si: .45, amb: .7, night: 1 },
@@ -58,7 +58,7 @@ function paperTexture(svg) {
     b.drawImage(img, M, M, S - 2 * M, S - 2 * M);
     b.fillStyle = '#2B1D16'; b.textAlign = 'center'; b.textBaseline = 'middle';
     texts.forEach(x => { b.font = `${x.fs * k * 1.15}px "Yuji Syuku", serif`; b.fillText(x.txt, M + x.x * k, M + x.y * k + 1); });
-    const o = c.getContext('2d'), r = 7;
+    const o = c.getContext('2d'), r = 3;
     for (let i = 0; i < 20; i++) { const a = i / 20 * Math.PI * 2; o.drawImage(base, Math.cos(a) * r, Math.sin(a) * r); }
     o.globalCompositeOperation = 'source-in'; o.fillStyle = CREAM; o.fillRect(0, 0, S, S);
     o.globalCompositeOperation = 'source-over'; o.drawImage(base, 0, 0);
@@ -380,7 +380,7 @@ function loop() {
   R.orb.position.set(ox, oy, -38); R.halo.position.set(ox, oy, -38.1); R.orb.lookAt(R.camera.position); R.halo.lookAt(R.camera.position);
   R.layers.forEach((m, i) => m.material.color.copy(m.userData.base).lerp(sk.top, .25 + i * .12).multiplyScalar(.75 + (1 - night) * .55));
 
-  const cloudCol = sk.bot.clone().lerp(new THREE.Color('#FFFFFF'), .45 - night * .3);
+  const cloudCol = sk.bot.clone().lerp(new THREE.Color('#FFFFFF'), .25 - night * .15);
   R.clouds.forEach(m => { const u = m.userData; u.x += u.v * dt; if (u.x > 12) u.x = -12; m.position.set(u.x, u.y, u.z); m.quaternion.copy(R.camera.quaternion); m.material.color.copy(cloudCol); });
   // Cámara: encuadra el ancho de la isla en vertical; arrastrar la inclina y vuelve sola
   const cam = R.camera, hf = 2 * Math.atan(Math.tan(cam.fov * Math.PI / 360) * cam.aspect);

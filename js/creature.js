@@ -1,78 +1,117 @@
-import { ELEMENTS, element, roots, depth } from './data.js';
+import { ELEMENTS, element, roots, depth, typeOf } from './data.js';
 
-// Criatura SVG procedural: cuerpo según elemento, rasgos heredados de cada raíz.
+// Criaturas de papel: la silueta dice el tipo 五行 (hoja, llama, roca, campana, gota), el color dice el
+// elemento, el kanji va pintado con pincel en el pecho y cada raíz suma un rasgo. Borde crema de recorte.
+const CREAM = '#FFF4DC', INK = '#1A1220';
+const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const mix = (a, b, t) => '#' + hex(a).map((v, i) => Math.round(v + (hex(b)[i] - v) * t).toString(16).padStart(2, '0')).join('');
+
+// Formas en un lienzo de diseño de 120×130 con la base en y=124
+const SHAPES = {
+  wood: { head: 36, eye: [72, 16], belly: [98, 22, 17],
+    body: 'M60 36 C88 36 104 58 104 84 C104 112 86 124 60 124 C34 124 16 112 16 84 C16 58 32 36 60 36Z',
+    shade: 'M60 124 C34 124 16 112 16 84 C30 108 90 108 104 84 C104 112 86 124 60 124Z' },
+  fire: { head: 44, eye: [76, 15], belly: [100, 20, 15],
+    body: 'M60 6 C66 30 94 42 100 72 C106 104 86 126 60 126 C34 126 14 106 18 76 C21 58 34 50 40 38 C44 52 50 54 52 48 C50 32 54 18 60 6Z',
+    inner: 'M60 40 C64 56 84 66 86 86 C88 108 76 118 60 118 C44 118 32 108 34 88 C36 74 46 70 50 62 C54 70 58 66 60 40Z',
+    shade: 'M60 126 C34 126 14 106 18 80 C30 108 92 108 102 80 C106 106 86 126 60 126Z' },
+  earth: { head: 48, eye: [82, 14], belly: [104, 20, 14],
+    body: 'M14 124 C8 98 18 70 38 58 C48 42 74 40 86 54 C104 64 112 94 106 124Z',
+    shade: 'M14 124 C10 110 12 100 16 92 C30 112 90 114 108 96 C110 108 108 116 106 124Z' },
+  metal: { head: 30, eye: [64, 14], belly: [92, 18, 13],
+    body: 'M60 30 C84 30 96 50 98 80 L104 120 L16 120 L22 80 C24 50 36 30 60 30Z',
+    shade: 'M19 106 L101 106 L104 120 L16 120Z' },
+  water: { head: 40, eye: [78, 15], belly: [98, 20, 15],
+    body: 'M60 8 C72 38 104 62 104 88 C104 112 86 126 60 126 C34 126 16 112 16 88 C16 62 48 38 60 8Z',
+    shade: 'M60 126 C34 126 16 112 16 88 C30 112 90 112 104 88 C104 112 86 126 60 126Z' },
+};
+
 export function creatureSVG(k, { mood = 1, egg = false, gold = false } = {}) {
-  if (egg) return eggSVG(element(k), gold);
-  const d = depth(k), [fill, dark] = gold ? ['#ffd95e', '#b07d10'] : ELEMENTS[element(k)];
-  const els = roots(k).map(element);
-  const count = e => els.filter(x => x === e).length;
-  const ry = 30 + d * 4, rx = 34 + d * 5, cx = 60, cy = 104 - ry;
-  const top = cy - ry, square = count('earth') ? 14 : rx;
-  let back = '', front = '';
-  const off = (i, n) => (i - (n - 1) / 2) * 16;
+  if (egg) return eggSVG(typeOf(k), element(k), gold);
+  const d = depth(k), type = typeOf(k), sh = SHAPES[type];
+  let [fill, dark] = gold ? ['#F2C94C', '#B8862A'] : ELEMENTS[element(k)];
+  const shade = mix(fill, dark, .55), light = mix(fill, '#FFFFFF', .45);
+  const els = roots(k).map(element), count = e => els.filter(x => x === e).length;
+  const s = [.8, .86, .91, .95, .98][Math.min(d, 4)];
+  const P = (x, y) => [60 + (x - 60) * s, 112 + (y - 124) * s]; // diseño → viewBox
+  const id = 'kj' + [...k].map(c => c.codePointAt(0)).join('') + (gold ? 'g' : '');
+  const H = sh.head, off = (i, n, w = 26) => 60 + (i - (n - 1) / 2) * w;
+  let back = '', top = '', face = '';
 
-  if (count('sun')) back += `<g class="kj-spin" style="transform-origin:${cx}px ${cy}px">${[...Array(10)].map((_, i) =>
-    `<rect x="${cx - 3}" y="${cy - ry - 16}" width="6" height="14" rx="3" fill="#ffd866" transform="rotate(${i * 36} ${cx} ${cy})"/>`).join('')}</g>`;
-  if (count('sky')) back += `<path d="M${cx - rx + 4} ${cy} q-22 -16 -20 6 q8 6 20 2Z M${cx + rx - 4} ${cy} q22 -16 20 6 q-8 6 -20 2Z" fill="#fff" stroke="${dark}" stroke-width="2"/>`;
-  for (let i = 0, n = count('wood'); i < n; i++) {
-    const x = cx + off(i, n);
-    front += `<g class="kj-sway" style="transform-origin:${x}px ${top + 2}px"><path d="M${x} ${top + 4} v-10" stroke="#3f8f3a" stroke-width="3" stroke-linecap="round"/><path d="M${x} ${top - 6} q-12 -8 -14 2 q8 6 14 -2Z M${x} ${top - 6} q12 -10 15 0 q-8 7 -15 0Z" fill="#8ee06f" stroke="#3f8f3a" stroke-width="2"/></g>`;
+  // Rasgo propio del tipo
+  if (type === 'wood') {
+    const n = Math.max(1, Math.min(3, count('wood')));
+    for (let i = 0; i < n; i++) { const x = off(i, n, 34); top += `<g class="kj-sway" style="transform-origin:${x}px ${H}px"><path d="M${x} ${H - 2} C${x - 12} ${H - 26} ${x - 30} ${H - 24} ${x - 36} ${H - 12} C${x - 20} ${H - 12} ${x - 10} ${H - 6} ${x} ${H - 2}Z" fill="${light}"/><path d="M${x} ${H - 2} C${x + 10} ${H - 28} ${x + 32} ${H - 26} ${x + 38} ${H - 14} C${x + 22} ${H - 12} ${x + 10} ${H - 6} ${x} ${H - 2}Z" fill="${fill}"/></g>`; }
   }
-  for (let i = 0, n = count('fire'); i < n; i++) {
-    const x = cx + off(i, n) + 2;
-    front += `<path class="kj-flicker" style="transform-origin:${x}px ${top + 4}px" d="M${x} ${top + 6} q-14 -8 -4 -24 q2 8 8 8 q2 -10 -2 -16 q16 8 10 26 q-4 8 -12 6Z" fill="#ffb03b" stroke="#c33d22" stroke-width="2"/>`;
-  }
-  if (count('moon')) front += `<path d="M${cx + rx * .45} ${top + 6} a14 14 0 1 0 16 -16 a10 10 0 1 1 -16 16Z" fill="#e8ecff" stroke="${ELEMENTS.moon[1]}" stroke-width="2"/>`;
-  if (count('power')) front += `<path d="M${cx - 16} ${top + 6} l-6 -16 l12 10Z M${cx + 16} ${top + 6} l6 -16 l-12 10Z" fill="#fff4dc" stroke="${ELEMENTS.power[1]}" stroke-width="2" stroke-linejoin="round"/>`;
-  if (count('heart')) front += `<path d="M${cx - rx * .6} ${top + 10} q-14 -12 -4 -18 q6 4 8 12Z M${cx + rx * .6} ${top + 10} q14 -12 4 -18 q-6 4 -8 12Z" fill="#ff98bf" stroke="#c9497b" stroke-width="2"/>`;
-  if (count('void')) front += `<ellipse cx="${cx}" cy="${top - 10}" rx="16" ry="4" fill="none" stroke="#e0b84a" stroke-width="3"/>`;
-  if (count('person')) front += `<path class="kj-wave" style="transform-origin:${cx + rx - 4}px ${cy + 4}px" d="M${cx + rx - 4} ${cy + 4} q12 -4 14 -14" stroke="${ELEMENTS.person[1]}" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M${cx - rx + 4} ${cy + 4} q-12 4 -12 14" stroke="${ELEMENTS.person[1]}" stroke-width="6" fill="none" stroke-linecap="round"/>`;
-  if (count('voice')) front += `<path d="M${cx - rx + 2} ${cy - 4} q-14 -2 -16 -14 M${cx - rx + 2} ${cy + 2} q-16 2 -20 -6" stroke="${ELEMENTS.voice[1]}" stroke-width="3" fill="none" stroke-linecap="round" class="kj-flicker" style="transform-origin:${cx - rx}px ${cy}px"/>`;
-  if (count('metal')) front += `<path d="M${cx} ${top + 2} v-16 M${cx - 8} ${top - 8} h16" stroke="${ELEMENTS.metal[1]}" stroke-width="4" stroke-linecap="round"/><circle cx="${cx}" cy="${top - 16}" r="3.5" fill="#fff" stroke="${ELEMENTS.metal[1]}" stroke-width="2"/>`;
-  if (count('eye')) front += `<ellipse cx="${cx}" cy="${top + 9}" rx="7" ry="5" fill="#fff" stroke="${ELEMENTS.eye[1]}" stroke-width="2"/><circle class="kj-look" cx="${cx}" cy="${top + 9}" r="2.6" fill="#4a2a7a"/>`;
-  if (count('life')) front += `<g class="kj-sway" style="transform-origin:${cx - rx * .5}px ${top + 4}px"><path d="M${cx - rx * .5} ${top + 6} q-2 -10 4 -14" stroke="#5c9a24" stroke-width="3" fill="none"/><circle cx="${cx - rx * .5 + 5}" cy="${top - 10}" r="5" fill="#fff38a" stroke="#c9a020" stroke-width="2"/></g>`;
-  if (count('water')) front += `<path class="kj-flicker" style="transform-origin:${cx + rx * .4}px ${top}px" d="M${cx + rx * .4} ${top - 16} q-8 12 0 16 q8 -4 0 -16Z" fill="#bfe6ff" stroke="${ELEMENTS.water[1]}" stroke-width="2"/>`;
-  if (count('thread')) front += `<path d="M${cx - rx + 6} ${top + 10} q-12 -6 -8 -18 q8 4 4 12 q-4 6 -10 2" fill="none" stroke="${ELEMENTS.thread[1]}" stroke-width="2.5" stroke-linecap="round"/>`;
-  if (count('spirit')) front += `<g class="kj-flicker" style="transform-origin:${cx - rx * .4}px ${top}px"><path d="M${cx - rx * .4} ${top - 2} q-6 -8 0 -16 q6 8 0 16Z" fill="#fff3b0" stroke="#c9a020" stroke-width="1.5"/></g>`;
-  if (d >= 3) back = `<circle cx="${cx}" cy="${cy}" r="${rx + 8}" fill="none" stroke="${fill}" stroke-width="3" stroke-dasharray="4 6" class="kj-spin" style="transform-origin:${cx}px ${cy}px" opacity=".8"/>` + back;
-  if (d >= 4) back = `<circle cx="${cx}" cy="${cy}" r="${rx + 14}" fill="${fill}" opacity=".18"/>` + back;
-  if (d >= 2) front += `<g fill="#fff6c9" stroke="${dark}" stroke-width="1.5">${[-14, 0, 14].map(o => `<path d="M${cx + o} ${top - 1} l4 -8 l4 8Z" transform="translate(-4 0)"/>`).join('')}</g>`;
+  if (type === 'metal') top += `<circle cx="60" cy="22" r="10" fill="${shade}"/>`;
+  if (type === 'earth') face += `<circle cx="38" cy="74" r="4" fill="${light}"/><circle cx="88" cy="70" r="3" fill="${light}"/><circle cx="96" cy="96" r="3.5" fill="${light}"/>`;
 
-  const happy = mood > .6, sad = mood < .3;
-  const mouth = happy ? `<path d="M${cx - 6} ${cy + 2} q6 7 12 0" stroke="#3a2a22" stroke-width="2.5" fill="none" stroke-linecap="round"/>`
-    : sad ? `<path d="M${cx - 5} ${cy + 5} q5 -4 10 0" stroke="#3a2a22" stroke-width="2.5" fill="none" stroke-linecap="round"/>`
-    : `<path d="M${cx - 4} ${cy + 3} h8" stroke="#3a2a22" stroke-width="2.5" stroke-linecap="round"/>`;
-  const ey = cy - ry * .32, ex = 11 + d;
+  // Rasgos heredados de las raíces (si no son del propio tipo)
+  if (count('sun')) back += `<g class="kj-spin" style="transform-origin:60px 84px">${[...Array(10)].map((_, i) => `<path d="M56 18 L60 4 L64 18Z" fill="#F2B544" transform="rotate(${i * 36} 60 84)"/>`).join('')}</g>`;
+  if (count('sky')) back += `<path d="M18 80 C-4 60 -6 86 4 96 C10 90 14 92 18 92Z M102 80 C124 60 126 86 116 96 C110 90 106 92 102 92Z" fill="#FFFFFF"/>`;
+  if (count('fire') && type !== 'fire') top += `<path class="kj-flicker" style="transform-origin:60px ${H}px" d="M60 ${H + 2} C46 ${H - 4} 48 ${H - 18} 56 ${H - 28} C56 ${H - 18} 62 ${H - 16} 64 ${H - 22} C72 ${H - 12} 74 ${H - 2} 60 ${H + 2}Z" fill="#FFA24A"/>`;
+  if (count('wood') && type !== 'wood') top += `<g class="kj-sway" style="transform-origin:72px ${H + 4}px"><path d="M72 ${H + 4} C70 ${H - 6} 74 ${H - 10} 78 ${H - 14}" stroke="#3F8F3A" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M78 ${H - 14} C80 ${H - 28} 96 ${H - 28} 98 ${H - 22} C90 ${H - 14} 84 ${H - 12} 78 ${H - 14}Z" fill="#8AD873"/></g>`;
+  if (count('water') && type !== 'water') top += `<path class="kj-flicker" style="transform-origin:90px ${H}px" d="M90 ${H - 26} C96 ${H - 16} 98 ${H - 10} 98 ${H - 6} C98 ${H} 94 ${H + 4} 90 ${H + 4} C86 ${H + 4} 82 ${H} 82 ${H - 6} C82 ${H - 10} 84 ${H - 16} 90 ${H - 26}Z" fill="#7CC4F2"/>`;
+  if (count('earth') && type !== 'earth') top += `<path d="M44 ${H + 4} C44 ${H - 8} 54 ${H - 14} 62 ${H - 12} C72 ${H - 14} 78 ${H - 6} 76 ${H + 4}Z" fill="#C98A4B"/>`;
+  if (count('metal') && type !== 'metal') top += `<path d="M60 ${H + 2} V${H - 16}" stroke="#6B7A8C" stroke-width="4" stroke-linecap="round"/><circle cx="60" cy="${H - 20}" r="6" fill="#E9D27A"/>`;
+  if (count('moon')) top += `<path d="M84 ${H - 4} A16 16 0 1 0 100 ${H - 24} A12 12 0 1 1 84 ${H - 4}Z" fill="#E8ECFF"/>`;
+  if (count('power')) top += `<path d="M38 ${H + 8} L30 ${H - 14} L48 ${H + 2}Z M82 ${H + 8} L90 ${H - 14} L72 ${H + 2}Z" fill="#FFF4DC" stroke="${dark}" stroke-width="2" stroke-linejoin="round"/>`;
+  if (count('heart')) top += `<path d="M36 ${H + 10} C20 ${H - 6} 30 ${H - 18} 40 ${H - 8} C44 ${H - 18} 54 ${H - 8} 44 ${H + 6}Z M84 ${H + 10} C100 ${H - 6} 90 ${H - 18} 80 ${H - 8} C76 ${H - 18} 66 ${H - 8} 76 ${H + 6}Z" fill="#FF98BF"/>`;
+  if (count('void')) top += `<ellipse cx="60" cy="${H - 18}" rx="20" ry="5" fill="none" stroke="#E0B84A" stroke-width="4"/>`;
+  if (count('person')) back += `<path class="kj-wave" style="transform-origin:100px 92px" d="M100 92 C112 88 116 78 114 70" stroke="${shade}" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M20 92 C8 96 6 104 8 110" stroke="${shade}" stroke-width="9" fill="none" stroke-linecap="round"/>`;
+  if (count('voice')) back += `<path class="kj-flicker" style="transform-origin:14px 80px" d="M12 70 C2 72 -2 64 0 58 M12 82 C0 86 -4 80 -6 76" stroke="${dark}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+  if (count('eye')) top += `<ellipse cx="60" cy="${H + 12}" rx="8" ry="6" fill="#FFFFFF" stroke="${dark}" stroke-width="2"/><circle class="kj-look" cx="60" cy="${H + 12}" r="3" fill="${INK}"/>`;
+  if (count('life')) top += `<g class="kj-sway" style="transform-origin:42px ${H + 4}px"><path d="M42 ${H + 4} C40 ${H - 6} 42 ${H - 12} 46 ${H - 16}" stroke="#5C9A24" stroke-width="3.5" fill="none"/><circle cx="47" cy="${H - 20}" r="6" fill="#FFF38A"/></g>`;
+  if (count('thread')) top += `<path d="M26 ${H + 14} C14 ${H + 6} 18 ${H - 8} 28 ${H - 4} C34 ${H} 30 ${H + 8} 24 ${H + 6}" fill="none" stroke="#B57AE0" stroke-width="3.5" stroke-linecap="round"/>`;
+  if (count('spirit')) top += `<path class="kj-flicker" style="transform-origin:34px ${H}px" d="M34 ${H + 2} C26 ${H - 8} 30 ${H - 18} 36 ${H - 26} C38 ${H - 16} 44 ${H - 10} 34 ${H + 2}Z" fill="#BFE3FF"/>`;
 
-  if (gold) front += `<g class="kj-spark" fill="#fff8c4"><path d="M18 30 l3 -8 l3 8 l8 3 l-8 3 l-3 8 l-3 -8 l-8 -3Z"/><path d="M98 54 l2 -5 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2Z"/></g>`;
+  // Cara: ojos grandes con brillo; el ánimo cambia ojos y boca
+  const [ey, ex] = sh.eye, happy = mood > .85, sad = mood < .3;
+  if (happy) face += `<path d="M${60 - ex - 7} ${ey + 2} Q${60 - ex} ${ey - 8} ${60 - ex + 7} ${ey + 2} M${60 + ex - 7} ${ey + 2} Q${60 + ex} ${ey - 8} ${60 + ex + 7} ${ey + 2}" stroke="${INK}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`;
+  else face += `<g class="kj-eyes" style="transform-origin:60px ${ey}px"><ellipse cx="${60 - ex}" cy="${ey}" rx="${sad ? 6 : 7}" ry="${sad ? 7 : 9}" fill="${INK}"/><ellipse cx="${60 + ex}" cy="${ey}" rx="${sad ? 6 : 7}" ry="${sad ? 7 : 9}" fill="${INK}"/>
+    <circle cx="${60 - ex + 2}" cy="${ey - 4}" r="2.8" fill="#FFF"/><circle cx="${60 + ex + 2}" cy="${ey - 4}" r="2.8" fill="#FFF"/><circle cx="${60 - ex - 2.5}" cy="${ey + 4}" r="1.2" fill="#FFF"/><circle cx="${60 + ex - 2.5}" cy="${ey + 4}" r="1.2" fill="#FFF"/></g>`;
+  if (sad) face += `<path d="M${60 - ex - 8} ${ey - 13} L${60 - ex + 6} ${ey - 9} M${60 + ex + 8} ${ey - 13} L${60 + ex - 6} ${ey - 9}" stroke="${INK}" stroke-width="3" stroke-linecap="round"/><path d="M${60 - ex - 3} ${ey + 10} C${60 - ex - 6} ${ey + 16} ${60 - ex - 3} ${ey + 20} ${60 - ex} ${ey + 20} C${60 - ex + 3} ${ey + 20} ${60 - ex + 3} ${ey + 16} ${60 - ex - 3} ${ey + 10}Z" fill="#7CC4F2"/>`;
+  if (mood > .5) face += `<ellipse cx="${60 - ex - 10}" cy="${ey + 11}" rx="6" ry="3.5" fill="#F28C8C" opacity=".7"/><ellipse cx="${60 + ex + 10}" cy="${ey + 11}" rx="6" ry="3.5" fill="#F28C8C" opacity=".7"/>`;
+  if (happy) face += `<path d="M55 ${ey + 12} Q60 ${ey + 17} 65 ${ey + 12}" stroke="${INK}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+
+  // Aura según profundidad de composición
+  let aura = '';
+  if (d >= 4) aura += `<circle cx="60" cy="${P(60, 84)[1]}" r="58" fill="${fill}" opacity=".16"/>`;
+  if (d >= 3) aura += `<circle class="kj-spin" style="transform-origin:60px ${P(60, 84)[1]}px" cx="60" cy="${P(60, 84)[1]}" r="54" fill="none" stroke="${fill}" stroke-width="2.5" stroke-dasharray="3 7" opacity=".9"/>`;
+  const spark = gold ? `<g class="kj-spark" fill="#FFF8C4"><path d="M14 26 l3 -8 l3 8 l8 3 l-8 3 l-3 8 l-3 -8 l-8 -3Z"/><path d="M100 46 l2 -5 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2Z"/></g>` : '';
+
+  const [bx, by] = P(60, sh.belly[0]), brx = sh.belly[1] * s, bry = sh.belly[2] * s;
   return `<svg viewBox="0 0 120 120" class="kj-svg" aria-label="${k}">
-  <ellipse class="kj-shadow" cx="${cx}" cy="108" rx="${rx * .8}" ry="5" fill="#0003"/>
-  <g class="kj-body">${back}
-    <rect x="${cx - rx}" y="${top}" width="${rx * 2}" height="${ry * 2}" rx="${Math.min(square + 18, rx)}" fill="${fill}" stroke="${dark}" stroke-width="3"/>
-    <ellipse cx="${cx - rx * .45}" cy="${top + ry * .45}" rx="${rx * .22}" ry="${ry * .14}" fill="#fff6" />
-    <circle cx="${cx}" cy="${cy + ry * .48}" r="${12 + d * 2}" fill="#fffaf0" stroke="${dark}" stroke-width="2"/>
-    <text x="${cx}" y="${cy + ry * .48 + 1}" text-anchor="middle" dominant-baseline="central" font-size="${15 + d * 2}" font-weight="900" fill="#2b2018" font-family="'Zen Maru Gothic',sans-serif">${k}</text>
-    <g class="kj-eyes"><ellipse cx="${cx - ex}" cy="${ey}" rx="4.5" ry="6" fill="#2b2018"/><ellipse cx="${cx + ex}" cy="${ey}" rx="4.5" ry="6" fill="#2b2018"/>
-    <circle cx="${cx - ex + 1.5}" cy="${ey - 2}" r="1.6" fill="#fff"/><circle cx="${cx + ex + 1.5}" cy="${ey - 2}" r="1.6" fill="#fff"/></g>
-    ${happy ? `<ellipse cx="${cx - ex - 8}" cy="${ey + 8}" rx="5" ry="3" fill="#ff6f8f66"/><ellipse cx="${cx + ex + 8}" cy="${ey + 8}" rx="5" ry="3" fill="#ff6f8f66"/>` : ''}
-    ${mouth}${front}
-  </g></svg>`;
+  <ellipse class="kj-shadow" cx="60" cy="113" rx="${34 * s}" ry="5" fill="#140A1E2E"/>${aura}
+  <g class="kj-body"><g transform="translate(60 112) scale(${s}) translate(-60 -124)">
+    <defs><clipPath id="${id}"><path d="${sh.body}"/></clipPath></defs>
+    <g stroke="${CREAM}" stroke-width="7" stroke-linejoin="round" paint-order="stroke">${back}${top}<path d="${sh.body}" fill="${fill}"/></g>
+    <path d="${sh.shade}" fill="${shade}" clip-path="url(#${id})"/>
+    ${sh.inner ? `<path d="${sh.inner}" fill="${mix(fill, '#FFE08A', .6)}"/>` : ''}
+    ${type === 'water' ? `<path d="M36 70 C40 56 48 46 54 38" stroke="#FFFFFF" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/>` : ''}
+    ${type === 'metal' ? `<path d="M19 106 L101 106" stroke="${dark}" stroke-width="3" opacity=".5"/>` : ''}
+    ${face}
+  </g>
+  <ellipse cx="${bx}" cy="${by}" rx="${brx}" ry="${bry}" fill="#F6EBD0"/>
+  <text x="${bx}" y="${by + 1}" text-anchor="middle" dominant-baseline="central" font-size="${bry * 1.55}" fill="#2B1D16" font-family="'Yuji Syuku',serif">${k}</text>
+  </g>${spark}</svg>`;
 }
 
-function eggSVG(el, gold) {
-  const [fill, dark] = gold ? ['#ffd95e', '#b07d10'] : ELEMENTS[el];
-  return `<svg viewBox="0 0 120 120" class="kj-svg"><ellipse cx="60" cy="108" rx="26" ry="5" fill="#0003"/>
-  <g class="kj-egg" style="transform-origin:60px 104px"><path d="M60 22 C88 22 92 70 92 80 C92 98 78 106 60 106 C42 106 28 98 28 80 C28 70 32 22 60 22Z" fill="#fffaf0" stroke="${dark}" stroke-width="3"/>
-  <path d="M30 72 l10 -8 l10 8 l10 -8 l10 8 l10 -8 l10 8" stroke="${fill}" stroke-width="6" fill="none" stroke-linejoin="round"/>
-  <circle cx="46" cy="44" r="6" fill="${fill}"/><circle cx="72" cy="52" r="4" fill="${fill}"/></g></svg>`;
+function eggSVG(type, el, gold) {
+  const [fill, dark] = gold ? ['#F2C94C', '#B8862A'] : ELEMENTS[el];
+  return `<svg viewBox="0 0 120 120" class="kj-svg"><ellipse class="kj-shadow" cx="60" cy="110" rx="26" ry="5" fill="#140A1E2E"/>
+  <g class="kj-egg" style="transform-origin:60px 106px"><path d="M60 20 C88 20 94 68 94 80 C94 98 80 108 60 108 C40 108 26 98 26 80 C26 68 32 20 60 20Z" fill="#FFF8EA" stroke="${CREAM}" stroke-width="7" paint-order="stroke"/>
+  <path d="M60 108 C40 108 26 98 26 80 C36 98 84 98 94 80 C94 98 80 108 60 108Z" fill="#E9DCC0"/>
+  <path d="M28 70 l10 -8 l10 8 l10 -8 l10 8 l10 -8 l10 8 l4 -3" stroke="${fill}" stroke-width="7" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="46" cy="44" r="6" fill="${fill}"/><circle cx="72" cy="52" r="4" fill="${fill}"/><circle cx="58" cy="34" r="3" fill="${dark}" opacity=".5"/></g></svg>`;
 }
 
-// Objeto del santuario: base de piedra con su kanji y pips de nivel
+// Objeto del santuario (vista 2D / almacén): ficha de papel con su kanji y pips de nivel
 export function objSVG(o, def) {
   const W = def.w * 60, H = def.h * 60;
   return `<svg viewBox="0 0 ${W} ${H}" class="obj-svg" preserveAspectRatio="xMidYMax meet">
-    <rect x="4" y="${H * .18}" width="${W - 8}" height="${H * .78}" rx="12" fill="${def.col}" stroke="#2b2018" stroke-width="3"/>
-    <rect x="10" y="${H * .18 + 6}" width="${W - 20}" height="8" rx="4" fill="#fff3"/>
-    <text x="${W / 2}" y="${H * .58}" text-anchor="middle" dominant-baseline="central" font-size="${Math.min(W, H) * .42}" font-weight="900" fill="#fff" font-family="'Zen Maru Gothic',sans-serif">${def.k}</text>
-    <g fill="#ffd866" stroke="#2b2018" stroke-width="1.5">${Array.from({ length: o.lv }, (_, i) => `<circle cx="${W / 2 + (i - (o.lv - 1) / 2) * 11}" cy="${H * .9}" r="4"/>`).join('')}</g></svg>`;
+    <rect x="5" y="${H * .18}" width="${W - 10}" height="${H * .76}" rx="14" fill="${def.col}" stroke="${CREAM}" stroke-width="5"/>
+    <rect x="5" y="${H * .74}" width="${W - 10}" height="${H * .2}" rx="10" fill="#0003"/>
+    <text x="${W / 2}" y="${H * .54}" text-anchor="middle" dominant-baseline="central" font-size="${Math.min(W, H) * .44}" fill="#FFF4DC" font-family="'Yuji Syuku',serif">${def.k}</text>
+    <g fill="#F2B544" stroke="#16132A" stroke-width="1.5">${Array.from({ length: o.lv }, (_, i) => `<circle cx="${W / 2 + (i - (o.lv - 1) / 2) * 11}" cy="${H * .86}" r="4"/>`).join('')}</g></svg>`;
 }
