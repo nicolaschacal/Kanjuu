@@ -818,3 +818,13 @@ ruby.rk{cursor:pointer;border-bottom:2px dotted #c9b48a}
 .duel.d3 .chal{top:auto!important;bottom:0!important;left:0!important;right:0!important;transform:none!important}
 .duel.d3 .duel-mid p{display:inline-block}
 .duel>.chal{position:absolute}
+/* Furigana en íconos: flota sobre el glifo sin moverlo (el kanji queda centrado) */
+:is(i,.tok,.fab,.rk-badge,.tb,.ak,.evo-k,.big-k,.goal,.rv,.lt) ruby.gl{position:relative;display:inline-block;line-height:1}
+:is(i,.tok,.fab,.rk-badge,.tb,.ak,.evo-k,.big-k,.goal,.rv,.lt) ruby.gl rt{position:absolute;left:50%;bottom:calc(100% + 1px);transform:translateX(-50%);
+  font-family:'M PLUS Rounded 1c',sans-serif;font-size:8px;font-weight:800;line-height:1;white-space:nowrap;opacity:1;color:currentColor;text-shadow:none;pointer-events:none}
+.tok ruby.gl rt,.rk-badge ruby.gl rt{bottom:auto;top:calc(100% + 6px);color:#F6EBD0;text-shadow:0 1px 2px #000a}
+.tabs i ruby.gl rt{bottom:calc(100% + 3px);color:#8A6E4B}
+.tabs button.center i ruby.gl rt{bottom:calc(100% + 8px);color:#8A6E4B}
+.fab ruby.gl rt{bottom:calc(100% + 2px);font-size:7px;color:#8A6E4B}
+.collect-pill ruby.gl rt,.review-pill ruby.gl rt,.goal ruby.gl rt{bottom:calc(100% + 1px);font-size:7px}
+.hud{padding-bottom:22px}

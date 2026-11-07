@@ -25,7 +25,8 @@ const SEL = '.tabs i,.dk i,.act i,.shop-row>i,.gcard i,.chip,.pill,.ak,.rank spa
 
 export const helpOn = () => S.help !== false;
 // Íconos y glifos de navegación no llevan furigana: ya tienen su etiqueta y la ruby los desalinea
-const NOFURI = 'rt,ruby,svg,i,.tabs,.hud,.fab,.collect-pill,.review-pill,.big-k,.evo-k,.ck,.unit,.goal-k,.tb,.ak,.dmg,.stage-ov,.no-furi';
+// (los íconos SÍ llevan furigana; sólo se excluyen la respuesta de los desafíos y números flotantes)
+const NOFURI = 'rt,ruby,svg,.ck,.dmg,.dmg3d,.no-furi';
 function annotate(root) {
   if (!helpOn()) return;
   const els = root.matches?.(SEL) ? [root, ...root.querySelectorAll(SEL)] : root.querySelectorAll?.(SEL) || [];
