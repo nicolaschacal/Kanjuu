@@ -4,7 +4,7 @@ import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
 import { GAMES, hasWord, hasParts, play, review, storyHTML, speak } from './games.js';
 import * as cloud from './cloud.js';
-import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn } from './help.js';
+import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn, setHelp } from './help.js';
 import { openAcademy, acadDue, reviewAcademy, DAILY_GOAL } from './academy.js';
 import { openAISettings, aiStatus } from './ai.js';
 import { startTutorial, emit } from './tutorial.js';
@@ -67,13 +67,14 @@ export const ui = { tab: 'home' };
 export function shell() {
   app.innerHTML = `
   <header class="hud">
-    <button class="rank" id="rankBtn" aria-label="Rango de guardián"><span class="rk-badge">守</span><span class="rk-txt"><b>Nv <em id="rankN">${S.rank.lv}</em></b><i><b id="rankBar" style="width:${S.rank.xp / rankNeed(S.rank.lv) * 100}%"></b></i></span></button>
+    <button class="rank" id="rankBtn" aria-label="Rango de guardián"><span class="rk-badge">守</span><em class="rk-n" id="rankN">${S.rank.lv}</em><i class="rk-bar"><b id="rankBar" style="width:${S.rank.xp / rankNeed(S.rank.lv) * 100}%"></b></i></button>
     <div class="hud-r">
       <div class="pill ink"><i>墨</i><b id="ink">${S.ink}</b></div>
       <button class="tok quest" id="questBtn" aria-label="Misiones"><i>任</i><b id="questN"></b></button>
       <button class="tok acad-btn ${(S.acad?.day?.xp || 0) < DAILY_GOAL ? 'glow' : ''}" id="acadBtn" aria-label="Academia"><i>学</i></button>
       <button class="tok" id="shopBtn" aria-label="Tienda"><i>店</i></button>
       <button class="tok acct ${cloud.user ? 'in' : ''}" id="acctBtn" aria-label="Cuenta"><i>我</i></button>
+      <button class="tok furi ${helpOn() ? 'on' : ''}" id="furiBtn" aria-label="Ayuda de lectura"><i class="no-furi">ふ</i></button>
     </div>
   </header>
   <main id="view"></main>
@@ -83,6 +84,7 @@ export function shell() {
   app.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { ui.tab = b.dataset.tab; buzz(5); go(); });
   $('#questBtn').onclick = openQuests;
   $('#shopBtn').onclick = () => { ui.tab = 'shop'; buzz(5); go(); };
+  $('#furiBtn').onclick = () => { const on = !helpOn(); setHelp(on); $('#furiBtn').classList.toggle('on', on); buzz(6); go(); toast(on ? 'ふ Ayuda de lectura activada' : 'Ayuda de lectura desactivada'); };
   $('#acctBtn').onclick = openAccount;
   $('#acadBtn').onclick = () => openAcademy(acadCtx());
   $('#rankBtn').onclick = () => toast(`位 Rango de guardián ${S.rank.lv} · ${S.rank.xp}/${rankNeed(S.rank.lv)} · subís entrenando, repasando, recogiendo tinta y descubriendo kanji`);

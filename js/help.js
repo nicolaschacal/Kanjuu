@@ -17,11 +17,12 @@ export const GLOSS = {
   '祠': ['ほこら', 'santuario'], '鐘': ['かね', 'campana'], '炉': ['ろ', 'brasero'], '芽': ['め', 'brote'], '集': ['しゅう', 'reunir'],
   '学': ['がく', 'estudio'], '半': ['はん', 'mitad'], '全': ['ぜん', 'todo'], '富': ['とみ', 'riqueza'], '卵': ['たまご', 'huevo'],
   '仮': ['か', 'kana'], '闘': ['とう', 'combate'], '箱': ['はこ', 'caja'], '道': ['みち', 'camino'], '族': ['ぞく', 'familia'],
+  '庭': ['にわ', 'jardín'], '守': ['しゅ', 'guardián'], '復': ['ふく', 'repasar'], '敵': ['てき', 'rival'], '連': ['れん', 'combo'], '目': ['もく', 'objetivo'],
   '勝利': ['しょうり', 'victoria'], '敗北': ['はいぼく', 'derrota'], '必殺': ['ひっさつ', 'golpe especial'], '五行': ['ごぎょう', 'cinco elementos'],
 };
 const KEYS = Object.keys(GLOSS).sort((a, b) => b.length - a.length);
 const RX = new RegExp(KEYS.join('|'), 'g');
-const SEL = '.tabs i,.dk i,.act i,.shop-row>i,.gcard i,.chip,.pill,.ak,.rank span,.sheet h3,.sheet h4,.v-shop h4,.v-dex h4,.v-lab h4,.wallet,.goal i,.mast,.reads span,.bar label,.btn,.story-d summary,.new-tag,.cal-d b i,.ach i,.deco-row>i,.place-bar,.acad-btn';
+const SEL = '.tok i,.fab i,.rk-badge,.collect-pill i,.review-pill i,.rv i,.tabs i,.dk i,.act i,.shop-row>i,.gcard i,.chip,.pill,.ak,.rank span,.sheet h3,.sheet h4,.v-shop h4,.v-dex h4,.v-lab h4,.wallet,.goal i,.mast,.reads span,.bar label,.btn,.story-d summary,.new-tag,.cal-d b i,.ach i,.deco-row>i,.place-bar,.acad-btn';
 
 export const helpOn = () => S.help !== false;
 // Íconos y glifos de navegación no llevan furigana: ya tienen su etiqueta y la ruby los desalinea
@@ -42,6 +43,13 @@ function annotate(root) {
       n.replaceWith(...span.childNodes);
     }
   }
+}
+// Prender/apagar sin recargar: quita o vuelve a poner la furigana en toda la pantalla
+export function setHelp(on) {
+  S.help = on; save();
+  document.querySelectorAll('ruby.gl').forEach(r => r.replaceWith(document.createTextNode(r.dataset.g)));
+  document.querySelectorAll('[data-ann]').forEach(e => { delete e.dataset.ann; e.normalize(); });
+  if (on) annotate(document.body);
 }
 export function startHelp(toast) {
   annotate(document.body);
@@ -114,7 +122,7 @@ export function openAcademy(modal, toast, hud, kana) {
     };
   });
   m.querySelector('#kanaBtn').onclick = () => { m.close(); kana(); };
-  m.querySelector('#helpT').onchange = e => { S.help = e.target.checked; save(); location.reload(); };
+  m.querySelector('#helpT').onchange = e => { setHelp(e.target.checked); };
 }
 
 // --- Entrenador de kana: sonidos que aparecen en las lecturas de tus criaturas ---

@@ -828,3 +828,33 @@ ruby.rk{cursor:pointer;border-bottom:2px dotted #c9b48a}
 .fab ruby.gl rt{bottom:calc(100% + 2px);font-size:7px;color:#8A6E4B}
 .collect-pill ruby.gl rt,.review-pill ruby.gl rt,.goal ruby.gl rt{bottom:calc(100% + 1px);font-size:7px}
 .hud{padding-bottom:22px}
+
+/* ===== Ayuda de lectura · Opción B: furigana dentro de la ficha =====
+   Cada ícono es una ficha de tamaño fijo con un renglón para la kana arriba del kanji.
+   Al apagar la ayuda la ficha no cambia de tamaño. */
+:is(i,.tok,.fab,.rk-badge,.tb,.ak,.evo-k,.big-k,.goal,.rv,.lt) ruby.gl rt{all:unset}
+:is(.tabs i,.tok i,.fab i,.rk-badge,.act i,.collect-pill i,.review-pill i,.goal i,.pill.ink i,.gcard i,.deco-row>i,.shop-row>i,.ach i,.ak,.dk i,.rv i){display:flex!important;flex-direction:column;align-items:center;justify-content:center;line-height:1;padding-top:0}
+:is(.tabs i,.tok i,.fab i,.rk-badge,.act i,.collect-pill i,.review-pill i,.goal i,.pill.ink i,.gcard i,.deco-row>i,.shop-row>i,.ach i,.ak,.dk i,.rv i) ruby.gl{display:inline-flex;flex-direction:column;align-items:center;line-height:1}
+:is(.tabs i,.tok i,.fab i,.rk-badge,.act i,.collect-pill i,.review-pill i,.goal i,.pill.ink i,.gcard i,.deco-row>i,.shop-row>i,.ach i,.ak,.dk i,.rv i) ruby.gl rt{display:block;order:-1;position:static;transform:none;
+  font-family:'M PLUS Rounded 1c',sans-serif;font-size:8px;font-weight:800;line-height:9px;height:9px;margin:0 0 2px;letter-spacing:0;color:currentColor;opacity:.72;text-shadow:none;white-space:nowrap}
+/* Fichas de tamaño fijo */
+.tok{width:34px;height:46px;border-radius:13px}
+.tok i{font-size:17px}
+.tok.furi{background:#E9DCC0;color:#8A6E4B}.tok.furi.on{background:var(--gold);color:var(--night)}
+.tok.furi i{font-family:'M PLUS Rounded 1c',sans-serif;font-weight:900;font-size:16px}
+.hud{padding-bottom:10px}#app.on-home .hud{padding-bottom:20px}
+.hud-r{gap:5px}
+.rank{position:relative;gap:0}
+.rk-badge{flex:0 0 40px;width:40px;height:48px;border-radius:14px;font-size:19px;border-width:2.5px}
+.rk-n{position:absolute;right:-6px;bottom:-4px;font-style:normal;background:var(--gold);color:var(--night);font-size:10px;font-weight:900;border-radius:7px;padding:1px 5px;box-shadow:0 2px 0 #0006}
+.rk-bar{position:absolute;left:4px;right:4px;bottom:-9px;height:4px;border-radius:2px;background:#F6EBD040;overflow:hidden;display:block}.rk-bar b{display:block;height:100%;background:var(--gold)}
+.hud .rank .rk-txt{display:none}
+.pill.ink{height:40px;padding:3px 10px 3px 3px}
+.pill.ink i{width:30px;height:34px;border-radius:10px;font-size:15px}
+.tabs i{width:42px;height:48px;border-radius:14px}
+.tabs button.center i{width:62px;height:62px}
+.tabs button.center{margin-top:-30px}
+.fab i{font-size:21px}
+.collect-pill i,.review-pill i{height:40px;width:40px}
+.goal i{flex-basis:30px;width:30px;height:34px;font-size:15px}
+.tabs button.center i ruby.gl rt,.review-pill.hot i ruby.gl rt{color:#FFF6E3;opacity:.9}.review-pill.hot i ruby.gl rt{color:var(--red)}
