@@ -3,7 +3,8 @@ import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
 import { GAMES, hasWord, hasParts, play, review, storyHTML, speak } from './games.js';
 import * as cloud from './cloud.js';
-import { startHelp, rr, romaji, openAcademy, lessonsNew, kanaPool, kanaDrill, helpOn } from './help.js';
+import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn } from './help.js';
+import { openAcademy, acadDue, DAILY_GOAL } from './academy.js';
 
 import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
 
@@ -19,6 +20,7 @@ const MISSIONS = [
   { id: 'train', label: 'Completá entrenamientos', goal: 3, ink: 12 },
   { id: 'exp', label: 'Enviá una expedición', goal: 1, ink: 8 },
   { id: 'review', label: 'Repasá kanji en el Dojo', goal: 8, ink: 15 },
+  { id: 'acad', label: 'Completá 2 lecciones de la Academia', goal: 2, ink: 15 },
 ];
 const WEEKLY = [
   { id: 'review', label: 'Repasá 50 kanji', goal: 50, ink: 60 },
@@ -51,7 +53,7 @@ function shell() {
   <header class="hud">
     <div class="pill ink">墨 <b id="ink">${S.ink}</b></div>
     <button class="rank" id="rankBtn"><span>位<em id="rankN">${S.rank.lv}</em></span><i><b id="rankBar" style="width:${S.rank.xp / rankNeed(S.rank.lv) * 100}%"></b></i></button>
-    <div class="hud-r"><button class="pill quest" id="questBtn">任 <b id="questN"></b></button><button class="pill acad-btn ${lessonsNew() ? 'glow' : ''}" id="acadBtn" aria-label="Academia">学</button><button class="pill acct ${cloud.user ? 'in' : ''}" id="acctBtn" aria-label="Cuenta">我</button></div>
+    <div class="hud-r"><button class="pill quest" id="questBtn">任 <b id="questN"></b></button><button class="pill acad-btn ${(S.acad?.day?.xp || 0) < DAILY_GOAL || acadDue() ? 'glow' : ''}" id="acadBtn" aria-label="Academia">学${acadDue() ? `<b class="nb">${acadDue()}</b>` : ''}</button><button class="pill acct ${cloud.user ? 'in' : ''}" id="acctBtn" aria-label="Cuenta">我</button></div>
   </header>
   <main id="view"></main>
   <nav class="tabs">${[['home', '苑', 'Santuario'], ['lab', '錬', 'Fusión'], ['exp', '旅', 'Viajes'], ['shop', '店', 'Tienda'], ['dex', '図', 'Atlas']]
@@ -60,7 +62,7 @@ function shell() {
   app.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { tab = b.dataset.tab; buzz(5); go(); });
   $('#questBtn').onclick = openQuests;
   $('#acctBtn').onclick = openAccount;
-  $('#acadBtn').onclick = () => openAcademy(modal, toast, () => { hud(); $('#acadBtn')?.classList.toggle('glow', !!lessonsNew()); }, startKana);
+  $('#acadBtn').onclick = () => openAcademy({ modal, toast, hud: () => { shell(); }, addXP, rankUp, bump });
   $('#rankBtn').onclick = () => toast(`位 Rango de guardián ${S.rank.lv} · ${S.rank.xp}/${rankNeed(S.rank.lv)} · subís entrenando, repasando, recogiendo tinta y descubriendo kanji`);
   go();
 }
@@ -259,7 +261,8 @@ function goalHTML() {
   const cs = S.creatures.filter(c => !c.egg);
   let g;
   if (S.creatures.some(c => c.egg)) g = 'Tocá el huevo 3 veces para que nazca';
-  else if (!(S.lessons || []).length) g = '¿Nuevo en japonés? Tocá 学 arriba: lecciones de 1 minuto';
+  else if (!Object.keys(S.acad?.done || {}).length) g = '¿Nuevo en japonés? Tocá 学 arriba: aprendé hiragana, katakana y frases';
+  else if ((S.acad?.day?.xp || 0) < DAILY_GOAL) g = `Meta de la Academia: ${S.acad?.day?.xp || 0}/${DAILY_GOAL} XP hoy · tocá 学`;
   else if (totalPending() >= 20) g = `Tus KANJŪ produjeron ${totalPending()} 墨 · tocá 収 para recoger`;
   else if (S.gate.length) g = 'Almacén lleno: hay KANJŪ esperando en la puerta';
   else if (S.tickets) g = `Tenés ${S.tickets} 札: invocá en el altar de la Tienda`;

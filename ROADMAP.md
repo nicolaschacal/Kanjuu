@@ -25,7 +25,13 @@ Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. El arte definitivo queda p
 - ✅ Codificación dual: criatura + glifo + audio japonés
 - ✅ Feedback inmediato con historia al fallar y reaprendizaje en la misma sesión
 - ✅ Trazo, Lecturas, Palabra, Ensamblar, Escuchar
-- ✅ Capa para principiantes: furigana en la interfaz (desactivable), romaji en lecturas, Academia con 5 lecciones y entrenador de kana
+- ✅ Capa para principiantes: furigana en la interfaz (desactivable), romaji en lecturas
+- ✅ Academia estilo Duolingo: 7 unidades (bienvenida, hiragana I y II, katakana, primeras frases, verbos y tiempos, lecturas)
+- ✅ 9 tipos de ejercicio: introducción con audio, kana↔romaji, escuchar, unir pares, significado, traducir, armar oraciones, completar partículas, tiempos verbales
+- ✅ Errores vuelven al final de la lección, combo, coronas (hasta 3), meta diaria de XP, premio por unidad, repaso espaciado de kana y vocabulario
+- ✅ Lecturas graduadas con tus kanji: furigana adaptativa (desaparece al dominar el kanji), traducción por oración, audio y preguntas de comprensión
+- 🔜 Generar lecturas nuevas con IA restringidas a los kanji y la gramática que ya conocés (endpoint en Vercel + API de Claude)
+- 🔜 Más unidades: て-form, querer/poder, contadores, números, hora y fechas; test para saltar unidades
 - 🔜 Orden de trazos real con datos de KanjiVG (animación + evaluación por trazo)
 - 🔜 Mnemotecnias propias del jugador (escribir su historia; las suyas se recuerdan mejor)
 - 🔜 Oraciones de contexto con furigana y audio
