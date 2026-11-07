@@ -94,6 +94,10 @@ Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. El arte definitivo queda p
 ## 9. Arte y audio (fase gráfica)
 - ✅ Santuario 3D (three.js): isla diorama con luz y sombras reales, día/noche según la hora, cielo, capas de papel, mar de nubes, luciérnagas, faroles que se encienden de noche; criaturas como recortes de papel 2D que deambulan dentro de sus casillas
 - ✅ La grilla de tiles sigue mandando y sólo se ve en modo construcción (huellas y casillas válidas)
+- ✅ Santuario como lugar del mundo: isla orgánica con acantilados, patio de piedra (= casillas), árboles, arbustos, flores; humo de incienso, estandartes, hojas/pétalos que caen
+- ✅ El santuario crece en 5 etapas por rango: 荒 terreno olvidado → 鳥 torii → 森 bosque sagrado → 灯 templo de faroles → 村 aldea
+- ✅ Tope de KANJŪ visibles por etapa (4→8); el resto descansa en el almacén. Expansores 拡 de patio (+1 fila, tope 2)
+- ✅ Distribución orgánica: cada criatura nueva va a la casilla más alejada de las demás
 - ✅ Criaturas de papel con silueta por tipo 五行, ojos grandes, sombra cel y kanji con pincel
 - ✅ Arena 3D: patio de templo de noche, torii, faroles de papel, escenario de madera; ataques con proyectil del color del tipo, onda de impacto y anillo de objetivo
 - 🔜 Ficha de criatura con escena 3D

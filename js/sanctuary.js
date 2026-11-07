@@ -8,7 +8,7 @@ import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn } from './help.js';
 import { openAcademy, acadDue, reviewAcademy, DAILY_GOAL } from './academy.js';
 import { openAISettings, aiStatus } from './ai.js';
 import { startTutorial, emit } from './tutorial.js';
-import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
+import { STAGES, EXT_COSTS, EXT_STAGE, stageIdx, stage, monCap, shownMons, syncGrid, COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
 import { $, buzz, home, owned, ui, go, hud, toast, modal, floatText } from './main.js';
 import { openCreature } from './sheet.js';
 import { allDue, openDojo } from './dojo.js';
@@ -20,7 +20,7 @@ export function viewHome(v) { return webgl() && !new URLSearchParams(location.se
 
 // Santuario 3D: la escena dibuja la grilla; la UI (objetivo, burbujas, dock) va por encima en HTML
 function viewHome3d(v) {
-  const pend = totalPending(), canGrow = S.rows < BASE_ROWS + ROW_COSTS.length;
+  const pend = totalPending(), canGrow = (S.ext || 0) < EXT_COSTS.length;
   const bubbles = placed().filter(it => pending(it) >= 8 || full(it)).map(it => `<button class="bubble-ink ${full(it) ? 'full' : ''}" data-c="${it.id}" data-anchor="${it.id}">墨<span>${pending(it)}</span></button>`).join('');
   v.innerHTML = `
   <div class="home home3d">
@@ -28,13 +28,13 @@ function viewHome3d(v) {
       <div class="stage-fx" aria-hidden="true"></div>
       <div class="stage-ov">${placing || build ? '' : bubbles}</div>
       <div class="stage-top">${placing ? '' : goalHTML()}</div>
-      ${build && canGrow ? `<button class="expand-row" id="expandRow">＋ Expandir terreno · ${ROW_COSTS[S.rows - BASE_ROWS]} 墨 · Rango ${ROW_RANK[S.rows - BASE_ROWS]}</button>` : ''}
-      ${build ? `<div class="build-hint"><b>匠 Modo construcción</b><span>Tocá un ítem para moverlo, guardarlo o mejorarlo · 空 ${tilesUsed()}/${tilesTotal()} casillas</span></div>` : ''}
+      ${build && canGrow ? `<button class="expand-row" id="expandRow">拡 Expansor de patio · ${EXT_COSTS[S.ext || 0]} 墨${stageIdx() < EXT_STAGE[S.ext || 0] ? ` · etapa ${STAGES[EXT_STAGE[S.ext || 0]].k}` : ''}</button>` : ''}
+      ${build ? `<div class="build-hint"><b>匠 Modo construcción</b><span>${stage().k} ${stage().name} · 空 ${tilesUsed()}/${tilesTotal()} casillas · 獣 ${shownMons()}/${monCap()} KANJŪ visibles</span></div>` : ''}
       ${placing ? '' : ctrlHTML(pend)}
     </div>
     ${placing ? `<div class="place-bar">Tocá dónde colocar <b>${placing.t ? OBJS[placing.t].k : placing.k}</b><button class="btn ghost" id="cancelPlace">Cancelar</button></div>` : ''}
   </div>`;
-  const stage = $('#stage', v);
+  const stg = $('#stage', v);
   const items = placed().map(it => {
     const [w, h] = foot(it), b = { id: it.id, x: it.pos.x, y: it.pos.y, w, h };
     if (it.t) return { ...b, kind: 'obj', t: it.t, lv: it.lv };
@@ -42,11 +42,11 @@ function viewHome3d(v) {
     return { ...b, kind: it.egg ? 'egg' : 'mon', svg: creatureSVG(it.k, { mood: it.mood, egg: it.egg, gold: it.gold }), insp: it.insp > Date.now() };
   });
   let valid = null;
-  if (placing) { const [w, h] = foot(placing); valid = []; for (let y = 0; y < S.rows; y++) for (let x = 0; x < COLS; x++) if (fits(w, h, x, y, placing)) valid.push([x, y]); }
-  mountScene(stage, { cols: COLS, rows: S.rows, items, mode: placing ? 'placing' : build ? 'build' : 'play', valid, onTap: tap3d, onCell: (x, y) => tapCell(x, y, null) });
-  stage.querySelectorAll('.bubble-ink').forEach(b => b.onclick = e => { e.stopPropagation(); harvest([findIt(b.dataset.c)], b); });
+  if (placing) { const [w, h] = foot(placing); valid = []; for (let y = 0; y < S.rows; y++) for (let x = 0; x < S.cols; x++) if (fits(w, h, x, y, placing)) valid.push([x, y]); }
+  mountScene(stg, { cols: S.cols, rows: S.rows, stage: stageIdx(), items, mode: placing ? 'placing' : build ? 'build' : 'play', valid, onTap: tap3d, onCell: (x, y) => tapCell(x, y, null) });
+  stg.querySelectorAll('.bubble-ink').forEach(b => b.onclick = e => { e.stopPropagation(); harvest([findIt(b.dataset.c)], b); });
   // El objetivo se muestra unos segundos y se pliega a un ícono; tocarlo lo abre de nuevo
-  const gEl = stage.querySelector('.goal');
+  const gEl = stg.querySelector('.goal');
   if (gEl) {
     const txt = gEl.textContent;
     if (txt === seenGoal) gEl.classList.add('min'); else { seenGoal = txt; setTimeout(() => gEl.classList.add('min'), 5000); }
@@ -59,7 +59,7 @@ function viewHome3d(v) {
     hopAll(.25);
     const mons = S.creatures.filter(c => c.pos && !c.away && !c.egg);
     if (mons.length > 1 && Math.random() < .35) emoteAt(mons[Math.random() * mons.length | 0].id, ['♪', '♥', '！', '…', 'ｚ', '✿'][Math.random() * 6 | 0]);
-    stage.querySelectorAll('.bubble-ink').forEach(b => { const n = pending(findIt(b.dataset.c)); b.querySelector('span').textContent = n; });
+    stg.querySelectorAll('.bubble-ink').forEach(b => { const n = pending(findIt(b.dataset.c)); b.querySelector('span').textContent = n; });
   }, 2500);
 }
 function tap3d(id) {
@@ -212,15 +212,17 @@ export function tapCell(x, y, el) {
   if (!placing) return;
   const [w, h] = foot(placing);
   if (!fits(w, h, x, y, placing)) { if (el) { el.classList.add('no'); setTimeout(() => el.classList.remove('no'), 300); } else toast('No entra ahí · elegí una casilla marcada'); buzz(30); return; }
+  if (!placing.t && !placing.pos && shownMons() >= monCap()) { toast(`獣 Ya hay ${monCap()} KANJŪ en el santuario · guardá uno o hacé crecer el santuario`); buzz(30); return; }
   const it = placing; it.pos = { x, y }; it.prodAt ??= Date.now(); placing = null; buzz(12); go();
   const near = neighbors(it).map(o => OBJS[o.t].k).join(' ');
   if (!it.t && near) toast(`${it.k} recibe el aura de ${near}`);
 }
 export function buyRow() {
-  const i = S.rows - BASE_ROWS, cost = ROW_COSTS[i], need = ROW_RANK[i];
-  if (S.rank.lv < need) return toast(`Necesitás Rango ${need} para expandir el terreno`);
+  const i = S.ext || 0, cost = EXT_COSTS[i], need = STAGES[EXT_STAGE[i]];
+  if (cost == null) return toast('El patio ya tiene todos sus expansores');
+  if (stageIdx() < EXT_STAGE[i]) return toast(`Se habilita cuando el santuario llegue a ${need.k} ${need.name} (rango ${need.rank})`);
   if (S.ink < cost) return toast(`Te faltan ${cost - S.ink} 墨`);
-  S.ink -= cost; S.rows++; buzz(20); toast('広 ¡Terreno expandido! +6 casillas'); go();
+  S.ink -= cost; S.ext = i + 1; syncGrid(); buzz(20); toast(`拡 ¡Patio ampliado! +${S.cols} casillas`); go();
 }
 export function openStorage() {
   const list = stored();
@@ -238,9 +240,9 @@ export function openStorage() {
 export function storedMenu(it, parent) {
   const isObj = !!it.t;
   const m = modal(`<h3>${isObj ? `${OBJS[it.t].k} ${OBJS[it.t].name}` : `${it.k} · ${KANJI[it.k].m}`}</h3><div class="menu-acts">
-    <button class="btn ok" id="put" ${findSpot(...foot(it)) ? '' : 'disabled'}>✥ Colocar en el santuario</button>
+    <button class="btn ok" id="put" ${findSpot(...foot(it)) && (it.t || shownMons() < monCap()) ? '' : 'disabled'}>✥ Colocar en el santuario</button>
     ${isObj ? `<button class="btn ghost" id="sell">Vender · +${sellValue(it)} 墨</button>` : `<button class="btn ghost" id="see">Ver ficha</button><button class="btn ghost" id="free" ${S.creatures.filter(c => !c.egg).length <= 1 ? 'disabled' : ''}>放 Liberar</button>`}</div>
-    ${findSpot(...foot(it)) ? '' : '<p class="r">No hay lugar libre de ese tamaño. Expandí el terreno o guardá algo.</p>'}`);
+    ${!it.t && shownMons() >= monCap() ? `<p class="r">El santuario ya tiene ${monCap()} KANJŪ visibles. Guardá uno o hacelo crecer subiendo de rango.</p>` : findSpot(...foot(it)) ? '' : '<p class="r">No hay lugar libre de ese tamaño. Usá un expansor o guardá algo.</p>'}`);
   $('#put', m).onclick = () => { m.close(); parent.close(); placing = it; ui.tab = 'home'; go(); };
   $('#sell', m) && ($('#sell', m).onclick = () => { S.ink += sellValue(it); S.objs = S.objs.filter(o => o !== it); m.close(); parent.close(); go(); openStorage(); });
   $('#see', m) && ($('#see', m).onclick = () => { m.close(); parent.close(); openCreature(it.id); });
@@ -250,7 +252,7 @@ export function rankUp(ups) {
   const r = ups[ups.length - 1];
   const m = modal(`<div class="result rank-up"><div class="rank-badge">位<b>${r}</b></div><h3>¡Rango ${r}!</h3>
     <p>+${ups.reduce((a, l) => a + 20 + l * 10, 0)} 墨 · +${ups.length} 札</p>
-    ${ROW_RANK.includes(r) ? '<p class="g">Desbloqueaste una nueva expansión de terreno</p>' : ''}
+    ${STAGES.some(st => st.rank === r) ? `<p class="g">⛩ ¡El santuario creció! ${STAGES.find(st => st.rank === r).k} ${STAGES.find(st => st.rank === r).name}: ${STAGES.find(st => st.rank === r).desc}</p>` : ''}
     ${Object.values(OBJS).filter(o => o.rank === r).map(o => `<p class="g">Nuevo objeto en la tienda: ${o.k} ${o.name}</p>`).join('')}
     <button class="btn ok wide">¡Genial!</button></div>`);
   buzz([20, 60, 20]); $('.btn', m).onclick = () => m.close();
