@@ -92,6 +92,10 @@ Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. El arte definitivo queda p
 - ⬜ TestFlight y prueba interna de Play con 20–50 jugadores; iterar retención D1/D7
 
 ## 9. Arte y audio (fase gráfica)
+- ✅ Santuario 3D (three.js): isla diorama con luz y sombras reales, día/noche según la hora, cielo, capas de papel, mar de nubes, luciérnagas, faroles que se encienden de noche; criaturas como recortes de papel 2D que deambulan dentro de sus casillas
+- ✅ La grilla de tiles sigue mandando y sólo se ve en modo construcción (huellas y casillas válidas)
+- 🔜 Rediseño de criaturas con el estilo del tablero visual (silueta por tipo, ojos grandes, sombra cel)
+- 🔜 Arena y ficha con la misma escena 3D
 - ⬜ Criaturas ilustradas por familia con 3 etapas visuales y animaciones idle/feliz/triste
 - ⬜ Fondos del santuario por hábitat, día/noche según la hora real
 - ⬜ Música ambiental y efectos por acción (tocar, evolucionar, fusionar)

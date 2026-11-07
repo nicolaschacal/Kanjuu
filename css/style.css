@@ -612,3 +612,17 @@ ruby.rk{cursor:pointer;border-bottom:2px dotted #c9b48a}
 .fm{display:flex;flex-wrap:wrap;gap:3px;margin:3px 0}.fm i{font-style:normal;font-weight:900;font-size:15px;color:#c9b48a}.fm i.on{color:var(--ink)}
 .fam.claim{border:3px solid var(--gold);animation:glow 1.5s infinite}.fam.claim small{color:var(--red)}.fam.got{opacity:.6}
 .battle-btn{animation:tutpulse 1.6s infinite!important}
+/* ===== Santuario 3D ===== */
+.home3d{background:#16132A}
+.stage{position:relative;flex:1;min-height:0;overflow:hidden}
+.stage-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.stage-ov{position:absolute;inset:0;pointer-events:none;z-index:2}
+.stage-ov>*{position:absolute;left:0;top:0;pointer-events:auto;will-change:transform}
+.stage-ov .bubble-ink{top:0;right:auto;animation:none;background:#F6EBD0;color:#16132A;box-shadow:0 3px 0 #0006;padding:4px 10px;font-size:13px}
+.stage-ov .bubble-ink span{color:#16132A}.stage-ov .bubble-ink.full{background:var(--red);color:#fff}.stage-ov .bubble-ink.full span{color:#fff}
+.emote3d{font-size:20px;font-weight:900;color:#16132A;background:#F6EBD0;border-radius:14px;padding:2px 9px;box-shadow:0 3px 0 #0006;animation:emote3d 1.6s ease-out forwards;pointer-events:none}
+@keyframes emote3d{0%{opacity:0;margin-top:6px}15%{opacity:1;margin-top:-6px}80%{opacity:1}100%{opacity:0;margin-top:-18px}}
+.stage-top{position:absolute;left:10px;right:10px;top:8px;z-index:3;pointer-events:none}
+.stage-top .goal{position:static;pointer-events:auto}
+.stage .expand-row{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);margin:0;z-index:3;background:#F6EBD0;border:0;color:#16132A;box-shadow:0 4px 0 #0006;white-space:nowrap}
+.build-hint{position:absolute;left:10px;right:10px;top:8px;z-index:4;background:#F2B544;color:#16132A;font-weight:900;font-size:12px;border-radius:12px;padding:8px 12px;box-shadow:0 3px 0 #0005}
