@@ -1,5 +1,6 @@
 // KANJŪ · atlas.js
-import { KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
+import { FAMILIES, PIECES } from './data.js';
+const famReward = f => 30 * f.members.length;import { KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
 import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
 import { GAMES, hasWord, hasParts, play, review, storyHTML, speak } from './games.js';
@@ -21,6 +22,11 @@ export function viewDex(v) {
       const d = S.dex[k];
       return `<button class="dex-c ${d?.owned ? 'own' : d?.seen ? 'seen' : ''}" data-k="${k}">${d?.owned ? creatureSVG(k) : `<span class="sil">${d?.seen ? k : '？'}</span>`}<small>${d?.seen ? k : '—'}</small>${d?.owned ? `<i class="mdots">${'●'.repeat(Math.min(6, mastery(k)))}</i>` : ''}</button>`;
     }).join('')}</div>`).join('')}
+    <h4>族 Familias <small>completá cada familia para ganar premios</small></h4>
+    <div class="fams">${FAMILIES.map(f => { const n = f.members.filter(k => S.dex[k]?.owned).length, done = n === f.members.length, got = (S.fams || []).includes(f.root);
+      return `<button class="fam ${done && !got ? 'claim' : ''} ${got ? 'got' : ''}" data-fam="${f.root}" ${done && !got ? '' : 'disabled'}><span class="fr">${f.root}</span><div><b>Familia ${f.root}${PIECES[f.root] ? ` · ${PIECES[f.root].m}` : KANJI[f.root] ? ` · ${KANJI[f.root].m}` : ''}</b>
+        <span class="fm">${f.members.map(k => `<i class="${S.dex[k]?.owned ? 'on' : ''}">${S.dex[k]?.seen ? k : '？'}</i>`).join('')}</span>
+        <small>${got ? '✓ Cobrada' : done ? `¡Cobrar ${famReward(f)} 墨 + 1 札!` : `${n}/${f.members.length}`}</small></div></button>`; }).join('')}</div>
     <h4>章 Logros</h4>
     <div class="achs">${ACHIEVEMENTS.map(([k, n, f, d, ink]) => { const got = f(), cl = S.ach.includes(k);
       return `<button class="ach ${got ? 'got' : ''} ${got && !cl ? 'claim' : ''}" data-a="${k}" ${got && !cl ? '' : 'disabled'}><i>${k}</i><b>${n}</b><small>${cl ? '✓ Cobrado' : got ? `¡Cobrar ${ink} 墨!` : d}</small></button>`; }).join('')}</div>
@@ -37,6 +43,9 @@ export function viewDex(v) {
       ${evolutionsOf(k).length ? `<p class="muted">Forma parte de: ${evolutionsOf(k).map(t => S.dex[t]?.seen ? t : '？').join(' ')}</p>` : ''}
       ${S.srs[k] ? `<p class="muted">Maestría ${mastery(k)}/6 · aciertos ${S.srs[k].ok} · fallos ${S.srs[k].miss}</p>` : ''}</div>`).querySelector('#say2').onclick = () => speak(reads(k)[0] || '');
   });
+  v.querySelectorAll('.fam.claim').forEach(b => b.onclick = () => {
+    const f = FAMILIES.find(x => x.root === b.dataset.fam); S.fams = [...(S.fams || []), f.root]; S.ink += famReward(f); S.tickets++;
+    buzz([20, 60, 20]); toast(`族 ¡Familia ${f.root} completa! +${famReward(f)} 墨 · +1 札`); viewDex(v); hud(); });
   $('#wipe', v).onclick = () => confirm('¿Borrar todo el progreso?') && reset();
   v.querySelectorAll('.ach.claim').forEach(b => b.onclick = () => {
     const a = ACHIEVEMENTS.find(x => x[0] === b.dataset.a); S.ach.push(a[0]); S.ink += a[4];

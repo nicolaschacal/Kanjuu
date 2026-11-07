@@ -16,7 +16,8 @@ export const GLOSS = {
   '硯': ['すずり', 'piedra de tinta'], '灯': ['とう', 'farol'], '松': ['まつ', 'pino'], '池': ['いけ', 'estanque'],
   '祠': ['ほこら', 'santuario'], '鐘': ['かね', 'campana'], '炉': ['ろ', 'brasero'], '芽': ['め', 'brote'], '集': ['しゅう', 'reunir'],
   '学': ['がく', 'estudio'], '半': ['はん', 'mitad'], '全': ['ぜん', 'todo'], '富': ['とみ', 'riqueza'], '卵': ['たまご', 'huevo'],
-  '仮': ['か', 'kana'],
+  '仮': ['か', 'kana'], '闘': ['とう', 'combate'], '箱': ['はこ', 'caja'], '道': ['みち', 'camino'], '族': ['ぞく', 'familia'],
+  '勝利': ['しょうり', 'victoria'], '敗北': ['はいぼく', 'derrota'], '必殺': ['ひっさつ', 'golpe especial'], '五行': ['ごぎょう', 'cinco elementos'],
 };
 const KEYS = Object.keys(GLOSS).sort((a, b) => b.length - a.length);
 const RX = new RegExp(KEYS.join('|'), 'g');

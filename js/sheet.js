@@ -12,7 +12,7 @@ import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCos
 import { $, buzz, esc, home, ui, go, hud, toast, modal, floatText } from './main.js';
 import { rankUp } from './sanctuary.js';
 import { STROKES } from './strokes.js';
-import { PIECES, isPiece } from './data.js';
+import { PIECES, isPiece, TYPES, typeOf } from './data.js';
 
 // ---------- Hoja de criatura ----------
 export function openCreature(id) {
@@ -23,7 +23,7 @@ export function openCreature(id) {
   const m = modal(`
     <div class="cr-top" style="--el:${fill}">
       <button class="cr-art" id="pet">${creatureSVG(c.k, { mood: c.mood, gold: c.gold })}${c.acc ? `<span class="acc-hat big">${c.acc}</span>` : ''}</button>
-      <div class="cr-name"><span class="big-k">${c.k}</span><div><b>${K.m}</b><small>${ELEMENTS[element(c.k)][2]} · Nivel KANJŪ ${kLevel(c.k)}${c.gen ? ` · Gen ${c.gen}` : ''}</small></div></div>
+      <div class="cr-name"><span class="big-k">${c.k}</span><div><b>${K.m}</b><small><b class="tbadge" style="--t:${TYPES[typeOf(c.k)].col}">${TYPES[typeOf(c.k)].k} ${TYPES[typeOf(c.k)].name}</b> fuerte contra ${TYPES[TYPES[typeOf(c.k)].beats].k} · ${ELEMENTS[element(c.k)][2]} · Nivel KANJŪ ${kLevel(c.k)}${c.gen ? ` · Gen ${c.gen}` : ''}</small></div></div>
       <div class="reads"><button class="say" id="say">🔊</button><span>音 ${K.on.map(rr).join('・') || '—'}</span><span>訓 ${K.kun.map(rr).join('・') || '—'}</span><span class="mast" title="Maestría">熟 ${'★'.repeat(mastery(c.k))}${'☆'.repeat(Math.max(0, 6 - mastery(c.k)))}</span></div>
     </div>
     <div class="bars">

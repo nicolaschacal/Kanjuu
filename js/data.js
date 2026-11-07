@@ -219,3 +219,24 @@ export const learnGate = c => depth(c) <= 1 ? 2 : depth(c) + 2;
 export const MAX_LV = 15;
 export const reads = k => [...KANJI[k].on, ...KANJI[k].kun];
 export const plain = r => r.replace(/[()]/g, '');
+
+// --- Tipos 五行 (gogyō): los cinco elementos japoneses tradicionales ---
+// Ciclo de dominio (相剋 sōkoku): 木 vence a 土, 土 a 水, 水 a 火, 火 a 金, 金 a 木.
+export const TYPES = {
+  wood: { k: '木', name: 'Madera', yomi: 'もく', col: '#4fbf6a', beats: 'earth' },
+  fire: { k: '火', name: 'Fuego', yomi: 'か', col: '#e8503a', beats: 'metal' },
+  earth: { k: '土', name: 'Tierra', yomi: 'ど', col: '#c78f12', beats: 'water' },
+  metal: { k: '金', name: 'Metal', yomi: 'きん', col: '#8a9bb0', beats: 'wood' },
+  water: { k: '水', name: 'Agua', yomi: 'すい', col: '#2f93b8', beats: 'fire' },
+};
+const EL_TYPE = { wood: 'wood', life: 'wood', thread: 'wood', fire: 'fire', sun: 'fire', heart: 'fire', earth: 'earth', person: 'earth', void: 'earth',
+  metal: 'metal', power: 'metal', voice: 'metal', water: 'water', moon: 'water', sky: 'water', eye: 'water', spirit: 'water' };
+export const typeOf = k => EL_TYPE[element(k)];
+export const typeMult = (a, d) => TYPES[a].beats === d ? 1.5 : TYPES[d].beats === a ? .7 : 1;
+
+// --- Familias 族: kanji que comparten una pieza o un kanji base (mínimo 3) ---
+export const FAMILIES = (() => {
+  const by = {};
+  for (const [k, K] of Object.entries(KANJI)) for (const p of new Set((K.recipes || []).flat())) (by[p] ??= new Set()).add(k);
+  return Object.entries(by).filter(([, s]) => s.size >= 3).map(([root, s]) => ({ root, members: [...s] })).sort((a, b) => a.members.length - b.members.length);
+})();

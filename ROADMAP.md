@@ -14,7 +14,9 @@ Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. El arte definitivo queda p
 - ✅ Rango de guardián que desbloquea terreno y objetos; calendario de 7 días sin reinicios
 - 🔜 Habitats por familia (bosque, cielo, agua…) con bonificación al convivir criaturas afines
 - 🔜 Rasgos de personalidad (tímido, juguetón…) que cambian animaciones y preferencias de entrenamiento
-- ⬜ Combates amistosos de "duelo de lecturas" contra criaturas salvajes en expediciones
+- ✅ Arena 闘 estilo Clash Royale: duelos 3v3 con desafíos de kanji, tipos 五行, copas, 6 arenas, camino de copas y cofres que se abren estudiando
+- ✅ Familias 族 con premio al completarlas; fusión sin pérdida de la criatura principal
+- 🔜 Duelos contra amigos (asíncronos) y temporadas de Arena
 - ⬜ Eventos de santuario: visitantes raros que solo aparecen si cumplís condiciones
 
 ## 2. Aprendizaje (técnicas con evidencia)

@@ -1,5 +1,5 @@
 // KANJŪ · main.js
-import { KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
+import { viewArena, ROAD, SLOTS } from './arena.js';import { KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
 import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
 import { GAMES, hasWord, hasParts, play, review, storyHTML, speak } from './games.js';
@@ -30,14 +30,19 @@ export const MISSIONS = [
   { id: 'exp', label: 'Enviá una expedición', goal: 1, ink: 8 },
   { id: 'review', label: 'Repasá kanji en el Dojo', goal: 8, ink: 15 },
   { id: 'acad', label: 'Completá 2 lecciones de la Academia', goal: 2, ink: 15 },
+  { id: 'duel', label: 'Ganá 2 duelos en la Arena', goal: 2, ink: 20 },
 ];
 export const WEEKLY = [
+  { id: 'duel', label: 'Ganá 12 duelos', goal: 12, ink: 80 },
   { id: 'review', label: 'Repasá 50 kanji', goal: 50, ink: 60 },
   { id: 'disc', label: 'Descubrí 3 kanji nuevos', goal: 3, ink: 50 },
   { id: 'evo', label: 'Evolucioná o fusioná 3 veces', goal: 3, ink: 50 },
   { id: 'train', label: 'Entrená 20 veces', goal: 20, ink: 40 },
 ];
 export const ACHIEVEMENTS = [
+  ['闘', 'Primera victoria', () => (S.arena?.wins || 0) >= 1, 'Ganá un duelo', 30],
+  ['城', 'Señor del castillo', () => (S.arena?.best || 0) >= 1400, 'Llegá a la Arena 5', 150],
+  ['族', 'Primera familia', () => (S.fams || []).length >= 1, 'Completá una familia de kanji', 60],
   ['芽', 'Primer brote', () => S.stats.evolutions >= 1, 'Evoluciona una criatura', 20],
   ['合', 'Alquimista', () => S.stats.fusions >= 1, 'Realiza una fusión', 20],
   ['輪', 'Ciclo eterno', () => S.stats.rebirths >= 1, 'Completa un renacimiento', 40],
@@ -67,7 +72,7 @@ export function shell() {
     <div class="hud-r"><button class="pill quest" id="questBtn">任 <b id="questN"></b></button><button class="pill acad-btn ${(S.acad?.day?.xp || 0) < DAILY_GOAL ? 'glow' : ''}" id="acadBtn" aria-label="Academia">学</button><button class="pill acct ${cloud.user ? 'in' : ''}" id="acctBtn" aria-label="Cuenta">我</button></div>
   </header>
   <main id="view"></main>
-  <nav class="tabs">${[['home', '苑', 'Santuario'], ['lab', '錬', 'Fusión'], ['exp', '旅', 'Viajes'], ['shop', '店', 'Tienda'], ['dex', '図', 'Atlas']]
+  <nav class="tabs">${[['home', '苑', 'Santuario'], ['lab', '錬', 'Fusión'], ['exp', '旅', 'Viajes'], ['arena', '闘', 'Arena'], ['shop', '店', 'Tienda'], ['dex', '図', 'Atlas']]
       .map(([id, k, l]) => `<button data-tab="${id}" class="${ui.tab === id ? 'on' : ''}"><i>${k}</i><span>${l}</span></button>`).join('')}</nav>
   <div id="layer"></div>`;
   app.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { ui.tab = b.dataset.tab; buzz(5); go(); });
@@ -80,7 +85,7 @@ export function shell() {
 export function go() {
   app.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === ui.tab));
   const v = $('#view'); v.className = 'view v-' + ui.tab;
-  ({ home: viewHome, lab: viewLab, exp: viewExp, shop: viewShop, dex: viewDex })[ui.tab](v);
+  ({ home: viewHome, lab: viewLab, exp: viewExp, arena: viewArena, shop: viewShop, dex: viewDex })[ui.tab](v);
   hud();
 }
 export function hud() {
@@ -93,6 +98,7 @@ export function hud() {
   $('#questBtn').classList.toggle('glow', !!ready);
   const expDone = S.creatures.some(c => c.away && Date.now() >= c.away.end);
   app.querySelector('[data-tab=exp]')?.classList.toggle('dot', expDone);
+  const ar = S.arena; app.querySelector('[data-tab=arena]')?.classList.toggle('dot', !!ar && (ar.chests.some((c, i) => i === 0 && c.pts >= ({ wood: 6, silver: 12, gold: 24 })[c.t]) || ROAD.some(r => ar.best >= r.at && !ar.road.includes(r.at))));
   app.querySelector('[data-tab=dex]')?.classList.toggle('dot', ACHIEVEMENTS.some(a => a[2]() && !S.ach.includes(a[0])));
   save();
 }

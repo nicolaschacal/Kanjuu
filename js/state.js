@@ -32,7 +32,12 @@ export function rollDaily() {
   if (S.daily.date !== today()) S.daily = { date: today(), p: {}, claimed: [] };
   if (S.weekly.week !== weekKey()) S.weekly = { week: weekKey(), p: {}, claimed: [] };
 }
-export function bump(key, n = 1) { rollDaily(); S.daily.p[key] = (S.daily.p[key] || 0) + n; S.weekly.p[key] = (S.weekly.p[key] || 0) + n; }
+// Estudiar abre cofres de la Arena: cada acierto suma puntos al primer cofre de la fila
+const STUDY = { review: 1, train: 2, acad: 3 };
+export function bump(key, n = 1) {
+  rollDaily(); S.daily.p[key] = (S.daily.p[key] || 0) + n; S.weekly.p[key] = (S.weekly.p[key] || 0) + n;
+  const ch = S.arena?.chests?.[0]; if (ch && STUDY[key]) ch.pts += n * STUDY[key];
+}
 
 
 // --- Repetición espaciada ---
@@ -77,12 +82,15 @@ export function evolve(c, to) {
 export function fuse(ids, to, pieces = []) {
   const used = ids.map(byId);
   pieces.forEach(p => S.pieces[p]--);
+  // La criatura principal (la de más vínculo y nivel) no desaparece: se transforma y conserva su historia
+  const main = [...used].sort((a, b) => (b.bond + b.lv) - (a.bond + a.lv))[0];
   used.forEach(c => { if (c.acc) { S.pieces[c.acc] = (S.pieces[c.acc] || 0) + 1; c.acc = null; } });
   S.creatures = S.creatures.filter(c => !ids.includes(c.id));
   S.stats.fusions++;
   return addCreature(to, {
+    id: main.id, gold: used.some(c => c.gold), stars: main.stars || 0,
     gen: Math.max(...used.map(c => c.gen)),
-    bond: Math.round(used.reduce((a, c) => a + c.bond, 0) / used.length),
+    bond: Math.max(...used.map(c => c.bond || 0)),
     hist: [...new Set(used.flatMap(c => c.hist)), to],
   });
 }
