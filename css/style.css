@@ -248,3 +248,12 @@ h4 small{font-weight:500;color:var(--muted)}
 
 .goal{position:absolute;left:12px;right:12px;top:10px;z-index:200;background:#fff7e8ee;border-radius:16px;padding:8px 12px;display:flex;gap:10px;align-items:center;box-shadow:0 4px 0 #0002;font-size:13px;font-weight:700;animation:up .4s}
 .goal i{font-style:normal;background:var(--red);color:#fff;border-radius:10px;padding:2px 8px;font-weight:900}
+
+.hud-r{display:flex;gap:6px}
+.acct{width:38px;justify-content:center;padding:6px 0}.acct.in{background:var(--green)}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:#efe3c8;border-radius:14px;padding:4px;margin:10px 0}
+.seg button{padding:8px;border-radius:10px;font-weight:900}.seg .on{background:#fff;box-shadow:0 2px 0 #d9c7a2}
+.auth input{width:100%;font:inherit;font-size:16px;padding:14px;border-radius:14px;border:3px solid #e6d6b6;background:#fff;margin-bottom:10px;outline:none;user-select:text;-webkit-user-select:text}
+.auth input:focus{border-color:var(--gold)}
+.err{min-height:18px;font-size:13px;font-weight:700}
+.onacct{z-index:55}

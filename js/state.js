@@ -1,10 +1,12 @@
 import { KANJI, MAX_LV, roots } from './data.js';
+import { pushSoon } from './cloud.js';
 
 const KEY = 'kanjuu.save.v1';
 const today = () => new Date().toISOString().slice(0, 10);
 const uid = () => Math.random().toString(36).slice(2, 9);
 
 export let S = load();
+export const loadedAt = S.savedAt || 0;
 
 function fresh() {
   return { creatures: [], dex: {}, ink: 10, deco: [], log: [], stats: { fusions: 0, evolutions: 0, rebirths: 0, trainings: 0 }, daily: { date: today(), p: {}, claimed: [] } };
@@ -13,7 +15,9 @@ function load() {
   try { const s = JSON.parse(localStorage.getItem(KEY)); if (s?.creatures) return s; } catch {}
   return fresh();
 }
-export function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} }
+export function save() { S.savedAt = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} pushSoon(S); }
+// Reemplaza la partida actual (p. ej. con la de la nube) sin cambiar la referencia
+export function replace(data) { Object.keys(S).forEach(k => delete S[k]); Object.assign(S, data); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} }
 export function reset() { S = fresh(); save(); location.reload(); }
 
 export function rollDaily() {

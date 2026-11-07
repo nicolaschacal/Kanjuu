@@ -31,3 +31,9 @@ js/main.js      pantallas, santuario, UI
 
 ## Próximos pasos sugeridos
 Arte definitivo por criatura, sonido/háptica, más kanji (datos KanjiVG para orden de trazos), misiones semanales, persistencia en la nube y empaquetado nativo (Capacitor).
+
+## Cuentas y nube
+- Vercel Functions en `api/` (`auth.js`, `save.js`) + Postgres en Neon (tablas `users`, `saves`).
+- Contraseñas con scrypt + sal; sesión en cookie HttpOnly firmada (HMAC, 60 días).
+- Variables de entorno en Vercel: `DATABASE_URL`, `AUTH_SECRET`.
+- El juego funciona sin cuenta y sin conexión; al iniciar sesión se compara la partida local con la de la nube.
