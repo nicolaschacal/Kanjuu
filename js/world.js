@@ -2,31 +2,37 @@
 import { KANJI, REGIONS, kLevel, element } from './data.js';
 import { S, addCreature, see, mastery } from './state.js';
 
-// --- El santuario crece con el guardián ---
-// Cada etapa (por rango) agrega escenario y amplía el patio. Las criaturas ocupan casillas según su
-// nivel (Nv1 1×1, Nv2 2×1, Nv3 2×2…) y además hay un tope de KANJŪ visibles: el resto descansa en el almacén.
-export const STAGES = [
-  { rank: 1, k: '荒', name: 'Terreno olvidado', cols: 4, rows: 3, mons: 4, desc: 'Un altar de piedra entre la maleza' },
-  { rank: 3, k: '鳥', name: 'Santuario del torii', cols: 5, rows: 3, mons: 5, desc: 'Torii, camino de piedras y faroles' },
-  { rank: 5, k: '森', name: 'Bosque sagrado', cols: 5, rows: 4, mons: 6, desc: 'La casa del santuario y un bosque alrededor' },
-  { rank: 8, k: '灯', name: 'Templo de los faroles', cols: 6, rows: 4, mons: 7, desc: 'Cerezo, estandartes y más faroles' },
-  { rank: 11, k: '村', name: 'Aldea KANJŪ', cols: 6, rows: 5, mons: 8, desc: 'Casitas y una pagoda: ya es una aldea' },
+// --- La isla: siempre básica; el jugador la decora y la agranda (3 niveles, como en Rebyters) ---
+// Las criaturas ocupan casillas según su nivel (Nv1 1×1, Nv2 2×1, Nv3 2×2…). Cada nivel de isla tiene
+// tope de KANJŪ visibles y de objetos colocados; el resto espera en el almacén.
+export const ISLANDS = [
+  { n: 5, mons: 4, objs: 12, cost: 0, rank: 1, name: 'Isla pequeña' },
+  { n: 7, mons: 6, objs: 24, cost: 1500, rank: 4, name: 'Isla mediana' },
+  { n: 9, mons: 8, objs: 40, cost: 5000, rank: 8, name: 'Isla grande' },
 ];
-// Expansores 拡: +1 fila de patio cada uno, tope 2. Se habilitan en ciertas etapas.
-export const EXT_COSTS = [150, 400], EXT_STAGE = [1, 3];
-export const stageIdx = (lv = S.rank?.lv || 1) => STAGES.reduce((a, s, i) => lv >= s.rank ? i : a, 0);
-export const stage = () => STAGES[stageIdx()];
-export const monCap = () => stage().mons;
+export const island = () => ISLANDS[S.island || 0];
+export const monCap = () => island().mons;
+export const objCap = () => island().objs;
 export const shownMons = () => S.creatures.filter(c => c.pos).length;
-// Ajusta el patio a la etapa; lo que ya no entra va al almacén
+export const shownObjs = () => S.objs.filter(o => o.pos).length;
+// 和 Armonía: cada objeto colocado suma belleza; la armonía sube la tinta de todo el santuario (+1% c/u, tope +60%)
+export const harmony = () => S.objs.filter(o => o.pos).reduce((a, o) => a + (OBJS[o.t]?.har || 0) * (1 + (o.lv - 1) * .5), 0);
+export const harmonyMult = () => 1 + Math.min(.6, harmony() * .01);
 export function syncGrid() {
-  const st = stage(); S.cols = st.cols; S.rows = st.rows + (S.ext || 0);
+  S.cols = S.rows = island().n;
   placed().forEach(it => { const [w, h] = foot(it), p = it.pos; if (p.x + w > S.cols || p.y + h > S.rows) it.pos = null; });
-  // si hay más criaturas visibles que el tope, las últimas descansan
   S.creatures.filter(c => c.pos && !c.away).slice(monCap()).forEach(c => { c.pos = null; });
+  S.objs.filter(o => o.pos).slice(objCap()).forEach(o => { o.pos = null; });
+}
+export function buyIsland() {
+  const i = (S.island || 0) + 1, I = ISLANDS[i];
+  if (!I) return 'max';
+  if (S.rank.lv < I.rank) return 'rank';
+  if (S.ink < I.cost) return 'ink';
+  S.ink -= I.cost; S.island = i; syncGrid(); return 'ok';
 }
 export const COLS = 6, BASE_ROWS = 3; // (compatibilidad: el tamaño real está en S.cols/S.rows)
-export const ROW_COSTS = EXT_COSTS, ROW_RANK = EXT_STAGE.map(i => STAGES[i].rank);
+export const ROW_COSTS = [], ROW_RANK = [];
 export const STORE_COSTS = [40, 90, 160, 260];
 export const PROD_CAP_H = 6; // la producción se acumula hasta 6 h: nunca se pierde, solo se llena
 
@@ -40,11 +46,26 @@ export const OBJS = {
   bell: { k: '鐘', name: 'Campana del templo', w: 1, h: 1, cost: 120, rank: 3, kind: 'global', col: '#c78f12', desc: '+1 墨 por acierto en el Dojo, por nivel' },
   torii: { k: '門', name: 'Portal torii', w: 2, h: 1, cost: 150, rank: 5, kind: 'global', col: '#d9442f', desc: 'Viajes −10% de tiempo por nivel' },
   brazier: { k: '炉', name: 'Brasero', w: 1, h: 1, cost: 70, rank: 2, kind: 'aura', col: '#c33d22', desc: 'Vecinos de Fuego y Sol: +40% 墨 por nivel' },
+  // Decoración: no tiene efecto propio, suma 和 Armonía (más tinta en todo el santuario)
+  stone: { k: '石', name: 'Camino de piedra', w: 1, h: 1, cost: 15, rank: 1, kind: 'decor', col: '#B3AB98', desc: 'Losas para armar caminos' },
+  rock: { k: '岩', name: 'Roca musgosa', w: 1, h: 1, cost: 20, rank: 1, kind: 'decor', col: '#8E8778', desc: 'Piedra con musgo' },
+  shrub: { k: '叢', name: 'Arbusto', w: 1, h: 1, cost: 25, rank: 1, kind: 'decor', col: '#4E8F4A', desc: 'Verde y redondo' },
+  flowers: { k: '花', name: 'Cantero de flores', w: 1, h: 1, cost: 30, rank: 1, kind: 'decor', col: '#F4A7B9', desc: 'Flores blancas, rosas y amarillas' },
+  fence: { k: '柵', name: 'Cerca de madera', w: 1, h: 1, cost: 20, rank: 1, kind: 'decor', col: '#7A4E32', desc: 'Para delimitar zonas' },
+  banner: { k: '幟', name: 'Estandarte', w: 1, h: 1, cost: 35, rank: 2, kind: 'decor', col: '#2A2F5A', desc: 'Nobori con el emblema 漢獣' },
+  bamboo: { k: '竹', name: 'Bambú', w: 1, h: 1, cost: 40, rank: 2, kind: 'decor', col: '#7FB04A', desc: 'Un macizo de cañas' },
+  tree: { k: '樹', name: 'Árbol', w: 1, h: 1, cost: 55, rank: 2, kind: 'decor', col: '#3F7A45', desc: 'Copa frondosa' },
+  altar: { k: '壇', name: 'Altar de incienso', w: 1, h: 1, cost: 80, rank: 3, kind: 'decor', col: '#A9A292', desc: 'Un hokora con humo de incienso' },
+  house: { k: '家', name: 'Casita', w: 2, h: 2, cost: 260, rank: 5, kind: 'decor', col: '#C9A27A', desc: 'Una casa con la ventana encendida' },
+  sakura: { k: '桜', name: 'Cerezo', w: 2, h: 2, cost: 240, rank: 6, kind: 'decor', col: '#F4A7B9', desc: 'Suelta pétalos sobre el santuario' },
+  pagoda: { k: '塔', name: 'Pagoda', w: 2, h: 2, cost: 700, rank: 9, kind: 'decor', col: '#B8392A', desc: 'Cinco techos: el orgullo de la aldea' },
 };
+// Armonía que aporta cada objeto (los edificios también embellecen)
+Object.entries({ suzuri: 2, lantern: 3, pine: 3, pond: 5, shrine: 10, bell: 4, torii: 6, brazier: 3, stone: 1, rock: 1, shrub: 1, flowers: 2, fence: 1, banner: 2, bamboo: 2, tree: 3, altar: 4, house: 9, sakura: 9, pagoda: 18 }).forEach(([t, h]) => OBJS[t].har = h);
 export const OBJ_MAX = 5;
 export const upCost = o => Math.round(OBJS[o.t].cost * o.lv * 1.6);
 // Cada copia del mismo objeto cuesta 50% más
-export const objCost = t => Math.round(OBJS[t].cost * 1.5 ** S.objs.filter(o => o.t === t).length);
+export const objCost = t => Math.round(OBJS[t].cost * (OBJS[t].kind === 'decor' ? 1.12 : 1.5) ** S.objs.filter(o => o.t === t).length);
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 export const rows = () => S.rows;
@@ -80,7 +101,7 @@ export function findSpot(w, h, ignore) {
 // Coloca en la grilla; si no entra, al almacén; si el almacén está lleno, a la puerta
 export function settle(it, prefer) {
   const [w, h] = foot(it);
-  if (!it.t && !it.pos && shownMons() >= monCap()) { it.pos = null; return 'store'; } // tope de visibles
+  if (!it.pos && (it.t ? shownObjs() >= objCap() : shownMons() >= monCap())) { it.pos = null; return 'store'; } // topes de la isla
   if (prefer && fits(w, h, prefer.x, prefer.y, it)) { it.pos = { ...prefer }; return 'grid'; }
   if (it.pos && fits(w, h, it.pos.x, it.pos.y, it)) return 'grid';
   const s = findSpot(w, h, it);
@@ -89,7 +110,7 @@ export function settle(it, prefer) {
   return 'store';
 }
 export const stored = () => [...S.creatures.filter(c => !c.pos && !c.away), ...S.objs.filter(o => !o.pos)];
-export const storeFree = () => S.storeCap - stored().length;
+export const storeFree = () => S.storeCap - S.creatures.filter(c => !c.pos && !c.away).length; // el almacén limita KANJŪ; los objetos no ocupan lugar
 
 // Llega una criatura nueva al mundo
 export function arrive(k, extra = {}) {
@@ -136,7 +157,7 @@ export function rate(c) {
   }
   r *= aura;
   if (c.insp > Date.now()) r *= 2;
-  return r;
+  return r * harmonyMult();
 }
 export const objRate = o => o.pos && o.t === 'suzuri' ? 5 * o.lv : 0;
 export function pending(it) {
@@ -163,7 +184,6 @@ export const rankNeed = r => 60 + r * r * 25;
 export function addXP(n) {
   const R = S.rank; R.xp += Math.round(n); const ups = [];
   while (R.xp >= rankNeed(R.lv)) { R.xp -= rankNeed(R.lv); R.lv++; ups.push(R.lv); S.ink += 20 + R.lv * 10; S.tickets++; }
-  if (ups.length) syncGrid(); // el santuario puede crecer de etapa
   return ups;
 }
 
@@ -223,7 +243,7 @@ export function initWorld() {
   delete S.deco; delete S.cap;
   if (!S.gridV) { S.creatures.forEach(c => c.pos === undefined && settle(c)); S.gridV = 1; }
   S.creatures.forEach(c => { c.pos ??= null; c.prodAt ??= Date.now(); });
-  // v2: etapas del santuario. Las filas compradas antes se convierten en expansores (tope 2)
-  if (!S.stageV) { S.ext = Math.min(2, Math.max(0, (S.rows || 3) - 3)); S.stageV = 1; }
-  S.ext ??= 0; syncGrid();
+  // v3: isla de 3 niveles. Lo que se había pagado en expansiones se devuelve en tinta.
+  if (!S.islandV) { const paid = [60, 130, 220, 340, 500, 720, 1000].slice(0, Math.max(0, (S.rows || 3) - 3)).reduce((a, b) => a + b, 0) + (S.ext ? [150, 400].slice(0, S.ext).reduce((a, b) => a + b, 0) : 0); if (S.stageV) S.ink += [150, 400].slice(0, S.ext || 0).reduce((a, b) => a + b, 0); else S.ink += paid; S.island = 0; S.islandV = 1; delete S.ext; delete S.stageV; }
+  syncGrid();
 }

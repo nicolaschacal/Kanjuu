@@ -8,7 +8,7 @@ import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn } from './help.js';
 import { openAcademy, acadDue, reviewAcademy, DAILY_GOAL } from './academy.js';
 import { openAISettings, aiStatus } from './ai.js';
 import { startTutorial, emit } from './tutorial.js';
-import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
+import { ISLANDS, island, buyIsland, harmony, COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
 import { $, buzz, go, hud, toast, modal } from './main.js';
 import { rankUp } from './sanctuary.js';
 
@@ -19,6 +19,11 @@ export const ITEMS = [
   { id: 'mochi', k: '餅', name: 'Caja de mochis', cost: 20, desc: 'Todas tus criaturas felices: producen más' },
   { id: 'incense', k: '香', name: 'Incienso', cost: 45, desc: 'Inspira a todo el santuario 1 h: ×2 tinta' },
 ];
+function shopObjs(decor) {
+  return Object.entries(OBJS).filter(([, d]) => (d.kind === 'decor') === decor).map(([t, d]) => { const lock = S.rank.lv < d.rank, n = S.objs.filter(o => o.t === t).length;
+    return `<div class="shop-row ${lock ? 'locked' : ''}"><i>${d.k}</i><div><b>${d.name}${n ? ` · tenés ${n}` : ''}</b><small>${d.kind === 'decor' ? d.desc : d.desc} · ${d.w}×${d.h} · 和+${d.har}</small></div>
+      <button class="btn ok" data-obj="${t}" ${lock || S.ink < objCost(t) ? 'disabled' : ''}>${lock ? `Rango ${d.rank}` : objCost(t) + ' 墨'}</button></div>`; }).join('');
+}
 export function viewShop(v) {
   v.innerHTML = `<div class="shop">
     <div class="wallet">墨 <b>${S.ink}</b> <span class="tk">札 ${S.tickets}</span><small>Tu santuario produce ${totalRate()} 墨/h · entrená y repasá para producir más</small></div>
@@ -27,10 +32,11 @@ export function viewShop(v) {
       <div class="pity"><span>Kanji nuevo garantizado en</span><b>${Math.max(1, PITY - S.pity)}</b><span>invocaciones</span></div>
       <div class="row"><button class="btn ok" data-pull="1">${S.tickets ? '札 ×1' : `${PULL} 墨`}<small>Invocar 1</small></button><button class="btn ok gold" data-pull="10">${S.tickets >= 10 ? '札 ×10' : `${PULL10} 墨`}<small>Invocar 10 · 1 nuevo seguro</small></button></div>
     </div>
-    <h4>置 Para el santuario <small>Se colocan en casillas · mejoralos hasta Nv${OBJ_MAX}</small></h4>
-    ${Object.entries(OBJS).map(([t, d]) => { const lock = S.rank.lv < d.rank, n = S.objs.filter(o => o.t === t).length;
-      return `<div class="shop-row ${lock ? 'locked' : ''}"><div class="sv">${objSVG({ lv: 1 }, d)}</div><div><b>${d.name}${n ? ` · tenés ${n}` : ''}</b><small>${d.desc} · ocupa ${d.w}×${d.h}</small></div>
-      <button class="btn ok" data-obj="${t}" ${lock || S.ink < objCost(t) ? 'disabled' : ''}>${lock ? `Rango ${d.rank}` : objCost(t) + ' 墨'}</button></div>`; }).join('')}
+    ${(() => { const nx = ISLANDS[(S.island || 0) + 1]; return nx ? `<div class="isle-card"><span class="ak">拡</span><div><b>${nx.name} ${nx.n}×${nx.n}</b><small>${nx.mons} KANJŪ y ${nx.objs} objetos en la isla (ahora ${island().mons} y ${island().objs})</small></div><button class="btn ok gold" id="buyIsle" ${S.rank.lv < nx.rank || S.ink < nx.cost ? 'disabled' : ''}>${S.rank.lv < nx.rank ? `Rango ${nx.rank}` : nx.cost + ' 墨'}</button></div>` : ''; })()}
+    <h4>建 Edificios <small>tienen efecto · mejoralos hasta Nv${OBJ_MAX}</small></h4>
+    ${shopObjs(false)}
+    <h4>飾 Decoración <small>cada objeto suma 和 Armonía: +1% de tinta por punto (hasta +60%) · tenés ${Math.round(harmony())}</small></h4>
+    ${shopObjs(true)}
     <h4>部品 Piezas <small>accesorios para evolucionar y fusionar</small></h4>
     ${Object.entries(PIECES).map(([p, d]) => `<div class="shop-row"><i class="pc-i">${p}</i><div><b>${d.name} <small class="rmj">${d.rom}</small> · ${d.m}${S.pieces[p] ? ` · tenés ${S.pieces[p]}` : ''}</b><small>Forma ${d.ex}</small></div><button class="btn ok" data-piece="${p}" ${S.ink < d.cost ? 'disabled' : ''}>${d.cost} 墨</button></div>`).join('')}
     <h4>品 Consumibles</h4>
@@ -41,9 +47,10 @@ export function viewShop(v) {
     toast(`部品 ${p} ${PIECES[p].name} guardada · equipala desde la ficha de una criatura`); go();
   });
   v.querySelectorAll('[data-pull]').forEach(b => b.onclick = () => doPull(+b.dataset.pull));
+  $('#buyIsle', v) && ($('#buyIsle', v).onclick = () => { const r = buyIsland(); if (r === 'ok') { buzz([20, 60, 20]); toast(`拡 ¡${island().name}! Más lugar para KANJŪ y objetos`); go(); } });
   v.querySelectorAll('[data-obj]').forEach(b => b.onclick = () => {
     const t = b.dataset.obj, d = OBJS[t]; S.ink -= objCost(t); const o = newObj(t); buzz(12);
-    if (o.pos) { toast(`${d.k} colocado · tocá 匠 Construir para moverlo`); } else toast(`${d.k} guardado en el almacén (no hay lugar)`);
+    if (o.pos) { toast(`${d.k} colocado en la isla · 和+${d.har} · movelo con 匠 Construir`); } else toast(`${d.k} guardado en 蔵 Almacén › Objetos (la isla está llena)`);
     go();
   });
   v.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => {

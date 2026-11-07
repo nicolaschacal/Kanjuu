@@ -94,9 +94,11 @@ Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. El arte definitivo queda p
 ## 9. Arte y audio (fase gráfica)
 - ✅ Santuario 3D (three.js): isla diorama con luz y sombras reales, día/noche según la hora, cielo, capas de papel, mar de nubes, luciérnagas, faroles que se encienden de noche; criaturas como recortes de papel 2D que deambulan dentro de sus casillas
 - ✅ La grilla de tiles sigue mandando y sólo se ve en modo construcción (huellas y casillas válidas)
-- ✅ Santuario como lugar del mundo: isla orgánica con acantilados, patio de piedra (= casillas), árboles, arbustos, flores; humo de incienso, estandartes, hojas/pétalos que caen
-- ✅ El santuario crece en 5 etapas por rango: 荒 terreno olvidado → 鳥 torii → 森 bosque sagrado → 灯 templo de faroles → 村 aldea
-- ✅ Tope de KANJŪ visibles por etapa (4→8); el resto descansa en el almacén. Expansores 拡 de patio (+1 fila, tope 2)
+- ✅ Isla siempre básica (pasto, acantilados, rocas flotantes); la decoración la arma el jugador
+- ✅ 3 niveles de isla comprables (5×5, 7×7, 9×9) con tope de KANJŪ (4/6/8) y de objetos (12/24/40)
+- ✅ Decoración 飾 en la Tienda (camino de piedra, rocas, arbustos, flores, cercas, estandartes, bambú, árbol, altar de incienso, casita, cerezo, pagoda); cada objeto suma 和 Armonía (+1% tinta por punto, tope +60%) y se mejora
+- ✅ Vista de primer plano: tocar un KANJŪ acerca la cámara y muestra su tarjeta (Entrenar, Mimar, Ficha)
+- ✅ Almacén por categorías: KANJŪ, Objetos, Evolución (piezas) y Consumibles
 - ✅ Distribución orgánica: cada criatura nueva va a la casilla más alejada de las demás
 - ✅ Criaturas de papel con silueta por tipo 五行, ojos grandes, sombra cel y kanji con pincel
 - ✅ Arena 3D: patio de templo de noche, torii, faroles de papel, escenario de madera; ataques con proyectil del color del tipo, onda de impacto y anillo de objetivo

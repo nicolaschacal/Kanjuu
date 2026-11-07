@@ -8,29 +8,33 @@ import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn } from './help.js';
 import { openAcademy, acadDue, reviewAcademy, DAILY_GOAL } from './academy.js';
 import { openAISettings, aiStatus } from './ai.js';
 import { startTutorial, emit } from './tutorial.js';
-import { STAGES, EXT_COSTS, EXT_STAGE, stageIdx, stage, monCap, shownMons, syncGrid, COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
+import { ISLANDS, island, buyIsland, objCap, shownObjs, harmony, harmonyMult, monCap, shownMons, syncGrid, COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
 import { $, buzz, home, owned, ui, go, hud, toast, modal, floatText } from './main.js';
 import { openCreature } from './sheet.js';
 import { allDue, openDojo } from './dojo.js';
-import { webgl, mountScene, emoteAt, hopAll, poke } from './scene3d.js';
+import { webgl, mountScene, emoteAt, hopAll, poke, setFocus } from './scene3d.js';
+import { openTraining } from './sheet.js';
+import { TYPES, typeOf } from './data.js';
 
 // ---------- Santuario (grilla de tiles) ----------
-let idleT, build = false, placing = null, seenGoal = '';
+let idleT, build = false, placing = null, seenGoal = '', focusId = null;
 export function viewHome(v) { return webgl() && !new URLSearchParams(location.search).has('2d') ? viewHome3d(v) : viewHome2d(v); }
 
 // Santuario 3D: la escena dibuja la grilla; la UI (objetivo, burbujas, dock) va por encima en HTML
 function viewHome3d(v) {
-  const pend = totalPending(), canGrow = (S.ext || 0) < EXT_COSTS.length;
+  const pend = totalPending(), nextI = ISLANDS[(S.island || 0) + 1];
+  if (focusId && (build || placing || !S.creatures.some(c => c.id === focusId && c.pos))) focusId = null;
   const bubbles = placed().filter(it => pending(it) >= 8 || full(it)).map(it => `<button class="bubble-ink ${full(it) ? 'full' : ''}" data-c="${it.id}" data-anchor="${it.id}">墨<span>${pending(it)}</span></button>`).join('');
   v.innerHTML = `
   <div class="home home3d">
     <div class="stage" id="stage">
       <div class="stage-fx" aria-hidden="true"></div>
-      <div class="stage-ov">${placing || build ? '' : bubbles}</div>
-      <div class="stage-top">${placing ? '' : goalHTML()}</div>
-      ${build && canGrow ? `<button class="expand-row" id="expandRow">拡 Expansor de patio · ${EXT_COSTS[S.ext || 0]} 墨${stageIdx() < EXT_STAGE[S.ext || 0] ? ` · etapa ${STAGES[EXT_STAGE[S.ext || 0]].k}` : ''}</button>` : ''}
-      ${build ? `<div class="build-hint"><b>匠 Modo construcción</b><span>${stage().k} ${stage().name} · 空 ${tilesUsed()}/${tilesTotal()} casillas · 獣 ${shownMons()}/${monCap()} KANJŪ visibles</span></div>` : ''}
-      ${placing ? '' : ctrlHTML(pend)}
+      <div class="stage-ov">${placing || build || focusId ? '' : bubbles}</div>
+      <div class="stage-top">${placing || focusId ? '' : goalHTML()}</div>
+      ${build && nextI ? `<button class="expand-row" id="expandRow">拡 ${nextI.name} ${nextI.n}×${nextI.n} · ${nextI.cost} 墨${S.rank.lv < nextI.rank ? ` · rango ${nextI.rank}` : ''}</button>` : ''}
+      ${build ? `<div class="build-hint"><b>匠 ${island().name} ${S.cols}×${S.rows}</b><span>獣 ${shownMons()}/${monCap()} KANJŪ · 置 ${shownObjs()}/${objCap()} objetos · 和 Armonía ${Math.round(harmony())} (+${Math.round((harmonyMult() - 1) * 100)}% tinta)</span></div>` : ''}
+      ${placing || focusId ? '' : ctrlHTML(pend)}
+      ${focusId ? focusHTML(findIt(focusId)) : ''}
     </div>
     ${placing ? `<div class="place-bar">Tocá dónde colocar <b>${placing.t ? OBJS[placing.t].k : placing.k}</b><button class="btn ghost" id="cancelPlace">Cancelar</button></div>` : ''}
   </div>`;
@@ -43,7 +47,7 @@ function viewHome3d(v) {
   });
   let valid = null;
   if (placing) { const [w, h] = foot(placing); valid = []; for (let y = 0; y < S.rows; y++) for (let x = 0; x < S.cols; x++) if (fits(w, h, x, y, placing)) valid.push([x, y]); }
-  mountScene(stg, { cols: S.cols, rows: S.rows, stage: stageIdx(), items, mode: placing ? 'placing' : build ? 'build' : 'play', valid, onTap: tap3d, onCell: (x, y) => tapCell(x, y, null) });
+  mountScene(stg, { cols: S.cols, rows: S.rows, focus: focusId, items, mode: placing ? 'placing' : build ? 'build' : 'play', valid, onTap: tap3d, onCell: (x, y) => tapCell(x, y, null) });
   stg.querySelectorAll('.bubble-ink').forEach(b => b.onclick = e => { e.stopPropagation(); harvest([findIt(b.dataset.c)], b); });
   // El objetivo se muestra unos segundos y se pliega a un ícono; tocarlo lo abre de nuevo
   const gEl = stg.querySelector('.goal');
@@ -53,17 +57,40 @@ function viewHome3d(v) {
     gEl.onclick = () => gEl.classList.toggle('min');
   }
   bindDock(v);
+  if (focusId) bindFocus(stg, findIt(focusId));
   clearInterval(idleT);
   idleT = setInterval(() => {
-    if (ui.tab !== 'home' || document.hidden || build || placing) return;
+    if (ui.tab !== 'home' || document.hidden || build || placing || focusId) return;
     hopAll(.25);
     const mons = S.creatures.filter(c => c.pos && !c.away && !c.egg);
     if (mons.length > 1 && Math.random() < .35) emoteAt(mons[Math.random() * mons.length | 0].id, ['♪', '♥', '！', '…', 'ｚ', '✿'][Math.random() * 6 | 0]);
     stg.querySelectorAll('.bubble-ink').forEach(b => { const n = pending(findIt(b.dataset.c)); b.querySelector('span').textContent = n; });
   }, 2500);
 }
+// Vista de primer plano (como en Rebyters): la cámara se acerca a la criatura y aparece su tarjeta
+function focusHTML(c) {
+  const K = KANJI[c.k], t = TYPES[typeOf(c.k)];
+  return `<div class="focus-card" style="--t:${t.col}">
+    <button class="fc-x" id="fcX" aria-label="Volver a la isla">✕</button>
+    <div class="fc-top"><span class="fc-k">${c.k}</span><div class="fc-info"><b>${K.m}</b><small><span class="fc-t">${t.k} ${t.name}</span> · Nv ${c.lv}${c.stars ? ' · ' + '★'.repeat(c.stars) : ''}</small>
+      <div class="fc-bars"><span title="EXP"><i style="width:${c.exp / expNeed(c.lv) * 100}%"></i></span><span class="b" title="Ánimo"><i style="width:${c.mood * 100}%"></i></span></div></div></div>
+    <div class="fc-acts"><button class="fc-a main" id="fcTrain"><i>練</i>Entrenar</button><button class="fc-a" id="fcPet"><i>撫</i>Mimar</button><button class="fc-a" id="fcSheet"><i>詳</i>Ficha</button></div>
+  </div>`;
+}
+function bindFocus(stg, c) {
+  $('#fcX', stg).onclick = () => { focusId = null; setFocus(null); go(); };
+  $('#fcTrain', stg).onclick = () => openTraining(c, { close() {} });
+  $('#fcSheet', stg).onclick = () => openCreature(c.id);
+  $('#fcPet', stg).onclick = () => {
+    c.mood = Math.min(1, c.mood + .12); c.bond = (c.bond || 0) + 1; bump('pet'); giveExp(c, 1); emit('pet');
+    poke(c.id); emoteAt(c.id, '♥'); buzz(6); save();
+    stg.querySelector('.fc-bars .b i').style.width = c.mood * 100 + '%';
+  };
+}
+export const unfocus = () => { if (focusId) { focusId = null; setFocus(null); } };
 function tap3d(id) {
-  const it = findIt(id); if (!it) return;
+  const it = findIt(id);
+  if (!it) { if (focusId) { focusId = null; setFocus(null); go(); } return; }
   buzz(8);
   if (build) return itemMenu(it);
   if (it.t) return toast(`${OBJS[it.t].k} ${OBJS[it.t].name} Nv${it.lv} · ${OBJS[it.t].desc}`);
@@ -74,7 +101,7 @@ function tap3d(id) {
     else { emoteAt(id, it.cracks === 1 ? '…' : '！！'); save(); }
     return;
   }
-  setTimeout(() => openCreature(it.id), 220);
+  focusId = it.id; setFocus(it.id); emit('sheet'); go();
 }
 function dockHTML(pend) {
   return `<div class="dock">
@@ -90,7 +117,7 @@ function ctrlHTML(pend) {
   const due = allDue();
   return `<div class="sc-ctrl">
       <button class="fab ${build ? 'on' : ''}" id="build" aria-label="Construir"><i>${build ? '✓' : '匠'}</i><span>${build ? 'Listo' : 'Construir'}</span></button>
-      <button class="fab" id="store" aria-label="Almacén"><i>蔵</i><span>${stored().length}/${S.storeCap}</span>${S.gate.length ? `<b>${S.gate.length}</b>` : ''}</button>
+      <button class="fab" id="store" aria-label="Almacén"><i>蔵</i><span>Almacén</span>${S.gate.length ? `<b>${S.gate.length}</b>` : ''}</button>
     </div>
     ${build ? '' : `<button class="collect-pill ${pend ? 'ready' : ''}" id="collectAll"><i>墨</i><span>${pend ? `+${pend}` : `${totalRate()}/h`}</span></button>
     <button class="review-pill ${due ? 'hot' : ''}" id="dojo"><i>復</i>${due ? `Repasar · ${due}` : 'Repaso al día'}</button>`}`;
@@ -98,8 +125,8 @@ function ctrlHTML(pend) {
 function bindDock(v) {
   if (placing) { $('#cancelPlace', v).onclick = () => { placing = null; go(); }; }
   else {
-    $('#build', v).onclick = () => { build = !build; buzz(6); go(); };
-    $('#store', v).onclick = openStorage;
+    $('#build', v) && ($('#build', v).onclick = () => { build = !build; focusId = null; setFocus(null); buzz(6); go(); });
+    $('#store', v) && ($('#store', v).onclick = () => openStorage());
     $('#collectAll', v) && ($('#collectAll', v).onclick = e => harvest(placed(), e.currentTarget));
     $('#dojo', v) && ($('#dojo', v).onclick = openDojo);
   }
@@ -133,8 +160,8 @@ function viewHome2d(v) {
   grid.querySelectorAll('.bubble-ink').forEach(b => b.onclick = e => { e.stopPropagation(); harvest([findIt(b.dataset.c)], b); });
   if (placing) { $('#cancelPlace', v).onclick = () => { placing = null; go(); }; markValid(grid); }
   else {
-    $('#build', v).onclick = () => { build = !build; buzz(6); go(); };
-    $('#store', v).onclick = openStorage;
+    $('#build', v) && ($('#build', v).onclick = () => { build = !build; focusId = null; setFocus(null); buzz(6); go(); });
+    $('#store', v) && ($('#store', v).onclick = () => openStorage());
     $('#collectAll', v) && ($('#collectAll', v).onclick = e => harvest(placed(), e.currentTarget));
     $('#dojo', v) && ($('#dojo', v).onclick = openDojo);
   }
@@ -194,7 +221,7 @@ export function itemMenu(it) {
     <p class="muted">${isObj ? d.desc : `Produce ${rate(it).toFixed(1)} 墨/h aquí. Los objetos vecinos lo potencian.`}</p>
     <div class="menu-acts">
       <button class="btn ghost" id="mv">✥ Mover</button>
-      <button class="btn ghost" id="st" ${storeFree() <= 0 || it.away ? 'disabled' : ''}>蔵 Guardar</button>
+      <button class="btn ghost" id="st" ${(!isObj && storeFree() <= 0) || it.away ? 'disabled' : ''}>蔵 Guardar</button>
       ${isObj && it.lv < OBJ_MAX ? `<button class="btn ok" id="up" ${S.ink < upCost(it) ? 'disabled' : ''}>⬆ Mejorar · ${upCost(it)} 墨</button>` : ''}
       ${isObj ? `<button class="btn ghost" id="sell">Vender · +${sellValue(it)} 墨</button>` : ''}
     </div>`);
@@ -212,37 +239,55 @@ export function tapCell(x, y, el) {
   if (!placing) return;
   const [w, h] = foot(placing);
   if (!fits(w, h, x, y, placing)) { if (el) { el.classList.add('no'); setTimeout(() => el.classList.remove('no'), 300); } else toast('No entra ahí · elegí una casilla marcada'); buzz(30); return; }
-  if (!placing.t && !placing.pos && shownMons() >= monCap()) { toast(`獣 Ya hay ${monCap()} KANJŪ en el santuario · guardá uno o hacé crecer el santuario`); buzz(30); return; }
+  if (!placing.pos && (placing.t ? shownObjs() >= objCap() : shownMons() >= monCap())) { toast(placing.t ? `置 La isla ya tiene ${objCap()} objetos · ampliala en 匠` : `獣 La isla ya tiene ${monCap()} KANJŪ · guardá uno o ampliala`); buzz(30); return; }
   const it = placing; it.pos = { x, y }; it.prodAt ??= Date.now(); placing = null; buzz(12); go();
   const near = neighbors(it).map(o => OBJS[o.t].k).join(' ');
   if (!it.t && near) toast(`${it.k} recibe el aura de ${near}`);
 }
 export function buyRow() {
-  const i = S.ext || 0, cost = EXT_COSTS[i], need = STAGES[EXT_STAGE[i]];
-  if (cost == null) return toast('El patio ya tiene todos sus expansores');
-  if (stageIdx() < EXT_STAGE[i]) return toast(`Se habilita cuando el santuario llegue a ${need.k} ${need.name} (rango ${need.rank})`);
-  if (S.ink < cost) return toast(`Te faltan ${cost - S.ink} 墨`);
-  S.ink -= cost; S.ext = i + 1; syncGrid(); buzz(20); toast(`拡 ¡Patio ampliado! +${S.cols} casillas`); go();
+  const nx = ISLANDS[(S.island || 0) + 1], r = buyIsland();
+  if (r === 'max') return toast('Tu isla ya es la más grande');
+  if (r === 'rank') return toast(`${nx.name}: necesitás rango ${nx.rank}`);
+  if (r === 'ink') return toast(`Te faltan ${nx.cost - S.ink} 墨 para la ${nx.name}`);
+  buzz([20, 60, 20]); hud(); toast(`拡 ¡${island().name} ${S.cols}×${S.rows}! Más lugar para KANJŪ y objetos`); go();
 }
-export function openStorage() {
-  const list = stored();
-  const m = modal(`<h3>蔵 Almacén <small class="muted">${list.length}/${S.storeCap}</small></h3>
-    ${Object.keys(PIECES).some(p => S.pieces[p]) ? `<div class="pc-inv">部品 ${Object.keys(PIECES).filter(p => S.pieces[p]).map(p => `<span>${p}<i>×${S.pieces[p]}</i></span>`).join('')}<small>Las piezas no ocupan lugar · se equipan desde la ficha</small></div>` : ''}
-    <p class="muted">Lo guardado no ocupa casillas ni produce tinta. Las criaturas guardadas pueden fusionarse y despertarse.</p>
-    ${S.gate.length ? `<h4>門 En la puerta (almacén lleno)</h4>${S.gate.map((g, i) => `<div class="shop-row"><div class="gate-mon">${creatureSVG(g.k, { gold: g.gold })}</div><div><b>${g.k} · ${KANJI[g.k].m}</b></div><button class="btn ok" data-gin="${i}" ${storeFree() > 0 || findSpot(...foot({ k: g.k })) ? '' : 'disabled'}>Recibir</button><button class="btn ghost" data-gout="${i}">+${6 + kLevel(g.k) * 4}墨</button></div>`).join('')}` : ''}
-    <div class="store-grid">${list.map(it => `<button class="st-it" data-s="${it.id}">${it.t ? objSVG(it, OBJS[it.t]) : creatureSVG(it.k, { egg: it.egg, gold: it.gold })}<small>${it.t ? `${OBJS[it.t].name} Nv${it.lv}` : `${it.k} Lv${it.lv}${it.stars ? ' ★' + it.stars : ''}`}</small><em>${foot(it).join('×')}</em></button>`).join('') || '<p class="muted">Vacío</p>'}</div>
-    ${STORE_COSTS[(S.storeCap - 10) / 5] ? `<button class="btn ghost wide" id="moreStore">蔵 +5 espacios de almacén · ${STORE_COSTS[(S.storeCap - 10) / 5]} 墨</button>` : ''}`);
+// Almacén por categorías: KANJŪ, objetos (decoración y edificios), evolución (piezas) y consumibles
+let storeTab = 'mon';
+export function openStorage(tab) {
+  if (tab) storeTab = tab;
+  const mons = S.creatures.filter(c => !c.pos && !c.away), objs = S.objs.filter(o => !o.pos);
+  const pcs = Object.keys(PIECES).filter(p => S.pieces[p]), cons = CONSUMABLES.filter(c => S.items[c.id]);
+  const tabs = [['mon', '獣', 'KANJŪ', mons.length + S.gate.length], ['obj', '飾', 'Objetos', objs.length], ['evo', '部', 'Evolución', pcs.reduce((a, p) => a + S.pieces[p], 0)], ['con', '品', 'Consumibles', cons.reduce((a, c) => a + S.items[c.id], 0)]];
+  let body = '';
+  if (storeTab === 'mon') body = `<p class="muted">Descansan aquí: no ocupan la isla ni producen tinta. ${mons.length}/${S.storeCap} lugares.</p>
+    ${S.gate.length ? `<h4>門 Esperando en la puerta</h4>${S.gate.map((g, i) => `<div class="shop-row"><div class="gate-mon">${creatureSVG(g.k, { gold: g.gold })}</div><div><b>${g.k} · ${KANJI[g.k].m}</b></div><button class="btn ok" data-gin="${i}" ${storeFree() > 0 ? '' : 'disabled'}>Recibir</button><button class="btn ghost" data-gout="${i}">+${6 + kLevel(g.k) * 4}墨</button></div>`).join('')}` : ''}
+    <div class="store-grid">${mons.map(c => `<button class="st-it" data-s="${c.id}">${creatureSVG(c.k, { egg: c.egg, gold: c.gold })}<small>${c.k} Nv${c.lv}${c.stars ? ' ★' + c.stars : ''}</small><em>${foot(c).join('×')}</em></button>`).join('') || '<p class="muted">Ningún KANJŪ descansando.</p>'}</div>
+    ${STORE_COSTS[(S.storeCap - 10) / 5] ? `<button class="btn ghost wide" id="moreStore">蔵 +5 lugares · ${STORE_COSTS[(S.storeCap - 10) / 5]} 墨</button>` : ''}`;
+  if (storeTab === 'obj') body = `<p class="muted">Decoración y edificios guardados. Tocá uno para colocarlo en la isla (${shownObjs()}/${objCap()} colocados).</p>
+    <div class="store-grid">${objs.map(o => `<button class="st-it" data-s="${o.id}"><i class="st-k">${OBJS[o.t].k}</i><small>${OBJS[o.t].name}</small><em>Nv${o.lv} · ${OBJS[o.t].w}×${OBJS[o.t].h}</em></button>`).join('') || '<p class="muted">No hay objetos guardados. Comprá decoración en 店 Tienda.</p>'}</div>`;
+  if (storeTab === 'evo') body = `<p class="muted">Piezas 部品: se equipan desde la ficha de una criatura para evolucionar o se suman en la fusión.</p>
+    <div class="store-grid">${pcs.map(p => `<div class="st-it"><i class="st-k">${p}</i><small>${PIECES[p].name}</small><em>×${S.pieces[p]}</em></div>`).join('') || '<p class="muted">Sin piezas. Salen de viajes, cofres y la Tienda.</p>'}</div>`;
+  if (storeTab === 'con') body = `<p class="muted">Objetos de un solo uso.</p>
+    ${cons.map(c => `<div class="shop-row"><i>${c.k}</i><div><b>${c.name} · ×${S.items[c.id]}</b><small>${c.use}</small></div></div>`).join('') || '<p class="muted">No tenés consumibles. Están en 店 Tienda.</p>'}`;
+  const m = modal(`<h3>蔵 Almacén</h3>
+    <div class="st-tabs">${tabs.map(([id, k, l, n]) => `<button class="${storeTab === id ? 'on' : ''}" data-tab-s="${id}"><i>${k}</i><span>${l}</span>${n ? `<b>${n}</b>` : ''}</button>`).join('')}</div>
+    <div class="st-body">${body}</div>`);
+  m.querySelectorAll('[data-tab-s]').forEach(b => b.onclick = () => { m.close(); openStorage(b.dataset.tabS); });
   m.querySelectorAll('[data-s]').forEach(b => b.onclick = () => storedMenu(findIt(b.dataset.s), m));
   m.querySelectorAll('[data-gin]').forEach(b => b.onclick = () => { const g = S.gate.splice(+b.dataset.gin, 1)[0]; arrive(g.k, { gold: g.gold }); m.close(); go(); openStorage(); });
   m.querySelectorAll('[data-gout]').forEach(b => b.onclick = () => { const g = S.gate.splice(+b.dataset.gout, 1)[0]; S.ink += 6 + kLevel(g.k) * 4; m.close(); go(); openStorage(); });
   $('#moreStore', m) && ($('#moreStore', m).onclick = () => { const c = STORE_COSTS[(S.storeCap - 10) / 5]; if (S.ink < c) return toast(`Te faltan ${c - S.ink} 墨`); S.ink -= c; S.storeCap += 5; m.close(); hud(); openStorage(); });
 }
+const CONSUMABLES = [
+  { id: 'scroll', k: '巻', name: 'Pergamino de saber', use: '+60 EXP: usalo desde la ficha de una criatura' },
+  { id: 'wind', k: '風', name: 'Viento veloz', use: 'Termina un viaje al instante: usalo en 旅 Viajes' },
+];
 export function storedMenu(it, parent) {
   const isObj = !!it.t;
   const m = modal(`<h3>${isObj ? `${OBJS[it.t].k} ${OBJS[it.t].name}` : `${it.k} · ${KANJI[it.k].m}`}</h3><div class="menu-acts">
-    <button class="btn ok" id="put" ${findSpot(...foot(it)) && (it.t || shownMons() < monCap()) ? '' : 'disabled'}>✥ Colocar en el santuario</button>
+    <button class="btn ok" id="put" ${findSpot(...foot(it)) && (it.t ? shownObjs() < objCap() : shownMons() < monCap()) ? '' : 'disabled'}>✥ Colocar en la isla</button>
     ${isObj ? `<button class="btn ghost" id="sell">Vender · +${sellValue(it)} 墨</button>` : `<button class="btn ghost" id="see">Ver ficha</button><button class="btn ghost" id="free" ${S.creatures.filter(c => !c.egg).length <= 1 ? 'disabled' : ''}>放 Liberar</button>`}</div>
-    ${!it.t && shownMons() >= monCap() ? `<p class="r">El santuario ya tiene ${monCap()} KANJŪ visibles. Guardá uno o hacelo crecer subiendo de rango.</p>` : findSpot(...foot(it)) ? '' : '<p class="r">No hay lugar libre de ese tamaño. Usá un expansor o guardá algo.</p>'}`);
+    ${!it.t && shownMons() >= monCap() ? `<p class="r">La isla ya tiene ${monCap()} KANJŪ. Guardá uno o ampliá la isla.</p>` : it.t && shownObjs() >= objCap() ? `<p class="r">La isla ya tiene ${objCap()} objetos. Guardá uno o ampliá la isla.</p>` : findSpot(...foot(it)) ? '' : '<p class="r">No hay lugar libre de ese tamaño. Ampliá la isla o guardá algo.</p>'}`);
   $('#put', m).onclick = () => { m.close(); parent.close(); placing = it; ui.tab = 'home'; go(); };
   $('#sell', m) && ($('#sell', m).onclick = () => { S.ink += sellValue(it); S.objs = S.objs.filter(o => o !== it); m.close(); parent.close(); go(); openStorage(); });
   $('#see', m) && ($('#see', m).onclick = () => { m.close(); parent.close(); openCreature(it.id); });
@@ -252,7 +297,7 @@ export function rankUp(ups) {
   const r = ups[ups.length - 1];
   const m = modal(`<div class="result rank-up"><div class="rank-badge">位<b>${r}</b></div><h3>¡Rango ${r}!</h3>
     <p>+${ups.reduce((a, l) => a + 20 + l * 10, 0)} 墨 · +${ups.length} 札</p>
-    ${STAGES.some(st => st.rank === r) ? `<p class="g">⛩ ¡El santuario creció! ${STAGES.find(st => st.rank === r).k} ${STAGES.find(st => st.rank === r).name}: ${STAGES.find(st => st.rank === r).desc}</p>` : ''}
+    ${ISLANDS.some(i => i.rank === r) ? `<p class="g">拡 Ya podés ampliar a la ${ISLANDS.find(i => i.rank === r).name} desde 匠 Construir</p>` : ''}
     ${Object.values(OBJS).filter(o => o.rank === r).map(o => `<p class="g">Nuevo objeto en la tienda: ${o.k} ${o.name}</p>`).join('')}
     <button class="btn ok wide">¡Genial!</button></div>`);
   buzz([20, 60, 20]); $('.btn', m).onclick = () => m.close();
