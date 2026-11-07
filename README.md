@@ -29,8 +29,13 @@ js/games.js     minijuegos
 js/main.js      pantallas, santuario, UI
 ```
 
-## Próximos pasos sugeridos
-Arte definitivo por criatura, sonido/háptica, más kanji (datos KanjiVG para orden de trazos), misiones semanales, persistencia en la nube y empaquetado nativo (Capacitor).
+## Aprendizaje
+Dojo con repetición espaciada (Leitner), recuperación activa, intercalado de tipos de pregunta, mnemotecnias por kanji (y propias del jugador), audio japonés y descomposición en componentes. Evolucionar exige haber acertado el kanji al menos una vez.
+
+## Economía y espacio
+Cada criatura ocupa tantos espacios como su nivel KANJŪ. La tienda vende ampliaciones, objetos y decoraciones con tinta 墨. Si el santuario está lleno, las nuevas criaturas esperan en la puerta.
+
+Ver `ROADMAP.md` para el plan hacia las tiendas.
 
 ## Cuentas y nube
 - Vercel Functions en `api/` (`auth.js`, `save.js`) + Postgres en Neon (tablas `users`, `saves`).

@@ -1,32 +1,61 @@
-import { KANJI, MAX_LV, roots } from './data.js';
+import { KANJI, MAX_LV, roots, size, BASE_CAP, CAP_STEP, SRS_HOURS } from './data.js';
 import { pushSoon } from './cloud.js';
 
 const KEY = 'kanjuu.save.v1';
 const today = () => new Date().toISOString().slice(0, 10);
 const uid = () => Math.random().toString(36).slice(2, 9);
 
-export let S = load();
+export let S = norm(load());
 export const loadedAt = S.savedAt || 0;
 
 function fresh() {
-  return { creatures: [], dex: {}, ink: 10, deco: [], log: [], stats: { fusions: 0, evolutions: 0, rebirths: 0, trainings: 0 }, daily: { date: today(), p: {}, claimed: [] } };
+  return { creatures: [], dex: {}, ink: 20, deco: [], log: [], stats: { fusions: 0, evolutions: 0, rebirths: 0, trainings: 0 }, daily: { date: today(), p: {}, claimed: [] } };
 }
+// Completa campos nuevos en partidas viejas
+export function norm(s) {
+  s.cap ??= BASE_CAP; s.gate ??= []; s.srs ??= {}; s.ach ??= []; s.items ??= {};
+  s.weekly ??= { week: weekKey(), p: {}, claimed: [] };
+  Object.keys(s.dex || {}).forEach(k => s.dex[k].owned && (s.srs[k] ??= { box: 0, due: 0, ok: 0, miss: 0 }));
+  return s;
+}
+export function weekKey() { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return d.toISOString().slice(0, 10); }
 function load() {
   try { const s = JSON.parse(localStorage.getItem(KEY)); if (s?.creatures) return s; } catch {}
   return fresh();
 }
 export function save() { S.savedAt = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} pushSoon(S); }
 // Reemplaza la partida actual (p. ej. con la de la nube) sin cambiar la referencia
-export function replace(data) { Object.keys(S).forEach(k => delete S[k]); Object.assign(S, data); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} }
-export function reset() { S = fresh(); save(); location.reload(); }
+export function replace(data) { Object.keys(S).forEach(k => delete S[k]); Object.assign(S, norm(data)); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} }
+export function reset() { replace(fresh()); save(); location.reload(); }
 
 export function rollDaily() {
   if (S.daily.date !== today()) S.daily = { date: today(), p: {}, claimed: [] };
+  if (S.weekly.week !== weekKey()) S.weekly = { week: weekKey(), p: {}, claimed: [] };
 }
-export function bump(key, n = 1) { rollDaily(); S.daily.p[key] = (S.daily.p[key] || 0) + n; }
+export function bump(key, n = 1) { rollDaily(); S.daily.p[key] = (S.daily.p[key] || 0) + n; S.weekly.p[key] = (S.weekly.p[key] || 0) + n; }
+
+// --- Espacio del santuario ---
+export const used = () => S.creatures.reduce((a, c) => a + (c.egg ? 1 : size(c.k)), 0);
+export const freeSpace = () => S.cap - used();
+// Llega una criatura nueva: si no hay espacio espera en la puerta
+export function recruit(k, extra) {
+  if (freeSpace() >= size(k)) return { c: addCreature(k, extra) };
+  see(k); S.gate.push(k); return { gate: true };
+}
+
+// --- Repetición espaciada ---
+export function srsAdd(k) { S.srs[k] ??= { box: 0, due: Date.now(), ok: 0, miss: 0 }; }
+export function grade(k, ok) {
+  srsAdd(k); const r = S.srs[k];
+  if (ok) { r.ok++; r.box = Math.min(SRS_HOURS.length - 1, r.box + 1); }
+  else { r.miss++; r.box = Math.max(0, r.box - 2); }
+  r.due = Date.now() + SRS_HOURS[r.box] * 36e5;
+}
+export const dueList = () => Object.keys(S.srs).filter(k => S.srs[k].due <= Date.now()).sort((a, b) => S.srs[a].due - S.srs[b].due);
+export const mastery = k => S.srs[k]?.box || 0;
 
 export function see(k) { S.dex[k] ??= { seen: true }; }
-export function own(k) { see(k); S.dex[k].owned = true; }
+export function own(k) { const nw = !S.dex[k]?.owned; see(k); S.dex[k].owned = true; srsAdd(k); if (nw && S.creatures.length) bump('disc'); }
 
 export function addCreature(k, extra = {}) {
   const c = { id: uid(), k, lv: 1, exp: 0, bond: 0, mood: .7, gen: 0, know: 0, away: null, hist: [k], ...extra };
@@ -47,8 +76,8 @@ export function giveExp(c, amount) {
   return ups;
 }
 
-export function evolve(c, to) {
-  c.k = to; c.lv = 1; c.exp = 0; c.hist.push(to); own(to); S.stats.evolutions++;
+export function evolve(c, to) { if (freeSpace() < size(to) - size(c.k)) return false;
+  c.k = to; c.lv = 1; c.exp = 0; c.hist.push(to); own(to); S.stats.evolutions++; return true;
 }
 
 // Fusión: consume las criaturas y crea el carácter resultante
@@ -64,6 +93,11 @@ export function fuse(ids, to) {
 }
 
 // Renacimiento: vuelve a su componente fundamental con un legado permanente
+// Liberar: la criatura vuelve a la naturaleza y deja tinta
+export function release(c) {
+  const ink = 4 + size(c.k) * 6 + c.lv;
+  S.creatures = S.creatures.filter(x => x !== c); S.ink += ink; return ink;
+}
 export function rebirth(c) {
   const root = roots(c.k)[0];
   S.log.unshift({ k: c.k, gen: c.gen, date: today() });

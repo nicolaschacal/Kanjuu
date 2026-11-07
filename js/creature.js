@@ -27,6 +27,10 @@ export function creatureSVG(k, { mood = 1, egg = false } = {}) {
   if (count('heart')) front += `<path d="M${cx - rx * .6} ${top + 10} q-14 -12 -4 -18 q6 4 8 12Z M${cx + rx * .6} ${top + 10} q14 -12 4 -18 q-6 4 -8 12Z" fill="#ff98bf" stroke="#c9497b" stroke-width="2"/>`;
   if (count('void')) front += `<ellipse cx="${cx}" cy="${top - 10}" rx="16" ry="4" fill="none" stroke="#e0b84a" stroke-width="3"/>`;
   if (count('person')) front += `<path class="kj-wave" style="transform-origin:${cx + rx - 4}px ${cy + 4}px" d="M${cx + rx - 4} ${cy + 4} q12 -4 14 -14" stroke="${ELEMENTS.person[1]}" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M${cx - rx + 4} ${cy + 4} q-12 4 -12 14" stroke="${ELEMENTS.person[1]}" stroke-width="6" fill="none" stroke-linecap="round"/>`;
+  if (count('voice')) front += `<path d="M${cx - rx + 2} ${cy - 4} q-14 -2 -16 -14 M${cx - rx + 2} ${cy + 2} q-16 2 -20 -6" stroke="${ELEMENTS.voice[1]}" stroke-width="3" fill="none" stroke-linecap="round" class="kj-flicker" style="transform-origin:${cx - rx}px ${cy}px"/>`;
+  if (count('metal')) front += `<path d="M${cx} ${top + 2} v-16 M${cx - 8} ${top - 8} h16" stroke="${ELEMENTS.metal[1]}" stroke-width="4" stroke-linecap="round"/><circle cx="${cx}" cy="${top - 16}" r="3.5" fill="#fff" stroke="${ELEMENTS.metal[1]}" stroke-width="2"/>`;
+  if (count('eye')) front += `<ellipse cx="${cx}" cy="${top + 9}" rx="7" ry="5" fill="#fff" stroke="${ELEMENTS.eye[1]}" stroke-width="2"/><circle class="kj-look" cx="${cx}" cy="${top + 9}" r="2.6" fill="#4a2a7a"/>`;
+  if (count('life')) front += `<g class="kj-sway" style="transform-origin:${cx - rx * .5}px ${top + 4}px"><path d="M${cx - rx * .5} ${top + 6} q-2 -10 4 -14" stroke="#5c9a24" stroke-width="3" fill="none"/><circle cx="${cx - rx * .5 + 5}" cy="${top - 10}" r="5" fill="#fff38a" stroke="#c9a020" stroke-width="2"/></g>`;
   if (d >= 2) front += `<g fill="#fff6c9" stroke="${dark}" stroke-width="1.5">${[-14, 0, 14].map(o => `<path d="M${cx + o} ${top - 1} l4 -8 l4 8Z" transform="translate(-4 0)"/>`).join('')}</g>`;
 
   const happy = mood > .6, sad = mood < .3;
