@@ -1,8 +1,10 @@
 import { KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, MAX_LV, reads } from './data.js';
-import { creatureSVG } from './creature.js';
-import { S, loadedAt, save, replace, reset, used, freeSpace, recruit, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
+import { creatureSVG, objSVG } from './creature.js';
+import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
 import { GAMES, hasWord, hasParts, play, review, storyHTML, speak } from './games.js';
 import * as cloud from './cloud.js';
+
+import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const app = $('#app');
@@ -31,7 +33,10 @@ const ACHIEVEMENTS = [
   ['森', 'Guardián del bosque', () => S.dex['森']?.owned, 'Obtén 森', 30],
   ['学', 'Estudioso', () => Object.values(S.srs).filter(r => r.box >= 3).length >= 10, '10 kanji con maestría 3', 60],
   ['修', 'Disciplina', () => Object.values(S.srs).reduce((a, r) => a + r.ok, 0) >= 100, '100 repasos acertados', 60],
-  ['広', 'Arquitecto', () => S.cap > 6, 'Amplía el santuario', 20],
+  ['広', 'Arquitecto', () => S.rows > 3, 'Expande el terreno', 30],
+  ['召', 'Invocador', () => (S.stats.pulls || 0) >= 10, 'Invoca 10 veces', 40],
+  ['富', 'Mercader de tinta', () => (S.stats.collected || 0) >= 1000, 'Recoge 1000 墨 producidos', 80],
+  ['覚', 'Despertar', () => S.creatures.some(c => c.stars >= 1), 'Despierta una estrella', 40],
   ['半', 'Medio atlas', () => owned() >= Object.keys(KANJI).length / 2, 'Llena la mitad del atlas', 100],
   ['全', 'Atlas completo', () => owned() >= Object.keys(KANJI).length, 'Llena todo el atlas', 300],
 ];
@@ -44,7 +49,7 @@ function shell() {
   app.innerHTML = `
   <header class="hud">
     <div class="pill ink">墨 <b id="ink">${S.ink}</b></div>
-    <div class="title">KANJ<span>Ū</span></div>
+    <button class="rank" id="rankBtn"><span>位${S.rank.lv}</span><i><b id="rankBar" style="width:${S.rank.xp / rankNeed(S.rank.lv) * 100}%"></b></i></button>
     <div class="hud-r"><button class="pill quest" id="questBtn">任 <b id="questN"></b></button><button class="pill acct ${cloud.user ? 'in' : ''}" id="acctBtn" aria-label="Cuenta">我</button></div>
   </header>
   <main id="view"></main>
@@ -54,6 +59,7 @@ function shell() {
   app.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { tab = b.dataset.tab; buzz(5); go(); });
   $('#questBtn').onclick = openQuests;
   $('#acctBtn').onclick = openAccount;
+  $('#rankBtn').onclick = () => toast(`位 Rango de guardián ${S.rank.lv} · ${S.rank.xp}/${rankNeed(S.rank.lv)} · subís entrenando, repasando, recogiendo tinta y descubriendo kanji`);
   go();
 }
 function go() {
@@ -64,6 +70,7 @@ function go() {
 }
 function hud() {
   $('#ink').textContent = S.ink;
+  const rb = $('#rankBar'); if (rb) { rb.style.width = S.rank.xp / rankNeed(S.rank.lv) * 100 + '%'; rb.parentNode.previousElementSibling.textContent = '位' + S.rank.lv; }
   rollDaily();
   const ready = MISSIONS.filter(m => (S.daily.p[m.id] || 0) >= m.goal && !S.daily.claimed.includes(m.id)).length
     + WEEKLY.filter(m => (S.weekly.p[m.id] || 0) >= m.goal && !S.weekly.claimed.includes(m.id)).length;
@@ -75,8 +82,9 @@ function hud() {
   save();
 }
 function toast(msg) {
+  const box = document.getElementById('toasts') || Object.assign(document.body.appendChild(document.createElement('div')), { id: 'toasts' });
   const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = msg;
-  document.body.append(t); setTimeout(() => t.remove(), 2400);
+  box.append(t); while (box.children.length > 3) box.firstChild.remove(); setTimeout(() => t.remove(), 2600);
 }
 function modal(html, cls = '') {
   const m = document.createElement('div'); m.className = 'modal ' + cls;
@@ -92,77 +100,156 @@ function floatText(el, txt, cls = '') {
   document.body.append(f); setTimeout(() => f.remove(), 1000);
 }
 
-// ---------- Santuario ----------
-let wanderT;
+// ---------- Santuario (grilla de tiles) ----------
+let idleT, build = false, placing = null;
 function viewHome(v) {
-  const d = S.deco;
+  const R = S.rows, pend = totalPending();
   v.innerHTML = `
-  <div class="scene">
-    <div class="sky"><div class="sun-disc"></div><div class="cloud c1"></div><div class="cloud c2"></div></div>
-    <div class="hill h1"></div><div class="hill h2"></div>
-    <div class="ground"></div>
-    ${d.includes('gate') ? '<div class="deco torii"><i></i><b></b></div>' : ''}
-    ${d.includes('pond') ? '<div class="deco koi"></div>' : ''}
-    ${d.includes('lantern') ? '<div class="deco lantern"><i></i></div>' : ''}
-    <div class="grass g1"></div><div class="grass g2"></div><div class="grass g3"></div>
-    <div id="mons"></div>
-    ${goalHTML()}
-    <div class="space ${freeSpace() <= 0 ? 'full' : ''}" id="space">空 ${used()}/${S.cap}</div>
-    ${S.gate.length ? `<button class="gate-note" id="gate">門 ${S.gate.length} esperando en la puerta</button>` : ''}
-    ${S.creatures.some(c => c.away) ? `<div class="away-note">旅 ${S.creatures.filter(c => c.away).length} de viaje</div>` : ''}
-    <button class="dojo-btn ${dueList().length ? 'due' : ''}" id="dojo"><i>修</i><span>Dojo</span>${dueList().length ? `<b>${dueList().length}</b>` : ''}</button>
+  <div class="home">
+    <div class="home-scroll">
+      <div class="sky-band"><div class="sun-disc"></div><div class="cloud c1"></div><div class="cloud c2"></div><div class="hill h1"></div><div class="hill h2"></div>${goalHTML()}</div>
+      <div class="grid ${build ? 'build' : ''} ${placing ? 'placing' : ''}" style="--rows:${R}" id="grid">
+        ${build || placing ? Array.from({ length: COLS * R }, (_, i) => `<i class="cell" data-x="${i % COLS}" data-y="${i / COLS | 0}"></i>`).join('') : ''}
+        ${placed().map(itemHTML).join('')}
+      </div>
+      ${S.rows < BASE_ROWS + ROW_COSTS.length ? `<button class="expand-row" id="expandRow">＋ Expandir terreno · ${ROW_COSTS[S.rows - BASE_ROWS]} 墨 · Rango ${ROW_RANK[S.rows - BASE_ROWS]}</button>` : ''}
+    </div>
+    ${placing ? `<div class="place-bar">Tocá dónde colocar <b>${placing.t ? OBJS[placing.t].k : placing.k}</b><button class="btn ghost" id="cancelPlace">Cancelar</button></div>` : `
+    <div class="dock">
+      <button class="dk ${tilesUsed() >= tilesTotal() ? 'full' : ''}" id="build"><i>${build ? '✓' : '匠'}</i><span>${build ? 'Listo' : 'Construir'}</span></button>
+      <button class="dk" id="store"><i>蔵</i><span>${stored().length}/${S.storeCap}</span>${S.gate.length ? `<b>${S.gate.length}</b>` : ''}</button>
+      <button class="dk big ${pend ? 'ready' : ''}" id="collectAll"><i>収</i><span>${pend ? `+${pend} 墨` : `${totalRate()}/h`}</span></button>
+      <button class="dk" id="tiles"><i>空</i><span>${tilesUsed()}/${tilesTotal()}</span></button>
+      <button class="dk ${dueList().length ? 'ready' : ''}" id="dojo"><i>修</i><span>Dojo</span>${dueList().length ? `<b>${dueList().length}</b>` : ''}</button>
+    </div>`}
   </div>`;
-  const box = $('#mons', v);
-  home().forEach((c, i) => {
-    const el = document.createElement('button');
-    el.className = 'mon' + (c.egg ? ' egg' : ''); el.dataset.id = c.id;
-    el.style.setProperty('--d', 0.9 + depth(c.k) * .12);
-    el.innerHTML = `<div class="flip">${creatureSVG(c.k, { mood: c.mood, egg: c.egg })}</div><div class="tag">${c.egg ? '¿?' : 'Lv' + c.lv}</div>`;
-    place(el, 15 + (i * 23) % 70, 58 + (i * 13) % 24);
-    el.onclick = () => tapMon(c, el);
-    box.append(el);
-  });
-  $('#space', v).onclick = () => { tab = 'shop'; go(); };
-  $('#dojo', v).onclick = openDojo;
-  if (S.gate.length) $('#gate', v).onclick = openGate;
-  clearInterval(wanderT);
-  wanderT = setInterval(() => {
-    if (tab !== 'home' || document.hidden) return;
-    const els = [...box.children];
-    els.forEach(el => { if (Math.random() < .45 && !el.classList.contains('egg')) wander(el); });
-    if (els.length > 1 && Math.random() < .3) {
-      const a = els[Math.random() * els.length | 0];
-      emote(a, ['♪', '♥', '！', '…', 'ｚ', '✿'][Math.random() * 6 | 0]);
-    }
-  }, 2200);
+  const grid = $('#grid', v);
+  grid.querySelectorAll('[data-it]').forEach(el => el.onclick = e => tapItem(el.dataset.it, el, e));
+  grid.querySelectorAll('.cell').forEach(el => el.onclick = () => tapCell(+el.dataset.x, +el.dataset.y, el));
+  grid.querySelectorAll('.bubble-ink').forEach(b => b.onclick = e => { e.stopPropagation(); harvest([findIt(b.dataset.c)], b); });
+  if (placing) { $('#cancelPlace', v).onclick = () => { placing = null; go(); }; markValid(grid); }
+  else {
+    $('#build', v).onclick = () => { build = !build; buzz(6); go(); };
+    $('#store', v).onclick = openStorage;
+    $('#collectAll', v).onclick = e => harvest(placed(), e.currentTarget);
+    $('#tiles', v).onclick = () => toast(`空 ${tilesUsed()} de ${tilesTotal()} casillas ocupadas · Nivel 1 ocupa 1, nivel 2 ocupa 2×1, nivel 3 ocupa 2×2`);
+    $('#dojo', v).onclick = openDojo;
+  }
+  $('#expandRow', v) && ($('#expandRow', v).onclick = buyRow);
+  clearInterval(idleT);
+  idleT = setInterval(() => {
+    if (tab !== 'home' || document.hidden || build || placing) return;
+    const mons = [...grid.querySelectorAll('.it.mon:not(.egg)')];
+    mons.forEach(el => Math.random() < .3 && (el.classList.remove('hop'), void el.offsetWidth, el.classList.add('hop')));
+    if (mons.length > 1 && Math.random() < .35) emote(mons[Math.random() * mons.length | 0], ['♪', '♥', '！', '…', 'ｚ', '✿'][Math.random() * 6 | 0]);
+    grid.querySelectorAll('.bubble-ink').forEach(b => { const n = pending(findIt(b.dataset.c)); b.querySelector('span').textContent = n; });
+  }, 2500);
 }
-function place(el, x, y) {
-  el.style.left = x + '%'; el.style.top = y + '%'; el.style.zIndex = Math.round(y);
-  el.dataset.x = x; el.dataset.y = y;
+const findIt = id => S.creatures.find(c => c.id === id) || S.objs.find(o => o.id === id);
+function itemHTML(it) {
+  const [w, h] = foot(it), p = it.pos, n = pending(it);
+  const style = `--x:${p.x};--y:${p.y};--w:${w};--h:${h}`;
+  const bub = n >= 1 ? `<button class="bubble-ink ${full(it) ? 'full' : ''}" data-c="${it.id}">墨<span>${n}</span></button>` : '';
+  if (it.t) return `<div class="it obj" data-it="${it.id}" style="${style}">${objSVG(it, OBJS[it.t])}${bub}</div>`;
+  if (it.away) return `<div class="it away" data-it="${it.id}" style="${style}"><span>旅</span><small>${it.k} de viaje</small></div>`;
+  return `<div class="it mon ${it.egg ? 'egg' : ''} ${it.insp > Date.now() ? 'insp' : ''}" data-it="${it.id}" style="${style}">
+    <div class="flip">${creatureSVG(it.k, { mood: it.mood, egg: it.egg, gold: it.gold })}</div>
+    <div class="tag">${it.egg ? '¿?' : `Lv${it.lv}${it.stars ? ' ' + '★'.repeat(it.stars) : ''}`}</div>${bub}</div>`;
 }
-function wander(el) {
-  const x = +el.dataset.x, nx = Math.max(8, Math.min(84, x + (Math.random() - .5) * 36));
-  const ny = Math.max(55, Math.min(84, +el.dataset.y + (Math.random() - .5) * 14));
-  el.querySelector('.flip').style.transform = `scaleX(${nx < x ? -1 : 1})`;
-  el.classList.add('walk'); place(el, nx, ny);
-  setTimeout(() => el.classList.remove('walk'), 1600);
+function harvest(list, el) {
+  let sum = 0; list.forEach(it => sum += gather(it));
+  if (!sum) return toast('Todavía no hay tinta para recoger · entrená para inspirar a tus KANJŪ');
+  const ups = addXP(sum / 10); buzz([8, 30, 8]); floatText(el, `+${sum} 墨`); hud(); go();
+  if (ups.length) rankUp(ups);
 }
 function emote(el, e) {
   const b = document.createElement('div'); b.className = 'emote'; b.textContent = e;
   el.append(b); setTimeout(() => b.remove(), 1600);
 }
-function tapMon(c, el) {
-  buzz(8); el.classList.remove('squish'); void el.offsetWidth; el.classList.add('squish');
-  if (c.egg) {
-    c.cracks = (c.cracks || 0) + 1;
-    if (c.cracks >= 3) { delete c.egg; delete c.cracks; hatchFX(c, el); }
-    else emote(el, '…'); save(); return;
+function tapItem(id, el, e) {
+  const it = findIt(id); if (!it) return;
+  buzz(8);
+  if (placing) return;
+  if (build) return itemMenu(it);
+  if (it.t) return toast(`${OBJS[it.t].k} ${OBJS[it.t].name} Nv${it.lv} · ${OBJS[it.t].desc}`);
+  if (it.away) return toast(`${it.k} está de viaje`);
+  el.classList.remove('squish'); void el.offsetWidth; el.classList.add('squish');
+  if (it.egg) {
+    it.cracks = (it.cracks || 0) + 1;
+    if (it.cracks >= 3) { delete it.egg; delete it.cracks; el.classList.add('hatch'); setTimeout(() => { go(); hatched(it); }, 600); }
+    else emote(el, it.cracks === 1 ? '…' : '！！'); save(); return;
   }
-  setTimeout(() => openCreature(c.id), 160);
+  setTimeout(() => openCreature(it.id), 160);
 }
-function hatchFX(c, el) {
-  el.classList.add('hatch');
-  setTimeout(() => { go(); toast(`<b>${c.k}</b> renació · Gen ${c.gen} <small>+${c.gen * 25}% EXP permanente</small>`); }, 600);
+function hatched(c) {
+  const m = modal(`<div class="result"><h3>¡Nació ${c.k}!</h3>${creatureSVG(c.k, { mood: 1, gold: c.gold })}${c.gold ? '<p class="g">✦ ¡Variante dorada! Produce +50% de tinta</p>' : ''}${c.gen ? `<p class="g">Gen ${c.gen} · +${c.gen * 25}% EXP permanente</p>` : ''}${storyHTML(c.k)}<button class="btn ok wide">¡Bienvenido!</button></div>`);
+  speak(reads(c.k)[0] || ''); $('.btn', m).onclick = () => m.close();
+}
+function itemMenu(it) {
+  const isObj = !!it.t, d = isObj && OBJS[it.t];
+  const m = modal(`<h3>${isObj ? `${d.k} ${d.name} · Nv${it.lv}` : `${it.k} · ${KANJI[it.k].m}`}</h3>
+    <p class="muted">${isObj ? d.desc : `Produce ${rate(it).toFixed(1)} 墨/h aquí. Los objetos vecinos lo potencian.`}</p>
+    <div class="menu-acts">
+      <button class="btn ghost" id="mv">✥ Mover</button>
+      <button class="btn ghost" id="st" ${storeFree() <= 0 || it.away ? 'disabled' : ''}>蔵 Guardar</button>
+      ${isObj && it.lv < OBJ_MAX ? `<button class="btn ok" id="up" ${S.ink < upCost(it) ? 'disabled' : ''}>⬆ Mejorar · ${upCost(it)} 墨</button>` : ''}
+      ${isObj ? `<button class="btn ghost" id="sell">Vender · +${sellValue(it)} 墨</button>` : ''}
+    </div>`);
+  $('#mv', m).onclick = () => { m.close(); placing = it; build = false; go(); };
+  $('#st', m).onclick = () => { gather(it); it.pos = null; m.close(); go(); toast(`${isObj ? d.k : it.k} guardado en el almacén`); };
+  $('#up', m) && ($('#up', m).onclick = () => { gather(it); S.ink -= upCost(it); it.lv++; m.close(); go(); toast(`⬆ ${d.k} subió a Nv${it.lv}`); buzz(20); });
+  $('#sell', m) && ($('#sell', m).onclick = () => { S.ink += sellValue(it); S.objs = S.objs.filter(o => o !== it); m.close(); go(); });
+}
+const sellValue = o => Math.round(OBJS[o.t].cost * (.4 + (o.lv - 1) * .5));
+function markValid(grid) {
+  const [w, h] = foot(placing);
+  grid.querySelectorAll('.cell').forEach(c => c.classList.toggle('ok', fits(w, h, +c.dataset.x, +c.dataset.y, placing)));
+}
+function tapCell(x, y, el) {
+  if (!placing) return;
+  const [w, h] = foot(placing);
+  if (!fits(w, h, x, y, placing)) { el.classList.add('no'); buzz(30); setTimeout(() => el.classList.remove('no'), 300); return; }
+  const it = placing; it.pos = { x, y }; it.prodAt ??= Date.now(); placing = null; buzz(12); go();
+  const near = neighbors(it).map(o => OBJS[o.t].k).join(' ');
+  if (!it.t && near) toast(`${it.k} recibe el aura de ${near}`);
+}
+function buyRow() {
+  const i = S.rows - BASE_ROWS, cost = ROW_COSTS[i], need = ROW_RANK[i];
+  if (S.rank.lv < need) return toast(`Necesitás Rango ${need} para expandir el terreno`);
+  if (S.ink < cost) return toast(`Te faltan ${cost - S.ink} 墨`);
+  S.ink -= cost; S.rows++; buzz(20); toast('広 ¡Terreno expandido! +6 casillas'); go();
+}
+function openStorage() {
+  const list = stored();
+  const m = modal(`<h3>蔵 Almacén <small class="muted">${list.length}/${S.storeCap}</small></h3>
+    <p class="muted">Lo guardado no ocupa casillas ni produce tinta. Las criaturas guardadas pueden fusionarse y despertarse.</p>
+    ${S.gate.length ? `<h4>門 En la puerta (almacén lleno)</h4>${S.gate.map((g, i) => `<div class="shop-row"><div class="gate-mon">${creatureSVG(g.k, { gold: g.gold })}</div><div><b>${g.k} · ${KANJI[g.k].m}</b></div><button class="btn ok" data-gin="${i}" ${storeFree() > 0 || findSpot(...foot({ k: g.k })) ? '' : 'disabled'}>Recibir</button><button class="btn ghost" data-gout="${i}">+${6 + kLevel(g.k) * 4}墨</button></div>`).join('')}` : ''}
+    <div class="store-grid">${list.map(it => `<button class="st-it" data-s="${it.id}">${it.t ? objSVG(it, OBJS[it.t]) : creatureSVG(it.k, { egg: it.egg, gold: it.gold })}<small>${it.t ? `${OBJS[it.t].name} Nv${it.lv}` : `${it.k} Lv${it.lv}${it.stars ? ' ★' + it.stars : ''}`}</small><em>${foot(it).join('×')}</em></button>`).join('') || '<p class="muted">Vacío</p>'}</div>
+    ${STORE_COSTS[(S.storeCap - 10) / 5] ? `<button class="btn ghost wide" id="moreStore">蔵 +5 espacios de almacén · ${STORE_COSTS[(S.storeCap - 10) / 5]} 墨</button>` : ''}`);
+  m.querySelectorAll('[data-s]').forEach(b => b.onclick = () => storedMenu(findIt(b.dataset.s), m));
+  m.querySelectorAll('[data-gin]').forEach(b => b.onclick = () => { const g = S.gate.splice(+b.dataset.gin, 1)[0]; arrive(g.k, { gold: g.gold }); m.close(); go(); openStorage(); });
+  m.querySelectorAll('[data-gout]').forEach(b => b.onclick = () => { const g = S.gate.splice(+b.dataset.gout, 1)[0]; S.ink += 6 + kLevel(g.k) * 4; m.close(); go(); openStorage(); });
+  $('#moreStore', m) && ($('#moreStore', m).onclick = () => { const c = STORE_COSTS[(S.storeCap - 10) / 5]; if (S.ink < c) return toast(`Te faltan ${c - S.ink} 墨`); S.ink -= c; S.storeCap += 5; m.close(); hud(); openStorage(); });
+}
+function storedMenu(it, parent) {
+  const isObj = !!it.t;
+  const m = modal(`<h3>${isObj ? `${OBJS[it.t].k} ${OBJS[it.t].name}` : `${it.k} · ${KANJI[it.k].m}`}</h3><div class="menu-acts">
+    <button class="btn ok" id="put" ${findSpot(...foot(it)) ? '' : 'disabled'}>✥ Colocar en el santuario</button>
+    ${isObj ? `<button class="btn ghost" id="sell">Vender · +${sellValue(it)} 墨</button>` : `<button class="btn ghost" id="see">Ver ficha</button><button class="btn ghost" id="free" ${S.creatures.filter(c => !c.egg).length <= 1 ? 'disabled' : ''}>放 Liberar</button>`}</div>
+    ${findSpot(...foot(it)) ? '' : '<p class="r">No hay lugar libre de ese tamaño. Expandí el terreno o guardá algo.</p>'}`);
+  $('#put', m).onclick = () => { m.close(); parent.close(); placing = it; tab = 'home'; go(); };
+  $('#sell', m) && ($('#sell', m).onclick = () => { S.ink += sellValue(it); S.objs = S.objs.filter(o => o !== it); m.close(); parent.close(); go(); openStorage(); });
+  $('#see', m) && ($('#see', m).onclick = () => { m.close(); parent.close(); openCreature(it.id); });
+  $('#free', m) && ($('#free', m).onclick = () => { if (!confirm(`${it.k} volverá a la naturaleza. ¿Liberar?`)) return; const ink = release(it); m.close(); parent.close(); go(); toast(`+${ink} 墨`); openStorage(); });
+}
+function rankUp(ups) {
+  const r = ups[ups.length - 1];
+  const m = modal(`<div class="result rank-up"><div class="rank-badge">位<b>${r}</b></div><h3>¡Rango ${r}!</h3>
+    <p>+${ups.reduce((a, l) => a + 20 + l * 10, 0)} 墨 · +${ups.length} 召符</p>
+    ${ROW_RANK.includes(r) ? '<p class="g">Desbloqueaste una nueva expansión de terreno</p>' : ''}
+    ${Object.values(OBJS).filter(o => o.rank === r).map(o => `<p class="g">Nuevo objeto en la tienda: ${o.k} ${o.name}</p>`).join('')}
+    <button class="btn ok wide">¡Genial!</button></div>`);
+  buzz([20, 60, 20]); $('.btn', m).onclick = () => m.close();
 }
 
 // Objetivo guiado: siempre hay un próximo paso claro
@@ -170,8 +257,10 @@ function goalHTML() {
   const cs = S.creatures.filter(c => !c.egg);
   let g;
   if (S.creatures.some(c => c.egg)) g = 'Tocá el huevo 3 veces para que nazca';
-  else if (S.gate.length && freeSpace() >= size(S.gate[0])) g = 'Hay espacio: recibí al KANJŪ que espera en la puerta';
-  else if (S.gate.length) g = 'Santuario lleno: ampliá en la tienda, fusioná o liberá';
+  else if (totalPending() >= 20) g = `Tus KANJŪ produjeron ${totalPending()} 墨 · tocá 収 para recoger`;
+  else if (S.gate.length) g = 'Almacén lleno: hay KANJŪ esperando en la puerta';
+  else if (S.tickets) g = `Tenés ${S.tickets} 召符: invocá en el altar de la Tienda`;
+  else if (!S.objs.length && S.ink >= 40) g = 'Comprá una 硯 Piedra de tinta en la Tienda para producir más';
   else if (dueList().length >= 3) g = `${dueList().length} kanji listos para repasar en el Dojo`;
   else if (S.creatures.some(c => c.away && Date.now() >= c.away.end)) g = 'Una criatura volvió de su expedición';
   else {
@@ -201,11 +290,13 @@ function openCreature(id) {
       <div class="bar bond"><label>絆 ${'♥'.repeat(Math.min(5, c.bond / 10 | 0))}${'♡'.repeat(5 - Math.min(5, c.bond / 10 | 0))}</label><div><i style="width:${c.mood * 100}%"></i></div></div>
     </div>
     <div class="acts a4">
-      <button class="act" id="train"><i>練</i>Entrenar</button>
+      <button class="act" id="train" ${c.pos ? '' : 'disabled'}><i>練</i>Entrenar</button>
       <button class="act" id="snack" ${S.ink < 5 ? 'disabled' : ''}><i>餅</i>Mochi <small>5墨</small></button>
       <button class="act ${c.lv >= MAX_LV ? 'hot' : ''}" id="reborn" ${c.lv < MAX_LV ? 'disabled' : ''}><i>輪</i>Renacer</button>
       <button class="act" id="free" ${S.creatures.filter(x => !x.egg).length <= 1 ? 'disabled' : ''}><i>放</i>Liberar</button>
     </div>
+    ${c.pos ? `<p class="prod">収 Produce <b>${rate(c).toFixed(1)} 墨/h</b>${c.insp > Date.now() ? ' · <b class="g">inspirado ×2</b>' : ' · entrenalo para inspirarlo ×2'}${neighbors(c).length ? ` · aura ${neighbors(c).map(o => OBJS[o.t].k).join('')}` : ''}</p>` : '<p class="r">En el almacén: colocalo en el santuario para entrenar y producir</p>'}
+    ${dupesOf(c).length && (c.stars || 0) < 5 ? `<button class="btn ok wide gold" id="awaken">覚 Despertar ★${(c.stars || 0) + 1} · usa un ${c.k} duplicado (+20% tinta y EXP)</button>` : ''}
     ${S.items.scroll ? `<button class="btn ghost wide" id="scroll">巻 Usar pergamino (+60 EXP) · ${S.items.scroll}</button>` : ''}
     <details class="story-d"><summary>💡 Historia para recordarlo</summary>${storyHTML(c.k)}
       <textarea id="note" maxlength="160" placeholder="Escribí tu propia historia: las que inventás vos se recuerdan mejor">${esc(S.notes?.[c.k] || '')}</textarea></details>
@@ -221,6 +312,7 @@ function openCreature(id) {
   };
   $('#snack', m).onclick = () => { S.ink -= 5; c.mood = 1; c.bond += 3; const up = giveExp(c, 8); m.close(); toast(`${c.k} disfrutó el mochi ${up ? '· ¡Subió de nivel!' : ''}`); go(); setTimeout(() => openCreature(id), 260); };
   $('#train', m).onclick = () => openTraining(c, m);
+  $('#awaken', m) && ($('#awaken', m).onclick = () => { if (!confirm(`Se consumirá otro ${c.k}. ¿Despertar?`)) return; awaken(c); m.close(); go(); buzz([20, 60, 20]); toast(`覚 ${c.k} despertó: ★${c.stars}`); setTimeout(() => openCreature(id), 260); });
   $('#say', m).onclick = () => speak(reads(c.k)[0] || '');
   $('#note', m).onchange = e => { S.notes ??= {}; S.notes[c.k] = e.target.value.trim(); save(); toast('✍ Historia guardada'); };
   $('#free', m).onclick = () => {
@@ -237,7 +329,7 @@ function evoCard(c, t) {
   const need = evoLevel(t), rec = KANJI[t].recipes.find(r => r.includes(c.k));
   const others = [...rec]; others.splice(others.indexOf(c.k), 1);
   const missing = [...new Set(others)].filter(o => !S.dex[o]?.owned);
-  const learned = mastery(c.k) >= 1, room = freeSpace() >= size(t) - size(c.k);
+  const learned = mastery(c.k) >= 1, room = true;
   const ok = c.lv >= need && !missing.length && learned && room;
   const known = S.dex[t]?.seen;
   return `<button class="evo ${ok ? 'ready' : ''}" data-evo="${t}" ${ok ? '' : 'disabled'}>
@@ -254,7 +346,9 @@ function openTraining(c, parent) {
     m.close(); parent.close();
     const stars = await play(b.dataset.g, c.k, c.know, $('#layer'));
     if (stars < 0) return;
-    const exp = [3, 10, 16, 24][stars] * (c.mood > .6 ? 1.2 : 1);
+    const exp = [3, 10, 16, 24][stars] * (c.mood > .6 ? 1.2 : 1) * expBonus(c);
+    gather(c); if (stars >= 2) c.insp = Date.now() + 36e5;
+    const rk = addXP(6 + stars * 4);
     const ups = giveExp(c, exp), ink = stars + ups * 3;
     S.ink += ink; grade(c.k, stars >= 2);
     if (stars >= 2) c.know++;
@@ -262,11 +356,11 @@ function openTraining(c, parent) {
     const r = modal(`<div class="result"><div class="stars">${'★'.repeat(stars)}<span>${'★'.repeat(3 - stars)}</span></div>
       <div class="res-art">${creatureSVG(c.k, { mood: stars >= 2 ? 1 : .5 })}</div>
       <p><b>+${Math.round(exp * (1 + c.gen * .25))} EXP · +${ink} 墨</b>${ups ? ` · <b class="g">¡Nivel ${c.lv}!</b>` : ''}</p>
-      ${stars < 2 ? storyHTML(c.k) : ''}
+      ${stars >= 2 ? `<p class="g">✦ ${c.k} está inspirado: produce ×2 tinta durante 1 h</p>` : storyHTML(c.k)}
       ${evolutionsOf(c.k).some(t => c.lv >= evoLevel(t) && c.lv - ups < evoLevel(t)) ? '<p class="g">✦ ¡Nueva evolución disponible!</p>' : ''}
       <div class="row"><button class="btn ghost" id="again">Otra vez</button><button class="btn ok" id="done">Seguir</button></div></div>`);
     $('#again', r).onclick = () => { r.close(); openTraining(c, { close() {} }); };
-    $('#done', r).onclick = () => { r.close(); go(); openCreature(c.id); };
+    $('#done', r).onclick = () => { r.close(); go(); openCreature(c.id); if (rk.length) rankUp(rk); };
     hud();
   });
 }
@@ -277,7 +371,8 @@ function evolveFX(c, to, from = [c.k]) {
   fx.innerHTML = `<div class="rays"></div><div class="parts">${from.map(k => `<span>${k}</span>`).join('')}</div>
     <div class="old">${creatureSVG(from[0])}</div><div class="new">${creatureSVG(to, { mood: 1 })}</div>
     <div class="evo-cap"><span class="big-k">${to}</span><b>${KANJI[to].m}</b><small>${KANJI[to].on.join('・')} · ${KANJI[to].kun.join('・')}</small><small>${from.join(' + ')} = ${to} · Nivel KANJŪ ${kLevel(to)}</small><p class="evo-mn">💡 ${KANJI[to].mn}</p><button class="btn ok">¡Genial!</button></div>`;
-  if (from.length === 1 && !evolve(c, to)) { fx.remove(); toast('No hay espacio en el santuario para esa evolución'); return; }
+  if (from.length === 1) { evolve(c, to); if (settle(c) === 'store') setTimeout(() => toast(`${to} creció y no entra en su lugar: está en el almacén`), 2600); }
+  addXP(40);
   document.body.append(fx); buzz([20, 60, 40]); bump('evo');
   save();
   $('.btn', fx).onclick = () => { fx.classList.add('out'); setTimeout(() => fx.remove(), 300); go(); };
@@ -325,14 +420,15 @@ function viewLab(v) {
   });
   $('#fuse', v).onclick = () => {
     if (!confirm(`Las criaturas elegidas se unirán para formar ${match}. ¿Fusionar?`)) return;
-    const from = sel.map(c => c.k), nc = fuse(labSel, match); labSel = [];
+    const pref = sel.find(c => c.pos)?.pos, from = sel.map(c => c.k), nc = fuse(labSel, match); labSel = [];
+    nc.prodAt = Date.now(); if (settle(nc, pref) === 'store') setTimeout(() => toast(`${match} está en el almacén: no había lugar`), 2600);
     evolveFX(nc, match, from);
   };
 }
 
 // ---------- Expediciones ----------
 function viewExp(v) {
-  const n = owned(), fast = S.deco.includes('gate') ? .75 : 1;
+  const n = owned(), fast = tripMult();
   v.innerHTML = `<div class="exps"><p class="lead">Enviá a tus KANJŪ a explorar. Vuelven con tinta, experiencia y, a veces, nuevos amigos.</p>
   ${REGIONS.map(r => {
     const c = S.creatures.find(x => x.away?.region === r.id), lock = n < r.need;
@@ -352,7 +448,7 @@ function viewExp(v) {
 }
 const fmt = ms => { const s = Math.ceil(ms / 1000); return s >= 60 ? `${s / 60 | 0}m ${String(s % 60).padStart(2, '0')}s` : `${s}s`; };
 function pickForTrip(r, fast) {
-  const free = home().filter(c => !c.egg);
+  const free = home().filter(c => !c.egg && c.pos);
   const m = modal(`<h3>旅 ${r.es}</h3><p class="muted">¿Quién va? Las criaturas fuera no pueden entrenar ni fusionarse.</p>
     <div class="roster">${free.map(c => `<button class="chip-mon" data-id="${c.id}">${creatureSVG(c.k)}<small>${c.k} Lv${c.lv}</small></button>`).join('')}</div>`);
   m.querySelectorAll('[data-id]').forEach(b => b.onclick = () => {
@@ -371,11 +467,11 @@ function collect(c) {
   if (first || Math.random() < .45) {
     const fresh = r.drops.filter(k => !S.dex[k]?.owned);
     const k = fresh.length && Math.random() < .8 ? fresh[0] : r.drops[Math.random() * r.drops.length | 0];
-    const res = recruit(k); found = res.c || { k, gate: true };
+    const res = arrive(k); found = res.c ? { k, store: res.where === 'store' } : { k, gate: true };
   } else r.drops.forEach(k => Math.random() < .5 && see(k));
   const m = modal(`<div class="result"><h3>${c.k} volvió de ${r.name}</h3>
     <p>+${ink} 墨 · +EXP${up ? ` · <b class="g">¡Nivel ${c.lv}!</b>` : ''}</p>
-    ${found ? `<div class="newmon"><span class="new-tag">${found.gate ? '門 Espera en la puerta' : '¡Nuevo KANJŪ!'}</span>${creatureSVG(found.k, { mood: 1 })}${storyHTML(found.k)}${found.gate ? '<small class="r">Tu santuario está lleno. Ampliá, fusioná o liberá para recibirlo.</small>' : ''}</div>` : '<p class="muted">Encontró huellas de otros kanji.</p>'}
+    ${found ? `<div class="newmon"><span class="new-tag">${found.gate ? '門 Espera en la puerta' : found.store ? '¡Nuevo! · está en el almacén' : '¡Nuevo KANJŪ!'}</span>${creatureSVG(found.k, { mood: 1 })}${storyHTML(found.k)}${found.gate ? '<small class="r">Santuario y almacén llenos. Liberá espacio para recibirlo.</small>' : ''}</div>` : '<p class="muted">Encontró huellas de otros kanji.</p>'}
     <button class="btn ok wide">Genial</button></div>`);
   $('.btn', m).onclick = () => { m.close(); go(); };
   hud();
@@ -436,54 +532,65 @@ function openQuests() {
     floatText(b, `+${q.ink}墨`); buzz(15); m.close(); hud(); openQuests();
   });
 }
-// ---------- Tienda ----------
+// ---------- Tienda y Altar ----------
 const ITEMS = [
-  { id: 'egg', k: '卵', name: 'Huevo misterioso', cost: 70, desc: 'Un componente de las regiones que ya exploraste' },
   { id: 'scroll', k: '巻', name: 'Pergamino de saber', cost: 30, desc: '+60 EXP para la criatura que elijas' },
-  { id: 'wind', k: '風', name: 'Viento veloz', cost: 20, desc: 'Termina una expedición al instante' },
-  { id: 'mochi', k: '餅', name: 'Caja de mochis', cost: 20, desc: 'Todas tus criaturas quedan felices' },
+  { id: 'wind', k: '風', name: 'Viento veloz', cost: 20, desc: 'Termina un viaje al instante' },
+  { id: 'mochi', k: '餅', name: 'Caja de mochis', cost: 20, desc: 'Todas tus criaturas felices: producen más' },
+  { id: 'incense', k: '香', name: 'Incienso', cost: 45, desc: 'Inspira a todo el santuario 1 h: ×2 tinta' },
 ];
 function viewShop(v) {
-  const step = S.cap > 6 ? (S.cap - 6) / CAP_STEP : 0, next = EXPANSIONS[step];
   v.innerHTML = `<div class="shop">
-    <div class="wallet">墨 <b>${S.ink}</b><small>Ganás tinta entrenando, repasando, viajando y con misiones</small></div>
-    <h4>空 Espacio del santuario <small>${used()}/${S.cap} ocupados</small></h4>
-    <div class="cap-bar">${Array.from({ length: S.cap }, (_, i) => `<i class="${i < used() ? 'on' : ''}"></i>`).join('')}</div>
-    <p class="muted">Cada criatura ocupa tantos espacios como su nivel KANJŪ (1 · 2 · 3…).</p>
-    ${next ? `<div class="shop-row big"><i>広</i><div><b>Ampliar santuario</b><small>+${CAP_STEP} espacios · nivel ${step + 1}/${EXPANSIONS.length}</small></div><button class="btn ok" data-buy="cap" ${S.ink < next ? 'disabled' : ''}>${next} 墨</button></div>` : '<p class="g">Santuario al máximo tamaño</p>'}
-    <h4>品 Objetos</h4>
+    <div class="wallet">墨 <b>${S.ink}</b> <span class="tk">召符 ${S.tickets}</span><small>Tu santuario produce ${totalRate()} 墨/h · entrená y repasá para producir más</small></div>
+    <div class="altar-card">
+      <div class="altar-top"><span class="ak">召</span><div><b>Altar de invocación</b><small>Componentes de las regiones que desbloqueaste · ${Math.round(GOLD_RATE * 100)}% dorado</small></div></div>
+      <div class="pity"><span>Kanji nuevo garantizado en</span><b>${Math.max(1, PITY - S.pity)}</b><span>invocaciones</span></div>
+      <div class="row"><button class="btn ok" data-pull="1">${S.tickets ? '召符 ×1' : `${PULL} 墨`}<small>Invocar 1</small></button><button class="btn ok gold" data-pull="10">${S.tickets >= 10 ? '召符 ×10' : `${PULL10} 墨`}<small>Invocar 10 · 1 nuevo seguro</small></button></div>
+    </div>
+    <h4>置 Para el santuario <small>Se colocan en casillas · mejoralos hasta Nv${OBJ_MAX}</small></h4>
+    ${Object.entries(OBJS).map(([t, d]) => { const lock = S.rank.lv < d.rank, n = S.objs.filter(o => o.t === t).length;
+      return `<div class="shop-row ${lock ? 'locked' : ''}"><div class="sv">${objSVG({ lv: 1 }, d)}</div><div><b>${d.name}${n ? ` · tenés ${n}` : ''}</b><small>${d.desc} · ocupa ${d.w}×${d.h}</small></div>
+      <button class="btn ok" data-obj="${t}" ${lock || S.ink < d.cost ? 'disabled' : ''}>${lock ? `Rango ${d.rank}` : d.cost + ' 墨'}</button></div>`; }).join('')}
+    <h4>品 Consumibles</h4>
     ${ITEMS.map(it => `<div class="shop-row"><i>${it.k}</i><div><b>${it.name}${S.items[it.id] ? ` · tenés ${S.items[it.id]}` : ''}</b><small>${it.desc}</small></div><button class="btn ok" data-buy="${it.id}" ${S.ink < it.cost ? 'disabled' : ''}>${it.cost} 墨</button></div>`).join('')}
-    <h4>匠 Decoraciones</h4>
-    ${DECOR.map(d => { const has = S.deco.includes(d.id);
-      return `<div class="shop-row"><i>${d.k}</i><div><b>${d.name}</b><small>${d.desc}</small></div><button class="btn ${has ? 'ghost' : 'ok'}" data-deco="${d.id}" ${has || S.ink < d.cost ? 'disabled' : ''}>${has ? '✓' : d.cost + ' 墨'}</button></div>`; }).join('')}
   </div>`;
-  v.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => buy(b.dataset.buy, next, b));
-  v.querySelectorAll('[data-deco]').forEach(b => b.onclick = () => {
-    const d = DECOR.find(x => x.id === b.dataset.deco); S.ink -= d.cost; S.deco.push(d.id); toast(`${d.k} ${d.name} construido`); go(); });
+  v.querySelectorAll('[data-pull]').forEach(b => b.onclick = () => doPull(+b.dataset.pull));
+  v.querySelectorAll('[data-obj]').forEach(b => b.onclick = () => {
+    const t = b.dataset.obj, d = OBJS[t]; S.ink -= d.cost; const o = newObj(t); buzz(12);
+    if (o.pos) { toast(`${d.k} colocado · tocá 匠 Construir para moverlo`); } else toast(`${d.k} guardado en el almacén (no hay lugar)`);
+    go();
+  });
+  v.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => {
+    const it = ITEMS.find(x => x.id === b.dataset.buy); S.ink -= it.cost; buzz(10);
+    if (it.id === 'mochi') { S.creatures.forEach(c => { c.mood = 1; c.bond += 2; }); toast('餅 Todos están felices'); }
+    else if (it.id === 'incense') { S.creatures.forEach(c => { gather(c); c.insp = Date.now() + 36e5; }); toast('香 Todo el santuario está inspirado: ×2 tinta por 1 h'); }
+    else { S.items[it.id] = (S.items[it.id] || 0) + 1; toast(`${it.k} ${it.name} guardado`); }
+    go();
+  });
 }
-function buy(id, capCost, el) {
-  buzz(12);
-  if (id === 'cap') { S.ink -= capCost; S.cap += CAP_STEP; floatText(el, `+${CAP_STEP} espacios`); toast('広 ¡Santuario ampliado!'); return go(); }
-  const it = ITEMS.find(x => x.id === id); S.ink -= it.cost;
-  if (id === 'mochi') { S.creatures.forEach(c => { c.mood = 1; c.bond += 2; }); toast('餅 Todos están felices'); }
-  else if (id === 'egg') {
-    const pool = REGIONS.filter(r => S.regionsDone?.[r.id] || r.need === 0).flatMap(r => r.drops);
-    const fresh = pool.filter(k => !S.dex[k]?.owned), k = fresh.length && Math.random() < .6 ? fresh[Math.random() * fresh.length | 0] : pool[Math.random() * pool.length | 0];
-    if (freeSpace() >= 1) { addCreature(k, { egg: true }); toast('卵 Un huevo llegó al santuario'); }
-    else { S.gate.push(k); see(k); toast('卵 El huevo espera en la puerta: no hay espacio'); }
-  } else { S.items[id] = (S.items[id] || 0) + 1; toast(`${it.k} ${it.name} guardado`); }
-  go();
+function doPull(n) {
+  const useT = S.tickets >= n, cost = n === 1 ? PULL : PULL10;
+  if (!useT && S.ink < cost) return toast(`Te faltan ${cost - S.ink} 墨 · también podés usar 召符`);
+  if (useT) S.tickets -= n; else S.ink -= cost;
+  const res = pull(n); bump('pull', n);
+  const fx = document.createElement('div'); fx.className = 'summon';
+  fx.innerHTML = `<div class="rays"></div><div class="sum-grid n${n}">${res.map((r, i) => `<div class="sum-card ${r.isNew ? 'new' : ''} ${r.gold ? 'gold' : ''}" style="animation-delay:${.3 + i * .12}s">
+    ${creatureSVG(r.k, { gold: r.gold })}<b>${r.k}</b><small>${KANJI[r.k].m}</small>${r.isNew ? '<em>NUEVO</em>' : r.gold ? '<em>DORADO</em>' : ''}${r.where === 'store' ? '<i>蔵</i>' : r.where === 'gate' ? '<i>門</i>' : ''}</div>`).join('')}</div>
+    <div class="sum-cap"><p>${res.filter(r => r.isNew).length} nuevos · los huevos están en tu santuario o almacén</p><button class="btn ok">Continuar</button></div>`;
+  document.body.append(fx); buzz([20, 80, 20, 80, 40]);
+  $('.btn', fx).onclick = () => { fx.classList.add('out'); setTimeout(() => fx.remove(), 300); go(); };
+  if (res.some(r => r.isNew)) addXP(30 * res.filter(r => r.isNew).length);
+  save();
 }
 
-// ---------- Puerta: criaturas esperando espacio ----------
-function openGate() {
-  const m = modal(`<h3>門 En la puerta</h3><p class="muted">Espacio libre: ${freeSpace()} · Cada una ocupa su nivel KANJŪ.</p>
-    ${S.gate.map((k, i) => `<div class="shop-row"><div class="gate-mon">${creatureSVG(k)}</div><div><b>${k} · ${KANJI[k].m}</b><small>Ocupa ${size(k)}</small></div>
-      <button class="btn ok" data-in="${i}" ${freeSpace() >= size(k) ? '' : 'disabled'}>Recibir</button><button class="btn ghost" data-out="${i}">+${3 + size(k) * 4}墨</button></div>`).join('')}
-    <button class="btn ghost wide" id="toShop">店 Ampliar santuario</button>`);
-  m.querySelectorAll('[data-in]').forEach(b => b.onclick = () => { const k = S.gate.splice(+b.dataset.in, 1)[0]; addCreature(k); m.close(); go(); toast(`¡${k} llegó al santuario!`); });
-  m.querySelectorAll('[data-out]').forEach(b => b.onclick = () => { const k = S.gate.splice(+b.dataset.out, 1)[0]; S.ink += 3 + size(k) * 4; m.close(); go(); });
-  $('#toShop', m).onclick = () => { m.close(); tab = 'shop'; go(); };
+// ---------- Calendario de entrada ----------
+function openLogin() {
+  const day = S.login.day % 7;
+  const m = modal(`<h3>暦 Regalo del día</h3><p class="muted">Avanza cada día que entrás. Si faltás, no perdés nada: sigue donde quedó.</p>
+    <div class="cal">${LOGIN.map((r, i) => `<div class="cal-d ${i < day ? 'got' : i === day ? 'today' : ''}"><small>Día ${i + 1}</small><b>${r.ink ? `${r.ink}<i>墨</i>` : r.tickets ? `${r.tickets}<i>召符</i>` : `${r.scroll}<i>巻</i>`}</b>${r.gold ? '<em>✦ dorado</em>' : ''}</div>`).join('')}</div>
+    <button class="btn ok wide" id="claim">Recibir</button>`, 'onacct');
+  m.onclick = null;
+  $('#claim', m).onclick = () => { const r = claimLogin(); buzz([10, 40, 10]); m.close(); hud(); go(); toast(`Recibiste ${r.ink ? r.ink + ' 墨' : ''}${r.tickets ? ` ${r.tickets} 召符` : ''}${r.scroll ? ` ${r.scroll} 巻` : ''}${r.gold ? ' · ¡tu próxima invocación será dorada!' : ''}`); };
 }
 
 // ---------- Dojo: repaso espaciado ----------
@@ -496,13 +603,14 @@ async function openDojo() {
     if (!confirm(`Todo repasado ✓ El próximo repaso llega en ${fmt(soon)}.\n\n¿Práctica libre? (no cambia la maestría)`)) return;
     list = owned.sort(() => Math.random() - .5).slice(0, 6); free = true;
   }
-  const bell = S.deco.includes('bell') ? 1 : 0;
+  const bell = bellBonus();
   const res = await review(list, $('#layer'), (k, ok) => {
     if (!free) grade(k, ok);
     if (ok) S.creatures.filter(c => c.k === k && !c.egg).forEach(c => giveExp(c, 6));
   });
   const ink = res.right * (2 + bell) * (free ? .5 : 1) | 0;
-  S.ink += ink; bump('review', res.right); save();
+  S.ink += ink; bump('review', res.right); const rk = addXP(res.right * 3); save();
+  if (rk.length) setTimeout(() => rankUp(rk), 400);
   const m = modal(`<div class="result"><h3>修 Dojo completado</h3><div class="stars">${res.right}<span>/${res.total}</span></div>
     <p><b>+${ink} 墨</b> · tus KANJŪ ganaron EXP por cada acierto</p>
     <p class="muted">${free ? 'Práctica libre.' : 'Los kanji que fallaste volverán pronto; los que acertaste, cada vez más tarde.'}</p>
@@ -548,7 +656,7 @@ async function syncAfterLogin(isNew) {
   const remote = isNew ? null : await cloud.pull().catch(() => null);
   if (remote?.creatures?.length) {
     const localHas = S.creatures.length && (S.savedAt || 0) > (remote.savedAt || 0);
-    if (!localHas || !confirm('Este dispositivo tiene una partida más reciente que la de tu cuenta.\n\nAceptar: usar la de este dispositivo\nCancelar: usar la de la nube')) replace(remote);
+    if (!localHas || !confirm('Este dispositivo tiene una partida más reciente que la de tu cuenta.\n\nAceptar: usar la de este dispositivo\nCancelar: usar la de la nube')) { replace(remote); initWorld(); }
     else await cloud.pushNow(S);
   } else if (S.creatures.length) await cloud.pushNow(S);
   cloud.setReady(true);
@@ -567,7 +675,7 @@ function onboarding() {
   m.querySelectorAll('.egg-pick').forEach(b => b.onclick = () => {
     b.classList.add('hatch'); buzz([10, 40, 10]);
     setTimeout(() => {
-      const c = addCreature(b.dataset.k); c.mood = 1; m.close(); go();
+      const c = arrive(b.dataset.k).c; c.mood = 1; m.close(); go();
       const w = modal(`<div class="result"><h3>¡Nació tu primer KANJŪ!</h3>${creatureSVG(c.k, { mood: 1 })}${storyHTML(c.k)}
         <p class="muted">Cada kanji tiene una historia para recordarlo. Tocá a ${c.k} en el santuario para mimarlo y entrenarlo.</p><button class="btn ok wide">¡Vamos!</button></div>`);
       speak(reads(c.k)[0]); $('.btn', w).onclick = () => w.close();
@@ -577,7 +685,8 @@ function onboarding() {
 
 // Pasa el tiempo: el ánimo baja suavemente, nunca castiga
 const last = S.last || Date.now(), hrs = (Date.now() - last) / 36e5;
-S.creatures.forEach(c => c.mood = Math.max(.25, c.mood - hrs * (S.deco.includes('pond') ? .02 : .04)));
+initWorld();
+S.creatures.forEach(c => c.mood = calm(c) ? Math.max(.7, c.mood) : Math.max(.25, c.mood - hrs * .04));
 // Regalo de regreso: nunca se pierde nada por no jugar
 const gift = S.creatures.length && hrs >= 3 ? Math.min(40, Math.round(hrs * 1.5) + S.creatures.length) : 0;
 if (gift) { S.ink += gift; setTimeout(() => toast(`Mientras no estabas, tus KANJŪ juntaron <b>${gift} 墨</b>`), 900); }
@@ -590,12 +699,13 @@ setInterval(() => {
 
 shell();
 if (!S.creatures.length) onboarding();
+else if (loginReady()) setTimeout(openLogin, gift ? 1400 : 300);
 // Si hay sesión, trae la partida de la nube cuando es más nueva
 cloud.me().then(async u => {
   if (!u) return;
   const remote = await cloud.pull().catch(() => undefined);
   if (remote === undefined) return shell(); // sin conexión: no sincronizar
-  if (remote?.creatures?.length && (remote.savedAt || 0) > loadedAt) { replace(remote); document.querySelector('.onbm')?.remove(); }
+  if (remote?.creatures?.length && (remote.savedAt || 0) > loadedAt) { { replace(remote); initWorld(); } document.querySelector('.onbm')?.remove(); }
   cloud.setReady(true); shell();
   if (!S.creatures.length && !document.querySelector('.onbm')) onboarding();
 });

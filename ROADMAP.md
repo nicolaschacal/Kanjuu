@@ -6,7 +6,12 @@ Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. El arte definitivo queda p
 - ✅ Santuario vivo, criaturas SVG procedurales, interacción directa
 - ✅ Evolución ramificada por EXP, fusión con recetas verificadas, renacimiento con legado
 - ✅ Expediciones asíncronas (5 regiones, desbloqueo por colección)
-- ✅ Espacio limitado: cada criatura ocupa su nivel KANJŪ; ampliaciones, puerta de espera, liberar
+- ✅ Santuario en grilla de tiles: criaturas (1×1, 2×1, 2×2) y objetos ocupan casillas; modo construcción para mover
+- ✅ Almacén para criaturas y objetos fuera de juego; puerta como desborde; expandir terreno y almacén
+- ✅ Producción idle de tinta por criatura (sube con nivel, maestría, ánimo, estrellas, auras); se acumula hasta 8 h
+- ✅ Objetos con aura y mejora hasta Nv5 (puzzle de ubicación), objetos globales
+- ✅ Altar de invocación con tinta o boletos, piedad transparente, variantes doradas, despertar con duplicados
+- ✅ Rango de guardián que desbloquea terreno y objetos; calendario de 7 días sin reinicios
 - 🔜 Habitats por familia (bosque, cielo, agua…) con bonificación al convivir criaturas afines
 - 🔜 Rasgos de personalidad (tímido, juguetón…) que cambian animaciones y preferencias de entrenamiento
 - ⬜ Combates amistosos de "duelo de lecturas" contra criaturas salvajes en expediciones

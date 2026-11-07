@@ -13,7 +13,7 @@ function fresh() {
 }
 // Completa campos nuevos en partidas viejas
 export function norm(s) {
-  s.cap ??= BASE_CAP; s.gate ??= []; s.srs ??= {}; s.ach ??= []; s.items ??= {};
+  s.gate ??= []; s.srs ??= {}; s.ach ??= []; s.items ??= {};
   s.weekly ??= { week: weekKey(), p: {}, claimed: [] };
   Object.keys(s.dex || {}).forEach(k => s.dex[k].owned && (s.srs[k] ??= { box: 0, due: 0, ok: 0, miss: 0 }));
   return s;
@@ -34,14 +34,6 @@ export function rollDaily() {
 }
 export function bump(key, n = 1) { rollDaily(); S.daily.p[key] = (S.daily.p[key] || 0) + n; S.weekly.p[key] = (S.weekly.p[key] || 0) + n; }
 
-// --- Espacio del santuario ---
-export const used = () => S.creatures.reduce((a, c) => a + (c.egg ? 1 : size(c.k)), 0);
-export const freeSpace = () => S.cap - used();
-// Llega una criatura nueva: si no hay espacio espera en la puerta
-export function recruit(k, extra) {
-  if (freeSpace() >= size(k)) return { c: addCreature(k, extra) };
-  see(k); S.gate.push(k); return { gate: true };
-}
 
 // --- Repetición espaciada ---
 export function srsAdd(k) { S.srs[k] ??= { box: 0, due: Date.now(), ok: 0, miss: 0 }; }
@@ -66,7 +58,7 @@ export function addCreature(k, extra = {}) {
 }
 export const byId = id => S.creatures.find(c => c.id === id);
 export const expNeed = lv => 12 + lv * 8;
-export const mult = c => (1 + c.gen * .25) * (S.deco.includes('lantern') ? 1.1 : 1);
+export const mult = c => (1 + c.gen * .25) * (1 + .2 * (c.stars || 0));
 
 // Devuelve cuántos niveles subió
 export function giveExp(c, amount) {
@@ -76,7 +68,7 @@ export function giveExp(c, amount) {
   return ups;
 }
 
-export function evolve(c, to) { if (freeSpace() < size(to) - size(c.k)) return false;
+export function evolve(c, to) {
   c.k = to; c.lv = 1; c.exp = 0; c.hist.push(to); own(to); S.stats.evolutions++; return true;
 }
 

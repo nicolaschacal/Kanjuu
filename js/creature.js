@@ -1,9 +1,9 @@
 import { ELEMENTS, element, roots, depth } from './data.js';
 
 // Criatura SVG procedural: cuerpo según elemento, rasgos heredados de cada raíz.
-export function creatureSVG(k, { mood = 1, egg = false } = {}) {
-  if (egg) return eggSVG(element(k));
-  const d = depth(k), [fill, dark] = ELEMENTS[element(k)];
+export function creatureSVG(k, { mood = 1, egg = false, gold = false } = {}) {
+  if (egg) return eggSVG(element(k), gold);
+  const d = depth(k), [fill, dark] = gold ? ['#ffd95e', '#b07d10'] : ELEMENTS[element(k)];
   const els = roots(k).map(element);
   const count = e => els.filter(x => x === e).length;
   const ry = 30 + d * 4, rx = 34 + d * 5, cx = 60, cy = 104 - ry;
@@ -39,6 +39,7 @@ export function creatureSVG(k, { mood = 1, egg = false } = {}) {
     : `<path d="M${cx - 4} ${cy + 3} h8" stroke="#3a2a22" stroke-width="2.5" stroke-linecap="round"/>`;
   const ey = cy - ry * .32, ex = 11 + d;
 
+  if (gold) front += `<g class="kj-spark" fill="#fff8c4"><path d="M18 30 l3 -8 l3 8 l8 3 l-8 3 l-3 8 l-3 -8 l-8 -3Z"/><path d="M98 54 l2 -5 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2Z"/></g>`;
   return `<svg viewBox="0 0 120 120" class="kj-svg" aria-label="${k}">
   <ellipse class="kj-shadow" cx="${cx}" cy="108" rx="${rx * .8}" ry="5" fill="#0003"/>
   <g class="kj-body">${back}
@@ -53,10 +54,20 @@ export function creatureSVG(k, { mood = 1, egg = false } = {}) {
   </g></svg>`;
 }
 
-function eggSVG(el) {
-  const [fill, dark] = ELEMENTS[el];
+function eggSVG(el, gold) {
+  const [fill, dark] = gold ? ['#ffd95e', '#b07d10'] : ELEMENTS[el];
   return `<svg viewBox="0 0 120 120" class="kj-svg"><ellipse cx="60" cy="108" rx="26" ry="5" fill="#0003"/>
   <g class="kj-egg" style="transform-origin:60px 104px"><path d="M60 22 C88 22 92 70 92 80 C92 98 78 106 60 106 C42 106 28 98 28 80 C28 70 32 22 60 22Z" fill="#fffaf0" stroke="${dark}" stroke-width="3"/>
   <path d="M30 72 l10 -8 l10 8 l10 -8 l10 8 l10 -8 l10 8" stroke="${fill}" stroke-width="6" fill="none" stroke-linejoin="round"/>
   <circle cx="46" cy="44" r="6" fill="${fill}"/><circle cx="72" cy="52" r="4" fill="${fill}"/></g></svg>`;
+}
+
+// Objeto del santuario: base de piedra con su kanji y pips de nivel
+export function objSVG(o, def) {
+  const W = def.w * 60, H = def.h * 60;
+  return `<svg viewBox="0 0 ${W} ${H}" class="obj-svg" preserveAspectRatio="xMidYMax meet">
+    <rect x="4" y="${H * .18}" width="${W - 8}" height="${H * .78}" rx="12" fill="${def.col}" stroke="#2b2018" stroke-width="3"/>
+    <rect x="10" y="${H * .18 + 6}" width="${W - 20}" height="8" rx="4" fill="#fff3"/>
+    <text x="${W / 2}" y="${H * .58}" text-anchor="middle" dominant-baseline="central" font-size="${Math.min(W, H) * .42}" font-weight="900" fill="#fff" font-family="'Zen Maru Gothic',sans-serif">${def.k}</text>
+    <g fill="#ffd866" stroke="#2b2018" stroke-width="1.5">${Array.from({ length: o.lv }, (_, i) => `<circle cx="${W / 2 + (i - (o.lv - 1) / 2) * 11}" cy="${H * .9}" r="4"/>`).join('')}</g></svg>`;
 }

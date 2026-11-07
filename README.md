@@ -32,8 +32,13 @@ js/main.js      pantallas, santuario, UI
 ## Aprendizaje
 Dojo con repetición espaciada (Leitner), recuperación activa, intercalado de tipos de pregunta, mnemotecnias por kanji (y propias del jugador), audio japonés y descomposición en componentes. Evolucionar exige haber acertado el kanji al menos una vez.
 
-## Economía y espacio
-Cada criatura ocupa tantos espacios como su nivel KANJŪ. La tienda vende ampliaciones, objetos y decoraciones con tinta 墨. Si el santuario está lleno, las nuevas criaturas esperan en la puerta.
+## Economía y santuario
+- Grilla de 6 columnas: nivel 1 ocupa 1×1, nivel 2 ocupa 2×1, nivel 3 ocupa 2×2. Objetos también ocupan casillas.
+- Las criaturas colocadas producen tinta 墨 por hora: más si su kanji está dominado (maestría), si están felices, despiertas (★), doradas o junto a objetos con aura. Entrenarlas las inspira (×2 durante 1 h).
+- Almacén 蔵 para lo que no está en juego; la puerta 門 recibe lo que no entra.
+- Altar 召: invocaciones con tinta o boletos, piedad visible, variantes doradas; los duplicados despiertan estrellas.
+- Rango de guardián: sube con todo lo que hacés y desbloquea terreno y objetos. Calendario de 7 días que no se reinicia.
+- Lógica en `js/world.js`.
 
 Ver `ROADMAP.md` para el plan hacia las tiendas.
 
