@@ -86,6 +86,10 @@ export const LESSONS = [
   { k: '組', t: 'Los kanji se arman con piezas', ink: 20, body: `<p>Muchos kanji combinan otros más simples. Por eso podés <b>fusionar</b> criaturas:</p>
     <div class="kana-row"><span>木</span><em>+</em><span>木</span><em>=</em><span>林</span><em>+</em><span>木</span><em>=</em><span>森</span></div>
     <p>Árbol + árbol = arboleda. Arboleda + árbol = bosque. Si reconocés las piezas, adivinás el significado de kanji nuevos.</p>` },
+  { k: '部', t: 'Kanji con piezas', ink: 15, body: `<p>Muchos kanji llevan <b>piezas</b> (部品) que casi nunca aparecen solas, como 宀 <i>techo</i> o 儿 <i>piernas</i>.</p>
+    <div class="kana-row"><span>宀</span><em>+</em><span>子</span><em>=</em><span>字</span></div>
+    <p>Techo + niño = <b>letra</b>: un niño estudiando bajo techo. En KANJŪ las piezas son <b>accesorios</b>: se los equipás a una criatura para que evolucione, o los sumás en el laboratorio de fusión.</p>
+    <p>Las conseguís en la Tienda, en los viajes y completando estas lecciones.</p>` },
   { k: '語', t: 'Palabras con dos kanji', ink: 25, body: `<p>Juntando kanji se forman palabras: <b>日</b> (sol) + <b>本</b> (origen) = <b>日本</b> <i>nihon</i>, Japón: "el origen del sol".</p>
     <p>El juego Palabra 語 te entrena en esto. Leer las piezas te da una pista del significado.</p>
     <p>Para recordar mejor: escribí tu propia historia en la ficha de cada criatura (💡).</p>` },

@@ -1,5 +1,5 @@
 // KANJŪ · shop.js
-import { KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
+import { PIECES, KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
 import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
 import { GAMES, hasWord, hasParts, play, review, storyHTML, speak } from './games.js';
@@ -31,9 +31,15 @@ export function viewShop(v) {
     ${Object.entries(OBJS).map(([t, d]) => { const lock = S.rank.lv < d.rank, n = S.objs.filter(o => o.t === t).length;
       return `<div class="shop-row ${lock ? 'locked' : ''}"><div class="sv">${objSVG({ lv: 1 }, d)}</div><div><b>${d.name}${n ? ` · tenés ${n}` : ''}</b><small>${d.desc} · ocupa ${d.w}×${d.h}</small></div>
       <button class="btn ok" data-obj="${t}" ${lock || S.ink < objCost(t) ? 'disabled' : ''}>${lock ? `Rango ${d.rank}` : objCost(t) + ' 墨'}</button></div>`; }).join('')}
+    <h4>部品 Piezas <small>accesorios para evolucionar y fusionar</small></h4>
+    ${Object.entries(PIECES).map(([p, d]) => `<div class="shop-row"><i class="pc-i">${p}</i><div><b>${d.name} <small class="rmj">${d.rom}</small> · ${d.m}${S.pieces[p] ? ` · tenés ${S.pieces[p]}` : ''}</b><small>Forma ${d.ex}</small></div><button class="btn ok" data-piece="${p}" ${S.ink < d.cost ? 'disabled' : ''}>${d.cost} 墨</button></div>`).join('')}
     <h4>品 Consumibles</h4>
     ${ITEMS.map(it => `<div class="shop-row"><i>${it.k}</i><div><b>${it.name}${S.items[it.id] ? ` · tenés ${S.items[it.id]}` : ''}</b><small>${it.desc}</small></div><button class="btn ok" data-buy="${it.id}" ${S.ink < it.cost ? 'disabled' : ''}>${it.cost} 墨</button></div>`).join('')}
   </div>`;
+  v.querySelectorAll('[data-piece]').forEach(b => b.onclick = () => {
+    const p = b.dataset.piece; S.ink -= PIECES[p].cost; S.pieces[p] = (S.pieces[p] || 0) + 1; buzz(10);
+    toast(`部品 ${p} ${PIECES[p].name} guardada · equipala desde la ficha de una criatura`); go();
+  });
   v.querySelectorAll('[data-pull]').forEach(b => b.onclick = () => doPull(+b.dataset.pull));
   v.querySelectorAll('[data-obj]').forEach(b => b.onclick = () => {
     const t = b.dataset.obj, d = OBJS[t]; S.ink -= objCost(t); const o = newObj(t); buzz(12);

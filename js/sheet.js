@@ -12,6 +12,7 @@ import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCos
 import { $, buzz, esc, home, ui, go, hud, toast, modal, floatText } from './main.js';
 import { rankUp } from './sanctuary.js';
 import { STROKES } from './strokes.js';
+import { PIECES, isPiece } from './data.js';
 
 // ---------- Hoja de criatura ----------
 export function openCreature(id) {
@@ -21,7 +22,7 @@ export function openCreature(id) {
   const evos = evolutionsOf(c.k);
   const m = modal(`
     <div class="cr-top" style="--el:${fill}">
-      <button class="cr-art" id="pet">${creatureSVG(c.k, { mood: c.mood })}</button>
+      <button class="cr-art" id="pet">${creatureSVG(c.k, { mood: c.mood, gold: c.gold })}${c.acc ? `<span class="acc-hat big">${c.acc}</span>` : ''}</button>
       <div class="cr-name"><span class="big-k">${c.k}</span><div><b>${K.m}</b><small>${ELEMENTS[element(c.k)][2]} · Nivel KANJŪ ${kLevel(c.k)}${c.gen ? ` · Gen ${c.gen}` : ''}</small></div></div>
       <div class="reads"><button class="say" id="say">🔊</button><span>音 ${K.on.map(rr).join('・') || '—'}</span><span>訓 ${K.kun.map(rr).join('・') || '—'}</span><span class="mast" title="Maestría">熟 ${'★'.repeat(mastery(c.k))}${'☆'.repeat(Math.max(0, 6 - mastery(c.k)))}</span></div>
     </div>
@@ -40,6 +41,7 @@ export function openCreature(id) {
     ${S.items.scroll ? `<button class="btn ghost wide" id="scroll">巻 Usar pergamino (+60 EXP) · ${S.items.scroll}</button>` : ''}
     <details class="story-d"><summary>💡 Historia para recordarlo</summary>${storyHTML(c.k)}
       <textarea id="note" maxlength="160" placeholder="Escribí tu propia historia: las que inventás vos se recuerdan mejor">${esc(S.notes?.[c.k] || '')}</textarea></details>
+    ${accHTML(c)}
     <h4>進化 Evoluciones</h4>
     <div class="evos">${evos.length ? evos.map(t => evoCard(c, t)).join('') : '<p class="muted">Forma final en este santuario. Llegá a Lv MAX para renacer.</p>'}</div>
     ${K.recipes ? `<p class="muted">Composición: ${K.recipes.map(r => r.join(' + ')).join('  ·  ')}${K.note ? ` — ${K.note}` : ''}</p>` : ''}
@@ -64,18 +66,25 @@ export function openCreature(id) {
     rebirth(c); m.close(); ui.tab = 'home'; go(); toast('Un huevo apareció en el santuario. Tocalo 3 veces.');
   };
   m.querySelectorAll('[data-evo]').forEach(b => b.onclick = () => { m.close(); evolveFX(c, b.dataset.evo); });
+  m.querySelectorAll('[data-eq]').forEach(b => b.onclick = () => {
+    const p = b.dataset.eq;
+    if (c.acc) S.pieces[c.acc] = (S.pieces[c.acc] || 0) + 1;
+    if (p) { S.pieces[p]--; c.acc = p; buzz(15); toast(`${c.k} se puso ${p} ${PIECES[p].m}`); } else { c.acc = null; toast('Pieza devuelta al inventario'); }
+    save(); m.close(); go(); setTimeout(() => openCreature(id), 220);
+  });
 }
 export function evoCard(c, t) {
   const need = evoLevel(t), rec = KANJI[t].recipes.find(r => r.includes(c.k));
   const others = [...rec]; others.splice(others.indexOf(c.k), 1);
-  const missing = [...new Set(others)].filter(o => !S.dex[o]?.owned);
+  const piece = others.find(isPiece), pieceOk = !piece || c.acc === piece;
+  const missing = [...new Set(others)].filter(o => !isPiece(o) && !S.dex[o]?.owned);
   const gate = learnGate(t), learned = mastery(c.k) >= gate, room = true;
-  const ok = c.lv >= need && !missing.length && learned && room;
+  const ok = c.lv >= need && !missing.length && learned && room && pieceOk;
   const known = S.dex[t]?.seen;
   return `<button class="evo ${ok ? 'ready' : ''}" data-evo="${t}" ${ok ? '' : 'disabled'}>
     <div class="evo-k ${known ? '' : 'unk'}">${known ? t : '？'}</div>
     <div><b>${known ? KANJI[t].m : 'Desconocido'}</b><small>${c.k} + ${others.join(' + ')}</small>
-    <small class="${c.lv >= need ? 'g' : ''}">Lv ${need}</small>${missing.length ? `<small class="r">Conocé: ${missing.join(' ')}</small>` : ''}${learned ? '' : `<small class="r">Dominá ${c.k}: maestría ${mastery(c.k)}/${gate} (repasalo en el Dojo en días distintos)</small>`}${room ? '' : `<small class="r">Necesitás ${size(t) - size(c.k)} espacio más</small>`}</div></button>`;
+    <small class="${c.lv >= need ? 'g' : ''}">Lv ${need}</small>${missing.length ? `<small class="r">Conocé: ${missing.join(' ')}</small>` : ''}${pieceOk ? '' : `<small class="r">Equipá la pieza ${piece} ${PIECES[piece].m} (${S.pieces[piece] ? `tenés ${S.pieces[piece]}` : 'conseguila en la Tienda, viajes o la Academia'})</small>`}${learned ? '' : `<small class="r">Dominá ${c.k}: maestría ${mastery(c.k)}/${gate} (repasalo en el Dojo en días distintos)</small>`}${room ? '' : `<small class="r">Necesitás ${size(t) - size(c.k)} espacio más</small>`}</div></button>`;
 }
 export function openTraining(c, parent) {
   const games = Object.entries(GAMES).filter(([id]) => (id !== 'word' || hasWord(c.k)) && (id !== 'parts' || hasParts(c.k)) && (id !== 'trace' || STROKES[c.k]?.length));
@@ -106,14 +115,22 @@ export function openTraining(c, parent) {
 }
 
 // ---------- Secuencia de evolución / fusión ----------
-export function evolveFX(c, to, from = [c.k]) {
+export function evolveFX(c, to, from = c.acc && KANJI[to].recipes.some(r => r.includes(c.acc)) ? [c.k, c.acc] : [c.k]) {
   const fx = document.createElement('div'); fx.className = 'evofx';
   fx.innerHTML = `<div class="rays"></div><div class="parts">${from.map(k => `<span>${k}</span>`).join('')}</div>
     <div class="old">${creatureSVG(from[0])}</div><div class="new">${creatureSVG(to, { mood: 1 })}</div>
     <div class="evo-cap"><span class="big-k">${to}</span><b>${KANJI[to].m}</b><small>${KANJI[to].on.join('・')} · ${KANJI[to].kun.join('・')}</small><small>${from.join(' + ')} = ${to} · Nivel KANJŪ ${kLevel(to)}</small><p class="evo-mn">💡 ${KANJI[to].mn}</p><button class="btn ok">¡Genial!</button></div>`;
-  if (from.length === 1) { evolve(c, to); if (settle(c) === 'store') setTimeout(() => toast(`${to} creció y no entra en su lugar: está en el almacén`), 2600); }
+  if (from[0] === c.k && byId(c.id)) { evolve(c, to); if (settle(c) === 'store') setTimeout(() => toast(`${to} creció y no entra en su lugar: está en el almacén`), 2600); }
   addXP(40);
   document.body.append(fx); buzz([20, 60, 40]); bump('evo');
   save();
   $('.btn', fx).onclick = () => { fx.classList.add('out'); setTimeout(() => fx.remove(), 300); go(); };
+}
+
+// Accesorio 部品: piezas útiles para las evoluciones de esta criatura
+export function accHTML(c) {
+  const useful = [...new Set(evolutionsOf(c.k).flatMap(t => KANJI[t].recipes.filter(r => r.includes(c.k)).flat()).filter(isPiece))];
+  if (!useful.length && !c.acc) return '';
+  return `<h4>部品 Accesorio</h4><div class="acc-row">${c.acc ? `<div class="acc-on"><span>${c.acc}</span><div><b>${PIECES[c.acc].name}</b><small>${PIECES[c.acc].m} · se consume al evolucionar</small></div><button class="btn ghost" data-eq="">Quitar</button></div>` : ''}
+    ${useful.filter(p => p !== c.acc).map(p => `<button class="acc-opt" data-eq="${p}" ${S.pieces[p] ? '' : 'disabled'}><span>${p}</span><small>${PIECES[p].m}<br>${S.pieces[p] ? `Equipar · tenés ${S.pieces[p]}` : 'No tenés'}</small></button>`).join('')}</div>`;
 }

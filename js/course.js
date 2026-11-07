@@ -26,6 +26,15 @@ export const UNITS = [
     { id: 'tip1', type: 'tip', tip: 1, name: 'Lecturas 音 y 訓' },
     { id: 'tip2', type: 'tip', tip: 2, name: 'Los kana' },
   ] },
+  { id: 'up', name: 'Piezas 部品', color: '#8a5a2e', free: true, reward: { tickets: 1 }, lessons: [
+    { id: 'p0', type: 'tip', tip: 4, name: 'Kanji con piezas' },
+    { id: 'p1', type: 'piece', piece: '宀', name: '宀 techo' },
+    { id: 'p2', type: 'piece', piece: '儿', name: '儿 piernas' },
+    { id: 'p3', type: 'piece', piece: '攵', name: '攵 golpear' },
+    { id: 'p4', type: 'piece', piece: '辶', name: '辶 camino' },
+    { id: 'p5', type: 'piece', piece: '广', name: '广 techo abierto' },
+    { id: 'p6', type: 'piece', piece: '亠', name: '亠 tapa' },
+  ] },
   { id: 'u1', name: 'Hiragana I', color: '#ff8a3d', reward: { tickets: 2 }, lessons: [
     { id: 'h1', type: 'kana', name: 'Vocales', chars: 'あいうえお', words: kanaWords.a },
     { id: 'h2', type: 'kana', name: 'Fila K', chars: 'かきくけこ', words: kanaWords.ka },

@@ -46,6 +46,15 @@ export const KANJI = {
   '相': { m: 'mutuo', on: ['ソウ', 'ショウ'], kun: ['あい'], recipes: [['木', '目']], form: 'izquierda-derecha', mn: 'Un ojo mira al árbol y el árbol le devuelve la mirada.' },
   '思': { m: 'pensar', on: ['シ'], kun: ['おも(う)'], recipes: [['田', '心']], form: 'arriba-abajo', note: 'componente con forma de 田', mn: 'Un campo de ideas sobre el corazón: pensar.' },
   '加': { m: 'añadir', on: ['カ'], kun: ['くわ(える)'], recipes: [['力', '口']], form: 'izquierda-derecha', mn: 'La fuerza de una voz de aliento: añadir.' },
+  // — Primera composición con piezas 部品 —
+  '字': { m: 'letra', on: ['ジ'], kun: ['あざ'], recipes: [['宀', '子']], form: 'arriba-abajo', mn: 'Un niño bajo el techo, aprendiendo a escribir letras.' },
+  '安': { m: 'tranquilo · barato', on: ['アン'], kun: ['やす(い)'], recipes: [['宀', '女']], form: 'arriba-abajo', mn: 'Una mujer en casa bajo el techo: todo está en paz.' },
+  '見': { m: 'ver', on: ['ケン'], kun: ['み(る)'], recipes: [['目', '儿']], form: 'arriba-abajo', mn: 'Un ojo con piernas que sale a ver el mundo.' },
+  '兄': { m: 'hermano mayor', on: ['ケイ', 'キョウ'], kun: ['あに'], recipes: [['口', '儿']], form: 'arriba-abajo', mn: 'Una boca grande sobre piernas: el hermano mayor que da órdenes.' },
+  '枚': { m: 'hoja · contador de cosas planas', on: ['マイ'], kun: [], recipes: [['木', '攵']], form: 'izquierda-derecha', mn: 'Golpear la madera hasta sacar láminas planas.' },
+  '近': { m: 'cerca', on: ['キン'], kun: ['ちか(い)'], recipes: [['斤', '辶']], form: 'envolvente', mn: 'Caminar con el hacha hasta el árbol más cercano.' },
+  '床': { m: 'piso · cama', on: ['ショウ'], kun: ['とこ', 'ゆか'], recipes: [['广', '木']], form: 'envolvente', mn: 'Madera bajo un techo abierto: el piso de la casa.' },
+  '享': { m: 'recibir · disfrutar', on: ['キョウ'], kun: [], recipes: [['亠', '口', '子']], form: 'arriba-abajo', note: 'tres piezas: 亠, 口 y 子', mn: 'Bajo la tapa, una boca alimenta a un niño: recibir y disfrutar.' },
   '音': { m: 'sonido', on: ['オン', 'イン'], kun: ['おと', 'ね'], recipes: [['立', '日']], form: 'arriba-abajo', mn: 'Alguien de pie bajo el sol, cantando: un sonido.' },
   '新': { m: 'nuevo', on: ['シン'], kun: ['あたら(しい)', 'あら(た)'], recipes: [['立', '木', '斤']], form: 'izquierda-derecha', note: 'tres piezas: 立 y 木 a la izquierda, 斤 a la derecha', mn: 'Cortar un árbol con el hacha: madera nueva.' },
   // — Composición intermedia —
@@ -55,6 +64,9 @@ export const KANJI = {
   '盟': { m: 'alianza', on: ['メイ'], kun: [], recipes: [['明', '皿']], form: 'arriba-abajo', mn: 'Una promesa brillante sellada sobre un plato.' },
   '枯': { m: 'marchitarse', on: ['コ'], kun: ['か(れる)'], recipes: [['木', '古']], form: 'izquierda-derecha', mn: 'Un árbol muy antiguo se marchita.' },
   '想': { m: 'imaginar', on: ['ソウ', 'ソ'], kun: [], recipes: [['相', '心']], form: 'arriba-abajo', mn: 'Mirar con el corazón: imaginar.' },
+  '案': { m: 'plan · propuesta', on: ['アン'], kun: [], recipes: [['安', '木']], form: 'arriba-abajo', mn: 'Una mesa de madera en la casa tranquila: ahí se hacen los planes.' },
+  '視': { m: 'mirar con atención', on: ['シ'], kun: [], recipes: [['示', '見']], form: 'izquierda-derecha', note: '示 aparece como 礻', mn: 'Mirar el altar con mucha atención.' },
+  '故': { m: 'razón · difunto', on: ['コ'], kun: ['ゆえ'], recipes: [['古', '攵']], form: 'izquierda-derecha', mn: 'Golpear algo antiguo para buscar la razón de las cosas.' },
   '喿': { m: 'piar de pájaros', on: ['ソウ'], kun: [], recipes: [['品', '木']], form: 'arriba-abajo', note: 'carácter componente, casi no se usa solo', mn: 'Tres bocas sobre un árbol: pájaros cantando en las ramas.' },
   '禁': { m: 'prohibir', on: ['キン'], kun: [], recipes: [['林', '示']], form: 'arriba-abajo', mn: 'Una arboleda sagrada sobre un altar: está prohibido entrar.' },
   '意': { m: 'intención · mente', on: ['イ'], kun: [], recipes: [['音', '心']], form: 'arriba-abajo', mn: 'El sonido del corazón: lo que querés decir.' },
@@ -85,6 +97,7 @@ export const WORDS = [
   ['一体', 'いったい', 'un solo cuerpo'], ['口火', 'くちび', 'chispa inicial'],
   ['水田', 'すいでん', 'arrozal inundado'], ['手本', 'てほん', 'modelo / ejemplo'], ['新人', 'しんじん', 'novato'],
   ['本音', 'ほんね', 'verdadera intención'], ['一億', 'いちおく', 'cien millones'], ['人手', 'ひとで', 'mano de obra'],
+  ['安心', 'あんしん', 'tranquilidad'], ['見本', 'みほん', 'muestra'], ['一枚', 'いちまい', 'una hoja'], ['故人', 'こじん', 'el difunto'],
   ['水力', 'すいりょく', 'fuerza hidráulica'], ['新月', 'しんげつ', 'luna nueva'], ['木立', 'こだち', 'arboleda'],
 ];
 
@@ -122,6 +135,18 @@ export const EXPANSIONS = [40, 90, 160, 260, 400, 600];
 // Repetición espaciada (cajas de Leitner), en horas
 export const SRS_HOURS = [0, 8, 24, 72, 168, 384, 840];
 
+// Piezas 部品: componentes que no son criaturas. Se usan como accesorios para evolucionar y fusionar.
+// Para el nivel KANJŪ cuentan como nivel 1 (componentes fundamentales).
+export const PIECES = {
+  '宀': { name: 'うかんむり', rom: 'ukanmuri', m: 'techo', cost: 40, mn: 'El techo de una casa: lo que está debajo está protegido.', ex: '字 安 案' },
+  '儿': { name: 'ひとあし', rom: 'hitoashi', m: 'piernas', cost: 40, mn: 'Dos piernas que caminan: algo que se mueve.', ex: '見 兄 視' },
+  '攵': { name: 'のぶん', rom: 'nobun', m: 'golpear · actuar', cost: 45, mn: 'Una mano con un palo: hacer algo con fuerza.', ex: '枚 故' },
+  '辶': { name: 'しんにょう', rom: 'shinnyō', m: 'camino · avanzar', cost: 45, mn: 'Un camino que avanza por debajo: moverse.', ex: '近' },
+  '广': { name: 'まだれ', rom: 'madare', m: 'techo abierto', cost: 40, mn: 'Un techo apoyado de un solo lado: un cobertizo.', ex: '床' },
+  '亠': { name: 'なべぶた', rom: 'nabebuta', m: 'tapa', cost: 35, mn: 'La tapa de una olla.', ex: '享' },
+};
+export const isPiece = k => k in PIECES;
+
 const memo = {};
 export function depth(k) {
   if (k in memo) return memo[k];
@@ -134,9 +159,10 @@ export const size = k => kLevel(k);
 
 export function element(k) {
   const d = KANJI[k];
-  return d.el || element(d.recipes[0][0]);
+  return d.el || element(d.recipes[0].find(p => !isPiece(p)));
 }
 export function roots(k) {
+  if (isPiece(k)) return [];
   const r = KANJI[k].recipes;
   return r ? r[0].flatMap(roots) : [k];
 }

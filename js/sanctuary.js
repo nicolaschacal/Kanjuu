@@ -1,5 +1,5 @@
 // KANJŪ · sanctuary.js
-import { KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
+import { PIECES, KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
 import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
 import { GAMES, hasWord, hasParts, play, review, storyHTML, speak } from './games.js';
@@ -66,7 +66,7 @@ export function itemHTML(it) {
   if (it.t) return `<div class="it obj" data-it="${it.id}" style="${style}">${objSVG(it, OBJS[it.t])}${bub}</div>`;
   if (it.away) return `<div class="it away" data-it="${it.id}" style="${style}"><span>旅</span><small>${it.k} de viaje</small></div>`;
   return `<div class="it mon ${it.egg ? 'egg' : ''} ${it.insp > Date.now() ? 'insp' : ''}" data-it="${it.id}" style="${style}">
-    <div class="flip">${creatureSVG(it.k, { mood: it.mood, egg: it.egg, gold: it.gold })}</div>
+    <div class="flip">${creatureSVG(it.k, { mood: it.mood, egg: it.egg, gold: it.gold })}</div>${it.acc ? `<span class="acc-hat">${it.acc}</span>` : ''}
     <div class="tag">${it.egg ? '¿?' : `Lv${it.lv}${it.stars ? ' ' + '★'.repeat(it.stars) : ''}`}</div>${bub}</div>`;
 }
 export function harvest(list, el) {
@@ -135,6 +135,7 @@ export function buyRow() {
 export function openStorage() {
   const list = stored();
   const m = modal(`<h3>蔵 Almacén <small class="muted">${list.length}/${S.storeCap}</small></h3>
+    ${Object.keys(PIECES).some(p => S.pieces[p]) ? `<div class="pc-inv">部品 ${Object.keys(PIECES).filter(p => S.pieces[p]).map(p => `<span>${p}<i>×${S.pieces[p]}</i></span>`).join('')}<small>Las piezas no ocupan lugar · se equipan desde la ficha</small></div>` : ''}
     <p class="muted">Lo guardado no ocupa casillas ni produce tinta. Las criaturas guardadas pueden fusionarse y despertarse.</p>
     ${S.gate.length ? `<h4>門 En la puerta (almacén lleno)</h4>${S.gate.map((g, i) => `<div class="shop-row"><div class="gate-mon">${creatureSVG(g.k, { gold: g.gold })}</div><div><b>${g.k} · ${KANJI[g.k].m}</b></div><button class="btn ok" data-gin="${i}" ${storeFree() > 0 || findSpot(...foot({ k: g.k })) ? '' : 'disabled'}>Recibir</button><button class="btn ghost" data-gout="${i}">+${6 + kLevel(g.k) * 4}墨</button></div>`).join('')}` : ''}
     <div class="store-grid">${list.map(it => `<button class="st-it" data-s="${it.id}">${it.t ? objSVG(it, OBJS[it.t]) : creatureSVG(it.k, { egg: it.egg, gold: it.gold })}<small>${it.t ? `${OBJS[it.t].name} Nv${it.lv}` : `${it.k} Lv${it.lv}${it.stars ? ' ★' + it.stars : ''}`}</small><em>${foot(it).join('×')}</em></button>`).join('') || '<p class="muted">Vacío</p>'}</div>

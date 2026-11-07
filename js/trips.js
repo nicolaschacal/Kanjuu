@@ -1,5 +1,5 @@
 // KANJŪ · trips.js
-import { KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
+import { PIECES, KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
 import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
 import { GAMES, hasWord, hasParts, play, review, storyHTML, speak } from './games.js';
@@ -76,8 +76,10 @@ export function collect(c) {
     S.tracks[r.id] = t + gained;
     r.drops.forEach(k => Math.random() < .5 && see(k));
     const roll = Math.random();
-    if (roll < .15) { S.items.scroll = (S.items.scroll || 0) + 1; bonus = '巻 Encontró un pergamino de saber'; }
-    else if (roll < .3) { S.items.wind = (S.items.wind || 0) + 1; bonus = '風 Encontró un viento veloz'; }
+    const usefulP = Object.keys(PIECES).filter(p => Object.values(KANJI).some(K => K.recipes?.some(r => r.includes(p) && r.some(x => S.dex[x]?.owned))));
+    if (roll < .12 && usefulP.length) { const p = usefulP[Math.random() * usefulP.length | 0]; S.pieces[p] = (S.pieces[p] || 0) + 1; bonus = `部品 Encontró la pieza ${p} (${PIECES[p].m})`; }
+    else if (roll < .25) { S.items.scroll = (S.items.scroll || 0) + 1; bonus = '巻 Encontró un pergamino de saber'; }
+    else if (roll < .37) { S.items.wind = (S.items.wind || 0) + 1; bonus = '風 Encontró un viento veloz'; }
     else { const extra = Math.round(ink * .6); ink += extra; bonus = `Juntó tinta extra en el camino`; }
   }
   S.ink += ink;

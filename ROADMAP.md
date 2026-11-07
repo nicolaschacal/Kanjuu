@@ -43,7 +43,9 @@ Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. El arte definitivo queda p
 - ⬜ Estadísticas de retención para el jugador (curva del olvido personal)
 
 ## 3. Contenido
-- ✅ 62 kanji en los 5 niveles KANJŪ (24 fundamentales; recetas verificadas con KanjiVG, ver docs/NIVELES.md)
+- ✅ 73 kanji en los 5 niveles KANJŪ (24 fundamentales; recetas verificadas con KanjiVG, ver docs/NIVELES.md)
+- ✅ Piezas 部品 como accesorios (宀 儿 攵 辶 广 亠): se equipan para evolucionar o se suman en la fusión; se consiguen en Tienda, viajes y Academia
+- 🔜 Más piezas (冖 疒 彳 尸 门…) y los kanji comunes que habilitan
 - 🔜 Pipeline de datos: kanji + componentes + lecturas desde KANJIDIC2 / KanjiVG, revisión humana de recetas
 - 🔜 Llevar a 100 kanji (todo N5) con niveles KANJŪ 4–5
 - ⬜ Temporadas temáticas (estaciones del año, festivales) con regiones nuevas

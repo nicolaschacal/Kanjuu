@@ -13,7 +13,7 @@ function fresh() {
 }
 // Completa campos nuevos en partidas viejas
 export function norm(s) {
-  s.gate ??= []; s.srs ??= {}; s.ach ??= []; s.items ??= {};
+  s.gate ??= []; s.pieces ??= {}; s.srs ??= {}; s.ach ??= []; s.items ??= {};
   s.weekly ??= { week: weekKey(), p: {}, claimed: [] };
   Object.keys(s.dex || {}).forEach(k => s.dex[k].owned && (s.srs[k] ??= { box: 0, due: 0, ok: 0, miss: 0 }));
   return s;
@@ -69,12 +69,15 @@ export function giveExp(c, amount) {
 }
 
 export function evolve(c, to) {
+  if (c.acc && KANJI[to].recipes.some(r => r.includes(c.acc) && r.includes(c.k))) c.acc = null; // la pieza equipada se consume
   c.k = to; c.lv = 1; c.exp = 0; c.hist.push(to); own(to); S.stats.evolutions++; return true;
 }
 
 // Fusión: consume las criaturas y crea el carácter resultante
-export function fuse(ids, to) {
+export function fuse(ids, to, pieces = []) {
   const used = ids.map(byId);
+  pieces.forEach(p => S.pieces[p]--);
+  used.forEach(c => { if (c.acc) { S.pieces[c.acc] = (S.pieces[c.acc] || 0) + 1; c.acc = null; } });
   S.creatures = S.creatures.filter(c => !ids.includes(c.id));
   S.stats.fusions++;
   return addCreature(to, {
@@ -87,6 +90,7 @@ export function fuse(ids, to) {
 // Renacimiento: vuelve a su componente fundamental con un legado permanente
 // Liberar: la criatura vuelve a la naturaleza y deja tinta
 export function release(c) {
+  if (c.acc) { S.pieces[c.acc] = (S.pieces[c.acc] || 0) + 1; c.acc = null; }
   const ink = 4 + size(c.k) * 6 + c.lv;
   S.creatures = S.creatures.filter(x => x !== c); S.ink += ink; return ink;
 }

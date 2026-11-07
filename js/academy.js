@@ -1,6 +1,6 @@
 // Academia: camino de lecciones al estilo Duolingo con kana, gramática y lecturas graduadas.
 import { S, save, mastery } from './state.js';
-import { SRS_HOURS } from './data.js';
+import { SRS_HOURS, KANJI, PIECES } from './data.js';
 import { UNITS, STORIES } from './course.js';
 import { LESSONS, romaji, helpOn } from './help.js';
 import { speak } from './games.js';
@@ -28,8 +28,9 @@ function unlocked(L) {
   const i = L.unit.lessons.findIndex(x => x.id === L.id);
   if (i > 0) return !!crowns(L.unit.lessons[i - 1].id);
   const ui = UNITS.indexOf(L.unit);
-  if (L.type === 'story') return true; // las lecturas dependen de tus kanji, no del camino
-  return ui === 0 || UNITS[ui - 1].lessons.every(x => crowns(x.id));
+  if (L.type === 'story' || L.unit.free) return true; // lecturas y piezas: se pueden hacer en cualquier momento
+  const prev = UNITS.slice(0, ui).reverse().find(u => !u.free); // las unidades libres no bloquean el camino
+  return !prev || prev.lessons.every(x => crowns(x.id));
 }
 const storyReady = st => st.kanji.filter(k => S.dex[k]?.owned).length >= Math.ceil(st.kanji.length / 2);
 
@@ -73,6 +74,20 @@ function buildReview(L) {
   return shuffle(ex);
 }
 
+// ---------- Piezas 部品 ----------
+function buildPiece(L) {
+  const p = L.piece, d = PIECES[p], others = Object.keys(PIECES).filter(x => x !== p);
+  const withP = Object.keys(KANJI).filter(k => KANJI[k].recipes?.some(r => r.includes(p)));
+  const without = Object.keys(KANJI).filter(k => !withP.includes(k) && KANJI[k].recipes);
+  const ex = [{ t: 'note', html: `<div class="pc-card"><span>${p}</span><b>${d.name}</b><i>${d.rom}</i><p>${d.m}</p></div><p>💡 ${d.mn}</p><p>No es un kanji que se use solo: es una <b>pieza</b> que aparece dentro de otros. Aparece en: <b class="jp">${withP.join(' ')}</b></p>` }];
+  withP.forEach(k => ex.push({ t: 'note', html: `<div class="pc-card"><span>${k}</span><b>${KANJI[k].m}</b></div><p>${KANJI[k].recipes.find(r => r.includes(p)).join(' + ')} = ${k}</p><p>💡 ${KANJI[k].mn}</p>` }));
+  ex.push({ t: 'q', q: `¿Qué significa la pieza <b class="jp">${p}</b>?`, a: d.m, opts: [d.m, ...shuffle(others).slice(0, 3).map(x => PIECES[x].m)] });
+  ex.push({ t: 'q', q: `¿Cómo se llama la pieza <b class="jp">${p}</b>?`, a: d.name, opts: [d.name, ...shuffle(others).slice(0, 3).map(x => PIECES[x].name)] });
+  withP.forEach(k => ex.push({ t: 'q', q: `¿Qué kanji contiene ${p} (${d.m})?`, a: k, opts: [k, ...shuffle(without).slice(0, 3)] }));
+  withP.slice(0, 2).forEach(k => ex.push({ t: 'q', q: `¿Qué significa <b class="jp">${k}</b>?`, a: KANJI[k].m, opts: [KANJI[k].m, ...shuffle(Object.keys(KANJI).filter(x => x !== k)).slice(0, 3).map(x => KANJI[x].m)] }));
+  return ex;
+}
+
 // ---------- Lectura graduada ----------
 const toks = line => line.replace(/([㐀-鿿々]+)\{([^}]+)\}/g, (_, k, y) => {
   const known = [...k].every(c => mastery(c) >= 3);
@@ -93,6 +108,7 @@ export function runLesson(L, root, custom) {
   else if (L.type === 'tense') queue = buildTense(L);
   else if (L.type === 'review') queue = buildReview(L);
   else if (L.type === 'story') { const st = STORIES[L.story]; queue = [{ t: 'read', st }, ...st.qs.map(([q, a, o]) => ({ t: 'q', q, a, opts: [a, ...o] }))]; }
+  else if (L.type === 'piece') queue = buildPiece(L);
   else queue = [{ t: 'note', html: `<h3>${LESSONS[L.tip].t}</h3>${LESSONS[L.tip].body}` }];
   const total = queue.filter(e => !['intro', 'vintro', 'note', 'read'].includes(e.t)).length || 1;
   let done = 0, mistakes = 0, combo = 0, best = 0, retries = 0; const missed = new Set();
@@ -242,7 +258,7 @@ export function openAcademy(ctx) {
         <div class="path">${u.lessons.map((l0, i) => { const l = byId(l0.id);
           const on = unlocked(l), c = crowns(l.id), st = l.type === 'story' ? STORIES[l.story] : null, ready = !st || storyReady(st);
           const isCur = on && !c && firstOpen && ready; if (isCur) firstOpen = false;
-          const icon = l.type === 'kana' ? chars(l)[0] : { tip: '💡', phrase: '語', tense: '時', review: '↻', story: '読' }[l.type];
+          const icon = l.type === 'kana' ? chars(l)[0] : l.type === 'piece' ? l.piece : { tip: '💡', phrase: '語', tense: '時', review: '↻', story: '読' }[l.type];
           return `<div class="pnode" style="--off:${[0, 1, 2, 1, 0, -1, -2, -1][i % 8]}"><button class="node ${c ? 'done' : ''} ${on && ready ? '' : 'lock'} ${isCur ? 'cur' : ''}" data-l="${l.id}">${on && ready ? icon : '🔒'}${c ? `<i class="cr">${'👑'.repeat(c)}</i>` : ''}</button>${isCur ? '<span class="start">EMPEZAR</span>' : ''}<small>${l.name}</small></div>`;
         }).join('')}</div></section>`;
       }).join('')}</div>
@@ -265,6 +281,8 @@ export function openAcademy(ctx) {
     const res = await runLesson(L, document.body);
     if (!res) return;
     const first = !crowns(L.id);
+    let pieceMsg = '';
+    if (first && L.type === 'piece') { S.pieces ??= {}; S.pieces[L.piece] = (S.pieces[L.piece] || 0) + 1; pieceMsg = `<p class="g">部品 Ganaste la pieza ${L.piece}: equipala desde la ficha de una criatura</p>`; }
     a.done[L.id] = Math.min(3, crowns(L.id) + 1);
     const xp = (L.type === 'tip' ? 5 : 10) + (res.perfect ? 5 : 0) + Math.min(5, res.best >> 1);
     a.xp += xp; a.day.xp += xp; learnItems(L);
@@ -277,7 +295,7 @@ export function openAcademy(ctx) {
     save();
     const m = ctx.modal(`<div class="result"><h3>${res.perfect ? '¡Lección perfecta!' : '¡Lección completada!'}</h3>
       <div class="lr-stats"><div><b>+${xp}</b><small>XP</small></div><div><b>${Math.round((1 - res.mistakes / Math.max(res.total, res.mistakes + 1)) * 100)}%</b><small>precisión</small></div><div><b>${res.best}</b><small>mejor racha</small></div></div>
-      <p><b>+${ink} 墨</b>${first ? '' : ` · 👑 ${crowns(L.id)}/3`}</p>${unitMsg}${goalHit ? '<p class="g">🎯 ¡Meta diaria cumplida! +30 墨</p>' : ''}
+      <p><b>+${ink} 墨</b>${first ? '' : ` · 👑 ${crowns(L.id)}/3`}</p>${pieceMsg}${unitMsg}${goalHit ? '<p class="g">🎯 ¡Meta diaria cumplida! +30 墨</p>' : ''}
       <button class="btn ok wide">Continuar</button></div>`);
     $('.btn', m).onclick = () => { m.close(); render(); if (ups.length) ctx.rankUp(ups); };
   }

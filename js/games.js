@@ -1,4 +1,4 @@
-import { KANJI, WORDS, reads, plain } from './data.js';
+import { KANJI, WORDS, PIECES, isPiece, reads, plain } from './data.js';
 import { STROKES } from './strokes.js';
 import { S } from './state.js';
 import { rr, romaji, helpOn } from './help.js';
@@ -28,7 +28,7 @@ export function speak(text) {
 export function storyHTML(k) {
   const K = KANJI[k];
   return `<div class="story"><span class="story-k">${k}</span><div><b>${K.m}</b><small>${reads(k).map(rr).join('・') || '—'}</small>
-    ${K.recipes ? `<div class="story-parts">${K.recipes[0].map(p => `<span>${p}<i>${KANJI[p].m}</i></span>`).join('<em>+</em>')}</div>` : ''}
+    ${K.recipes ? `<div class="story-parts">${K.recipes[0].map(p => `<span class="${isPiece(p) ? 'pc' : ''}">${p}<i>${(KANJI[p] || PIECES[p]).m}</i></span>`).join('<em>+</em>')}</div>` : ''}
     <p>💡 ${K.mn}</p>${S.notes?.[k] ? `<p class="mine">✍ ${S.notes[k].replace(/</g, '&lt;')}</p>` : ''}</div></div>`;
 }
 export const hasWord = k => WORDS.some(w => w[0].includes(k));
@@ -152,7 +152,7 @@ function parts(k, know, body, end) {
   body.innerHTML = `<p class="hint">Construí el kanji de <b>«${KANJI[k].m}»</b></p>
     <div class="target ${know < 2 ? 'peek' : ''}">${know < 2 ? k : '？'}</div>
     <div class="slots-row">${rec.map(() => '<span class="pslot"></span>').join('<em>+</em>')}</div>
-    <div class="tiles">${tiles.map((t, i) => `<button class="tile" data-i="${i}">${t}<small>${KANJI[t].m}</small></button>`).join('')}</div>`;
+    <div class="tiles">${tiles.map((t, i) => `<button class="tile" data-i="${i}">${t}<small>${(KANJI[t] || PIECES[t]).m}</small></button>`).join('')}</div>`;
   const slots = body.querySelectorAll('.pslot');
   body.querySelectorAll('.tile').forEach(b => b.onclick = () => {
     const t = tiles[b.dataset.i], need = [...rec];
