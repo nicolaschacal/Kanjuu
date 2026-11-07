@@ -1,4 +1,5 @@
 // KANJŪ · trips.js
+import { ic } from './icons.js';
 import { PIECES, KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
 import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
@@ -26,14 +27,14 @@ export function viewExp(v) {
   ${REGIONS.map(r => {
     const c = S.creatures.find(x => x.away?.region === r.id), lock = n < r.need;
     let inner;
-    if (lock) inner = `<p class="muted">封 Obtené ${r.need} kanji para desbloquear (${n}/${r.need})</p>`;
+    if (lock) inner = `<p class="muted lockline">${ic('lock')} Obtené ${r.need} kanji para desbloquear (${n}/${r.need})</p>`;
     else if (c) {
       const left = Math.max(0, c.away.end - Date.now()), done = !left;
       inner = `<div class="trip"><div class="trip-mon ${done ? '' : 'walking'}">${creatureSVG(c.k)}</div><div class="trip-info"><b>${c.k} ${done ? 'regresó' : 'explorando…'}</b>
         <div class="tbar"><i style="width:${(1 - left / (c.away.secs * 1000)) * 100}%"></i></div><small data-end="${c.away.end}">${done ? '¡Listo!' : fmt(left)}</small></div>
         ${!done && S.items.wind ? `<button class="btn ghost" data-wind="${c.id}">風 ${S.items.wind}</button>` : `<button class="btn ${done ? 'ok' : 'ghost'}" data-collect="${c.id}" ${done ? '' : 'disabled'}>Recibir</button>`}</div>`;
-    } else if (tripsLeft(r) <= 0) inner = `<div class="trip"><small>月 Esta región descansa hasta mañana (en ${untilTomorrow()})${tracksHTML(r)}</small></div>`;
-    else inner = `<div class="trip"><small>Hallazgos: ${r.drops.map(k => S.dex[k]?.seen ? k : '？').join(' ')} · ⏱ ${fmt(r.secs * fast * 1000)}<span class="tleft">巡 ${tripsLeft(r)}/${r.daily} hoy</span>${tracksHTML(r)}</small><button class="btn ok" data-send="${r.id}">Enviar</button></div>`;
+    } else if (tripsLeft(r) <= 0) inner = `<div class="trip"><small>${ic('moon')} Esta región descansa hasta mañana (en ${untilTomorrow()})${tracksHTML(r)}</small></div>`;
+    else inner = `<div class="trip"><small>Hallazgos: ${r.drops.map(k => S.dex[k]?.seen ? k : '？').join(' ')} · ${fmt(r.secs * fast * 1000)}<span class="tleft">${ic('compass')} ${tripsLeft(r)}/${r.daily} hoy</span>${tracksHTML(r)}</small><button class="btn ok" data-send="${r.id}">Enviar</button></div>`;
     return `<section class="region ${lock ? 'locked' : ''} ${!lock && !c && tripsLeft(r) <= 0 ? 'rest' : ''}" style="--a:${r.bg[0]};--b:${r.bg[1]}"><header><span class="rk">${r.name}</span><b>${r.es}</b></header>${inner}</section>`;
   }).join('')}</div>`;
   v.querySelectorAll('[data-send]').forEach(b => b.onclick = () => pickForTrip(REGIONS.find(r => r.id === b.dataset.send), fast));

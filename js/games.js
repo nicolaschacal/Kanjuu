@@ -1,4 +1,5 @@
 import { KANJI, WORDS, PIECES, isPiece, reads, plain } from './data.js';
+import { ic } from './icons.js';
 import { STROKES } from './strokes.js';
 import { S } from './state.js';
 import { rr, romaji, helpOn } from './help.js';
@@ -172,7 +173,7 @@ function listen(k, know, body, end) {
   const r = pick(reads(k)), opts = shuffle([k, ...shuffle(Object.keys(S.dex).filter(x => x !== k && !reads(x).includes(r))).slice(0, 3)]);
   while (opts.length < 4) { const x = pick(Object.keys(KANJI)); if (!opts.includes(x) && !reads(x).includes(r)) opts.push(x); }
   const show = !canSpeak() || know < 1;
-  body.innerHTML = `<p class="hint">¿Qué kanji se lee así?</p><button class="speaker">音<span>${show ? rr(r) : ''}</span></button>
+  body.innerHTML = `<p class="hint">¿Qué kanji se lee así?</p><button class="speaker" aria-label="Escuchar">${ic('sound')}<span>${show ? rr(r) : ''}</span></button>
     <div class="opts">${opts.map(o => `<button class="opt">${o}</button>`).join('')}</div>`;
   const say = () => speak(r); say();
   body.querySelector('.speaker').onclick = () => { say(); body.querySelector('.speaker span').textContent = r; };
@@ -203,7 +204,7 @@ export function review(list, root, onGrade) {
       let q, opts, correct;
       if (type === 'k2m') { q = `<div class="qk">${k}</div><p class="hint">¿Qué significa?</p>`; opts = shuffle([K.m, ...others.map(o => KANJI[o].m)]); correct = K.m; }
       else if (type === 'm2k' || type === 'parts') { q = `<p class="hint">¿Cuál es el kanji de</p><div class="qm">«${K.m}»</div>${type === 'parts' ? `<p class="muted">Pista: ${K.recipes[0].join(' + ')}</p>` : ''}`; opts = shuffle([k, ...others]); correct = k; }
-      else if (type === 'listen') { const r = pick(reads(k)); q = `<button class="speaker">音<span>${canSpeak() ? '' : r}</span></button><p class="hint">¿Qué kanji se lee así?</p>`; opts = shuffle([k, ...others.filter(o => !reads(o).includes(r))]); correct = k; setTimeout(() => speak(r), 200); body.dataset.r = r; }
+      else if (type === 'listen') { const r = pick(reads(k)); q = `<button class="speaker" aria-label="Escuchar">${ic('sound')}<span>${canSpeak() ? '' : r}</span></button><p class="hint">¿Qué kanji se lee así?</p>`; opts = shuffle([k, ...others.filter(o => !reads(o).includes(r))]); correct = k; setTimeout(() => speak(r), 200); body.dataset.r = r; }
       else { const r = reads(k)[0]; const pool = shuffle(all.flatMap(reads).filter(x => !reads(k).includes(x))); q = `<div class="qk">${k}</div><p class="hint">¿Cómo se lee?</p>`; opts = shuffle([r, ...[...new Set(pool)].slice(0, 3)]); correct = r; }
       body.innerHTML = `${q}<div class="opts ${type === 'k2m' || type === 'k2r' ? 'txt' : ''}">${opts.map(o => `<button class="opt">${o}</button>`).join('')}</div>`;
       const sp = body.querySelector('.speaker'); if (sp) sp.onclick = () => { speak(body.dataset.r); sp.querySelector('span').textContent = body.dataset.r; };

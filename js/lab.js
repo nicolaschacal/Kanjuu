@@ -1,4 +1,5 @@
 // KANJŪ · lab.js
+import { ic } from './icons.js';
 import { PIECES, isPiece, KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
 import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
@@ -31,7 +32,7 @@ export function viewLab(v) {
       <div class="slots">${Array.from({ length: Math.min(4, Math.max(2, labSel.length + 1)) }, (_, i) => i).map(i => labSel[i] ? slotHTML(labSel[i]) : `<div class="slot">＋</div>`).join('<span class="plus">+</span>')}</div>
       <div class="arrow">↓</div>
       <div class="result-slot ${match ? 'ok' : ''}">${match ? `<span class="big-k">${match}</span><small>${KANJI[match].m} · ${KANJI[match].form}</small>` : `<span class="big-k dim">？</span><small>${sel.length ? 'Sin composición conocida' : 'Elegí criaturas'}</small>`}</div>
-      ${weak.length ? `<p class="gate-msg">書 Para fusionar necesitás dominar ${weak.map(k => `<b>${k}</b> ${mastery(k)}/${learnGate(match)}`).join(' · ')}. Repasalos en el Dojo en días distintos.</p>` : ''}
+      ${weak.length ? `<p class="gate-msg">${ic('lock')} Para fusionar necesitás dominar ${weak.map(k => `<b>${k}</b> ${mastery(k)}/${learnGate(match)}`).join(' · ')}. Repasalos en el Dojo en días distintos.</p>` : ''}
       <button class="btn ok wide" id="fuse" ${match && !weak.length ? '' : 'disabled'}>合 Fusionar</button>
     </div>
     <h4>Tus KANJŪ <small>tocá para ponerlos en el altar</small></h4>

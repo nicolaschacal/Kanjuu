@@ -1,4 +1,5 @@
 // KANJŪ · sanctuary.js
+import { ic } from './icons.js';
 import { PIECES, KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
 import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
@@ -11,7 +12,7 @@ import { startTutorial, emit } from './tutorial.js';
 import { ISLANDS, island, buyIsland, objCap, shownObjs, harmony, harmonyMult, monCap, shownMons, syncGrid, COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
 import { $, buzz, home, owned, ui, go, hud, toast, modal, floatText } from './main.js';
 import { openCreature } from './sheet.js';
-import { allDue, openDojo } from './dojo.js';
+import { allDue, openDojo, acadCtx } from './dojo.js';
 import { webgl, mountScene, emoteAt, hopAll, poke, setFocus } from './scene3d.js';
 import { openTraining } from './sheet.js';
 import { TYPES, typeOf } from './data.js';
@@ -71,10 +72,10 @@ function viewHome3d(v) {
 function focusHTML(c) {
   const K = KANJI[c.k], t = TYPES[typeOf(c.k)];
   return `<div class="focus-card" style="--t:${t.col}">
-    <button class="fc-x" id="fcX" aria-label="Volver a la isla">✕</button>
+    <button class="fc-x" id="fcX" aria-label="Volver a la isla">${ic('x')}</button>
     <div class="fc-top"><span class="fc-k">${c.k}</span><div class="fc-info"><b>${K.m}</b><small><span class="fc-t">${t.k} ${t.name}</span> · Nv ${c.lv}${c.stars ? ' · ' + '★'.repeat(c.stars) : ''}</small>
       <div class="fc-bars"><span title="EXP"><i style="width:${c.exp / expNeed(c.lv) * 100}%"></i></span><span class="b" title="Ánimo"><i style="width:${c.mood * 100}%"></i></span></div></div></div>
-    <div class="fc-acts"><button class="fc-a main" id="fcTrain"><i>練</i>Entrenar</button><button class="fc-a" id="fcPet"><i>撫</i>Mimar</button><button class="fc-a" id="fcSheet"><i>詳</i>Ficha</button></div>
+    <div class="fc-acts"><button class="fc-a main" id="fcTrain">${ic('target')}Entrenar</button><button class="fc-a" id="fcPet">${ic('heart')}Mimar</button><button class="fc-a" id="fcSheet">${ic('book')}Ficha</button></div>
   </div>`;
 }
 function bindFocus(stg, c) {
@@ -114,13 +115,14 @@ function dockHTML(pend) {
 }
 // Controles flotantes sobre la escena (estilo del tablero visual)
 function ctrlHTML(pend) {
-  const due = allDue();
+  const due = allDue(), acadLow = (S.acad?.day?.xp || 0) < DAILY_GOAL;
   return `<div class="sc-ctrl">
-      <button class="fab ${build ? 'on' : ''}" id="build" aria-label="Construir"><i>${build ? '✓' : '匠'}</i><span>${build ? 'Listo' : 'Construir'}</span></button>
-      <button class="fab" id="store" aria-label="Almacén"><i>蔵</i><span>Almacén</span>${S.gate.length ? `<b>${S.gate.length}</b>` : ''}</button>
+      ${build ? '' : `<button class="fab ${acadLow ? 'hot' : ''}" id="acadFab" aria-label="Academia">${ic('cap')}<span>Academia</span></button>`}
+      <button class="fab ${build ? 'on' : ''}" id="build" aria-label="Construir">${ic(build ? 'check' : 'hammer')}<span>${build ? 'Listo' : 'Construir'}</span></button>
+      <button class="fab" id="store" aria-label="Almacén">${ic('box')}<span>Almacén</span>${S.gate.length ? `<b>${S.gate.length}</b>` : ''}</button>
     </div>
-    ${build ? '' : `<button class="collect-pill ${pend ? 'ready' : ''}" id="collectAll"><i>墨</i><span>${pend ? `+${pend}` : `${totalRate()}/h`}</span></button>
-    <button class="review-pill ${due ? 'hot' : ''}" id="dojo"><i>復</i>${due ? `Repasar · ${due}` : 'Repaso al día'}</button>`}`;
+    ${build ? '' : `<button class="collect-pill ${pend ? 'ready' : ''}" id="collectAll">${ic('ink')}<span>${pend ? `+${pend}` : `${totalRate()}/h`}</span></button>
+    <button class="review-pill ${due ? 'hot' : ''}" id="dojo">${ic('refresh')}<span>${due ? `Repasar · ${due}` : 'Repaso al día'}</span></button>`}`;
 }
 function bindDock(v) {
   if (placing) { $('#cancelPlace', v).onclick = () => { placing = null; go(); }; }
@@ -129,6 +131,7 @@ function bindDock(v) {
     $('#store', v) && ($('#store', v).onclick = () => openStorage());
     $('#collectAll', v) && ($('#collectAll', v).onclick = e => harvest(placed(), e.currentTarget));
     $('#dojo', v) && ($('#dojo', v).onclick = openDojo);
+    $('#acadFab', v) && ($('#acadFab', v).onclick = () => openAcademy(acadCtx()));
   }
   $('#expandRow', v) && ($('#expandRow', v).onclick = buyRow);
 }
@@ -324,5 +327,5 @@ export function goalHTML() {
     else if (!S.creatures.some(c => c.away) && owned() < 3) g = 'Enviá una criatura de expedición para encontrar nuevos kanji';
     else { const c = cs.sort((a, b) => b.lv - a.lv)[0]; const t = c && evolutionsOf(c.k)[0]; g = t ? `Entrená a ${c.k} hasta Lv ${evoLevel(t)}` : 'Llevá una criatura a Lv MAX para renacer'; }
   }
-  return `<button class="goal" aria-label="Objetivo"><i>目</i><span>${g}</span></button>`;
+  return `<button class="goal" aria-label="Objetivo">${ic('target')}<span>${g}</span></button>`;
 }

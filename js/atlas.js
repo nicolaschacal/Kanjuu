@@ -1,4 +1,5 @@
 // KANJŪ · atlas.js
+import { ic } from './icons.js';
 import { FAMILIES, PIECES } from './data.js';
 const famReward = f => 30 * f.members.length;import { KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
 import { creatureSVG, objSVG } from './creature.js';
@@ -39,7 +40,7 @@ export function viewDex(v) {
     const k = b.dataset.k, d = S.dex[k]; if (!d?.seen) return toast('Aún no descubierto');
     const K = KANJI[k];
     modal(`<div class="dex-detail">${d.owned ? creatureSVG(k) : `<span class="sil big">${k}</span>`}
-      ${storyHTML(k)}<button class="btn ghost" id="say2">音 Escuchar</button>
+      ${storyHTML(k)}<button class="btn ghost" id="say2">${ic('sound')} Escuchar</button>
       <p class="muted">Nivel KANJŪ ${kLevel(k)} · composition_depth ${depth(k)}</p>
       ${K.recipes ? `<p>${K.recipes.map(r => r.join(' + ') + ' = ' + k).join('<br>')}</p>` : '<p class="muted">Componente fundamental</p>'}
       ${evolutionsOf(k).length ? `<p class="muted">Forma parte de: ${evolutionsOf(k).map(t => S.dex[t]?.seen ? t : '？').join(' ')}</p>` : ''}

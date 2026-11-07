@@ -1,4 +1,5 @@
 // KANJŪ · main.js
+import { ic } from './icons.js';
 import { viewArena, ROAD, SLOTS } from './arena.js';import { KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
 import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
@@ -67,27 +68,24 @@ export const ui = { tab: 'home' };
 export function shell() {
   app.innerHTML = `
   <header class="hud">
-    <button class="rank" id="rankBtn" aria-label="Rango de guardián"><span class="rk-badge">守</span><em class="rk-n" id="rankN">${S.rank.lv}</em><i class="rk-bar"><b id="rankBar" style="width:${S.rank.xp / rankNeed(S.rank.lv) * 100}%"></b></i></button>
+    <button class="hud-me" id="rankBtn" aria-label="Menú">
+      <span class="me-seal"><i>守</i></span>
+      <span class="me-txt"><b>Guardián <em id="rankN">${S.rank.lv}</em></b><span class="me-bar"><i id="rankBar" style="width:${S.rank.xp / rankNeed(S.rank.lv) * 100}%"></i></span></span>
+      <span class="me-menu">${ic('menu')}</span>
+    </button>
     <div class="hud-r">
-      <div class="pill ink"><i>墨</i><b id="ink">${S.ink}</b></div>
-      <button class="tok quest" id="questBtn" aria-label="Misiones"><i>任</i><b id="questN"></b></button>
-      <button class="tok acad-btn ${(S.acad?.day?.xp || 0) < DAILY_GOAL ? 'glow' : ''}" id="acadBtn" aria-label="Academia"><i>学</i></button>
-      <button class="tok" id="shopBtn" aria-label="Tienda"><i>店</i></button>
-      <button class="tok acct ${cloud.user ? 'in' : ''}" id="acctBtn" aria-label="Cuenta"><i>我</i></button>
-      <button class="tok furi ${helpOn() ? 'on' : ''}" id="furiBtn" aria-label="Ayuda de lectura"><i class="no-furi">ふ</i></button>
+      <button class="wallet-p" id="shopBtn" aria-label="Tienda"><span class="wc">${ic('ink', 'ink')}<b id="ink">${S.ink}</b></span><span class="wc">${ic('ticket', 'tix')}<b id="tix">${S.tickets}</b></span></button>
+      <button class="quest-card" id="questBtn" aria-label="Misiones de hoy"><span class="qc-ic">${ic('list')}</span><span class="qc-t"><b>Misiones</b><small id="questTxt"></small></span><b class="qc-n" id="questN"></b></button>
     </div>
   </header>
   <main id="view"></main>
-  <nav class="tabs">${[['home', '庭', 'Santuario'], ['lab', '錬', 'Fusión'], ['arena', '闘', 'Arena'], ['exp', '旅', 'Viajes'], ['dex', '図', 'Atlas']]
-      .map(([id, k, l]) => `<button data-tab="${id}" class="${ui.tab === id ? 'on' : ''} ${id === 'arena' ? 'center' : ''}"><i>${k}</i><span>${l}</span></button>`).join('')}</nav>
+  <nav class="tabs">${[['home', 'torii', 'Santuario'], ['lab', 'fusion', 'Fusión'], ['arena', 'swords', 'Arena'], ['exp', 'compass', 'Viajes'], ['dex', 'book', 'Atlas']]
+      .map(([id, k, l]) => `<button data-tab="${id}" class="${ui.tab === id ? 'on' : ''} ${id === 'arena' ? 'center' : ''}"><i>${ic(k)}</i><span>${l}</span></button>`).join('')}</nav>
   <div id="layer"></div>`;
   app.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { ui.tab = b.dataset.tab; buzz(5); go(); });
   $('#questBtn').onclick = openQuests;
   $('#shopBtn').onclick = () => { ui.tab = 'shop'; buzz(5); go(); };
-  $('#furiBtn').onclick = () => { const on = !helpOn(); setHelp(on); $('#furiBtn').classList.toggle('on', on); buzz(6); go(); toast(on ? 'ふ Ayuda de lectura activada' : 'Ayuda de lectura desactivada'); };
-  $('#acctBtn').onclick = openAccount;
-  $('#acadBtn').onclick = () => openAcademy(acadCtx());
-  $('#rankBtn').onclick = () => toast(`位 Rango de guardián ${S.rank.lv} · ${S.rank.xp}/${rankNeed(S.rank.lv)} · subís entrenando, repasando, recogiendo tinta y descubriendo kanji`);
+  $('#rankBtn').onclick = openMenu;
   go();
 }
 export function go() {
@@ -104,15 +102,36 @@ export function hud() {
   const ready = MISSIONS.filter(m => (S.daily.p[m.id] || 0) >= m.goal && !S.daily.claimed.includes(m.id)).length
     + WEEKLY.filter(m => (S.weekly.p[m.id] || 0) >= m.goal && !S.weekly.claimed.includes(m.id)).length;
   $('#questN').textContent = ready || '';
-  $('#questBtn').classList.toggle('glow', !!ready);
+  $('#questBtn').classList.toggle('hot', !!ready);
+  const tix = $('#tix'); if (tix) tix.textContent = S.tickets;
+  const done = MISSIONS.filter(m => (S.daily.p[m.id] || 0) >= m.goal).length;
+  const qt = $('#questTxt'); if (qt) qt.textContent = ready ? `${ready} para cobrar` : `${done}/${MISSIONS.length} hoy`;
   const expDone = S.creatures.some(c => c.away && Date.now() >= c.away.end);
   app.querySelector('[data-tab=exp]')?.classList.toggle('dot', expDone);
   const ar = S.arena; app.querySelector('[data-tab=arena]')?.classList.toggle('dot', !!ar && (ar.chests.some((c, i) => i === 0 && c.pts >= ({ wood: 6, silver: 12, gold: 24 })[c.t]) || ROAD.some(r => ar.best >= r.at && !ar.road.includes(r.at))));
   app.querySelector('[data-tab=dex]')?.classList.toggle('dot', ACHIEVEMENTS.some(a => a[2]() && !S.ach.includes(a[0])));
   save();
 }
+const ICONS = { '店': 'bag', '旅': 'compass', '錬': 'fusion', '闘': 'swords', '図': 'book' };
+// Menú: rango, Academia, Tienda, Cuenta y ayuda de lectura
+export function openMenu() {
+  const need = rankNeed(S.rank.lv);
+  const m = modal(`<div class="sh-head"><span class="sh-seal"><i>守</i></span><div class="sh-t"><b>Guardián ${S.rank.lv}</b><small>${S.rank.xp}/${need} para el próximo rango</small></div></div>
+    <div class="bar-k"><i style="width:${S.rank.xp / need * 100}%"></i></div>
+    <p class="muted">Subís de rango entrenando, repasando, recogiendo tinta y descubriendo kanji.</p>
+    <div class="menu-list">
+      <button class="row-k" id="mAcad"><span class="row-ic">${ic('cap')}</span><span class="row-t"><b>Academia</b><small>Lecciones de kana, vocabulario y gramática</small></span>${ic('right', 'chev')}</button>
+      <button class="row-k" id="mShop"><span class="row-ic">${ic('bag')}</span><span class="row-t"><b>Tienda</b><small>Invocar, decorar, edificios y piezas</small></span>${ic('right', 'chev')}</button>
+      <button class="row-k" id="mAcct"><span class="row-ic">${ic('user')}</span><span class="row-t"><b>Cuenta</b><small>${cloud.user ? esc(cloud.user.email) : 'Guardado en la nube y seguridad'}</small></span>${ic('right', 'chev')}</button>
+      <label class="row-k"><span class="row-ic">${ic('kana')}</span><span class="row-t"><b>Ayuda de lectura</b><small>Furigana sobre los kanji de la interfaz</small></span><input type="checkbox" class="sw" id="mFuri" ${helpOn() ? 'checked' : ''}></label>
+    </div>`);
+  $('#mAcad', m).onclick = () => { m.close(); openAcademy(acadCtx()); };
+  $('#mShop', m).onclick = () => { m.close(); ui.tab = 'shop'; go(); };
+  $('#mAcct', m).onclick = () => { m.close(); openAccount(); };
+  $('#mFuri', m).onchange = e => { setHelp(e.target.checked); go(); };
+}
 // Encabezado común de pantalla: sello con kanji · título · una línea · dato a la derecha
-export const scrHead = (k, title, sub, right = '') => `<header class="scr-h"><span class="scr-k"><i>${k}</i></span><div class="scr-t"><b>${title}</b><small>${sub}</small></div>${right ? `<div class="scr-r">${right}</div>` : ''}</header>`;
+export const scrHead = (k, title, sub, right = '') => `<header class="scr-h"><span class="scr-k">${ICONS[k] ? ic(ICONS[k]) : `<i>${k}</i>`}</span><div class="scr-t"><b>${title}</b><small>${sub}</small></div>${right ? `<div class="scr-r">${right}</div>` : ''}</header>`;
 export function toast(msg) {
   const box = document.getElementById('toasts') || Object.assign(document.body.appendChild(document.createElement('div')), { id: 'toasts' });
   const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = msg;

@@ -1,4 +1,5 @@
 // Academia: camino de lecciones al estilo Duolingo con kana, gramática y lecturas graduadas.
+import { ic } from './icons.js';
 import { S, save, mastery } from './state.js';
 import { SRS_HOURS, KANJI, PIECES } from './data.js';
 import { UNITS, STORIES } from './course.js';
@@ -150,9 +151,9 @@ export function runLesson(L, root, custom) {
       let q = '', opts = [], correct;
       if (e.t === 'k2r') { q = `<p class="lp-q">¿Cómo suena?</p><div class="big-kana">${e.c}</div>`; correct = romaji(e.c); opts = optsFrom(correct, e.pool.map(romaji)); }
       else if (e.t === 'r2k') { q = `<p class="lp-q">Elegí <b>${romaji(e.c)}</b></p>`; correct = e.c; opts = optsFrom(correct, e.pool); }
-      else if (e.t === 'listen') { q = `<p class="lp-q">¿Qué escuchás?</p><button class="spk" id="sp">音</button>`; correct = e.c; opts = optsFrom(correct, e.pool); setTimeout(() => speak(e.c), 250); }
+      else if (e.t === 'listen') { q = `<p class="lp-q">¿Qué escuchás?</p><button class="spk" id="sp" aria-label="Escuchar">${ic('sound')}</button>`; correct = e.c; opts = optsFrom(correct, e.pool); setTimeout(() => speak(e.c), 250); }
       else if (e.t === 'mean') { q = `<p class="lp-q">¿Qué significa?</p><button class="big-word" id="sp">${e.jp}</button>${helpOn() ? `<p class="rom">${romaji(e.jp)}</p>` : ''}`; correct = e.es; opts = optsFrom(correct, e.opts, 3); speak(e.jp); }
-      else if (e.t === 'listenv') { q = `<p class="lp-q">Escuchá y elegí: <b>${e.es}</b></p><button class="spk" id="sp">音</button>`; correct = e.jp; opts = optsFrom(correct, e.opts, 3); setTimeout(() => speak(e.jp), 250); }
+      else if (e.t === 'listenv') { q = `<p class="lp-q">Escuchá y elegí: <b>${e.es}</b></p><button class="spk" id="sp" aria-label="Escuchar">${ic('sound')}</button>`; correct = e.jp; opts = optsFrom(correct, e.opts, 3); setTimeout(() => speak(e.jp), 250); }
       else if (e.t === 'trans') { q = `<p class="lp-q">Traducí</p><button class="big-word sm" id="sp">${e.jp.replace(/ /g, '')}</button>${helpOn() ? `<p class="rom">${romaji(e.jp)}</p>` : ''}`; correct = e.es; opts = optsFrom(correct, e.opts, 3); speak(e.jp); }
       else if (e.t === 'blank') { q = `<p class="lp-q">Completá · <i>${e.es}</i></p><div class="big-word sm">${e.s.replace('_', '<span class="gap">？</span>').replace(/ /g, '')}</div>`; correct = e.a; opts = optsFrom(correct, ['は', 'を', 'に', 'で', 'の', 'か', 'が', 'います', 'あります'], 4); }
       else if (e.t === 'tense' || e.t === 'q') { q = `<p class="lp-q">${e.q}</p>`; correct = e.a; opts = shuffle([...new Set(e.opts)]); if (e.speak) setTimeout(() => speak(e.speak), 250); }
@@ -262,7 +263,7 @@ export function openAcademy(ctx) {
           return `<div class="pnode" style="--off:${[0, 1, 2, 1, 0, -1, -2, -1][i % 8]}"><button class="node ${c ? 'done' : ''} ${on && ready ? '' : 'lock'} ${isCur ? 'cur' : ''}" data-l="${l.id}">${on && ready ? icon : '封'}${c ? `<i class="cr">${'冠'.repeat(c)}</i>` : ''}</button>${isCur ? '<span class="start">EMPEZAR</span>' : ''}<small>${l.name}</small></div>`;
         }).join('')}</div></section>`;
       }).join('')}</div>
-      <div class="av-foot"><div class="row2"><button class="btn gold" id="aiStory">✦ Cuento con tus KANJŪ</button><button class="btn ghost" id="lib">本 ${(S.library || []).length}</button></div>
+      <div class="av-foot"><div class="row2"><button class="btn gold" id="aiStory">${ic('sparkles')} Cuento con tus KANJŪ</button><button class="btn ghost" id="lib">本 ${(S.library || []).length}</button></div>
       <button class="btn ${due + ctx.kanjiDue() ? 'ok' : 'ghost'} wide" id="rev" ${due + ctx.kanjiDue() ? '' : 'disabled'}>修 Repaso del día ${due + ctx.kanjiDue() ? `· ${due + ctx.kanjiDue()} listos` : '· al día ✓'}</button></div>`;
     $('.x', v).onclick = () => { v.remove(); ctx.hud(); };
     v.querySelectorAll('[data-l]').forEach(b => b.onclick = () => openNode(byId(b.dataset.l)));
@@ -305,7 +306,7 @@ export function openAcademy(ctx) {
   const THEMES = ['una aventura en el bosque', 'la comida', 'una noche de estrellas', 'la amistad', 'un día de lluvia', 'un viaje', 'una fiesta', 'un misterio'];
   function pickTheme() {
     const t = [...THEMES].sort(() => Math.random() - .5).slice(0, 4);
-    const m = ctx.modal(`<h3>✦ ¿De qué trata el cuento?</h3><p class="muted">Lo escribe tu IA con tus ${Object.values(S.dex).filter(d => d.owned).length} kanji, tus palabras aprendidas y tu gramática. Protagonistas: tus KANJŪ.</p>
+    const m = ctx.modal(`<h3>${ic('sparkles')} ¿De qué trata el cuento?</h3><p class="muted">Lo escribe tu IA con tus ${Object.values(S.dex).filter(d => d.owned).length} kanji, tus palabras aprendidas y tu gramática. Protagonistas: tus KANJŪ.</p>
       <div class="themes">${t.map(x => `<button class="btn ghost" data-t="${x}">${x}</button>`).join('')}<button class="btn ghost" data-t="">運 Sorpresa</button></div>
       <button class="link" id="aiCfg">設 Configurar mi IA</button>`);
     m.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { m.close(); makeStory(b.dataset.t); });
@@ -336,7 +337,7 @@ export function openAcademy(ctx) {
   }
   function openLibrary() {
     const L = S.library || [];
-    const m = ctx.modal(`<h3>本 Tu biblioteca</h3>${L.length ? L.map((st, i) => `<button class="lesson" data-b="${i}"><i>読</i><div><b>${st.title}</b><small>${new Date(st.date).toLocaleDateString()} · ${st.lines.length} oraciones</small></div></button>`).join('') : '<p class="muted">Todavía no hay cuentos. Creá uno con ✦.</p>'}`);
+    const m = ctx.modal(`<h3>${ic('book')} Tu biblioteca</h3>${L.length ? L.map((st, i) => `<button class="lesson" data-b="${i}"><i>読</i><div><b>${st.title}</b><small>${new Date(st.date).toLocaleDateString()} · ${st.lines.length} oraciones</small></div></button>`).join('') : '<p class="muted">Todavía no hay cuentos. Creá uno con ✦.</p>'}`);
     m.querySelectorAll('[data-b]').forEach(b => b.onclick = () => { m.close(); readStory(L[+b.dataset.b], false); });
   }
   render(); document.body.append(v);

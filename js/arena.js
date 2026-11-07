@@ -1,4 +1,5 @@
 // KANJŪ · arena.js — Duelos 3 contra 3 con copas, arenas, cofres que se abren estudiando y camino de copas.
+import { ic } from './icons.js';
 import { webgl, mountArena, arenaHit, emoteAt } from './scene3d.js';
 import { KANJI, TYPES, typeOf, typeMult, kLevel, reads, PIECES } from './data.js';
 import { S, save, bump, mastery } from './state.js';
@@ -59,10 +60,10 @@ export function viewArena(v) {
   const a = A(), ar = arenaOf(a.cups), i = ARENAS.indexOf(ar), next = ARENAS[i + 1];
   const team = myTeam(), pend = ROAD.filter(r => a.best >= r.at && !a.road.includes(r.at));
   v.innerHTML = `<div class="arena">
-    ${scrHead('闘', 'Arena', 'Duelos de kanji: ganá copas y abrí cofres estudiando', `<span class="pill-w">杯 <b>${a.cups}</b></span>`)}
+    ${scrHead('闘', 'Arena', 'Duelos de kanji: ganá copas y abrí cofres estudiando', `<span class="pill-w">${ic('trophy')}<b>${a.cups}</b></span>`)}
     <div class="arena-card" style="--i:${i}">
       <span class="ak">${ar.k}</span><div><small>Arena ${i + 1}</small><b>${ar.name}</b>
-      <div class="cups">杯 ${a.cups}${next ? `<div class="tbar"><i style="width:${(a.cups - ar.min) / (next.min - ar.min) * 100}%"></i></div><small>${next.min - a.cups} para ${next.name}</small>` : ''}</div></div>
+      <div class="cups">${ic('trophy')} ${a.cups}${next ? `<div class="tbar"><i style="width:${(a.cups - ar.min) / (next.min - ar.min) * 100}%"></i></div><small>${next.min - a.cups} para ${next.name}</small>` : ''}</div></div>
     </div>
     <div class="team-pick"><h4>Tu equipo <small>los 3 KANJŪ más fuertes · tocá para cambiar</small></h4>
       <div class="team">${team.map(c => cardHTML(c, false, 'data-swap="' + c.id + '"')).join('') || '<p class="muted">Necesitás al menos 1 KANJŪ.</p>'}</div></div>
@@ -210,7 +211,7 @@ export function startDuel() {
     const ups = addXP(win ? 15 : 5); save();
     const promoted = arenaIdx(a.cups) > ar0;
     w.innerHTML = `<div class="duel-end ${win ? 'win' : 'lose'}"><h2>${win ? '勝利 ¡Victoria!' : '敗北 Derrota'}</h2>
-      <p class="cupd">杯 ${delta > 0 ? '+' : ''}${delta}</p>
+      <p class="cupd">${ic('trophy')} ${delta > 0 ? '+' : ''}${delta}</p>
       ${win ? `<p>+${ink} 墨${chest ? ` · ${CHESTS[chest].k} ${CHESTS[chest].name}` : ' · <span class="r">cofres llenos: abrí alguno estudiando</span>'}</p>` : '<p class="muted">Entrená a tus KANJŪ y estudiá sus kanji para atacar más fuerte.</p>'}
       ${promoted ? `<div class="promo"><span>${arenaOf(a.cups).k}</span><b>¡Nueva arena!</b><small>${arenaOf(a.cups).name}</small></div>` : ''}
       <button class="btn ok wide">Continuar</button></div>`;

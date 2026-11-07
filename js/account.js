@@ -1,4 +1,5 @@
 // KANJŪ · account.js
+import { ic } from './icons.js';
 import { KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
 import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
@@ -16,8 +17,8 @@ export function openAccount() {
   if (cloud.user) {
     const m = modal(`<h3>我 Tu cuenta</h3><p>${esc(cloud.user.email)}</p><p class="muted">Tu santuario se guarda en la nube automáticamente.</p>
       <div class="row"><button class="btn ghost" id="out">Cerrar sesión</button><button class="btn ok" id="sync">Guardar ahora</button></div>
-      <button class="btn gold wide" id="aiSet">✦ ${S.aiOn ? 'Tu IA está conectada · cambiar' : 'Conectar mi IA (cuentos personalizados)'}</button>
-      <h4>封 Seguridad</h4>
+      <button class="btn gold wide" id="aiSet">${ic('sparkles')} ${S.aiOn ? 'Tu IA está conectada · cambiar' : 'Conectar mi IA (cuentos personalizados)'}</button>
+      <h4>${ic('lock')} Seguridad</h4>
       <div class="menu-acts"><button class="btn ghost" id="chPass">Cambiar contraseña</button><button class="btn ghost" id="newCode">Nuevo código de recuperación</button><button class="btn danger" id="delAcc">Borrar mi cuenta</button></div>`);
     $('#chPass', m).onclick = () => passPrompt('Cambiar contraseña', true, async (password, newPassword) => { await cloud.account('change', { password, newPassword }); toast('Contraseña cambiada'); });
     $('#newCode', m).onclick = () => passPrompt('Nuevo código de recuperación', false, async password => { const r = await cloud.account('newcode', { password }); showRecovery(r.recovery); });
