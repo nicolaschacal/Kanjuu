@@ -22,11 +22,21 @@ Santuario → mimar → entrenar (minijuegos) → EXP → evolución ramificada 
 
 ## Estructura
 ```
-js/data.js      kanji, recetas, palabras, regiones, depth
-js/state.js     guardado local, EXP, evolución, fusión, renacimiento
-js/creature.js  generador SVG procedural (rasgos heredados de cada raíz)
-js/games.js     minijuegos
-js/main.js      pantallas, santuario, UI
+js/main.js       arranque, barra superior, objetivos, navegación
+js/sanctuary.js  santuario en grilla, construir, almacén, rango
+js/sheet.js      ficha de criatura, entrenamiento, evolución
+js/lab.js        laboratorio de fusión
+js/trips.js      viajes
+js/atlas.js      atlas, logros, misiones
+js/shop.js       tienda, altar, calendario, kana
+js/dojo.js       repaso del día (kanji + kana + vocabulario)
+js/account.js    cuenta, recuperación, borrar cuenta
+js/academy.js    Academia (camino, lecciones, lecturas)   js/course.js  contenido del curso
+js/world.js      grilla, producción, objetos, altar        js/state.js   guardado y SRS
+js/games.js      minijuegos                                js/strokes.js trazos KanjiVG (CC BY-SA 3.0)
+js/tutorial.js   primera sesión guiada                     js/ai.js      IA propia (desde el dispositivo)
+api/             auth (límite de intentos, recuperación, borrar cuenta) y guardado
+tools/           simulación de economía                    docs/ECONOMIA.md
 ```
 
 ## Aprendizaje
@@ -53,3 +63,6 @@ Cada jugador conecta su clave (Gemini, Groq, Claude, OpenAI u OpenRouter) desde 
 La app llama al proveedor **directo desde el dispositivo**: la clave se guarda solo localmente (fuera de la partida sincronizada) y no pasa por el servidor de KANJŪ, así que no consume funciones ni base de datos.
 Se usa para cuentos con las criaturas del jugador (limitados a sus kanji, vocabulario y gramática; las oraciones con kanji no permitidos se descartan) y para explicar errores en la Academia. Código en `js/ai.js`.
 En la app nativa (Capacitor) la clave pasaría al llavero del sistema (Keychain / Keystore) y las llamadas pueden ir por el HTTP nativo.
+
+## Créditos
+Orden de trazos: [KanjiVG](http://kanjivg.tagaini.net) de Ulrich Apel, licencia CC BY-SA 3.0 (`js/strokes.js`).

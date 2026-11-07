@@ -1,4 +1,5 @@
 import { KANJI, WORDS, reads, plain } from './data.js';
+import { STROKES } from './strokes.js';
 import { S } from './state.js';
 import { rr, romaji, helpOn } from './help.js';
 
@@ -7,7 +8,7 @@ const pick = a => a[Math.floor(Math.random() * a.length)];
 const h = (html) => { const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; };
 
 export const GAMES = {
-  trace: { name: 'Trazo', k: '書', desc: 'Dibujá el kanji con el dedo' },
+  trace: { name: 'Trazo', k: '書', desc: 'Escribilo en el orden correcto' },
   bubbles: { name: 'Lecturas', k: '読', desc: 'Atrapá sus lecturas' },
   word: { name: 'Palabra', k: '語', desc: 'Completá la palabra' },
   parts: { name: 'Ensamblar', k: '組', desc: 'Construí el kanji con sus piezas' },
@@ -43,39 +44,65 @@ export function play(type, k, know, root) {
   });
 }
 
+// Trazo con orden real (KanjiVG): demostración animada y evaluación trazo por trazo
 function trace(k, know, body, end) {
-  const S2 = 300;
-  body.innerHTML = `<p class="hint">Trazá <b>${k}</b> · ${KANJI[k].m}</p><canvas width="${S2}" height="${S2}" class="pad"></canvas><div class="row"><button class="btn ghost clr">Borrar</button><button class="btn ok">¡Listo!</button></div>`;
-  const cv = body.querySelector('canvas'), cx = cv.getContext('2d');
-  const font = `900 240px 'Zen Maru Gothic', sans-serif`;
-  const mask = document.createElement('canvas'); mask.width = mask.height = S2;
-  const mx = mask.getContext('2d'); mx.font = font; mx.textAlign = 'center'; mx.textBaseline = 'middle'; mx.fillText(k, S2 / 2, S2 / 2 + 10);
-  const M = mx.getImageData(0, 0, S2, S2).data;
-  const guide = () => {
-    cx.clearRect(0, 0, S2, S2); cx.font = font; cx.textAlign = 'center'; cx.textBaseline = 'middle';
-    cx.fillStyle = `rgba(60,40,30,${know >= 4 ? .06 : know >= 2 ? .14 : .25})`; cx.fillText(k, S2 / 2, S2 / 2 + 10);
+  const strokes = STROKES[k];
+  if (!strokes?.length) return end(-1);
+  const NS = 'http://www.w3.org/2000/svg';
+  body.innerHTML = `<p class="hint">Escribí <b>${k}</b> · ${KANJI[k].m} <span class="sc">Trazo <b>1</b>/${strokes.length}</span></p>
+    <svg class="pad stroke-pad" viewBox="0 0 109 109"><g class="grid-l"><line x1="54.5" y1="0" x2="54.5" y2="109"/><line x1="0" y1="54.5" x2="109" y2="54.5"/></g>
+    <g class="guide">${know < 3 ? strokes.map(d => `<path d="${d}"/>`).join('') : ''}</g><g class="done"></g><g class="hintg"></g><path class="ink" d=""/></svg>
+    <div class="row"><button class="btn ghost demo">▶ Ver orden</button></div>`;
+  const svg = body.querySelector('svg'), done = svg.querySelector('.done'), hintg = svg.querySelector('.hintg'), ink = svg.querySelector('.ink'), sc = body.querySelector('.sc b');
+  const measure = document.createElementNS(NS, 'path'); svg.append(measure); measure.style.display = 'none';
+  let i = 0, mistakes = 0, tries = 0, pts = [], drawing = false, busy = false;
+  const sample = (d, n = 12) => { measure.setAttribute('d', d); const L = measure.getTotalLength(); return Array.from({ length: n }, (_, j) => { const p = measure.getPointAtLength(L * j / (n - 1)); return [p.x, p.y]; }); };
+  const resample = (p, n = 12) => {
+    const seg = [0]; for (let j = 1; j < p.length; j++) seg.push(seg[j - 1] + Math.hypot(p[j][0] - p[j - 1][0], p[j][1] - p[j - 1][1]));
+    const L = seg[seg.length - 1] || 1;
+    return Array.from({ length: n }, (_, j) => { const t = L * j / (n - 1); let a = seg.findIndex(s => s >= t - 1e-9); if (a < 0) return p[p.length - 1]; if (a === 0) return p[0]; const f = (t - seg[a - 1]) / (seg[a] - seg[a - 1] || 1); return [p[a - 1][0] + (p[a][0] - p[a - 1][0]) * f, p[a - 1][1] + (p[a][1] - p[a - 1][1]) * f]; });
   };
-  guide();
-  let drawing = false, ink = new Uint8Array(S2 * S2), last;
-  const pt = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * S2 / r.width, (e.clientY - r.top) * S2 / r.height]; };
-  const stamp = ([x, y]) => { for (let dy = -9; dy <= 9; dy++) for (let dx = -9; dx <= 9; dx++) { const X = x + dx | 0, Y = y + dy | 0; if (dx * dx + dy * dy < 81 && X >= 0 && Y >= 0 && X < S2 && Y < S2) ink[Y * S2 + X] = 1; } };
-  cv.onpointerdown = e => { drawing = true; last = pt(e); cv.setPointerCapture(e.pointerId); stamp(last); };
-  cv.onpointermove = e => {
-    if (!drawing) return; const p = pt(e);
-    cx.strokeStyle = '#2b2018'; cx.lineWidth = 18; cx.lineCap = 'round'; cx.beginPath(); cx.moveTo(...last); cx.lineTo(...p); cx.stroke();
-    const n = Math.ceil(Math.hypot(p[0] - last[0], p[1] - last[1]) / 4);
-    for (let i = 1; i <= n; i++) stamp([last[0] + (p[0] - last[0]) * i / n, last[1] + (p[1] - last[1]) * i / n]);
-    last = p;
+  const animate = (d, cls, ms = 600) => new Promise(r => {
+    const p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); p.setAttribute('class', cls); hintg.append(p);
+    const L = p.getTotalLength(); p.style.strokeDasharray = L; p.style.strokeDashoffset = L;
+    p.animate([{ strokeDashoffset: L }, { strokeDashoffset: 0 }], { duration: ms, fill: 'forwards', easing: 'ease-in-out' }).onfinish = () => r(p);
+  });
+  const startDot = () => {
+    hintg.querySelectorAll('.sd').forEach(x => x.remove());
+    if (know >= 2 || i >= strokes.length) return;
+    const [x, y] = sample(strokes[i], 2)[0], c = document.createElementNS(NS, 'g'); c.setAttribute('class', 'sd');
+    c.innerHTML = `<circle cx="${x}" cy="${y}" r="4.5"/><text x="${x}" y="${y + 1.6}">${i + 1}</text>`; hintg.append(c);
   };
-  cv.onpointerup = () => drawing = false;
-  body.querySelector('.clr').onclick = () => { ink.fill(0); guide(); };
-  body.querySelector('.ok').onclick = () => {
-    let m = 0, hit = 0, drawn = 0;
-    for (let i = 0; i < ink.length; i++) { const on = M[i * 4 + 3] > 80; if (on) m++; if (ink[i]) { drawn++; if (on) hit++; } }
-    if (!drawn) return;
-    const cover = hit / m, prec = hit / drawn, sc = Math.min(1, cover * 1.6) * Math.min(1, prec * 1.5);
-    end(sc > .7 ? 3 : sc > .45 ? 2 : sc > .2 ? 1 : 0);
+  async function demo() {
+    if (busy) return; busy = true; hintg.innerHTML = '';
+    for (let j = i; j < strokes.length; j++) await animate(strokes[j], 'demo', 450);
+    setTimeout(() => { hintg.innerHTML = ''; startDot(); busy = false; }, 500);
+  }
+  const pos = e => { const r = svg.getBoundingClientRect(); return [(e.clientX - r.left) * 109 / r.width, (e.clientY - r.top) * 109 / r.height]; };
+  svg.onpointerdown = e => { if (busy || i >= strokes.length) return; drawing = true; pts = [pos(e)]; svg.setPointerCapture(e.pointerId); };
+  svg.onpointermove = e => { if (!drawing) return; pts.push(pos(e)); ink.setAttribute('d', 'M' + pts.map(p => p.join(' ')).join(' L')); };
+  svg.onpointerup = async () => {
+    if (!drawing) return; drawing = false;
+    const exp = sample(strokes[i]), got = resample(pts.length > 1 ? pts : [pts[0], pts[0]]);
+    const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+    const avg = exp.reduce((s, p, j) => s + dist(p, got[j]), 0) / exp.length;
+    const ok = dist(exp[0], got[0]) < 22 && dist(exp[exp.length - 1], got[got.length - 1]) < 22 && avg < 15;
+    ink.setAttribute('d', '');
+    if (ok) {
+      const p = document.createElementNS(NS, 'path'); p.setAttribute('d', strokes[i]); done.append(p); navigator.vibrate?.(8);
+      i++; tries = 0; hintg.innerHTML = '';
+    } else {
+      mistakes++; tries++; navigator.vibrate?.(40); busy = true;
+      svg.classList.add('shake-s'); setTimeout(() => svg.classList.remove('shake-s'), 300);
+      await animate(strokes[i], 'hint', 500); await new Promise(r => setTimeout(r, 350)); hintg.innerHTML = ''; busy = false;
+      if (tries >= 3) { const p = document.createElementNS(NS, 'path'); p.setAttribute('d', strokes[i]); p.setAttribute('class', 'auto'); done.append(p); i++; tries = 0; }
+    }
+    sc.textContent = Math.min(i + 1, strokes.length);
+    if (i >= strokes.length) { svg.classList.add('complete'); return setTimeout(() => end(mistakes === 0 ? 3 : mistakes <= 2 ? 2 : 1), 700); }
+    startDot();
   };
+  body.querySelector('.demo').onclick = demo;
+  if (know < 1) demo(); else startDot();
 }
 
 function bubbles(k, know, body, end) {

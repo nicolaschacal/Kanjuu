@@ -112,7 +112,10 @@ export function roots(k) {
 export function evolutionsOf(k) {
   return Object.keys(KANJI).filter(c => KANJI[c].recipes?.some(r => r.includes(k)));
 }
-export const evoLevel = c => 4 + depth(c) * 3;
+// Balance validado con simulación de 30 días (ver docs/ECONOMIA.md)
+export const evoLevel = c => 5 + (depth(c) - 1) * 3;
+// Maestría mínima de los componentes para evolucionar o fusionar: obliga a repasar en días distintos
+export const learnGate = c => depth(c) <= 1 ? 2 : depth(c) + 2;
 export const MAX_LV = 15;
 export const reads = k => [...KANJI[k].on, ...KANJI[k].kun];
 export const plain = r => r.replace(/[()]/g, '');

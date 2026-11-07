@@ -1,0 +1,118 @@
+// KANJŪ · sheet.js
+import { KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
+import { creatureSVG, objSVG } from './creature.js';
+import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
+import { GAMES, hasWord, hasParts, play, review, storyHTML, speak } from './games.js';
+import * as cloud from './cloud.js';
+import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn } from './help.js';
+import { openAcademy, acadDue, reviewAcademy, DAILY_GOAL } from './academy.js';
+import { openAISettings, aiStatus } from './ai.js';
+import { startTutorial, emit } from './tutorial.js';
+import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
+import { $, buzz, esc, home, ui, go, hud, toast, modal, floatText } from './main.js';
+import { rankUp } from './sanctuary.js';
+
+// ---------- Hoja de criatura ----------
+export function openCreature(id) {
+  const c = byId(id); if (!c) return;
+  emit('sheet');
+  const K = KANJI[c.k], [fill] = ELEMENTS[element(c.k)];
+  const evos = evolutionsOf(c.k);
+  const m = modal(`
+    <div class="cr-top" style="--el:${fill}">
+      <button class="cr-art" id="pet">${creatureSVG(c.k, { mood: c.mood })}</button>
+      <div class="cr-name"><span class="big-k">${c.k}</span><div><b>${K.m}</b><small>${ELEMENTS[element(c.k)][2]} · Nivel KANJŪ ${kLevel(c.k)}${c.gen ? ` · Gen ${c.gen}` : ''}</small></div></div>
+      <div class="reads"><button class="say" id="say">🔊</button><span>音 ${K.on.map(rr).join('・') || '—'}</span><span>訓 ${K.kun.map(rr).join('・') || '—'}</span><span class="mast" title="Maestría">熟 ${'★'.repeat(mastery(c.k))}${'☆'.repeat(Math.max(0, 6 - mastery(c.k)))}</span></div>
+    </div>
+    <div class="bars">
+      <div class="bar"><label>Lv ${c.lv}${c.lv >= MAX_LV ? ' MAX' : ''}</label><div><i style="width:${c.exp / expNeed(c.lv) * 100}%"></i></div></div>
+      <div class="bar bond"><label>絆 ${'♥'.repeat(Math.min(5, c.bond / 10 | 0))}${'♡'.repeat(5 - Math.min(5, c.bond / 10 | 0))}</label><div><i style="width:${c.mood * 100}%"></i></div></div>
+    </div>
+    <div class="acts a4">
+      <button class="act" id="train" ${c.pos ? '' : 'disabled'}><i>練</i>Entrenar</button>
+      <button class="act" id="snack" ${S.ink < 5 ? 'disabled' : ''}><i>餅</i>Mochi <small>5墨</small></button>
+      <button class="act ${c.lv >= MAX_LV ? 'hot' : ''}" id="reborn" ${c.lv < MAX_LV ? 'disabled' : ''}><i>輪</i>Renacer</button>
+      <button class="act" id="free" ${S.creatures.filter(x => !x.egg).length <= 1 ? 'disabled' : ''}><i>放</i>Liberar</button>
+    </div>
+    ${c.pos ? `<p class="prod">収 Produce <b>${rate(c).toFixed(1)} 墨/h</b>${c.insp > Date.now() ? ' · <b class="g">inspirado ×2</b>' : ' · entrenalo para inspirarlo ×2'}${neighbors(c).length ? ` · aura ${neighbors(c).map(o => OBJS[o.t].k).join('')}` : ''}</p>` : '<p class="r">En el almacén: colocalo en el santuario para entrenar y producir</p>'}
+    ${dupesOf(c).length && (c.stars || 0) < 5 ? `<button class="btn ok wide gold" id="awaken">覚 Despertar ★${(c.stars || 0) + 1} · usa un ${c.k} duplicado (+20% tinta y EXP)</button>` : ''}
+    ${S.items.scroll ? `<button class="btn ghost wide" id="scroll">巻 Usar pergamino (+60 EXP) · ${S.items.scroll}</button>` : ''}
+    <details class="story-d"><summary>💡 Historia para recordarlo</summary>${storyHTML(c.k)}
+      <textarea id="note" maxlength="160" placeholder="Escribí tu propia historia: las que inventás vos se recuerdan mejor">${esc(S.notes?.[c.k] || '')}</textarea></details>
+    <h4>進化 Evoluciones</h4>
+    <div class="evos">${evos.length ? evos.map(t => evoCard(c, t)).join('') : '<p class="muted">Forma final en este santuario. Llegá a Lv MAX para renacer.</p>'}</div>
+    ${K.recipes ? `<p class="muted">Composición: ${K.recipes.map(r => r.join(' + ')).join('  ·  ')}${K.note ? ` — ${K.note}` : ''}</p>` : ''}
+    <p class="hist">${c.hist.join(' → ')}</p>`, 'cr');
+
+  $('#pet', m).onclick = e => {
+    c.mood = Math.min(1, c.mood + .12); c.bond++; bump('pet'); giveExp(c, 1); emit('pet');
+    floatText(e.currentTarget, '♥', 'heart'); buzz(6);
+    const a = $('#pet', m); a.classList.remove('squish'); void a.offsetWidth; a.classList.add('squish'); hud();
+  };
+  $('#snack', m).onclick = () => { S.ink -= 5; c.mood = 1; c.bond += 3; const up = giveExp(c, 8); m.close(); toast(`${c.k} disfrutó el mochi ${up ? '· ¡Subió de nivel!' : ''}`); go(); setTimeout(() => openCreature(id), 260); };
+  $('#train', m).onclick = () => openTraining(c, m);
+  $('#awaken', m) && ($('#awaken', m).onclick = () => { if (!confirm(`Se consumirá otro ${c.k}. ¿Despertar?`)) return; awaken(c); m.close(); go(); buzz([20, 60, 20]); toast(`覚 ${c.k} despertó: ★${c.stars}`); setTimeout(() => openCreature(id), 260); });
+  $('#say', m).onclick = () => speak(reads(c.k)[0] || '');
+  $('#note', m).onchange = e => { S.notes ??= {}; S.notes[c.k] = e.target.value.trim(); save(); toast('✍ Historia guardada'); };
+  $('#free', m).onclick = () => {
+    if (!confirm(`${c.k} volverá a la naturaleza y te dejará tinta. Su entrada en el atlas se conserva. ¿Liberar?`)) return;
+    const ink = release(c); m.close(); go(); toast(`${c.k} se despidió · +${ink} 墨`); };
+  if (S.items.scroll) $('#scroll', m).onclick = () => { S.items.scroll--; const up = giveExp(c, 60); m.close(); go(); toast(`${c.k} absorbió el pergamino${up ? ` · ¡Nivel ${c.lv}!` : ''}`); setTimeout(() => openCreature(id), 260); };
+  $('#reborn', m).onclick = () => {
+    if (!confirm(`${c.k} volverá a ser un huevo de su raíz y ganará +25% EXP para siempre. ¿Renacer?`)) return;
+    rebirth(c); m.close(); ui.tab = 'home'; go(); toast('Un huevo apareció en el santuario. Tocalo 3 veces.');
+  };
+  m.querySelectorAll('[data-evo]').forEach(b => b.onclick = () => { m.close(); evolveFX(c, b.dataset.evo); });
+}
+export function evoCard(c, t) {
+  const need = evoLevel(t), rec = KANJI[t].recipes.find(r => r.includes(c.k));
+  const others = [...rec]; others.splice(others.indexOf(c.k), 1);
+  const missing = [...new Set(others)].filter(o => !S.dex[o]?.owned);
+  const gate = learnGate(t), learned = mastery(c.k) >= gate, room = true;
+  const ok = c.lv >= need && !missing.length && learned && room;
+  const known = S.dex[t]?.seen;
+  return `<button class="evo ${ok ? 'ready' : ''}" data-evo="${t}" ${ok ? '' : 'disabled'}>
+    <div class="evo-k ${known ? '' : 'unk'}">${known ? t : '？'}</div>
+    <div><b>${known ? KANJI[t].m : 'Desconocido'}</b><small>${c.k} + ${others.join(' + ')}</small>
+    <small class="${c.lv >= need ? 'g' : ''}">Lv ${need}</small>${missing.length ? `<small class="r">Conocé: ${missing.join(' ')}</small>` : ''}${learned ? '' : `<small class="r">Dominá ${c.k}: maestría ${mastery(c.k)}/${gate} (repasalo en el Dojo en días distintos)</small>`}${room ? '' : `<small class="r">Necesitás ${size(t) - size(c.k)} espacio más</small>`}</div></button>`;
+}
+export function openTraining(c, parent) {
+  const games = Object.entries(GAMES).filter(([id]) => (id !== 'word' || hasWord(c.k)) && (id !== 'parts' || hasParts(c.k)));
+  const m = modal(`<h3>練 Entrenar con ${c.k}</h3><div class="games">${games.map(([id, g]) =>
+    `<button class="gcard" data-g="${id}"><i>${g.k}</i><b>${g.name}</b><small>${g.desc}</small></button>`).join('')}</div>
+    <p class="muted">Saber: ${'●'.repeat(Math.min(5, c.know))}${'○'.repeat(Math.max(0, 5 - c.know))} · la dificultad se adapta</p>`);
+  m.querySelectorAll('[data-g]').forEach(b => b.onclick = async () => {
+    m.close(); parent.close();
+    const stars = await play(b.dataset.g, c.k, c.know, $('#layer'));
+    if (stars < 0) return;
+    const exp = [3, 10, 16, 24][stars] * (c.mood > .6 ? 1.2 : 1) * expBonus(c);
+    gather(c); if (stars >= 2) c.insp = Date.now() + 36e5;
+    const rk = addXP(6 + stars * 4);
+    const ups = giveExp(c, exp), ink = (stars + ups * 3) * 2;
+    S.ink += ink; grade(c.k, stars >= 2); emit('train');
+    if (stars >= 2) c.know++;
+    c.mood = Math.max(0, c.mood - .05); S.stats.trainings++; bump('train');
+    const r = modal(`<div class="result"><div class="stars">${'★'.repeat(stars)}<span>${'★'.repeat(3 - stars)}</span></div>
+      <div class="res-art">${creatureSVG(c.k, { mood: stars >= 2 ? 1 : .5 })}</div>
+      <p><b>+${Math.round(exp * (1 + c.gen * .25))} EXP · +${ink} 墨</b>${ups ? ` · <b class="g">¡Nivel ${c.lv}!</b>` : ''}</p>
+      ${stars >= 2 ? `<p class="g">✦ ${c.k} está inspirado: produce ×2 tinta durante 1 h</p>` : storyHTML(c.k)}
+      ${evolutionsOf(c.k).some(t => c.lv >= evoLevel(t) && c.lv - ups < evoLevel(t)) ? '<p class="g">✦ ¡Nueva evolución disponible!</p>' : ''}
+      <div class="row"><button class="btn ghost" id="again">Otra vez</button><button class="btn ok" id="done">Seguir</button></div></div>`);
+    $('#again', r).onclick = () => { r.close(); openTraining(c, { close() {} }); };
+    $('#done', r).onclick = () => { r.close(); go(); openCreature(c.id); if (rk.length) rankUp(rk); };
+    hud();
+  });
+}
+
+// ---------- Secuencia de evolución / fusión ----------
+export function evolveFX(c, to, from = [c.k]) {
+  const fx = document.createElement('div'); fx.className = 'evofx';
+  fx.innerHTML = `<div class="rays"></div><div class="parts">${from.map(k => `<span>${k}</span>`).join('')}</div>
+    <div class="old">${creatureSVG(from[0])}</div><div class="new">${creatureSVG(to, { mood: 1 })}</div>
+    <div class="evo-cap"><span class="big-k">${to}</span><b>${KANJI[to].m}</b><small>${KANJI[to].on.join('・')} · ${KANJI[to].kun.join('・')}</small><small>${from.join(' + ')} = ${to} · Nivel KANJŪ ${kLevel(to)}</small><p class="evo-mn">💡 ${KANJI[to].mn}</p><button class="btn ok">¡Genial!</button></div>`;
+  if (from.length === 1) { evolve(c, to); if (settle(c) === 'store') setTimeout(() => toast(`${to} creció y no entra en su lugar: está en el almacén`), 2600); }
+  addXP(40);
+  document.body.append(fx); buzz([20, 60, 40]); bump('evo');
+  save();
+  $('.btn', fx).onclick = () => { fx.classList.add('out'); setTimeout(() => fx.remove(), 300); go(); };
+}

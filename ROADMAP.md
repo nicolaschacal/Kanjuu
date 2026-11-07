@@ -36,7 +36,7 @@ Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. El arte definitivo queda p
 - ✅ "¿Por qué?": la IA explica cada error en la Academia
 - 🔜 Conversaciones guiadas con las criaturas (practicar frases en contexto)
 - 🔜 Más unidades: て-form, querer/poder, contadores, números, hora y fechas; test para saltar unidades
-- 🔜 Orden de trazos real con datos de KanjiVG (animación + evaluación por trazo)
+- ✅ Orden de trazos real con KanjiVG: demostración animada y evaluación trazo por trazo
 - 🔜 Mnemotecnias propias del jugador (escribir su historia; las suyas se recuerdan mejor)
 - 🔜 Oraciones de contexto con furigana y audio
 - ⬜ Pruebas de nivel JLPT N5 → N1 como "torres" desbloqueables
@@ -50,12 +50,14 @@ Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. El arte definitivo queda p
 
 ## 4. Retención y economía
 - ✅ Misiones diarias y semanales sin castigo, logros cobrables, objetivo guiado
+- ✅ Primera sesión guiada (6 pasos con recompensa) y repaso del día unificado (kanji + kana + vocabulario)
 - ✅ Tinta 墨 como moneda blanda; tienda con ampliaciones, objetos y decoraciones
 - 🔜 Recompensa de regreso ("mientras no estabas…") en vez de rachas punitivas
 - 🔜 Pase de temporada gratuito con recompensas cosméticas
 - 🔜 Notificaciones locales: expedición lista, kanji para repasar (opt-in)
 - ⬜ Amigos: visitar santuarios, intercambiar huevos, ranking semanal del Dojo
-- ⬜ Balance de economía con telemetría (fuentes y sumideros de tinta)
+- ✅ Balance de economía con simulación de 30 días (docs/ECONOMIA.md); el Atlas exige maestría
+- 🔜 Validar con telemetría real (fuentes y sumideros de tinta)
 
 ## 5. Monetización ética (no en el MVP)
 - ⬜ Moneda premium 玉 solo para cosméticos, decoraciones y ampliaciones extra
@@ -65,10 +67,11 @@ Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. El arte definitivo queda p
 
 ## 6. Cuenta y backend
 - ✅ Cuenta email/contraseña, guardado en la nube (Vercel + Neon)
-- 🔜 Recuperar contraseña por email (Resend), límite de intentos de login
+- ✅ Límite de intentos de login (por email e IP), código de recuperación, cambiar contraseña
+- 🔜 Recuperación por email (Resend) como alternativa al código
 - 🔜 Validación de partida en servidor (anti-trampas en economía)
 - ⬜ Sign in with Apple (obligatorio en iOS si hay otros logins sociales) y Google
-- ⬜ Borrado de cuenta desde la app (requisito de App Store y Google Play)
+- ✅ Borrado de cuenta desde la app (requisito de App Store y Google Play)
 
 ## 7. Empaquetado nativo
 - 🔜 Capacitor: proyecto iOS y Android desde esta misma web

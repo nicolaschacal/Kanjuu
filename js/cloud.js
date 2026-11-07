@@ -19,11 +19,14 @@ export async function me() {
   return user;
 }
 export const lastUser = () => { try { return localStorage.getItem(LAST); } catch { return null; } };
-export async function auth(action, email, password) {
-  user = (await api('/api/auth', { method: 'POST', body: JSON.stringify({ action, email, password }) })).user;
+export async function auth(action, email, password, extra = {}) {
+  const r = await api('/api/auth', { method: 'POST', body: JSON.stringify({ action, email, password, ...extra }) });
+  user = r.user;
   try { localStorage.setItem(LAST, user.email); } catch {}
-  return user;
+  return r;
 }
+// Acciones con sesión: cambiar contraseña, nuevo código, borrar cuenta
+export const account = (action, data) => api('/api/auth', { method: 'POST', body: JSON.stringify({ action, ...data }) });
 export async function logout() { ready = false; try { localStorage.removeItem(LAST); } catch {} await api('/api/auth', { method: 'POST', body: '{"action":"logout"}' }).catch(() => {}); user = null; }
 export async function pull() { return (await api('/api/save')).data; }
 export async function pushNow(data) { if (user) await api('/api/save', { method: 'PUT', body: JSON.stringify({ data }) }); }

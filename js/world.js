@@ -6,7 +6,7 @@ export const COLS = 6, BASE_ROWS = 3;
 export const ROW_COSTS = [60, 130, 220, 340, 500, 720, 1000];
 export const ROW_RANK = [2, 3, 5, 7, 9, 11, 13];
 export const STORE_COSTS = [40, 90, 160, 260];
-export const PROD_CAP_H = 8; // la producción se acumula hasta 8 h: nunca se pierde, solo se llena
+export const PROD_CAP_H = 6; // la producción se acumula hasta 6 h: nunca se pierde, solo se llena
 
 // Objetos colocables. kind: prod (genera tinta), aura (afecta vecinos), global (afecta todo)
 export const OBJS = {
@@ -21,6 +21,8 @@ export const OBJS = {
 };
 export const OBJ_MAX = 5;
 export const upCost = o => Math.round(OBJS[o.t].cost * o.lv * 1.6);
+// Cada copia del mismo objeto cuesta 50% más
+export const objCost = t => Math.round(OBJS[t].cost * 1.5 ** S.objs.filter(o => o.t === t).length);
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 export const rows = () => S.rows;
@@ -92,7 +94,7 @@ export const calm = c => neighbors(c).some(o => o.t === 'pond');
 export function rate(c) {
   if (!c.pos || c.egg || c.away) return 0;
   const el = element(c.k);
-  let r = (3 + c.lv * .6 + mastery(c.k) * 1.5) * (1 + .5 * (kLevel(c.k) - 1));
+  let r = (.8 + c.lv * .15 + mastery(c.k) * .5) * (1 + .5 * (kLevel(c.k) - 1));
   r *= (.5 + .5 * c.mood) * (1 + .2 * (c.stars || 0)) * (1 + .25 * c.gen) * (c.gold ? 1.5 : 1);
   let aura = 1;
   for (const o of neighbors(c)) {
@@ -148,7 +150,7 @@ export function claimLogin() {
 }
 
 // --- Altar de invocación (solo tinta o boletos 札, nunca dinero) ---
-export const PULL = 60, PULL10 = 540, PITY = 10, GOLD_RATE = .04;
+export const PULL = 120, PULL10 = 1080, PITY = 10, GOLD_RATE = .04;
 export function pullPool() {
   const n = Object.values(S.dex).filter(d => d.owned).length;
   return REGIONS.filter(r => n >= r.need).flatMap(r => r.drops);
@@ -159,7 +161,7 @@ export function pull(times) {
     const unowned = pool.filter(k => !S.dex[k]?.owned && !out.some(o => o.k === k));
     S.pity++;
     const forceNew = unowned.length && (S.pity >= PITY || (times === 10 && i === 9 && !out.some(o => o.isNew)));
-    const k = forceNew || (unowned.length && Math.random() < .25) ? unowned[Math.random() * unowned.length | 0] : pool[Math.random() * pool.length | 0];
+    const k = forceNew || (unowned.length && Math.random() < .15) ? unowned[Math.random() * unowned.length | 0] : pool[Math.random() * pool.length | 0];
     const isNew = !S.dex[k]?.owned && !out.some(o => o.k === k);
     if (isNew) S.pity = 0;
     const gold = S.goldNext || Math.random() < GOLD_RATE; S.goldNext = false;

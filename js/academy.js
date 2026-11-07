@@ -5,6 +5,7 @@ import { UNITS, STORIES } from './course.js';
 import { LESSONS, romaji, helpOn } from './help.js';
 import { speak } from './games.js';
 import { aiOn, genStory, explain, openAISettings } from './ai.js';
+import { emit } from './tutorial.js';
 
 const shuffle = a => a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(v => v[1]);
 const pick = a => a[Math.random() * a.length | 0];
@@ -215,6 +216,17 @@ function reviewQueue() {
     : (([jp, es]) => ({ t: 'mean', jp, es, opts: allV.map(v => v[1]), key }))(key.slice(2).split('|')));
 }
 
+// Repaso de kana y vocabulario: se usa dentro del repaso del día del Dojo
+export async function reviewAcademy(ctx) {
+  const a = A(), q = reviewQueue(); if (!q.length) return null;
+  const keys = q.map(e => e.key);
+  const res = await runLesson({ type: 'custom' }, document.body, q);
+  if (!res) return null;
+  keys.forEach(k => { const r = a.srs[k], ok = !res.missed.has(k); r.box = ok ? Math.min(SRS_HOURS.length - 1, r.box + 1) : Math.max(0, r.box - 1); r.due = Date.now() + SRS_HOURS[Math.max(1, r.box)] * 36e5; });
+  const xp = 10 + (res.perfect ? 5 : 0); a.xp += xp; a.day.xp += xp; S.ink += xp * 2; ctx.addXP(xp); save();
+  return { right: keys.length - res.missed.size, total: keys.length, ink: xp * 2 };
+}
+
 // ---------- Pantalla de la Academia ----------
 export function openAcademy(ctx) {
   const a = A();
@@ -235,7 +247,7 @@ export function openAcademy(ctx) {
         }).join('')}</div></section>`;
       }).join('')}</div>
       <div class="av-foot"><div class="row2"><button class="btn gold" id="aiStory">✨ Cuento con tus KANJŪ</button><button class="btn ghost" id="lib">📚 ${(S.library || []).length}</button></div>
-      <button class="btn ${due ? 'ok' : 'ghost'} wide" id="rev" ${due ? '' : 'disabled'}>↻ Repaso inteligente ${due ? `· ${due} listos` : '· al día ✓'}</button></div>`;
+      <button class="btn ${due + ctx.kanjiDue() ? 'ok' : 'ghost'} wide" id="rev" ${due + ctx.kanjiDue() ? '' : 'disabled'}>修 Repaso del día ${due + ctx.kanjiDue() ? `· ${due + ctx.kanjiDue()} listos` : '· al día ✓'}</button></div>`;
     $('.x', v).onclick = () => { v.remove(); ctx.hud(); };
     v.querySelectorAll('[data-l]').forEach(b => b.onclick = () => openNode(byId(b.dataset.l)));
     $('#rev', v).onclick = doReview;
@@ -256,7 +268,7 @@ export function openAcademy(ctx) {
     a.done[L.id] = Math.min(3, crowns(L.id) + 1);
     const xp = (L.type === 'tip' ? 5 : 10) + (res.perfect ? 5 : 0) + Math.min(5, res.best >> 1);
     a.xp += xp; a.day.xp += xp; learnItems(L);
-    const ink = xp * 2; S.ink += ink; ctx.bump('acad'); const ups = ctx.addXP(xp);
+    const ink = xp * 2; S.ink += ink; ctx.bump('acad'); emit('lesson'); const ups = ctx.addXP(xp);
     let unitMsg = '';
     const u = L.unit;
     if (!a.units.includes(u.id) && u.lessons.every(l => crowns(l.id))) { a.units.push(u.id); S.tickets += u.reward.tickets; unitMsg = `<p class="g">🎉 ¡Unidad completada! +${u.reward.tickets} 札 para el altar</p>`; }
@@ -269,15 +281,8 @@ export function openAcademy(ctx) {
       <button class="btn ok wide">Continuar</button></div>`);
     $('.btn', m).onclick = () => { m.close(); render(); if (ups.length) ctx.rankUp(ups); };
   }
-  async function doReview() {
-    const q = reviewQueue(); if (!q.length) return;
-    const keys = q.map(e => e.key);
-    const res = await runLesson({ type: 'custom' }, document.body, q);
-    if (!res) return;
-    keys.forEach(k => { const r = a.srs[k], ok = !res.missed.has(k); r.box = ok ? Math.min(SRS_HOURS.length - 1, r.box + 1) : Math.max(0, r.box - 1); r.due = Date.now() + SRS_HOURS[Math.max(1, r.box)] * 36e5; });
-    const xp = 10 + (res.perfect ? 5 : 0); a.xp += xp; a.day.xp += xp; S.ink += xp * 2; ctx.addXP(xp); save();
-    ctx.toast(`↻ Repaso completado · +${xp} XP · +${xp * 2} 墨`); render();
-  }
+  // El repaso es uno solo para todo el juego: el Dojo
+  async function doReview() { v.remove(); await ctx.openDojo(); }
   // ---- Cuentos con IA ----
   const THEMES = ['una aventura en el bosque', 'la comida', 'una noche de estrellas', 'la amistad', 'un día de lluvia', 'un viaje', 'una fiesta', 'un misterio'];
   function pickTheme() {
