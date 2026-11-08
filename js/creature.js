@@ -1,4 +1,5 @@
 import { ELEMENTS, element, roots, depth, typeOf } from './data.js';
+import { ART } from './art.js';
 
 // Criaturas de papel: la silueta dice el tipo 五行 (hoja, llama, roca, campana, gota), el color dice el
 // elemento, el kanji va pintado con pincel en el pecho y cada raíz suma un rasgo. Borde crema de recorte.
@@ -28,6 +29,7 @@ const SHAPES = {
 
 export function creatureSVG(k, { mood = 1, egg = false, gold = false } = {}) {
   if (egg) return eggSVG(typeOf(k), element(k), gold);
+  if (ART[k]) return artSVG(k, mood, gold);
   const d = depth(k), type = typeOf(k), sh = SHAPES[type];
   let [fill, dark] = gold ? ['#F2C94C', '#B8862A'] : ELEMENTS[element(k)];
   const shade = mix(fill, dark, .55), light = mix(fill, '#FFFFFF', .45);
@@ -95,6 +97,17 @@ export function creatureSVG(k, { mood = 1, egg = false, gold = false } = {}) {
   <ellipse cx="${bx}" cy="${by}" rx="${brx}" ry="${bry}" fill="#F6EBD0"/>
   <text x="${bx}" y="${by + 1}" text-anchor="middle" dominant-baseline="central" font-size="${bry * 1.55}" fill="#2B1D16" font-family="'Yuji Syuku',serif">${k}</text>
   </g>${spark}</svg>`;
+}
+
+// Criatura ilustrada (recorte de papel): misma caja 120×120, base en y=114, sombra y respiración como la procedural
+function artSVG(k, mood, gold) {
+  const id = 'kja' + [...k].map(c => c.codePointAt(0)).join('') + (gold ? 'g' : '');
+  const tint = gold ? `<defs><filter id="${id}"><feColorMatrix type="matrix" values=".55 .45 .1 0 .08  .45 .45 .08 0 .04  .12 .18 .12 0 0  0 0 0 1 0"/></filter></defs>` : '';
+  const spark = gold ? `<g class="kj-spark" fill="#FFF8C4"><path d="M14 26 l3 -8 l3 8 l8 3 l-8 3 l-3 8 l-3 -8 l-8 -3Z"/><path d="M100 46 l2 -5 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2Z"/></g>` : '';
+  const tear = mood < .3 ? `<path d="M44 66 C41 72 44 76 47 76 C50 76 50 72 44 66Z" fill="#7CC4F2" stroke="#FFF" stroke-width="1.5"/>` : '';
+  return `<svg viewBox="0 0 120 120" class="kj-svg" aria-label="${k}">${tint}
+  <ellipse class="kj-shadow" cx="60" cy="113" rx="30" ry="5" fill="#140A1E2E"/>
+  <g class="kj-body"><image href="${ART[k]}" x="6" y="4" width="108" height="110" preserveAspectRatio="xMidYMax meet"${gold ? ` filter="url(#${id})"` : ''}/>${tear}</g>${spark}</svg>`;
 }
 
 function eggSVG(type, el, gold) {

@@ -43,7 +43,7 @@ const fontReady = document.fonts?.load('64px "Yuji Syuku"').catch(() => {}) || P
 const texCache = new Map();
 function paperTexture(svg) {
   if (texCache.has(svg)) return texCache.get(svg);
-  const S = 256, M = 12, c = canvas(S), t = tex(c);
+  const S = svg.includes('<image') ? 512 : 256, M = S / 256 * 12, c = canvas(S), t = tex(c);
   texCache.set(svg, t);
   const texts = [];
   const s = svg.replace(/<text([^>]*)>([^<]*)<\/text>/g, (_, a, txt) => {
@@ -58,7 +58,7 @@ function paperTexture(svg) {
     b.drawImage(img, M, M, S - 2 * M, S - 2 * M);
     b.fillStyle = '#2B1D16'; b.textAlign = 'center'; b.textBaseline = 'middle';
     texts.forEach(x => { b.font = `${x.fs * k}px "Yuji Syuku", serif`; b.fillText(x.txt, M + x.x * k, M + x.y * k + 1); });
-    const o = c.getContext('2d'), r = 3;
+    const o = c.getContext('2d'), r = 3 * S / 256;
     for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; o.drawImage(base, Math.cos(a) * r, Math.sin(a) * r); }
     o.globalCompositeOperation = 'source-in'; o.fillStyle = CREAM; o.fillRect(0, 0, S, S);
     o.globalCompositeOperation = 'source-over'; o.drawImage(base, 0, 0);
