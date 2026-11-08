@@ -9,7 +9,9 @@ import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn, setHelp } from './h
 import { openAcademy, acadDue, reviewAcademy, DAILY_GOAL } from './academy.js';
 import { openAISettings, aiStatus } from './ai.js';
 import { startTutorial, emit } from './tutorial.js';
-import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
+import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld, raining } from './world.js';
+import { setGrain, grainOn } from './paper.js';
+import { hourNow } from './scene3d.js';
 import { viewHome, harvest } from './sanctuary.js';
 import { viewTrainer } from './trainer.js';
 import { allDue } from './dojo.js';
@@ -133,7 +135,12 @@ function renderPanel() {
 }
 export function hud() {
   $('#ink').textContent = S.ink;
-  const ct = $('#clkT'); if (ct) { ct.textContent = clock(); const ph = phase(); if ($('#clkP').textContent !== ph.l) { $('#clkP').textContent = ph.l; if (!wxNow) $('#clkI').innerHTML = ic(ph.i); } }
+  const ct = $('#clkT'); if (ct) {
+    const ph = phase(), rn = raining(), lbl = ph.l; ct.textContent = rn ? clock() + ' · lluvia' : clock();
+    const k = rn ? 'rain' : wxNow && WX(wxNow.c) !== 'sun' ? WX(wxNow.c) : ph.i;
+    if ($('#clkP').textContent !== lbl) $('#clkP').textContent = lbl;
+    const ci = $('#clkI'); if (ci.dataset.k !== k) { ci.dataset.k = k; ci.innerHTML = ic(k); }
+  }
   const dot = $('#inkDot'), pend = totalPending(); if (dot) { dot.hidden = !pend; $('#shopBtn').classList.toggle('claim', !!pend); }
   rollDaily();
   const ready = MISSIONS.filter(m => (S.daily.p[m.id] || 0) >= m.goal && !S.daily.claimed.includes(m.id)).length
@@ -153,7 +160,7 @@ export function hud() {
 // ---------- Hora y clima (Open-Meteo, sin clave). La ubicación sólo se pide al tocar el reloj. ----------
 const clock = () => new Date().toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
 // Momento del día: es lo que se lee primero (como en Rebyters); la hora y el clima van chicos debajo
-const phase = (h = new Date().getHours()) => h >= 6 && h < 12 ? { l: 'Mañana', i: 'dawn' } : h >= 12 && h < 19 ? { l: 'Tarde', i: 'sun' } : h >= 19 && h < 23 ? { l: 'Noche', i: 'night' } : { l: 'Madrugada', i: 'night' };
+const phase = (h = Math.floor(hourNow())) => h >= 6 && h < 12 ? { l: 'Mañana', i: 'dawn' } : h >= 12 && h < 19 ? { l: 'Tarde', i: 'sun' } : h >= 19 && h < 23 ? { l: 'Noche', i: 'night' } : { l: 'Madrugada', i: 'night' };
 const WXN = { sun: 'Despejado', cloud: 'Nublado', fog: 'Niebla', rain: 'Lluvia', snow: 'Nieve', storm: 'Tormenta' };
 let wxNow = null;
 const WX = c => c <= 1 ? 'sun' : c <= 3 ? 'cloud' : c <= 48 ? 'fog' : c <= 67 || (c >= 80 && c <= 82) ? 'rain' : c <= 86 ? 'snow' : 'storm';
@@ -161,7 +168,7 @@ const GEO = 'kanjuu.geo', WXC = 'kanjuu.wx';
 export async function weather(ask) {
   const show = w => {
     const el = $('#wx'); if (!el) return; wxNow = w; el.hidden = false;
-    const k = WX(w.c); $('#clkI').innerHTML = ic(k === 'sun' ? phase().i : k);
+    const k = raining() ? 'rain' : WX(w.c) === 'sun' ? phase().i : WX(w.c); $('#clkI').innerHTML = ic(k); $('#clkI').dataset.k = k;
     $('#wxT').textContent = `${Math.round(w.t)}° ${WXN[k]}`;
   };
   try { const w = JSON.parse(localStorage.getItem(WXC)); if (w) { show(w); if (Date.now() - w.at < 18e5 && !ask) return; } } catch {}
@@ -186,11 +193,13 @@ export function openMenu() {
       <button class="row-k" id="mAcct"><span class="row-ic">${ic('user')}</span><span class="row-t"><b>Cuenta</b><small>${cloud.user ? esc(cloud.user.email) : 'Guardado en la nube y seguridad'}</small></span>${ic('right', 'chev')}</button>
       <button class="row-k" id="mAI"><span class="row-ic">${ic('sparkles')}</span><span class="row-t"><b>IA propia</b><small>Tu clave para cuentos y explicaciones</small></span>${ic('right', 'chev')}</button>
       <label class="row-k"><span class="row-ic">${ic('kana')}</span><span class="row-t"><b>Ayuda de lectura</b><small>Furigana sobre los kanji de la interfaz</small></span><input type="checkbox" class="sw" id="mFuri" ${helpOn() ? 'checked' : ''}></label>
+      <label class="row-k"><span class="row-ic">${ic('leaf')}</span><span class="row-t"><b>Papel con grano</b><small>Textura de papel en el santuario (apagado: papel liso)</small></span><input type="checkbox" class="sw" id="mGrain" ${grainOn() ? 'checked' : ''}></label>
       <button class="row-k" id="mWx"><span class="row-ic">${ic('sun')}</span><span class="row-t"><b>Clima</b><small>Usa tu ubicación aproximada para el clima del HUD</small></span>${ic('right', 'chev')}</button>
     </div>`);
   $('#mAcct', m).onclick = () => { m.close(); openAccount(); };
   $('#mAI', m).onclick = () => { m.close(); openAISettings(modal, toast, go); };
   $('#mFuri', m).onchange = e => { setHelp(e.target.checked); go(); };
+  $('#mGrain', m).onchange = e => setGrain(e.target.checked);
   $('#mWx', m).onclick = () => { m.close(); try { localStorage.removeItem(GEO); } catch {} weather(true); };
 }
 const ICONS = { '店': 'bag', '旅': 'compass', '錬': 'fusion', '闘': 'swords', '図': 'book' };

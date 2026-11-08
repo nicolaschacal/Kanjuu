@@ -2,6 +2,7 @@
 import { ic } from './icons.js';
 import { PIECES, KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
 import { creatureSVG, objSVG } from './creature.js';
+import { artThumb } from './paper.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
 import { GAMES, hasWord, hasParts, play, review, storyHTML, speak } from './games.js';
 import * as cloud from './cloud.js';
@@ -21,8 +22,8 @@ export const ITEMS = [
   { id: 'incense', k: '香', name: 'Incienso', cost: 45, desc: 'Inspira a todo el santuario 1 h: ×2 tinta' },
 ];
 function shopObjs(decor) {
-  return Object.entries(OBJS).filter(([, d]) => (d.kind === 'decor') === decor).map(([t, d]) => { const lock = S.rank.lv < d.rank, n = S.objs.filter(o => o.t === t).length;
-    return `<div class="shop-row ${lock ? 'locked' : ''}"><i>${d.k}</i><div><b>${d.name}${n ? ` · tenés ${n}` : ''}</b><small>${d.kind === 'decor' ? d.desc : d.desc} · ${d.w}×${d.h} · 和+${d.har}</small></div>
+  return Object.entries(OBJS).filter(([, d]) => (d.kind === 'decor') === decor && !d.hide).map(([t, d]) => { const lock = S.rank.lv < d.rank, n = S.objs.filter(o => o.t === t).length;
+    return `<div class="shop-row ${lock ? 'locked' : ''}"><i class="shop-art">${d.art ? `<img src="${artThumb(d.art)}" alt="">` : d.k}</i><div><b>${d.name}${n ? ` · tenés ${n}` : ''}</b><small>${d.kind === 'decor' ? d.desc : d.desc} · ${d.w}×${d.h} · 和+${d.har}</small></div>
       <button class="btn ok" data-obj="${t}" ${lock || S.ink < objCost(t) ? 'disabled' : ''}>${lock ? `Rango ${d.rank}` : objCost(t) + ' 墨'}</button></div>`; }).join('');
 }
 let shopTab = 'inv';

@@ -10,6 +10,8 @@ export const ISLANDS = [
   { n: 5, mons: 5, objs: 12, cost: 0, rank: 1, name: 'Isla pequeña' },
   { n: 7, mons: 7, objs: 24, cost: 1500, rank: 4, name: 'Isla mediana' },
   { n: 9, mons: 9, objs: 40, cost: 5000, rank: 8, name: 'Isla grande' },
+  { n: 12, mons: 12, objs: 64, cost: 12000, rank: 12, name: 'Isla amplia' },
+  { n: 15, mons: 15, objs: 96, cost: 25000, rank: 16, name: 'Gran isla' },
 ];
 export const island = () => ISLANDS[S.island || 0];
 export const monCap = () => island().mons;
@@ -63,9 +65,25 @@ export const OBJS = {
   house: { k: '家', name: 'Casita', w: 2, h: 2, cost: 260, rank: 5, kind: 'decor', col: '#C9A27A', desc: 'Una casa con la ventana encendida' },
   sakura: { k: '桜', name: 'Cerezo', w: 2, h: 2, cost: 240, rank: 6, kind: 'decor', col: '#F4A7B9', desc: 'Suelta pétalos sobre el santuario' },
   pagoda: { k: '塔', name: 'Pagoda', w: 2, h: 2, cost: 700, rank: 9, kind: 'decor', col: '#B8392A', desc: 'Cinco techos: el orgullo de la aldea' },
+  // Santuario de papel: adornos de templo y edificios japoneses
+  chochin: { k: '提', name: 'Chōchin', w: 1, h: 1, cost: 45, rank: 2, kind: 'decor', col: '#D9533B', desc: 'Farolillo de papel: se enciende de noche' },
+  ema: { k: '絵', name: 'Ema', w: 1, h: 1, cost: 60, rank: 2, kind: 'decor', col: '#E8D2A6', desc: 'Tablillas de deseos' },
+  komainu: { k: '狛', name: 'Komainu', w: 1, h: 1, cost: 90, rank: 3, kind: 'decor', col: '#B9B4A8', desc: 'Guardián de piedra del templo' },
+  refugio: { k: '庵', name: 'Refugio', w: 1, h: 1, cost: 110, rank: 3, kind: 'decor', col: '#87603F', desc: 'Tus KANJŪ se cubren aquí cuando llueve' },
+  bridge: { k: '橋', name: 'Puente', w: 2, h: 2, cost: 160, rank: 3, kind: 'decor', col: '#C8412E', desc: 'Puente rojo: cruza el agua de punta a punta', water: true },
+  sacred: { k: '磐', name: 'Roca sagrada', w: 1, h: 1, cost: 120, rank: 4, kind: 'decor', col: '#8E897F', desc: 'Roca con su cuerda shimenawa' },
+  teahouse: { k: '茶', name: 'Casa de té', w: 1, h: 1, cost: 180, rank: 4, kind: 'decor', col: '#D9C9A8', desc: 'Pequeña, con ventana redonda' },
+  temple: { k: '寺', name: 'Templo', w: 2, h: 2, cost: 520, rank: 7, kind: 'decor', col: '#3E4A52', desc: 'Salón principal con frontón curvo' },
+  castle: { k: '城', name: 'Castillo', w: 3, h: 3, cost: 1500, rank: 10, kind: 'decor', col: '#4E8C82', desc: 'Torre de cinco pisos estilo Osaka' },
 };
+// Recorte de papel que dibuja cada objeto en el santuario (paper.js). flat: va acostado en el suelo
+const ART = { suzuri: 'suzuri', lantern: 'farol', pine: 'pino', pond: 'estanque', shrine: 'templo', bell: 'campana', torii: 'torii', brazier: 'brasero', stone: 'losa', rock: 'roca', shrub: 'arbusto', flowers: 'flores', fence: 'cerca', banner: 'nobori', bamboo: 'bambu', tree: 'arbol', altar: 'incienso', house: 'minka', sakura: 'cerezo', pagoda: 'pagoda', chochin: 'chochin', ema: 'ema', komainu: 'komainu', refugio: 'refugio', bridge: 'puente', sacred: 'sagrada', teahouse: 'casate', temple: 'templo', castle: 'castillo' };
+Object.entries(ART).forEach(([t, a]) => OBJS[t].art = a);
+OBJS.pond.flat = OBJS.stone.flat = true; OBJS.pond.water = true; OBJS.rock.water = true;
+OBJS.stone.hide = true; // los caminos ahora se pintan como casillas en el editor
+
 // Armonía que aporta cada objeto (los edificios también embellecen)
-Object.entries({ suzuri: 2, lantern: 3, pine: 3, pond: 5, shrine: 10, bell: 4, torii: 6, brazier: 3, stone: 1, rock: 1, shrub: 1, flowers: 2, fence: 1, banner: 2, bamboo: 2, tree: 3, altar: 4, house: 9, sakura: 9, pagoda: 18 }).forEach(([t, h]) => OBJS[t].har = h);
+Object.entries({ suzuri: 2, lantern: 3, pine: 3, pond: 5, shrine: 10, bell: 4, torii: 6, brazier: 3, stone: 1, rock: 1, shrub: 1, flowers: 2, fence: 1, banner: 2, bamboo: 2, tree: 3, altar: 4, house: 9, sakura: 9, pagoda: 18, chochin: 2, ema: 2, komainu: 3, refugio: 3, bridge: 4, sacred: 4, teahouse: 5, temple: 12, castle: 25 }).forEach(([t, h]) => OBJS[t].har = h);
 export const OBJ_MAX = 5;
 export const upCost = o => Math.round(OBJS[o.t].cost * o.lv * 1.6);
 // Cada copia del mismo objeto cuesta 50% más
@@ -73,6 +91,55 @@ export const objCost = t => Math.round(OBJS[t].cost * (OBJS[t].kind === 'decor' 
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 export const rows = () => S.rows;
+
+// --- Suelo de la isla (editor de Construir): tipo de casilla, altura 0–3 y rampa ---
+export const GROUNDS = {
+  grass: { n: 'Pasto', c: '#8DBF5E' }, moss: { n: 'Musgo', c: '#5F9447' }, dirt: { n: 'Tierra', c: '#B98D5A' },
+  sand: { n: 'Arena', c: '#E2CE97' }, slate: { n: 'Losa', c: '#AAA59B' }, snow: { n: 'Nieve', c: '#F3F0EA' }, water: { n: 'Agua', c: '#5AA5D2' },
+};
+export const tileAt = (x, y) => ({ g: 'grass', h: 0, r: null, ...(S.tiles?.[x + ',' + y] || {}) });
+function putTile(x, y, t) {
+  const k = x + ',' + y; S.tiles ??= {};
+  if (t.g === 'grass' && !t.h && !t.r) delete S.tiles[k]; else S.tiles[k] = { g: t.g, h: t.h || 0, ...(t.r ? { r: t.r } : {}) };
+}
+export const isWater = (x, y) => tileAt(x, y).g === 'water';
+export const itemOn = (x, y) => placed().find(it => { const [w, h] = foot(it), p = it.pos; return x >= p.x && x < p.x + w && y >= p.y && y < p.y + h; });
+// Cada acción devuelve un texto de error o null
+export function paintTile(x, y, g) {
+  const t = tileAt(x, y); if (t.g === g) return null;
+  const it = itemOn(x, y);
+  if (g === 'water' && it && !it.t) return 'Mové primero al KANJŪ: no nadan';
+  if (g === 'water' && it?.t && !OBJS[it.t].water) return 'Quitá el objeto antes de hacer agua';
+  t.g = g; if (g === 'water') t.r = null; putTile(x, y, t); return null;
+}
+export function raiseTile(x, y) {
+  const t = tileAt(x, y); if (t.g === 'water') return 'Para subir el agua usá Cascada';
+  t.h = (t.h + 1) % 4; t.r = null; putTile(x, y, t); return null;
+}
+export function cascadeTile(x, y) {
+  const t = tileAt(x, y); if (t.g !== 'water') return 'Tocá una casilla de agua';
+  t.h = (t.h + 1) % 4; putTile(x, y, t); return null;
+}
+export function rampTile(x, y) {
+  const t = tileAt(x, y); if (t.g === 'water') return 'No hay rampas en el agua';
+  const dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]].filter(([dx, dy]) => { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= S.cols || ny >= S.rows) return false; const n = tileAt(nx, ny); return n.g !== 'water' && n.h === t.h + 1; });
+  if (!dirs.length) { if (t.r) { t.r = null; putTile(x, y, t); return null; } return 'La rampa va al lado de una casilla un nivel más alta'; }
+  const i = t.r ? dirs.findIndex(d => d[0] === t.r[0] && d[1] === t.r[1]) + 1 : 0;
+  t.r = i >= dirs.length ? null : dirs[i]; putTile(x, y, t); return null;
+}
+
+// --- Lluvia: cada 3 horas hay una chance de chaparrón de 25 a 55 minutos (igual para todos ese día) ---
+const rnd01 = n => { const v = Math.sin(n * 127.1 + 311.7) * 43758.5453; return v - Math.floor(v); };
+export function rainAt(ms = Date.now()) {
+  const q = new URLSearchParams(location.search).get('lluvia'); if (q !== null) return q !== '0';
+  const d = new Date(ms), day = d.getFullYear() * 400 + d.getMonth() * 32 + d.getDate();
+  const hr = d.getHours() + d.getMinutes() / 60, block = Math.floor(hr / 3), seed = day * 8 + block;
+  if (rnd01(seed) > .3) return false;
+  const start = block * 3 + rnd01(seed + .5) * 2.2, len = (25 + rnd01(seed + .9) * 30) / 60;
+  return hr >= start && hr < start + len;
+}
+export const raining = () => rainAt();
+
 export function foot(it) {
   if (it.t) return [OBJS[it.t].w, OBJS[it.t].h];
   if (it.egg) return [1, 1];
@@ -84,6 +151,8 @@ export const tilesTotal = () => S.cols * S.rows;
 
 export function fits(w, h, x, y, ignore) {
   if (x < 0 || y < 0 || x + w > S.cols || y + h > S.rows) return false;
+  const floats = !!(ignore?.t && OBJS[ignore.t].water);
+  if (!floats) for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) if (isWater(x + i, y + j)) return false;
   return !placed().some(it => {
     if (it === ignore) return false;
     const [W, H] = foot(it), p = it.pos;
@@ -241,7 +310,7 @@ export function awaken(c) {
 // Migra partidas anteriores al sistema de grilla
 export function initWorld() {
   S.rows ??= BASE_ROWS; S.objs ??= []; S.storeCap ??= 10; S.tickets ??= 1; S.pity ??= 0;
-  S.rank ??= { lv: 1, xp: 0 }; S.login ??= { day: 0, last: '' };
+  S.rank ??= { lv: 1, xp: 0 }; S.login ??= { day: 0, last: '' }; S.tiles ??= {};
   S.gate = (S.gate || []).map(g => typeof g === 'string' ? { k: g } : g);
   if (S.deco?.length) { S.deco.forEach(t => OBJS[t] && newObj(t)); }
   delete S.deco; delete S.cap;
