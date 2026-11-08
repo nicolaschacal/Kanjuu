@@ -467,7 +467,7 @@ function sanctuary() {
   const W = { name: 'sanct', scene, camera, world, ov, items: new Map(), opts: {}, cols: 0, rows: 0, stage: -1, yaw: 0, panZ: 0, dragging: false, platform: null, dress: { lights: [], banners: [], trees: [], smoke: [] }, geo: { rx: 5, rz: 4, zc: -1 } };
   let drag0 = null;
   W.dragStart = () => { drag0 = { yaw: W.yaw, pan: W.panZ }; W.dragging = true; };
-  W.drag = (dx, dy) => { if (!drag0) return; const lim = Math.max(0, W.geo.rz - 2.6); W.yaw = Math.max(-.3, Math.min(.3, drag0.yaw + dx * .004)); W.panZ = Math.max(-lim, Math.min(lim * .6, drag0.pan - dy * .014)); };
+  W.drag = (dx, dy) => { if (!drag0) return; const lim = Math.max(0, W.geo.rz - (W.geo.elev ? 1.6 : 2.6)); W.yaw = Math.max(-.3, Math.min(.3, drag0.yaw + dx * .004)); W.panZ = Math.max(-lim, Math.min(lim * .6, drag0.pan - dy * .014)); };
   W.dragEnd = () => { drag0 = null; W.dragging = false; };
   W.tap = ray => {
     const { mode, onTap, onCell } = W.opts;
@@ -495,7 +495,7 @@ function sanctuary() {
     // Cámara 3/4 que encuadra la isla entera
     const g = W.geo, hf = 2 * Math.atan(Math.tan(camera.fov * Math.PI / 360) * camera.aspect);
     if (!W.dragging) W.yaw += (0 - W.yaw) * Math.min(1, dt * 2.5);
-    let dist = (g.rx * 1.06) / Math.tan(hf / 2), elev = .72, tx = 0, ty = .3, tz = g.zc + W.panZ;
+    let dist = (g.rx * 1.06) / Math.tan(hf / 2), elev = g.elev ?? .72, tx = 0, ty = .3, tz = g.zc + (g.lookZ || 0) + W.panZ;
     const fo = W.focus && W.items.get(W.focus);
     if (fo?.sprite) { // primer plano: la cámara baja y se acerca a la criatura
       const v = new THREE.Vector3(); fo.sprite.getWorldPosition(v);
@@ -548,8 +548,64 @@ function sanctuary() {
   return E.worlds.sanct = W;
 }
 
+// PROPUESTA (rama propuesta-suelo): en vez de isla, un terreno rectangular que llena la pantalla.
+//   ?suelo=patio → jardín rectangular con borde de piedra y cerco de bosque alrededor
+//   ?suelo=campo → pasto hasta el horizonte, sin bordes; la grilla sólo se ve al construir
+const SUELO = new URLSearchParams(location.search).get('suelo');
+// Pasto que se repite sin costuras: cada mancha y brizna se dibuja también del otro lado del borde
+let _seam;
+function seamlessGrass() {
+  if (_seam) return _seam;
+  const S0 = 512, c = canvas(S0, S0), x = c.getContext('2d'), rnd = mulberry(11);
+  const wrap = (f) => { for (const dx of [-S0, 0, S0]) for (const dy of [-S0, 0, S0]) { x.save(); x.translate(dx, dy); f(); x.restore(); } };
+  x.fillStyle = '#76A95C'; x.fillRect(0, 0, S0, S0);
+  for (let i = 0; i < 260; i++) { const px = rnd() * S0, py = rnd() * S0, a = 12 + rnd() * 30, b = 6 + rnd() * 14, r = rnd() * 3, col = rnd() < .5 ? 'rgba(140,192,110,.5)' : 'rgba(86,140,72,.4)';
+    wrap(() => { x.fillStyle = col; x.beginPath(); x.ellipse(px, py, a, b, r, 0, 7); x.fill(); }); }
+  x.strokeStyle = 'rgba(170,216,128,.75)'; x.lineWidth = 3; x.lineCap = 'round';
+  for (let i = 0; i < 420; i++) { const px = rnd() * S0, py = rnd() * S0, ex = (rnd() - .5) * 8, ey = 10 + rnd() * 6; wrap(() => { x.beginPath(); x.moveTo(px, py); x.quadraticCurveTo(px + 2, py - 6, px + ex, py - ey); x.stroke(); }); }
+  for (let i = 0; i < 22; i++) { const px = rnd() * S0, py = rnd() * S0, col = rnd() < .5 ? '#E8452C' : '#F2B544'; wrap(() => { x.fillStyle = CREAM; x.beginPath(); x.arc(px, py, 4.5, 0, 7); x.fill(); x.fillStyle = col; x.beginPath(); x.arc(px, py, 2, 0, 7); x.fill(); }); }
+  return _seam = c;
+}
+const grassRep = (w, h) => repTex(tex(seamlessGrass()), w / 5, h / 5);
+function repTex(t, rx, ry) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rx, ry); return t; }
+function buildField(W, cols, rows, kind) {
+  if (W.platform) W.world.remove(W.platform);
+  W.dress = { lights: [], banners: [], trees: [], smoke: [] };
+  const g = new THREE.Group(), pw = cols * T, pd = rows * T, seed = cols * 7 + rows, rnd = mulberry(seed * 5);
+  // Encuadre: el rectángulo jugable ocupa casi todo el ancho; cámara más alta (se ve más piso, menos cielo)
+  W.geo = { rx: pw / 2 + (kind === 'patio' ? .55 : .2), rz: pd / 2 + .4, zc: 0, elev: kind === 'patio' ? .86 : .92, lookZ: -pd * .2 };
+  // Piso enorme: llega hasta los bordes de la pantalla y al horizonte
+  const BW = pw + 40, BD = pd + 60;
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(BW, BD), new THREE.MeshLambertMaterial({ map: grassRep(BW, BD), color: kind === 'patio' ? '#B9CFA0' : '#FFFFFF' }));
+  ground.rotation.x = -Math.PI / 2; ground.position.set(0, .2, -BD / 2 + pd / 2 + 14); ground.receiveShadow = true; g.add(ground);
+  if (kind === 'patio') {
+    // Césped cuidado dentro del rectángulo, un poco más claro y elevado 2 cm
+    const lawn = new THREE.Mesh(new THREE.PlaneGeometry(pw + .5, pd + .5), new THREE.MeshLambertMaterial({ map: grassRep(pw + .5, pd + .5) }));
+    lawn.rotation.x = -Math.PI / 2; lawn.position.y = .215; lawn.receiveShadow = true; g.add(lawn);
+    // Bordillo de piedra alrededor
+    const stone = new THREE.MeshLambertMaterial({ color: '#B8AE98' }), sw = .22;
+    [[0, -(pd / 2 + .25 + sw / 2), pw + .5 + sw * 2, sw], [0, pd / 2 + .25 + sw / 2, pw + .5 + sw * 2, sw], [-(pw / 2 + .25 + sw / 2), 0, sw, pd + .5], [pw / 2 + .25 + sw / 2, 0, sw, pd + .5]]
+      .forEach(([x, z, w, d]) => g.add(mesh(new THREE.BoxGeometry(w, .12, d), stone, x, .26, z)));
+    // Seto bajo detrás y a los costados (el frente queda abierto)
+    for (let x = -pw / 2 - .4; x <= pw / 2 + .4; x += .55) { const b = bush(1.15, seed + x * 10); b.position.set(x, .2, -pd / 2 - .75); g.add(b); }
+    for (const sx of [-1, 1]) for (let z = -pd / 2 - .4; z <= pd / 2 + .2; z += .6) { const b = bush(1, seed + z * 13 + sx); b.position.set(sx * (pw / 2 + .8), .2, z); g.add(b); }
+  }
+  // Árboles: cerco de bosque detrás y a los lados, cada vez más denso hacia el fondo
+  const ring = kind === 'patio' ? 1.6 : 2.4;
+  for (let i = 0; i < 90; i++) {
+    const side = rnd(), x = side < .5 ? (rnd() - .5) * (pw + 22) : (rnd() < .5 ? -1 : 1) * (pw / 2 + ring + rnd() * 9);
+    const z = side < .5 ? -pd / 2 - ring - rnd() * 14 : (rnd() - .6) * (pd + 14);
+    if (Math.abs(x) < pw / 2 + ring - .3 && z > -pd / 2 - ring + .3) continue;
+    const t = tree(rnd() < .08 ? 'sakura' : 'pine', 1.1 + rnd() * .9, seed + i); t.position.set(x, .2, z); g.add(t); W.dress.trees.push(t);
+  }
+  if (kind === 'campo') for (let i = 0; i < 26; i++) { const b = bush(.8 + rnd() * .5, seed + i * 3); b.position.set((rnd() - .5) * (pw + 6), .2, -pd / 2 - .8 - rnd() * 2); g.add(b); }
+  W.floaters = [];
+  W.world.add(g); W.platform = g; W.cols = cols; W.rows = rows;
+}
+
 // Isla básica (siempre igual): pasto, acantilados y rocas que flotan. La decoración la pone el jugador.
 function buildIsland(W, cols, rows) {
+  if (SUELO === 'patio' || SUELO === 'campo') return buildField(W, cols, rows, SUELO);
   if (W.platform) W.world.remove(W.platform);
   W.dress = { lights: [], banners: [], trees: [], smoke: [] };
   const g = new THREE.Group(), pw = cols * T, pd = rows * T;
