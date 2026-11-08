@@ -25,7 +25,7 @@ export function viewHome(v) { return webgl() && !new URLSearchParams(location.se
 function viewHome3d(v) {
   const pend = totalPending(), nextI = ISLANDS[(S.island || 0) + 1];
   if (focusId && (build || placing || !S.creatures.some(c => c.id === focusId && c.pos))) focusId = null;
-  const bubbles = placed().filter(it => pending(it) >= 8 || full(it)).map(it => `<button class="bubble-ink ${full(it) ? 'full' : ''}" data-c="${it.id}" data-anchor="${it.id}">墨<span>${pending(it)}</span></button>`).join('');
+  const bubbles = placed().filter(it => pending(it) >= 1).map(it => `<button class="bubble-ink ${full(it) ? 'full' : ''}" data-c="${it.id}" data-anchor="${it.id}" aria-label="Recoger ${pending(it)} de tinta">${ic('ink')}</button>`).join('');
   v.innerHTML = `
   <div class="home home3d">
     <div class="stage" id="stage">
@@ -65,7 +65,7 @@ function viewHome3d(v) {
     hopAll(.25);
     const mons = S.creatures.filter(c => c.pos && !c.away && !c.egg);
     if (mons.length > 1 && Math.random() < .35) emoteAt(mons[Math.random() * mons.length | 0].id, ['♪', '♥', '！', '…', 'ｚ', '✿'][Math.random() * 6 | 0]);
-    stg.querySelectorAll('.bubble-ink').forEach(b => { const n = pending(findIt(b.dataset.c)); b.querySelector('span').textContent = n; });
+    if (!stg.querySelector('.bubble-ink') && placed().some(it => pending(it) >= 1)) go();
   }, 2500);
 }
 // Vista de primer plano (como en Rebyters): la cámara se acerca a la criatura y aparece su tarjeta
@@ -169,14 +169,13 @@ function viewHome2d(v) {
     const mons = [...grid.querySelectorAll('.it.mon:not(.egg)')];
     mons.forEach(el => Math.random() < .3 && (el.classList.remove('hop'), void el.offsetWidth, el.classList.add('hop')));
     if (mons.length > 1 && Math.random() < .35) emote(mons[Math.random() * mons.length | 0], ['♪', '♥', '！', '…', 'ｚ', '✿'][Math.random() * 6 | 0]);
-    grid.querySelectorAll('.bubble-ink').forEach(b => { const n = pending(findIt(b.dataset.c)); b.querySelector('span').textContent = n; });
   }, 2500);
 }
 export const findIt = id => S.creatures.find(c => c.id === id) || S.objs.find(o => o.id === id);
 export function itemHTML(it) {
   const [w, h] = foot(it), p = it.pos, n = pending(it);
   const style = `--x:${p.x};--y:${p.y};--w:${w};--h:${h}`;
-  const bub = n >= 1 ? `<button class="bubble-ink ${full(it) ? 'full' : ''}" data-c="${it.id}">墨<span>${n}</span></button>` : '';
+  const bub = n >= 1 ? `<button class="bubble-ink ${full(it) ? 'full' : ''}" data-c="${it.id}">${ic('ink')}</button>` : '';
   if (it.t) return `<div class="it obj" data-it="${it.id}" style="${style}">${objSVG(it, OBJS[it.t])}${bub}</div>`;
   if (it.away) return `<div class="it away" data-it="${it.id}" style="${style}"><span>旅</span><small>${it.k} de viaje</small></div>`;
   return `<div class="it mon ${it.egg ? 'egg' : ''} ${it.insp > Date.now() ? 'insp' : ''}" data-it="${it.id}" style="${style}">

@@ -75,7 +75,7 @@ export const TRAINER_TABS = [['bag', 'bag', 'Mochila'], ['kan', 'paw', 'KANJŪ']
 export function shell() {
   app.innerHTML = `
   <header class="hud">
-    <button class="hud-clock" id="clock" aria-label="Hora y clima"><b id="clkT">${clock()}</b><span class="wx" id="wx" hidden><i id="wxI"></i><small id="wxT"></small></span></button>
+    <button class="hud-clock" id="clock" aria-label="Momento del día y clima"><span class="clk-ic" id="clkI">${ic(phase().i)}</span><span class="clk-t"><b id="clkP">${phase().l}</b><small><span id="clkT">${clock()}</span><span id="wx" hidden> · <span id="wxT"></span></span></small></span></button>
     <div class="hud-r">
       <div class="hud-row">
         <button class="wallet-p" id="shopBtn" aria-label="Tinta y tienda"><span class="wc">${ic('ink', 'ink')}<b id="ink">${S.ink}</b></span><span class="wc">${ic('ticket', 'tix')}<b id="tix">${S.tickets}</b></span><i class="ink-dot" id="inkDot" hidden></i></button>
@@ -131,7 +131,7 @@ function renderPanel() {
 }
 export function hud() {
   $('#ink').textContent = S.ink;
-  const ct = $('#clkT'); if (ct) ct.textContent = clock();
+  const ct = $('#clkT'); if (ct) { ct.textContent = clock(); const ph = phase(); if ($('#clkP').textContent !== ph.l) { $('#clkP').textContent = ph.l; if (!wxNow) $('#clkI').innerHTML = ic(ph.i); } }
   const dot = $('#inkDot'), pend = totalPending(); if (dot) { dot.hidden = !pend; $('#shopBtn').classList.toggle('claim', !!pend); }
   rollDaily();
   const ready = MISSIONS.filter(m => (S.daily.p[m.id] || 0) >= m.goal && !S.daily.claimed.includes(m.id)).length
@@ -150,10 +150,18 @@ export function hud() {
 }
 // ---------- Hora y clima (Open-Meteo, sin clave). La ubicación sólo se pide al tocar el reloj. ----------
 const clock = () => new Date().toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
+// Momento del día: es lo que se lee primero (como en Rebyters); la hora y el clima van chicos debajo
+const phase = (h = new Date().getHours()) => h >= 6 && h < 12 ? { l: 'Mañana', i: 'dawn' } : h >= 12 && h < 19 ? { l: 'Tarde', i: 'sun' } : h >= 19 && h < 23 ? { l: 'Noche', i: 'night' } : { l: 'Madrugada', i: 'night' };
+const WXN = { sun: 'Despejado', cloud: 'Nublado', fog: 'Niebla', rain: 'Lluvia', snow: 'Nieve', storm: 'Tormenta' };
+let wxNow = null;
 const WX = c => c <= 1 ? 'sun' : c <= 3 ? 'cloud' : c <= 48 ? 'fog' : c <= 67 || (c >= 80 && c <= 82) ? 'rain' : c <= 86 ? 'snow' : 'storm';
 const GEO = 'kanjuu.geo', WXC = 'kanjuu.wx';
 export async function weather(ask) {
-  const show = w => { const el = $('#wx'); if (!el) return; el.hidden = false; $('#wxI').innerHTML = ic(!w.day && w.c <= 1 ? 'moon' : WX(w.c)); $('#wxT').textContent = Math.round(w.t) + '°'; };
+  const show = w => {
+    const el = $('#wx'); if (!el) return; wxNow = w; el.hidden = false;
+    const k = WX(w.c); $('#clkI').innerHTML = ic(k === 'sun' ? phase().i : k);
+    $('#wxT').textContent = `${Math.round(w.t)}° ${WXN[k]}`;
+  };
   try { const w = JSON.parse(localStorage.getItem(WXC)); if (w) { show(w); if (Date.now() - w.at < 18e5 && !ask) return; } } catch {}
   let pos; try { pos = JSON.parse(localStorage.getItem(GEO)); } catch {}
   if (!pos) {

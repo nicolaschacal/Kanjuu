@@ -365,12 +365,13 @@ b,strong{font-weight:700}
 #app.covered .hud>*{pointer-events:none}
 #app.covered .tabs{transform:translateY(120%);opacity:0;pointer-events:none}
 
-.hud-clock{display:flex;align-items:center;gap:8px;background:var(--paper);border:var(--b);box-shadow:var(--sh-d);border-radius:14px;padding:6px 10px;color:var(--line);font-family:var(--f-title)}
-.hud-clock>b{font-size:17px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.hud-clock .wx{display:flex;align-items:center;gap:3px;padding-left:8px;border-left:1.5px solid #1A122022}
-.hud-clock .wx[hidden]{display:none}
-.hud-clock .wx i .ic{width:18px;height:18px}
-.hud-clock .wx small{font-size:13px;font-weight:800}
+.hud-clock{display:flex;align-items:center;gap:10px;background:var(--paper);border:var(--b);box-shadow:var(--sh-d);border-radius:18px;padding:6px 16px 6px 6px;color:var(--line);text-align:left}
+.clk-ic{width:42px;height:42px;border-radius:13px;background:var(--line);color:var(--gold);display:grid;place-items:center;flex:none}
+.clk-ic .ic{width:23px;height:23px}
+.clk-t{display:flex;flex-direction:column;line-height:1.15}
+.clk-t b{font-family:var(--f-title);font-size:16px;font-weight:800;letter-spacing:-.01em}
+.clk-t small{font-size:12px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+#wx[hidden]{display:none}
 .hud-row{display:flex;align-items:center;gap:8px}
 .wallet-p{position:relative}
 .ink-dot{position:absolute;top:-5px;left:-5px;width:14px;height:14px;border-radius:50%;background:var(--gold);border:2.5px solid var(--line);animation:inkPulse 1.4s ease-in-out infinite}
@@ -387,7 +388,7 @@ b,strong{font-weight:700}
 .build-pill.alt{right:auto;left:12px}
 .build-pill b{position:absolute;top:-8px;right:-8px;background:var(--red);color:#fff;border:2px solid var(--line);border-radius:10px;min-width:20px;height:20px;font-size:11px;display:grid;place-items:center}
 #app.covered .focus-card{bottom:calc(16px + var(--safe-b))}
-.home3d .build-hint{top:calc(16px + var(--safe-t))}
+.home3d .build-hint{top:calc(118px + var(--safe-t))}
 .home3d .expand-row{bottom:calc(152px + var(--safe-b))}
 
 /* Hoja con pestañas */
@@ -443,3 +444,11 @@ b,strong{font-weight:700}
 .me-stats b{font-family:var(--f-title);font-size:20px;font-weight:800}.me-stats small{font-size:10.5px;color:var(--muted);font-weight:700}
 .row-ic.hot{background:var(--red)}
 .row-n{min-width:26px;height:26px;border-radius:13px;background:var(--red);color:#fff;display:grid;place-items:center;font-size:12px;padding:0 6px}
+
+/* Burbuja de tinta (sólo cuando hay algo para recoger): globo de papel con cola, sin número */
+.stage-ov .bubble-ink{width:38px!important;height:38px;padding:0!important;display:grid!important;place-items:center;border-radius:50%!important;background:var(--paper3)!important;color:var(--line)!important;border:2.5px solid var(--line)!important;box-shadow:0 3px 0 var(--line)!important;animation:inkBob 2.2s ease-in-out infinite!important}
+.stage-ov .bubble-ink::after{content:'';position:absolute;left:50%;bottom:-7px;width:10px;height:10px;background:inherit;border-right:2.5px solid var(--line);border-bottom:2.5px solid var(--line);transform:translateX(-50%) rotate(45deg);border-radius:0 0 3px 0}
+.stage-ov .bubble-ink .ic{width:19px;height:19px;position:relative;z-index:1}
+.stage-ov .bubble-ink.full{background:var(--gold)!important}
+@keyframes inkBob{50%{translate:0 -4px}}
+.grid .bubble-ink .ic{width:14px;height:14px}
