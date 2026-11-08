@@ -64,7 +64,7 @@ export const ACHIEVEMENTS = [
 ];
 export const owned = () => Object.values(S.dex).filter(d => d.owned).length;
 
-export const ui = { tab: 'home', sub: 'kan' };
+export const ui = { tab: 'home', sub: 'kan', dsub: 'atlas' };
 
 // ---------- Shell ----------
 // El mapa siempre queda debajo. Cada sección es una hoja con pestañas que sube sobre el mapa;
@@ -72,6 +72,7 @@ export const ui = { tab: 'home', sub: 'kan' };
 export const NAV = [['trainer', 'user', 'Entrenador'], ['lab', 'fusion', 'Fusión'], ['arena', 'swords', 'Arena'], ['exp', 'compass', 'Viajes'], ['dex', 'book', 'Atlas']];
 const TITLES = { lab: 'Fusión', arena: 'Arena', exp: 'Viajes', dex: 'Atlas', shop: 'Tienda' };
 export const TRAINER_TABS = [['bag', 'bag', 'Mochila'], ['kan', 'paw', 'KANJŪ'], ['me', 'user', 'Usuario']];
+export const DEX_TABS = [['atlas', 'book', 'Atlas'], ['fam', 'fusion', 'Familias'], ['ach', 'star', 'Logros']];
 export function shell() {
   app.innerHTML = `
   <header class="hud">
@@ -116,15 +117,16 @@ function renderPanel() {
   }
   const fresh = !p.classList.contains('open') || p.classList.contains('out') || p.dataset.t !== t;
   const old = $('#pnBody', p), top = fresh ? 0 : old?.scrollTop || 0;
-  const head = t === 'trainer'
-    ? `<div class="pn-tabs">${TRAINER_TABS.map(([id, k, l]) => `<button class="${ui.sub === id ? 'on' : ''}" data-sub="${id}">${ic(k)}<span>${l}</span></button>`).join('')}</div>`
+  const tabs = t === 'trainer' ? [TRAINER_TABS, 'sub'] : t === 'dex' ? [DEX_TABS, 'dsub'] : null;
+  const head = tabs
+    ? `<div class="pn-tabs">${tabs[0].map(([id, k, l]) => `<button class="${(ui[tabs[1]] || tabs[0][0][0]) === id ? 'on' : ''}" data-sub="${id}">${ic(k)}<span>${l}</span></button>`).join('')}</div>`
     : `<b class="pn-title">${TITLES[t]}</b>`;
   p.className = 'open' + (fresh && p.dataset.t !== t && !p.classList.contains('open') ? ' in' : '');
   p.dataset.t = t;
   p.innerHTML = `<div class="pn-card"><div class="pn-head">${head}<button class="pn-x" id="pnX" aria-label="Cerrar">${ic('x')}</button></div><div class="pn-body view v-${t}${t === 'trainer' ? ' sub-' + ui.sub : ''}" id="pnBody"></div></div>`;
   p.onclick = e => { if (e.target === p) closePanel(); };
   $('#pnX', p).onclick = closePanel;
-  p.querySelectorAll('[data-sub]').forEach(b => b.onclick = () => { ui.sub = b.dataset.sub; buzz(5); go(); });
+  p.querySelectorAll('[data-sub]').forEach(b => b.onclick = () => { ui[tabs[1]] = b.dataset.sub; buzz(5); go(); });
   const body = $('#pnBody', p);
   ({ lab: viewLab, exp: viewExp, arena: viewArena, shop: viewShop, dex: viewDex, trainer: viewTrainer })[t](body);
   body.scrollTop = top;

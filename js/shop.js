@@ -39,7 +39,7 @@ export function viewShop(v) {
     </div>
     ` : ''}
     ${shopTab === 'dec' ? `
-    ${(() => { const nx = ISLANDS[(S.island || 0) + 1]; return nx ? `<div class="isle-card"><span class="ak">拡</span><div><b>${nx.name} ${nx.n}×${nx.n}</b><small>${nx.mons} KANJŪ y ${nx.objs} objetos en la isla (ahora ${island().mons} y ${island().objs})</small></div><button class="btn ok gold" id="buyIsle" ${S.rank.lv < nx.rank || S.ink < nx.cost ? 'disabled' : ''}>${S.rank.lv < nx.rank ? `Rango ${nx.rank}` : nx.cost + ' 墨'}</button></div>` : ''; })()}
+    ${(() => { const nx = ISLANDS[(S.island || 0) + 1]; return nx ? `<div class="isle-card"><span class="ak">拡</span><div><b>${nx.name} ${nx.n}×${nx.n}</b><small>${nx.mons} plazas de KANJŪ y ${nx.objs} objetos (ahora ${island().mons} y ${island().objs})</small></div><button class="btn ok gold" id="buyIsle" ${S.rank.lv < nx.rank || S.ink < nx.cost ? 'disabled' : ''}>${S.rank.lv < nx.rank ? `Rango ${nx.rank}` : nx.cost + ' 墨'}</button></div>` : ''; })()}
     <h4>和 Armonía ${Math.round(harmony())} <small>cada objeto suma armonía: +1% de tinta por punto (hasta +60%)</small></h4>
     ${shopObjs(true)}` : ''}
     ${shopTab === 'bld' ? `<h4>Edificios <small>tienen efecto sobre sus vecinos · mejoralos hasta Nv${OBJ_MAX}</small></h4>

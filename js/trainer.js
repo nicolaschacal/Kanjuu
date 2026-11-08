@@ -54,7 +54,7 @@ function kanTab(v) {
     ${more ? `<button class="btn ghost wide" id="moreStore">蔵 +5 lugares en el almacén · ${more} 墨</button>` : ''}</div>`;
   v.querySelectorAll('[data-c]').forEach(b => b.onclick = () => {
     const c = findIt(b.dataset.c); buzz(6);
-    if (c.egg) return toast(c.pos ? 'Tocá el huevo en la isla para que nazca' : 'Colocá el huevo en la isla para que nazca');
+    if (c.egg && c.pos) return toast('Tocá el huevo en la isla 3 veces para que nazca');
     !c.pos && !c.away ? storedMenu(c, noop) : openCreature(c.id);
   });
   v.querySelectorAll('[data-gin]').forEach(b => b.onclick = () => { const g = S.gate.splice(+b.dataset.gin, 1)[0]; arrive(g.k, { gold: g.gold }); go(); });

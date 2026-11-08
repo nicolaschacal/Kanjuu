@@ -452,3 +452,23 @@ b,strong{font-weight:700}
 .stage-ov .bubble-ink.full{background:var(--gold)!important}
 @keyframes inkBob{50%{translate:0 -4px}}
 .grid .bubble-ink .ic{width:14px;height:14px}
+
+/* Ficha de tiempo compacta: misma altura que la billetera */
+.hud-clock{gap:7px!important;padding:3px 11px 3px 3px!important;border-radius:14px!important;height:40px;box-sizing:border-box}
+.clk-ic{width:32px!important;height:32px!important;border-radius:10px!important}
+.clk-ic .ic{width:18px!important;height:18px!important}
+.clk-t b{font-size:13.5px!important;line-height:1.05}
+.clk-t small{font-size:10.5px!important}
+
+/* Atlas dentro de la hoja clara: cuadraditos visibles también bloqueados */
+.pn-body .dex-grid{grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:6px}
+.pn-body .dex-grid .dex-c{border-radius:12px!important;color:var(--line)}
+.pn-body .dex-grid .dex-c.lock{background:#1A12200D!important;border:1.5px dashed #1A122033!important}
+.pn-body .dex-grid .dex-c.seen{background:var(--paper2)!important;border:1.5px solid #1A122040!important}
+.pn-body .dex-c .lk{display:grid;place-items:center;color:#1A122040}.pn-body .dex-c .lk .ic{width:18px;height:18px}
+.pn-body .dex-c .sil{color:#1A122066;font-size:20px}
+.pn-body .dex-c small{display:block!important;min-height:12px}
+.pn-body .dex-bar{margin-bottom:6px}
+.pn-body .fam,.pn-body .ach{background:var(--paper2)}
+.pn-body .ach{opacity:.75}.pn-body .ach.got,.pn-body .ach.claim{opacity:1;background:var(--paper3)}
+.pn-body .fm i{color:#1A122055}.pn-body .fm i.on{color:var(--line)}

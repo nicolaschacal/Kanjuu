@@ -9,7 +9,7 @@ import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn } from './help.js';
 import { openAcademy, acadDue, reviewAcademy, DAILY_GOAL } from './academy.js';
 import { openAISettings, aiStatus } from './ai.js';
 import { startTutorial, emit } from './tutorial.js';
-import { ISLANDS, island, buyIsland, objCap, shownObjs, harmony, harmonyMult, monCap, shownMons, syncGrid, COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
+import { ISLANDS, island, buyIsland, objCap, shownObjs, harmony, harmonyMult, monCap, shownMons, monFits, slot, syncGrid, COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
 import { $, buzz, home, owned, ui, go, hud, toast, modal, floatText, covered } from './main.js';
 import { openCreature } from './sheet.js';
 import { allDue, openDojo, acadCtx } from './dojo.js';
@@ -32,7 +32,7 @@ function viewHome3d(v) {
       <div class="stage-fx" aria-hidden="true"></div>
       <div class="stage-ov">${placing || build || focusId ? '' : bubbles}</div>
       ${build && nextI ? `<button class="expand-row" id="expandRow">拡 ${nextI.name} ${nextI.n}×${nextI.n} · ${nextI.cost} 墨${S.rank.lv < nextI.rank ? ` · rango ${nextI.rank}` : ''}</button>` : ''}
-      ${build ? `<div class="build-hint"><b>匠 ${island().name} ${S.cols}×${S.rows}</b><span>獣 ${shownMons()}/${monCap()} KANJŪ · 置 ${shownObjs()}/${objCap()} objetos · 和 Armonía ${Math.round(harmony())} (+${Math.round((harmonyMult() - 1) * 100)}% tinta)</span></div>` : ''}
+      ${build ? `<div class="build-hint"><b>匠 ${island().name} ${S.cols}×${S.rows}</b><span>獣 ${shownMons()}/${monCap()} plazas · 置 ${shownObjs()}/${objCap()} objetos · 和 Armonía ${Math.round(harmony())} (+${Math.round((harmonyMult() - 1) * 100)}% tinta)</span></div>` : ''}
       ${placing || focusId ? '' : ctrlHTML()}
       ${focusId ? focusHTML(findIt(focusId)) : ''}
     </div>
@@ -235,7 +235,7 @@ export function tapCell(x, y, el) {
   if (!placing) return;
   const [w, h] = foot(placing);
   if (!fits(w, h, x, y, placing)) { if (el) { el.classList.add('no'); setTimeout(() => el.classList.remove('no'), 300); } else toast('No entra ahí · elegí una casilla marcada'); buzz(30); return; }
-  if (!placing.pos && (placing.t ? shownObjs() >= objCap() : shownMons() >= monCap())) { toast(placing.t ? `置 La isla ya tiene ${objCap()} objetos · ampliala en 匠` : `獣 La isla ya tiene ${monCap()} KANJŪ · guardá uno o ampliala`); buzz(30); return; }
+  if (!placing.pos && (placing.t ? shownObjs() >= objCap() : !monFits(placing))) { toast(placing.t ? `置 La isla ya tiene ${objCap()} objetos · ampliala en 匠` : `獣 Ocupa ${slot(placing)} plazas y quedan ${monCap() - shownMons()} · guardá uno o ampliá la isla`); buzz(30); return; }
   const it = placing; it.pos = { x, y }; it.prodAt ??= Date.now(); placing = null; buzz(12); go();
   const near = neighbors(it).map(o => OBJS[o.t].k).join(' ');
   if (!it.t && near) toast(`${it.k} recibe el aura de ${near}`);
@@ -259,15 +259,21 @@ export const CONSUMABLES = [
   { id: 'wind', k: '風', name: 'Viento veloz', use: 'Termina un viaje al instante: usalo en 旅 Viajes' },
 ];
 export function storedMenu(it, parent) {
-  const isObj = !!it.t;
-  const m = modal(`<h3>${isObj ? `${OBJS[it.t].k} ${OBJS[it.t].name}` : `${it.k} · ${KANJI[it.k].m}`}</h3><div class="menu-acts">
-    <button class="btn ok" id="put" ${findSpot(...foot(it)) && (it.t ? shownObjs() < objCap() : shownMons() < monCap()) ? '' : 'disabled'}>✥ Colocar en la isla</button>
-    ${isObj ? `<button class="btn ghost" id="sell">Vender · +${sellValue(it)} 墨</button>` : `<button class="btn ghost" id="see">Ver ficha</button><button class="btn ghost" id="free" ${S.creatures.filter(c => !c.egg).length <= 1 ? 'disabled' : ''}>放 Liberar</button>`}</div>
-    ${!it.t && shownMons() >= monCap() ? `<p class="r">La isla ya tiene ${monCap()} KANJŪ. Guardá uno o ampliá la isla.</p>` : it.t && shownObjs() >= objCap() ? `<p class="r">La isla ya tiene ${objCap()} objetos. Guardá uno o ampliá la isla.</p>` : findSpot(...foot(it)) ? '' : '<p class="r">No hay lugar libre de ese tamaño. Ampliá la isla o guardá algo.</p>'}`);
+  const isObj = !!it.t, egg = !!it.egg, spot = findSpot(...foot(it));
+  const capOk = isObj ? shownObjs() < objCap() : monFits(it);
+  const free = monCap() - shownMons();
+  const why = !capOk ? (isObj ? `La isla ya tiene ${objCap()} objetos. Guardá uno o ampliá la isla.` : `Ocupa ${slot(it)} ${slot(it) === 1 ? 'plaza' : 'plazas'} y en la isla quedan ${free} de ${monCap()}. Guardá uno o ampliá la isla.`)
+    : spot ? '' : 'No hay lugar libre de ese tamaño. Ampliá la isla o guardá algo.';
+  const m = modal(`<h3>${isObj ? `${OBJS[it.t].k} ${OBJS[it.t].name}` : egg ? '卵 Huevo misterioso' : `${it.k} · ${KANJI[it.k].m}`}</h3>
+    ${egg ? '<p class="muted">Colocalo en la isla y tocalo 3 veces para que nazca.</p>' : isObj ? '' : `<p class="muted">Nivel KANJŪ ${slot(it)} · ocupa ${slot(it)} ${slot(it) === 1 ? 'plaza' : 'plazas'} (${monCap() - shownMons()} libres)</p>`}
+    <div class="menu-acts">
+    <button class="btn ok" id="put" ${spot && capOk ? '' : 'disabled'}>✥ Colocar en la isla</button>
+    ${isObj ? `<button class="btn ghost" id="sell">Vender · +${sellValue(it)} 墨</button>` : egg ? '' : `<button class="btn ghost" id="see">Ver ficha</button><button class="btn ghost" id="free" ${S.creatures.filter(c => !c.egg).length <= 1 ? 'disabled' : ''}>放 Liberar</button>`}</div>
+    ${why ? `<p class="r">${why}</p>` : ''}`);
   $('#put', m).onclick = () => { m.close(); parent.close(); placing = it; ui.tab = 'home'; go(); };
-  $('#sell', m) && ($('#sell', m).onclick = () => { S.ink += sellValue(it); S.objs = S.objs.filter(o => o !== it); m.close(); parent.close(); go(); openStorage(); });
+  $('#sell', m) && ($('#sell', m).onclick = () => { S.ink += sellValue(it); S.objs = S.objs.filter(o => o !== it); m.close(); parent.close(); go(); });
   $('#see', m) && ($('#see', m).onclick = () => { m.close(); parent.close(); openCreature(it.id); });
-  $('#free', m) && ($('#free', m).onclick = () => { if (!confirm(`${it.k} volverá a la naturaleza. ¿Liberar?`)) return; const ink = release(it); m.close(); parent.close(); go(); toast(`+${ink} 墨`); openStorage(); });
+  $('#free', m) && ($('#free', m).onclick = () => { if (!confirm(`${it.k} volverá a la naturaleza. ¿Liberar?`)) return; const ink = release(it); m.close(); parent.close(); go(); toast(`+${ink} 墨`); });
 }
 export function rankUp(ups) {
   const r = ups[ups.length - 1];

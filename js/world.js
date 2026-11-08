@@ -4,16 +4,20 @@ import { S, addCreature, see, mastery } from './state.js';
 
 // --- La isla: siempre básica; el jugador la decora y la agranda (3 niveles, como en Rebyters) ---
 // Las criaturas ocupan casillas según su nivel (Nv1 1×1, Nv2 2×1, Nv3 2×2…). Cada nivel de isla tiene
-// tope de KANJŪ visibles y de objetos colocados; el resto espera en el almacén.
+// plazas para KANJŪ: cada uno ocupa tantas plazas como su nivel KANJŪ (un huevo, 1). Isla 5×5 = 5 plazas:
+// cinco KANJŪ de nivel 1, o uno de nivel 3 y dos de nivel 1, etc. Los objetos tienen su propio tope.
 export const ISLANDS = [
-  { n: 5, mons: 4, objs: 12, cost: 0, rank: 1, name: 'Isla pequeña' },
-  { n: 7, mons: 6, objs: 24, cost: 1500, rank: 4, name: 'Isla mediana' },
-  { n: 9, mons: 8, objs: 40, cost: 5000, rank: 8, name: 'Isla grande' },
+  { n: 5, mons: 5, objs: 12, cost: 0, rank: 1, name: 'Isla pequeña' },
+  { n: 7, mons: 7, objs: 24, cost: 1500, rank: 4, name: 'Isla mediana' },
+  { n: 9, mons: 9, objs: 40, cost: 5000, rank: 8, name: 'Isla grande' },
 ];
 export const island = () => ISLANDS[S.island || 0];
 export const monCap = () => island().mons;
 export const objCap = () => island().objs;
-export const shownMons = () => S.creatures.filter(c => c.pos).length;
+export const slot = it => it.egg ? 1 : kLevel(it.k);
+export const shownMons = () => S.creatures.filter(c => c.pos).reduce((a, c) => a + slot(c), 0);
+// ¿Entra este KANJŪ en las plazas de la isla? (si ya está colocado, no se cuenta dos veces)
+export const monFits = it => shownMons() - (it.pos ? slot(it) : 0) + slot(it) <= monCap();
 export const shownObjs = () => S.objs.filter(o => o.pos).length;
 // 和 Armonía: cada objeto colocado suma belleza; la armonía sube la tinta de todo el santuario (+1% c/u, tope +60%)
 export const harmony = () => S.objs.filter(o => o.pos).reduce((a, o) => a + (OBJS[o.t]?.har || 0) * (1 + (o.lv - 1) * .5), 0);
@@ -21,7 +25,7 @@ export const harmonyMult = () => 1 + Math.min(.6, harmony() * .01);
 export function syncGrid() {
   S.cols = S.rows = island().n;
   placed().forEach(it => { const [w, h] = foot(it), p = it.pos; if (p.x + w > S.cols || p.y + h > S.rows) it.pos = null; });
-  S.creatures.filter(c => c.pos && !c.away).slice(monCap()).forEach(c => { c.pos = null; });
+  let used = 0; S.creatures.filter(c => c.pos && !c.away).forEach(c => { used += slot(c); if (used > monCap()) { used -= slot(c); c.pos = null; } });
   S.objs.filter(o => o.pos).slice(objCap()).forEach(o => { o.pos = null; });
 }
 export function buyIsland() {
@@ -101,7 +105,7 @@ export function findSpot(w, h, ignore) {
 // Coloca en la grilla; si no entra, al almacén; si el almacén está lleno, a la puerta
 export function settle(it, prefer) {
   const [w, h] = foot(it);
-  if (!it.pos && (it.t ? shownObjs() >= objCap() : shownMons() >= monCap())) { it.pos = null; return 'store'; } // topes de la isla
+  if (!it.pos && (it.t ? shownObjs() >= objCap() : !monFits(it))) { it.pos = null; return 'store'; } // topes de la isla
   if (prefer && fits(w, h, prefer.x, prefer.y, it)) { it.pos = { ...prefer }; return 'grid'; }
   if (it.pos && fits(w, h, it.pos.x, it.pos.y, it)) return 'grid';
   const s = findSpot(w, h, it);
@@ -114,7 +118,7 @@ export const storeFree = () => S.storeCap - S.creatures.filter(c => !c.pos && !c
 
 // Llega una criatura nueva al mundo
 export function arrive(k, extra = {}) {
-  if ((!findSpot(...foot({ k, ...extra })) || shownMons() >= monCap()) && storeFree() <= 0) { see(k); S.gate.push({ k, gold: !!extra.gold }); return { where: 'gate' }; }
+  if ((!findSpot(...foot({ k, ...extra })) || !monFits({ k, ...extra })) && storeFree() <= 0) { see(k); S.gate.push({ k, gold: !!extra.gold }); return { where: 'gate' }; }
   const c = addCreature(k, extra);
   const where = settle(c);
   return { c, where };
