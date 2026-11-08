@@ -612,3 +612,9 @@ ruby.rk{cursor:pointer;border-bottom:2px dotted #c9b48a}
 .fm{display:flex;flex-wrap:wrap;gap:3px;margin:3px 0}.fm i{font-style:normal;font-weight:900;font-size:15px;color:#c9b48a}.fm i.on{color:var(--ink)}
 .fam.claim{border:3px solid var(--gold);animation:glow 1.5s infinite}.fam.claim small{color:var(--red)}.fam.got{opacity:.6}
 .battle-btn{animation:tutpulse 1.6s infinite!important}
+/* Lectura principal y secundarias */
+.reads .r1{outline:2px solid var(--gold)}
+.reads .r2{opacity:.6}
+.reads span b{font-size:11px;opacity:.7;margin-right:4px}
+.oku{font-style:normal;opacity:.5}
+.reads .r2 .ic{width:12px;height:12px;vertical-align:-1px}

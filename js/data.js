@@ -112,6 +112,21 @@ export const KANJI = {
   '藻': { m: 'alga', on: ['ソウ'], kun: ['も'], recipes: [['艸', '澡']], form: 'arriba-abajo', note: '艸 aparece como 艹', mn: 'La hierba que vive en el agua: un alga.' },
 };
 
+// Lectura principal de cada kanji: la más frecuente (訓 si el kanji se usa solo, 音 si vive en compuestos).
+// Se aprende primero; la otra se exige desde maestría 3. Ver docs/LECTURAS.md
+export const MAIN_READ = {
+  '一': 'イチ', '木': 'き', '人': 'ひと', '日': 'ニチ', '月': 'ゲツ', '火': 'ひ', '田': 'た', '力': 'ちから', '女': 'おんな', '子': 'こ',
+  '口': 'くち', '十': 'ジュウ', '目': 'め', '生': 'セイ', '心': 'こころ', '皿': 'さら', '水': 'みず', '艸': 'くさ', '手': 'て', '糸': 'いと',
+  '示': 'しめ(す)', '衣': 'イ', '立': 'た(つ)', '車': 'くるま', '止': 'と(まる)', '土': 'つち', '寸': 'スン', '皮': 'かわ', '毛': 'け', '豆': 'まめ',
+  '斤': 'キン', '林': 'はやし', '休': 'やす(む)', '本': 'ホン', '明': 'メイ', '炎': 'エン', '男': 'おとこ', '好': 'す(き)', '品': 'ヒン', '晶': 'ショウ',
+  '星': 'ほし', '姓': 'セイ', '杏': 'あんず', '旦': 'タン', '朋': 'ホウ', '古': 'ふる(い)', '相': 'ソウ', '思': 'おも(う)', '加': 'カ', '字': 'ジ',
+  '安': 'やす(い)', '見': 'み(る)', '兄': 'あに', '枚': 'マイ', '近': 'ちか(い)', '床': 'ゆか', '享': 'キョウ', '音': 'おと', '新': 'あたら(しい)', '軍': 'グン',
+  '連': 'レン', '疲': 'つか(れる)', '正': 'ただ(しい)', '寺': 'てら', '尾': 'お', '圧': 'アツ', '厚': 'あつ(い)', '同': 'おな(じ)', '内': 'ナイ', '句': 'ク',
+  '旬': 'シュン', '杉': 'すぎ', '登': 'のぼ(る)', '森': 'もり', '体': 'タイ', '焚': 'た(く)', '盟': 'メイ', '枯': 'か(れる)', '想': 'ソウ', '案': 'アン',
+  '視': 'シ', '故': 'コ', '運': 'ウン', '症': 'ショウ', '待': 'ま(つ)', '持': 'も(つ)', '時': 'ジ', '居': 'い(る)', '延': 'エン', '喿': 'ソウ',
+  '禁': 'キン', '意': 'イ', '薪': 'たきぎ', '操': 'ソウ', '燥': 'ソウ', '繰': 'く(る)', '澡': 'ソウ', '襟': 'えり', '億': 'オク', '憶': 'オク', '藻': 'ソウ',
+};
+
 export const WORDS = [
   ['森林', 'しんりん', 'bosque'], ['休日', 'きゅうじつ', 'día libre'], ['日本', 'にほん', 'Japón'],
   ['本日', 'ほんじつ', 'hoy'], ['明日', 'あした', 'mañana'], ['月日', 'つきひ', 'el tiempo'],
@@ -217,7 +232,10 @@ export const evoLevel = c => 5 + (depth(c) - 1) * 3;
 // Maestría mínima de los componentes para evolucionar o fusionar: obliga a repasar en días distintos
 export const learnGate = c => depth(c) <= 1 ? 2 : depth(c) + 2;
 export const MAX_LV = 15;
-export const reads = k => [...KANJI[k].on, ...KANJI[k].kun];
+const _all = k => [...KANJI[k].on, ...KANJI[k].kun];
+export const mainRead = k => _all(k).includes(MAIN_READ[k]) ? MAIN_READ[k] : _all(k)[0];
+// Todas las lecturas, con la principal primero (reads(k)[0] es siempre la principal)
+export const reads = k => { const m = mainRead(k); return m ? [m, ..._all(k).filter(r => r !== m)] : []; };
 export const plain = r => r.replace(/[()]/g, '');
 
 // --- Tipos 五行 (gogyō): los cinco elementos japoneses tradicionales ---

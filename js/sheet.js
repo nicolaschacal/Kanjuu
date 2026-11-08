@@ -3,7 +3,7 @@ import { ic } from './icons.js';
 import { KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
 import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
-import { GAMES, hasWord, hasParts, play, review, storyHTML, speak } from './games.js';
+import { GAMES, hasWord, hasParts, play, review, storyHTML, speak, okuHTML } from './games.js';
 import * as cloud from './cloud.js';
 import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn } from './help.js';
 import { openAcademy, acadDue, reviewAcademy, DAILY_GOAL } from './academy.js';
@@ -25,7 +25,7 @@ export function openCreature(id) {
     <div class="cr-top" style="--el:${fill}">
       <button class="cr-art" id="pet">${creatureSVG(c.k, { mood: c.mood, gold: c.gold })}${c.acc ? `<span class="acc-hat big">${c.acc}</span>` : ''}</button>
       <div class="cr-name"><span class="big-k">${c.k}</span><div><b>${K.m}</b><small><b class="tbadge" style="--t:${TYPES[typeOf(c.k)].col}">${TYPES[typeOf(c.k)].k} ${TYPES[typeOf(c.k)].name}</b> fuerte contra ${TYPES[TYPES[typeOf(c.k)].beats].k} · ${ELEMENTS[element(c.k)][2]} · Nivel KANJŪ ${kLevel(c.k)}${c.gen ? ` · Gen ${c.gen}` : ''}</small></div></div>
-      <div class="reads"><button class="say" id="say" aria-label="Escuchar">${ic('sound')}</button><span>音 ${K.on.map(rr).join('・') || '—'}</span><span>訓 ${K.kun.map(rr).join('・') || '—'}</span><span class="mast" title="Maestría">熟 ${'★'.repeat(mastery(c.k))}${'☆'.repeat(Math.max(0, 6 - mastery(c.k)))}</span></div>
+      <div class="reads"><button class="say" id="say" aria-label="Escuchar">${ic('sound')}</button>${reads(c.k).map((r, i) => `<span class="${i ? 'r2' : 'r1'}" ${i ? `title="Se pide desde maestría 3"` : ''}><b>${K.kun.includes(r) ? '訓' : '音'}</b>${okuHTML(rr(r))}${i && mastery(c.k) < 3 ? ` ${ic('lock')}` : ''}</span>`).join('') || '<span>—</span>'}<span class="mast" title="Maestría">熟 ${'★'.repeat(mastery(c.k))}${'☆'.repeat(Math.max(0, 6 - mastery(c.k)))}</span></div>
     </div>
     <div class="bars">
       <div class="bar"><label>Lv ${c.lv}${c.lv >= MAX_LV ? ' MAX' : ''}</label><div><i style="width:${c.exp / expNeed(c.lv) * 100}%"></i></div></div>
