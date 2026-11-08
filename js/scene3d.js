@@ -256,11 +256,27 @@ function engine() {
   renderer.toneMapping = THREE.NeutralToneMapping; renderer.toneMappingExposure = 1.05;
   renderer.domElement.className = 'stage-canvas';
   E = { renderer, ray: new THREE.Raycaster(), raf: 0, worlds: {}, active: null, t0: performance.now() };
-  const el = renderer.domElement; let down = null;
-  el.addEventListener('pointerdown', e => { down = { x: e.clientX, y: e.clientY, moved: false }; el.setPointerCapture(e.pointerId); E.W?.dragStart?.(); });
-  el.addEventListener('pointermove', e => { if (!down) return; const dx = e.clientX - down.x, dy = e.clientY - down.y; if (Math.hypot(dx, dy) > 8) down.moved = true; E.W?.drag?.(dx, dy); });
-  el.addEventListener('pointerup', e => { if (down && !down.moved) tap(e); down = null; E.W?.dragEnd?.(); });
-  el.addEventListener('pointercancel', () => { down = null; E.W?.dragEnd?.(); });
+  const el = renderer.domElement; let down = null; const pts = new Map(); let pinch0 = 0;
+  // Un dedo: arrastrar el mapa libremente. Dos dedos: pellizco para zoom. Rueda del mouse: zoom.
+  const gap = () => { const [a, b] = [...pts.values()]; return Math.hypot(a.x - b.x, a.y - b.y); };
+  el.addEventListener('pointerdown', e => {
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); el.setPointerCapture(e.pointerId);
+    if (pts.size === 2) { pinch0 = gap(); E.W?.pinchStart?.(); if (down) down.moved = true; return; }
+    down = { x: e.clientX, y: e.clientY, moved: false }; E.W?.dragStart?.();
+  });
+  el.addEventListener('pointermove', e => {
+    if (!pts.has(e.pointerId)) return; pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pts.size >= 2) { if (pinch0) E.W?.pinch?.(gap() / pinch0); return; }
+    if (!down) return; const dx = e.clientX - down.x, dy = e.clientY - down.y; if (Math.hypot(dx, dy) > 8) down.moved = true; E.W?.drag?.(dx, dy);
+  });
+  const up = (e, ok) => {
+    pts.delete(e.pointerId);
+    if (pts.size === 1) { const [p] = pts.values(); pinch0 = 0; down = { x: p.x, y: p.y, moved: true }; E.W?.dragStart?.(); return; }
+    if (ok && down && !down.moved) tap(e); down = null; pinch0 = 0; E.W?.dragEnd?.();
+  };
+  el.addEventListener('pointerup', e => up(e, true));
+  el.addEventListener('pointercancel', e => up(e, false));
+  el.addEventListener('wheel', e => { e.preventDefault(); E.W?.zoomBy?.(Math.exp(e.deltaY * .0012)); }, { passive: false });
   addEventListener('resize', () => E.host && resize());
   return E;
 }
@@ -466,8 +482,21 @@ function sanctuary() {
 
   const W = { name: 'sanct', scene, camera, world, ov, items: new Map(), opts: {}, cols: 0, rows: 0, stage: -1, yaw: 0, panZ: 0, dragging: false, platform: null, dress: { lights: [], banners: [], trees: [], smoke: [] }, geo: { rx: 5, rz: 4, zc: -1 } };
   let drag0 = null;
-  W.dragStart = () => { drag0 = { yaw: W.yaw, pan: W.panZ }; W.dragging = true; };
-  W.drag = (dx, dy) => { if (!drag0) return; const lim = Math.max(0, W.geo.rz - (W.geo.elev ? 1.6 : 2.6)); const y0 = W.geo.yaw0 || 0; W.yaw = Math.max(y0 - .3, Math.min(y0 + .3, drag0.yaw + dx * .004)); W.panZ = Math.max(-lim, Math.min(lim * .6, drag0.pan - dy * .014)); };
+  W.pan = { x: 0, z: 0 }; W.zoom = 1;
+  W.dragStart = () => { drag0 = { yaw: W.yaw, pan: W.panZ, px: W.pan.x, pz: W.pan.z }; W.dragging = true; };
+  let z0 = 1; W.pinchStart = () => { z0 = W.zoom; }; W.pinch = r => { W.zoom = Math.max(.4, Math.min(1.7, z0 / r)); };
+  W.zoomBy = f => { W.zoom = Math.max(.4, Math.min(1.7, W.zoom * f)); };
+  // Arrastre libre: el mapa sigue al dedo (en unidades del mundo según cuánto se ve), sin volver solo al centro
+  W.freeDrag = (dx, dy) => {
+    if (!drag0 || W.focus) return;
+    const g = W.geo, y0 = g.yaw0 || 0, el0 = W.cam?.elev || .7, h = E.host?.clientHeight || 800;
+    const k = 2 * W.cam.dist * Math.tan(camera.fov * Math.PI / 360) / h;
+    const rx = Math.cos(y0), rz = -Math.sin(y0), fx = -Math.sin(y0), fz = -Math.cos(y0);
+    const lim = Math.max(W.cols, W.rows) * T / 2 + 3;
+    W.pan.x = Math.max(-lim, Math.min(lim, drag0.px - rx * dx * k + fx * dy * k / Math.sin(el0)));
+    W.pan.z = Math.max(-lim, Math.min(lim, drag0.pz - rz * dx * k + fz * dy * k / Math.sin(el0)));
+  };
+  W.drag = (dx, dy) => { if (!drag0) return; if (!OLDMOVE) return W.freeDrag(dx, dy); const lim = Math.max(0, W.geo.rz - (W.geo.elev ? 1.6 : 2.6)); const y0 = W.geo.yaw0 || 0; W.yaw = Math.max(y0 - .3, Math.min(y0 + .3, drag0.yaw + dx * .004)); W.panZ = Math.max(-lim, Math.min(lim * .6, drag0.pan - dy * .014)); };
   W.dragEnd = () => { drag0 = null; W.dragging = false; };
   W.tap = ray => {
     const { mode, onTap, onCell } = W.opts;
@@ -496,13 +525,14 @@ function sanctuary() {
     const g = W.geo, hf = 2 * Math.atan(Math.tan(camera.fov * Math.PI / 360) * camera.aspect);
     if (!W.dragging) W.yaw += ((g.yaw0 || 0) - W.yaw) * Math.min(1, dt * 2.5);
     const y0 = g.yaw0 || 0, back = (g.lookZ || 0) + W.panZ;
-    let dist = (g.rx * 1.06) / Math.tan(hf / 2), elev = g.elev ?? .72, tx = Math.sin(y0) * back, ty = .3, tz = g.zc + Math.cos(y0) * back;
+    let dist = (g.rx * 1.06) / Math.tan(hf / 2) * (OLDMOVE ? 1 : W.zoom), elev = g.elev ?? .72, tx = Math.sin(y0) * back + (OLDMOVE ? 0 : W.pan.x), ty = .3, tz = g.zc + Math.cos(y0) * back + (OLDMOVE ? 0 : W.pan.z);
     const fo = W.focus && W.items.get(W.focus);
     if (fo?.sprite) { // primer plano: la cámara baja y se acerca a la criatura
       const v = new THREE.Vector3(); fo.sprite.getWorldPosition(v);
       dist = 3.2 + fo.size * 1.4; elev = .3; tx = v.x; ty = v.y + fo.size * .45; tz = v.z;
     }
     scene.fog.near = dist + 10; scene.fog.far = dist + 55;
+    W.cam && (W.cam.dist = dist, W.cam.elev = elev);
     const want = new THREE.Vector3(tx + Math.sin(W.yaw) * Math.cos(elev) * dist, ty + Math.sin(elev) * dist, tz + Math.cos(W.yaw) * Math.cos(elev) * dist);
     const look = new THREE.Vector3(tx - (fo ? 0 : Math.sin(y0) * .3), ty, tz - (fo ? 0 : Math.cos(y0) * .3));
     W.cam ??= { p: want.clone(), l: look.clone() };
@@ -556,6 +586,7 @@ function sanctuary() {
 //   ?suelo=patio → jardín rectangular con borde de piedra y cerco de bosque alrededor
 //   ?suelo=campo → pasto hasta el horizonte, sin bordes; la grilla sólo se ve al construir
 const Q = new URLSearchParams(location.search), SUELO = Q.get('suelo');
+const OLDMOVE = Q.get('mover') === 'antes'; // ?mover=antes vuelve al arrastre limitado anterior
 // Vista "Cult of the Lamb": lente larga (FOV estrecho, casi ortográfica → se siente isométrica sin deformar),
 // cámara a ~50° mirando hacia abajo, y los recortes 2D inclinados hacia la cámara para que no se aplasten.
 // Encima: desenfoque tilt-shift arriba y abajo + viñeta cálida (lo hace el CSS de .tiltshift).
