@@ -507,6 +507,8 @@ function sanctuary() {
     W.cam ??= { p: want.clone(), l: look.clone() };
     const k = Math.min(1, dt * 3.2); W.cam.p.lerp(want, k); W.cam.l.lerp(look, k);
     camera.position.copy(W.cam.p); camera.lookAt(W.cam.l);
+    const fovWant = g.tilt && !fo ? LAMB_FOV : 34; if (Math.abs(camera.fov - fovWant) > .05) { camera.fov += (fovWant - camera.fov) * k; camera.updateProjectionMatrix(); }
+    W.cam.tiltNow = (W.cam.tiltNow || 0) + ((g.tilt && !fo ? elev * .85 : 0) - (W.cam.tiltNow || 0)) * k;
     W.floaters?.forEach(m => { m.position.y = m.userData.y + Math.sin(t * .7 + m.userData.p) * .15; m.rotation.y += dt * .2; });
     // Escenario animado
     W.dress.trees.forEach(tr => { tr.userData.canopy.rotation.z = Math.sin(t * .8 + tr.userData.ph) * .03; });
@@ -522,7 +524,7 @@ function sanctuary() {
         const vx = (w.tx - w.x) * 1.2 * dt, vz = (w.tz - w.z) * 1.2 * dt; w.x += vx; w.z += vz;
         const moving = Math.hypot(vx, vz) > .002; if (Math.abs(vx) > .0015) o.flip = vx > 0 ? 1 : -1;
         animSprite(o, t, dt, moving);
-        o.sprite.position.x = w.x; o.sprite.position.z = w.z; o.sprite.position.y += .22; o.sprite.rotation.y = W.yaw;
+        o.sprite.position.x = w.x; o.sprite.position.z = w.z; o.sprite.position.y += .22; o.sprite.rotation.y = W.yaw; o.sprite.rotation.x = W.geo.tilt && !fo ? -W.cam.tiltNow : 0;
         o.blob.position.set(w.x, .235, w.z);
         o.sprite.material.emissiveIntensity = (d.insp ? .62 : .42) - night * .14 + (d.insp ? Math.sin(t * 4) * .08 : 0);
       }
@@ -551,7 +553,12 @@ function sanctuary() {
 // PROPUESTA (rama propuesta-suelo): en vez de isla, un terreno rectangular que llena la pantalla.
 //   ?suelo=patio → jardín rectangular con borde de piedra y cerco de bosque alrededor
 //   ?suelo=campo → pasto hasta el horizonte, sin bordes; la grilla sólo se ve al construir
-const SUELO = new URLSearchParams(location.search).get('suelo');
+const Q = new URLSearchParams(location.search), SUELO = Q.get('suelo');
+// Vista "Cult of the Lamb": lente larga (FOV estrecho, casi ortográfica → se siente isométrica sin deformar),
+// cámara a ~50° mirando hacia abajo, y los recortes 2D inclinados hacia la cámara para que no se aplasten.
+// Encima: desenfoque tilt-shift arriba y abajo + viñeta cálida (lo hace el CSS de .tiltshift).
+const LAMB = SUELO && Q.get('vista') !== 'antes';
+const LAMB_FOV = +(Q.get('fov') || 18), LAMB_ANG = +(Q.get('ang') || 45);
 // Pasto que se repite sin costuras: cada mancha y brizna se dibuja también del otro lado del borde
 let _seam;
 function seamlessGrass() {
@@ -573,7 +580,7 @@ function buildField(W, cols, rows, kind) {
   W.dress = { lights: [], banners: [], trees: [], smoke: [] };
   const g = new THREE.Group(), pw = cols * T, pd = rows * T, seed = cols * 7 + rows, rnd = mulberry(seed * 5);
   // Encuadre: el rectángulo jugable ocupa casi todo el ancho; cámara más alta (se ve más piso, menos cielo)
-  W.geo = { rx: pw / 2 + (kind === 'patio' ? .55 : .2), rz: pd / 2 + .4, zc: 0, elev: +(new URLSearchParams(location.search).get('ang') || 28) * Math.PI / 180, lookZ: -pd * +(new URLSearchParams(location.search).get('lz') || .4) };
+  W.geo = { rx: pw / 2 + (kind === 'patio' ? .55 : .2), rz: pd / 2 + .4, zc: 0, elev: (LAMB ? LAMB_ANG : +(Q.get('ang') || 28)) * Math.PI / 180, lookZ: -pd * +(Q.get('lz') || (LAMB ? .22 : .4)), tilt: LAMB };
   // Piso enorme: llega hasta los bordes de la pantalla y al horizonte
   const BW = pw + 40, BD = pd + 60;
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(BW, BD), new THREE.MeshLambertMaterial({ map: grassRep(BW, BD), color: kind === 'patio' ? '#B9CFA0' : '#FFFFFF' }));
@@ -662,6 +669,7 @@ export function mountScene(host, opts) {
   [...W.items.keys()].forEach(id => { if (!seen.has(id)) { W.world.remove(W.items.get(id).group); W.items.delete(id); } });
   drawEditor(W);
   attach(host, W);
+  if (LAMB && !host.querySelector('.tiltshift')) E.renderer.domElement.insertAdjacentHTML('afterend', '<div class="tiltshift"><i class="ts-t"></i><i class="ts-b"></i></div>');
   return true;
 }
 function drawEditor(W) {

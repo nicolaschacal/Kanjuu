@@ -494,3 +494,10 @@ h4.gh .grade{font-size:13px;padding:3px 9px 3px 3px}h4.gh .grade i{width:20px;he
 .grade.gem{left:auto!important;top:auto!important;right:2px!important;bottom:2px!important;width:auto!important;height:auto!important}
 .loc{white-space:nowrap}
 .pn-body .dex-c.seen small{display:none!important}
+
+/* Vista estilo Cult of the Lamb (propuesta): desenfoque tilt-shift arriba y abajo + viñeta cálida, como una maqueta */
+.tiltshift{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(130% 95% at 50% 52%,transparent 55%,#2A140C66 100%)}
+.tiltshift i{position:absolute;left:0;right:0;-webkit-backdrop-filter:blur(3.5px);backdrop-filter:blur(3.5px)}
+.tiltshift .ts-t{top:0;height:30%;-webkit-mask-image:linear-gradient(#000 25%,transparent);mask-image:linear-gradient(#000 25%,transparent)}
+.tiltshift .ts-b{bottom:0;height:16%;-webkit-mask-image:linear-gradient(transparent,#000 75%);mask-image:linear-gradient(transparent,#000 75%)}
+.home3d.focus .tiltshift,.stage.focus .tiltshift{opacity:0}
