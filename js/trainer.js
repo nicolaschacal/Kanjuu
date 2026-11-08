@@ -1,5 +1,6 @@
 // KANJŪ · trainer.js — hoja del Entrenador (como Rebyters): Mochila · KANJŪ · Usuario
 import { ic } from './icons.js';
+import { artThumb } from './paper.js';
 import { KANJI, PIECES, kLevel, MAX_LV, gradeTag } from './data.js';
 import { creatureSVG } from './creature.js';
 import { S, save, mastery, expNeed } from './state.js';
@@ -24,7 +25,7 @@ function bagTab(v) {
   const segs = [['obj', '飾', 'Objetos', objs.length], ['evo', '部', 'Piezas', pcs.reduce((a, p) => a + S.pieces[p], 0)], ['con', '品', 'Consumibles', cons.reduce((a, c) => a + S.items[c.id], 0)]];
   let body = '';
   if (tab === 'obj') body = `<p class="pn-lead">Tocá un objeto para colocarlo en la isla · ${shownObjs()}/${objCap()} colocados</p>
-    <div class="tr-grid">${objs.map(o => `<button class="tr-card" data-s="${o.id}"><span class="tr-th obj"><i>${OBJS[o.t].k}</i></span><span class="tr-t"><b>${OBJS[o.t].name}</b><small>Nv${o.lv} · ${OBJS[o.t].w}×${OBJS[o.t].h}</small></span></button>`).join('') || empty('No hay objetos guardados', 'Comprá decoración y edificios en la Tienda')}</div>`;
+    <div class="tr-grid">${objs.map(o => `<button class="tr-card" data-s="${o.id}"><span class="tr-th obj">${OBJS[o.t].art ? `<img class="obj-art" src="${artThumb(OBJS[o.t].art)}" alt="">` : `<i>${OBJS[o.t].k}</i>`}</span><span class="tr-t"><b>${OBJS[o.t].name}</b><small>Nv${o.lv} · ${OBJS[o.t].w}×${OBJS[o.t].h}</small></span></button>`).join('') || empty('No hay objetos guardados', 'Comprá decoración y edificios en la Tienda')}</div>`;
   if (tab === 'evo') body = `<p class="pn-lead">Piezas 部品: se equipan desde la ficha de un KANJŪ para evolucionar o se suman en la fusión.</p>
     <div class="tr-grid">${pcs.map(p => `<div class="tr-card"><span class="tr-th obj"><i>${p}</i></span><span class="tr-t"><b>${PIECES[p].name}</b><small>${PIECES[p].m} · ×${S.pieces[p]}</small></span></div>`).join('') || empty('Sin piezas', 'Salen de viajes, cofres y la Tienda')}</div>`;
   if (tab === 'con') body = `<p class="pn-lead">Objetos de un solo uso.</p>

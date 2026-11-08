@@ -9,16 +9,16 @@ import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn } from './help.js';
 import { openAcademy, acadDue, reviewAcademy, DAILY_GOAL } from './academy.js';
 import { openAISettings, aiStatus } from './ai.js';
 import { startTutorial, emit } from './tutorial.js';
-import { ISLANDS, island, buyIsland, objCap, shownObjs, harmony, harmonyMult, monCap, shownMons, monFits, slot, syncGrid, COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
+import { ISLANDS, island, buyIsland, objCap, shownObjs, harmony, harmonyMult, monCap, shownMons, monFits, slot, syncGrid, COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld, GROUNDS, paintTile, raiseTile, rampTile, cascadeTile, raining } from './world.js';
 import { $, buzz, home, owned, ui, go, hud, toast, modal, floatText, covered } from './main.js';
 import { openCreature } from './sheet.js';
 import { allDue, openDojo, acadCtx } from './dojo.js';
-import { webgl, mountScene, emoteAt, hopAll, poke, setFocus } from './scene3d.js';
+import { webgl, mountScene, emoteAt, hopAll, poke, setFocus, rotateCam, zoomCam } from './scene3d.js';
 import { openTraining } from './sheet.js';
 import { TYPES, typeOf, gradeTag } from './data.js';
 
 // ---------- Santuario (grilla de tiles) ----------
-let idleT, build = false, placing = null, seenGoal = '', focusId = null;
+let idleT, build = false, placing = null, seenGoal = '', focusId = null, tool = 'move';
 export function viewHome(v) { return webgl() && !new URLSearchParams(location.search).has('2d') ? viewHome3d(v) : viewHome2d(v); }
 
 // Santuario 3D: la escena dibuja la grilla; la UI (objetivo, burbujas, dock) va por encima en HTML
@@ -34,6 +34,8 @@ function viewHome3d(v) {
       ${build && nextI ? `<button class="expand-row" id="expandRow">拡 ${nextI.name} ${nextI.n}×${nextI.n} · ${nextI.cost} 墨${S.rank.lv < nextI.rank ? ` · rango ${nextI.rank}` : ''}</button>` : ''}
       ${build ? `<div class="build-hint"><b>匠 ${island().name} ${S.cols}×${S.rows}</b><span>獣 ${shownMons()}/${monCap()} plazas · 置 ${shownObjs()}/${objCap()} objetos · 和 Armonía ${Math.round(harmony())} (+${Math.round((harmonyMult() - 1) * 100)}% tinta)</span></div>` : ''}
       ${placing || focusId ? '' : ctrlHTML()}
+      ${focusId ? '' : camHTML()}
+      ${build && !placing ? toolsHTML() : ''}
       ${focusId ? focusHTML(findIt(focusId)) : ''}
     </div>
     ${placing ? `<div class="place-bar">Tocá dónde colocar <b>${placing.t ? OBJS[placing.t].k : placing.k}</b><button class="btn ghost" id="cancelPlace">Cancelar</button></div>` : ''}
@@ -48,7 +50,21 @@ function viewHome3d(v) {
   });
   let valid = null;
   if (placing) { const [w, h] = foot(placing); valid = []; for (let y = 0; y < S.rows; y++) for (let x = 0; x < S.cols; x++) if (fits(w, h, x, y, placing)) valid.push([x, y]); }
-  mountScene(stg, { cols: S.cols, rows: S.rows, focus: focusId, items, mode: placing ? 'placing' : build ? 'build' : 'play', valid, onTap: tap3d, onCell: (x, y) => tapCell(x, y, null) });
+  const t = build && !placing ? tool : 'move';
+  const opts = { cols: S.cols, rows: S.rows, focus: focusId, items, OBJS, tiles: S.tiles, tool: t, paints: !!GROUNDS[t], rain: raining, mode: placing ? 'placing' : build ? 'build' : 'play', valid, onTap: tap3d, onCell: (x, y) => tapCell(x, y, null) };
+  // Herramientas de suelo: cada toque cambia la casilla y se vuelve a armar sólo la isla (sin redibujar la pantalla)
+  let errAt = 0;
+  opts.onTile = (x, y) => {
+    const err = GROUNDS[t] ? paintTile(x, y, t) : t === 'raise' ? raiseTile(x, y) : t === 'ramp' ? rampTile(x, y) : t === 'fall' ? cascadeTile(x, y) : null;
+    if (err) { if (Date.now() - errAt > 1500) { toast(err); buzz(30); } errAt = Date.now(); return; }
+    buzz(5); save(); mountScene(stg, { ...opts, tiles: S.tiles });
+  };
+  mountScene(stg, opts);
+  stg.querySelectorAll('[data-tool]').forEach(b => b.onclick = () => { tool = b.dataset.tool; buzz(6); go(); });
+  $('#rotL', stg) && ($('#rotL', stg).onclick = () => rotateCam(-1));
+  $('#rotR', stg) && ($('#rotR', stg).onclick = () => rotateCam(1));
+  $('#zIn', stg) && ($('#zIn', stg).onclick = () => zoomCam(1.2));
+  $('#zOut', stg) && ($('#zOut', stg).onclick = () => zoomCam(1 / 1.2));
   stg.querySelectorAll('.bubble-ink').forEach(b => b.onclick = e => { e.stopPropagation(); harvest([findIt(b.dataset.c)], b); });
   // El objetivo se muestra unos segundos y se pliega a un ícono; tocarlo lo abre de nuevo
   const gEl = stg.querySelector('.goal');
@@ -116,12 +132,31 @@ function dockHTML(pend) {
 // Sobre la escena sólo queda Construir (abajo a la derecha); en modo construcción, también la Mochila
 function ctrlHTML() {
   return `${build ? `<button class="build-pill alt" id="store">${ic('bag')}<span>Mochila</span>${S.gate.length ? `<b>${S.gate.length}</b>` : ''}</button>` : ''}
-    <button class="build-pill ${build ? 'on' : ''}" id="build">${ic(build ? 'check' : 'hammer')}<span>${build ? 'Listo' : 'Construir'}</span></button>`;
+    <button class="build-pill ${build ? 'on' : ''}" id="build">${ic(build ? 'check' : 'build')}<span>${build ? 'Listo' : 'Construir'}</span></button>`;
+}
+// Girar la isla de a 90° y acercar/alejar (también se gira arrastrando y se hace zoom pellizcando)
+function camHTML() {
+  return `<div class="cam-ctrl"><button id="rotL" aria-label="Girar a la izquierda">${ic('rotL')}</button><button id="rotR" aria-label="Girar a la derecha">${ic('rotR')}</button><button id="zOut" aria-label="Alejar">${ic('minus')}</button><button id="zIn" aria-label="Acercar">${ic('plus')}</button></div>`;
+}
+// Modo Construir: mover objetos o editar el suelo (tiles, relieve, rampa y cascada)
+const TOOL_SVG = {
+  raise: '<span class="tl-lv"><i style="height:10px"></i><i style="height:22px"></i><i style="height:14px"></i></span>',
+  ramp: '<svg viewBox="0 0 46 46" aria-hidden="true"><path d="M4 40 L42 40 L42 14 Z" fill="#8DBF5E" stroke="#2E2620" stroke-width="2.5" stroke-linejoin="round"/><path d="M14 34 L30 24" stroke="#2E2620" stroke-width="2.5" stroke-linecap="round"/><path d="M24 23 L30 24 L28 30" fill="none" stroke="#2E2620" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  fall: '<svg viewBox="0 0 46 46" aria-hidden="true"><path d="M4 14 H24 V40 H4 Z" fill="#A47D55" stroke="#2E2620" stroke-width="2.5"/><path d="M4 12 H26 V16 H4 Z" fill="#5AA5D2" stroke="#2E2620" stroke-width="2"/><path d="M26 14 C33 16 32 28 33 40" fill="none" stroke="#5AA5D2" stroke-width="6" stroke-linecap="round"/><path d="M24 40 H44" stroke="#5AA5D2" stroke-width="4" stroke-linecap="round"/></svg>',
+};
+const TOOL_HINT = { move: 'Tocá un objeto o KANJŪ para moverlo, guardarlo o mejorarlo', raise: 'Tocá una casilla para subirla; en la cima vuelve a llano', ramp: 'Tocá una casilla al pie de una colina', fall: 'Tocá agua para subirla; cae por los bordes más bajos' };
+function toolsHTML() {
+  const b = (id, inner, n) => `<button class="tl ${tool === id ? 'on' : ''}" data-tool="${id}" aria-pressed="${tool === id}">${inner}<span>${n}</span></button>`;
+  return `<div class="tools"><div class="tl-hint">${TOOL_HINT[tool] || 'Pintá casillas arrastrando el dedo'}</div><div class="tl-row">
+    ${b('move', ic('hand'), 'Mover')}<i class="tl-sep"></i>
+    ${Object.entries(GROUNDS).map(([id, g]) => b(id, `<span class="tl-sw" style="background:${g.c}"></span>`, g.n)).join('')}<i class="tl-sep"></i>
+    ${b('raise', TOOL_SVG.raise, 'Relieve')}${b('ramp', TOOL_SVG.ramp, 'Rampa')}${b('fall', TOOL_SVG.fall, 'Cascada')}
+  </div></div>`;
 }
 function bindDock(v) {
   if (placing) { $('#cancelPlace', v).onclick = () => { placing = null; go(); }; }
   else {
-    $('#build', v) && ($('#build', v).onclick = () => { build = !build; focusId = null; setFocus(null); buzz(6); go(); });
+    $('#build', v) && ($('#build', v).onclick = () => { build = !build; tool = 'move'; focusId = null; setFocus(null); buzz(6); go(); });
     $('#store', v) && ($('#store', v).onclick = () => openStorage());
     $('#collectAll', v) && ($('#collectAll', v).onclick = e => harvest(placed(), e.currentTarget));
     $('#dojo', v) && ($('#dojo', v).onclick = openDojo);
