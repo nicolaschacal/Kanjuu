@@ -210,7 +210,7 @@ function tuftTex() {
 function makeSprite(svg, size, id) {
   const map = paperTexture(svg), geo = new THREE.PlaneGeometry(1, 1); geo.translate(0, .5, 0);
   const mat = new THREE.MeshLambertMaterial({ map, alphaTest: .5, side: THREE.DoubleSide, emissive: '#FFFFFF', emissiveMap: map, emissiveIntensity: .42 });
-  const sp = new THREE.Mesh(geo, mat); sp.castShadow = true;
+  const sp = new THREE.Mesh(geo, mat); sp.castShadow = true; sp.rotation.order = 'YXZ';
   sp.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map, alphaTest: .5 });
   sp.scale.setScalar(size); sp.position.y = -.05 * size; sp.userData.id = id;
   const blob = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: blobTex(), transparent: true, depthWrite: false }));
@@ -467,7 +467,7 @@ function sanctuary() {
   const W = { name: 'sanct', scene, camera, world, ov, items: new Map(), opts: {}, cols: 0, rows: 0, stage: -1, yaw: 0, panZ: 0, dragging: false, platform: null, dress: { lights: [], banners: [], trees: [], smoke: [] }, geo: { rx: 5, rz: 4, zc: -1 } };
   let drag0 = null;
   W.dragStart = () => { drag0 = { yaw: W.yaw, pan: W.panZ }; W.dragging = true; };
-  W.drag = (dx, dy) => { if (!drag0) return; const lim = Math.max(0, W.geo.rz - (W.geo.elev ? 1.6 : 2.6)); W.yaw = Math.max(-.3, Math.min(.3, drag0.yaw + dx * .004)); W.panZ = Math.max(-lim, Math.min(lim * .6, drag0.pan - dy * .014)); };
+  W.drag = (dx, dy) => { if (!drag0) return; const lim = Math.max(0, W.geo.rz - (W.geo.elev ? 1.6 : 2.6)); const y0 = W.geo.yaw0 || 0; W.yaw = Math.max(y0 - .3, Math.min(y0 + .3, drag0.yaw + dx * .004)); W.panZ = Math.max(-lim, Math.min(lim * .6, drag0.pan - dy * .014)); };
   W.dragEnd = () => { drag0 = null; W.dragging = false; };
   W.tap = ray => {
     const { mode, onTap, onCell } = W.opts;
@@ -494,8 +494,9 @@ function sanctuary() {
     clouds.forEach(m => { const u = m.userData; u.x += u.v * dt * (u.rim ? (u.x > 0 ? 1 : -1) * .3 : 1); if (!u.rim && u.x > 16) u.x = -16; if (u.rim && Math.abs(u.x) > 9) u.x = Math.sign(u.x) * 5.6; m.position.set(u.x, u.y, u.z); m.quaternion.copy(camera.quaternion); m.material.color.copy(cc); });
     // Cámara 3/4 que encuadra la isla entera
     const g = W.geo, hf = 2 * Math.atan(Math.tan(camera.fov * Math.PI / 360) * camera.aspect);
-    if (!W.dragging) W.yaw += (0 - W.yaw) * Math.min(1, dt * 2.5);
-    let dist = (g.rx * 1.06) / Math.tan(hf / 2), elev = g.elev ?? .72, tx = 0, ty = .3, tz = g.zc + (g.lookZ || 0) + W.panZ;
+    if (!W.dragging) W.yaw += ((g.yaw0 || 0) - W.yaw) * Math.min(1, dt * 2.5);
+    const y0 = g.yaw0 || 0, back = (g.lookZ || 0) + W.panZ;
+    let dist = (g.rx * 1.06) / Math.tan(hf / 2), elev = g.elev ?? .72, tx = Math.sin(y0) * back, ty = .3, tz = g.zc + Math.cos(y0) * back;
     const fo = W.focus && W.items.get(W.focus);
     if (fo?.sprite) { // primer plano: la cámara baja y se acerca a la criatura
       const v = new THREE.Vector3(); fo.sprite.getWorldPosition(v);
@@ -503,10 +504,11 @@ function sanctuary() {
     }
     scene.fog.near = dist + 10; scene.fog.far = dist + 55;
     const want = new THREE.Vector3(tx + Math.sin(W.yaw) * Math.cos(elev) * dist, ty + Math.sin(elev) * dist, tz + Math.cos(W.yaw) * Math.cos(elev) * dist);
-    const look = new THREE.Vector3(tx, ty, tz - (fo ? 0 : .3));
+    const look = new THREE.Vector3(tx - (fo ? 0 : Math.sin(y0) * .3), ty, tz - (fo ? 0 : Math.cos(y0) * .3));
     W.cam ??= { p: want.clone(), l: look.clone() };
     const k = Math.min(1, dt * 3.2); W.cam.p.lerp(want, k); W.cam.l.lerp(look, k);
     camera.position.copy(W.cam.p); camera.lookAt(W.cam.l);
+    sky.position.copy(camera.position); layers.forEach(m => m.visible = !g.yaw0); [orb, ring, halo].forEach(m => m.visible = !g.yaw0);
     const fovWant = g.tilt && !fo ? LAMB_FOV : 34; if (Math.abs(camera.fov - fovWant) > .05) { camera.fov += (fovWant - camera.fov) * k; camera.updateProjectionMatrix(); }
     W.cam.tiltNow = (W.cam.tiltNow || 0) + ((g.tilt && !fo ? elev * .85 : 0) - (W.cam.tiltNow || 0)) * k;
     W.floaters?.forEach(m => { m.position.y = m.userData.y + Math.sin(t * .7 + m.userData.p) * .15; m.rotation.y += dt * .2; });
@@ -610,8 +612,52 @@ function buildField(W, cols, rows, kind) {
   W.world.add(g); W.platform = g; W.cols = cols; W.rows = rows;
 }
 
+// ?suelo=tiles → plataforma de baldosas en bloque, vista isométrica a 45° (rombos) y costa escalonada que cae al vacío
+function buildTiles(W, cols, rows) {
+  if (W.platform) W.world.remove(W.platform);
+  W.dress = { lights: [], banners: [], trees: [], smoke: [] };
+  const g = new THREE.Group(), seed = cols * 7 + rows, rnd = mulberry(seed * 9);
+  // Baldosas decorativas alrededor del tablero: muchas hacia el fondo (se sale de la pantalla), pocas adelante (se ve la costa)
+  const MB = +(Q.get('fondo') || 14), MF = +(Q.get('frente') || 3);
+  const N0 = -MB, X1 = cols + MF, Z1 = rows + MF;
+  const pw = cols * T, pd = rows * T;
+  W.geo = { rx: (cols / 2 + +(Q.get('zoom') || 1.6)) * T, rz: pd / 2 + 1, zc: 0, elev: (+(Q.get('ang') || 33)) * Math.PI / 180, yaw0: Math.PI / 4, lookZ: -(+(Q.get('lz') || 0)), tilt: true };
+  // Forma de la plataforma: un rombo grande cuyo borde es irregular (costa)
+  const cells = [];
+  for (let z = N0; z < Z1; z++) for (let x = N0; x < X1; x++) {
+    const ex = Math.min(x - N0, X1 - 1 - x), ez = Math.min(z - N0, Z1 - 1 - z), e = Math.min(ex, ez);
+    const inPlay = x >= 0 && z >= 0 && x < cols && z < rows;
+    if (!inPlay && e === 0 && rnd() < .35) continue;          // mordiscos en el borde
+    if (!inPlay && e === 0 && ex === 0 && ez === 0) continue;  // esquinas redondeadas
+    const drop = !inPlay && e === 0 && rnd() < .45 ? .18 + rnd() * .22 : !inPlay && e === 1 && rnd() < .12 ? .1 : 0; // escalones de la costa
+    cells.push({ x, z, drop, inPlay, e });
+  }
+  const top = new THREE.InstancedMesh(new THREE.BoxGeometry(T * .97, .1, T * .97), new THREE.MeshLambertMaterial(), cells.length);
+  const body = new THREE.InstancedMesh(new THREE.BoxGeometry(T, 1, T), new THREE.MeshLambertMaterial(), cells.length);
+  top.receiveShadow = body.receiveShadow = true;
+  const m4 = new THREE.Matrix4(), col = new THREE.Color(), A = new THREE.Color(Q.get('c1') || '#7FB35E'), B = new THREE.Color(Q.get('c2') || '#73A653'), S1 = new THREE.Color('#6B5A48'), S2 = new THREE.Color('#5A4A3B');
+  cells.forEach((c, i) => {
+    const wx = (c.x + .5 - cols / 2) * T, wz = (c.z + .5 - rows / 2) * T, H = c.e <= 1 ? 1.1 + rnd() * .5 : 1, y0 = .22 - c.drop;
+    m4.makeTranslation(wx, y0 - .05, wz); top.setMatrixAt(i, m4);
+    col.copy((c.x + c.z) & 1 ? A : B).offsetHSL(0, 0, (rnd() - .5) * .035); top.setColorAt(i, col);
+    m4.makeScale(1, H, 1).setPosition(wx, y0 - .1 - H / 2, wz); body.setMatrixAt(i, m4);
+    body.setColorAt(i, col.copy(c.e <= 1 ? S2 : S1).offsetHSL(0, 0, (rnd() - .5) * .05));
+  });
+  g.add(body, top);
+  // Goteras / raíces que cuelgan bajo la costa
+  const edge = cells.filter(c => c.e === 0);
+  edge.forEach((c, i) => { if (rnd() < .5) return; const wx = (c.x + .5 - cols / 2) * T + (rnd() - .5) * .6, wz = (c.z + .5 - rows / 2) * T + (rnd() - .5) * .6, h = .6 + rnd() * 1.6;
+    g.add(mesh(new THREE.BoxGeometry(.1 + rnd() * .12, h, .1 + rnd() * .12), L('#5A4A3B'), wx, .22 - c.drop - 1.2 - h / 2, wz)); });
+  // Piedritas y pasto suelto sobre las baldosas de afuera (para que no se vea vacío)
+  cells.filter(c => !c.inPlay && rnd() < .12).forEach(c => { const b = rnd() < .5 ? bush(.6 + rnd() * .3, seed + c.x * 31 + c.z) : mesh(new THREE.DodecahedronGeometry(.12 + rnd() * .1, 0), new THREE.MeshLambertMaterial({ color: '#9A9284', flatShading: true }));
+    b.position.set((c.x + .5 - cols / 2) * T + (rnd() - .5) * .5, .22 - c.drop + (b.isMesh ? .06 : 0), (c.z + .5 - rows / 2) * T + (rnd() - .5) * .5); g.add(b); });
+  W.floaters = [];
+  W.world.add(g); W.platform = g; W.cols = cols; W.rows = rows;
+}
+
 // Isla básica (siempre igual): pasto, acantilados y rocas que flotan. La decoración la pone el jugador.
 function buildIsland(W, cols, rows) {
+  if (SUELO === 'tiles') return buildTiles(W, cols, rows);
   if (SUELO === 'patio' || SUELO === 'campo') return buildField(W, cols, rows, SUELO);
   if (W.platform) W.world.remove(W.platform);
   W.dress = { lights: [], banners: [], trees: [], smoke: [] };
