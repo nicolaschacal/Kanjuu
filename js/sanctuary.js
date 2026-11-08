@@ -40,7 +40,7 @@ function viewHome3d(v) {
       ${editing ? buildTopHTML(nextI) : ''}
       ${placing || focusId || build ? '' : ctrlHTML()}
       ${focusId ? '' : camHTML()}
-      ${editing && sel ? selHTML(findIt(sel)) : ''}
+      ${editing && sel ? selHTML(findIt(sel)) : editing && buyPick && trayTab === 'shop' ? buyHTML(buyPick) : ''}
       ${editing ? trayHTML() : ''}
       ${focusId ? focusHTML(findIt(focusId)) : ''}
     </div>
@@ -112,47 +112,78 @@ function selHTML(it) {
     <button class="sb-a x" data-a="x" aria-label="Soltar">${ic('x')}</button>
   </div>`;
 }
-const TRAY = [['inv', 'bag', 'Mochila'], ['dec', 'leaf', 'Decorar'], ['bld', 'home', 'Edificios'], ['suelo', 'box', 'Suelo']];
+// Bandeja de Construir: lo TUYO (Mochila) y lo que se COMPRA (Tienda) nunca se mezclan.
+// Mochila = tarjetas de papel con "Poner"; Tienda = tarjetas doradas con etiqueta de precio y confirmación.
+const TRAY = [['inv', 'bag', 'Mochila'], ['shop', 'shop', 'Tienda'], ['suelo', 'mount', 'Terreno']];
+let invSub = 'obj', shopSub = 'dec', buyPick = null;
 function trayHTML() {
-  const inv = stored(), card = (attrs, th, name, sub, cls = '') => `<button class="tc ${cls}" ${attrs}><span class="tc-th">${th}</span><b>${name}</b><small>${sub}</small></button>`;
-  let body = '';
-  if (trayTab === 'inv') body = inv.length ? inv.map(it => card(`data-place="${it.id}"`, thumb(it), it.t ? OBJS[it.t].name : it.k, it.t ? `Nv${it.lv} · ${OBJS[it.t].w}×${OBJS[it.t].h}` : it.egg ? 'Huevo' : `Nv${it.lv}`)).join('')
-    : `<p class="tc-empty">La mochila está vacía · comprá en Decorar o Edificios</p>`;
-  else if (trayTab === 'suelo') {
+  const inv = stored(), invO = inv.filter(it => it.t), invM = inv.filter(it => !it.t);
+  const chip = (attr, id, cur, label, n) => `<button class="tr-chip ${cur === id ? 'on' : ''}" ${attr}="${id}">${label}${n != null ? ` <i>${n}</i>` : ''}</button>`;
+  let chips = '', body = '', hint = '';
+  if (trayTab === 'inv') {
+    chips = chip('data-isub', 'obj', invSub, 'Objetos', invO.length) + chip('data-isub', 'mon', invSub, 'KANJŪ', invM.length);
+    const list = invSub === 'obj' ? invO : invM;
+    body = list.length ? list.map(it => `<button class="tc mine" data-place="${it.id}"><span class="tc-th">${thumb(it)}</span><b>${it.t ? OBJS[it.t].name : it.k}</b><small>${it.t ? `Nv${it.lv}` : it.egg ? 'Huevo' : `Nv${it.lv}`}</small><span class="tc-go">Poner</span></button>`).join('')
+      : `<div class="tc-empty">${invSub === 'obj' ? `No tenés objetos guardados.<button class="tc-link" data-tray="shop">${ic('shop')} Ir a la Tienda</button>` : 'Todos tus KANJŪ están en la isla'}</div>`;
+    hint = 'Lo que ya es tuyo · gratis';
+  } else if (trayTab === 'shop') {
+    chips = chip('data-ssub', 'dec', shopSub, 'Decoración') + chip('data-ssub', 'bld', shopSub, 'Edificios') + `<span class="tr-wallet">${ic('ink')}<b>${S.ink}</b></span>`;
+    body = Object.entries(OBJS).filter(([, d]) => (d.kind === 'decor') === (shopSub === 'dec') && !d.hide).map(([k, d]) => {
+      const lock = S.rank.lv < d.rank, c = objCost(k), mine = invO.filter(o => o.t === k).length;
+      return `<button class="tc buy ${lock ? 'lock' : S.ink < c ? 'poor' : ''} ${buyPick === k ? 'pick' : ''}" data-pick="${k}" ${lock ? 'disabled' : ''}>
+        ${mine ? `<span class="tc-own">Tenés ${mine}</span>` : ''}<span class="tc-th">${lock ? ic('lock') : `<img src="${artThumb(d.art)}" alt="">`}</span><b>${d.name}</b>
+        <span class="tc-price">${lock ? `Rango ${d.rank}` : `${ic('ink')}${c}`}</span></button>`;
+    }).join('');
+    hint = 'Se paga con tinta 墨';
+  } else {
     const b = (id, inner, n) => `<button class="tl ${tool === id ? 'on' : ''}" data-tool="${id}" aria-pressed="${tool === id}">${inner}<span>${n}</span></button>`;
     body = `${Object.entries(GROUNDS).map(([id, g]) => b(id, `<span class="tl-sw" style="background:${g.c}"></span>`, g.n)).join('')}<i class="tl-sep"></i>
       ${b('raise', TOOL_SVG.raise, 'Relieve')}${b('ramp', TOOL_SVG.ramp, 'Rampa')}${b('fall', TOOL_SVG.fall, 'Cascada')}`;
-  } else body = Object.entries(OBJS).filter(([, d]) => (d.kind === 'decor') === (trayTab === 'dec') && !d.hide).map(([k, d]) => {
-    const lock = S.rank.lv < d.rank, c = objCost(k), n = S.objs.filter(o => o.t === k).length;
-    return card(`data-buy="${k}" ${lock ? 'disabled' : ''}`, `<img src="${artThumb(d.art)}" alt="">`, d.name, lock ? `Rango ${d.rank}` : `${c} 墨${n ? ` · ×${n}` : ''}`, `${lock ? 'lock' : S.ink < c ? 'poor' : ''}`);
-  }).join('');
-  const hint = trayTab === 'suelo' ? (TOOL_HINT[tool] || 'Pintá casillas arrastrando el dedo') : trayTab === 'inv' ? 'Tocá para ponerlo en la isla' : 'Tocá para comprarlo y ponerlo en la isla';
-  return `<div class="tray">
+    hint = (TOOL_HINT[tool] || 'Pintá casillas arrastrando el dedo') + ' · gratis';
+  }
+  return `<div class="tray t-${trayTab}">
     <div class="tray-tabs">${TRAY.map(([id, i, l]) => `<button class="${trayTab === id ? 'on' : ''}" data-tray="${id}">${ic(i)}<span>${l}</span>${id === 'inv' && inv.length ? `<b>${inv.length}</b>` : ''}</button>`).join('')}</div>
-    <div class="tray-hint">${hint}</div>
+    <div class="tray-sub">${chips ? `<div class="tr-chips">${chips}</div>` : ''}<span class="tray-hint">${hint}</span></div>
     <div class="tray-row">${body}</div>
   </div>`;
 }
+// Confirmación de compra: muestra qué es, qué da y cuánto cuesta antes de gastar
+function buyHTML(k) {
+  const d = OBJS[k], c = objCost(k), mine = stored().find(o => o.t === k), poor = S.ink < c;
+  return `<div class="buybar">
+    <span class="bb-th"><img src="${artThumb(d.art)}" alt=""></span>
+    <span class="bb-t"><b>${d.name}</b><small>${d.desc} · 和+${d.har} · ${d.w}×${d.h}</small></span>
+    <div class="bb-acts">
+      ${mine ? `<button class="bb-mine" data-place="${mine.id}">${ic('bag')}Usar el tuyo</button>` : ''}
+      <button class="bb-buy" id="bbBuy" ${poor ? 'disabled' : ''}>${poor ? `Faltan ${c - S.ink}` : 'Comprar'}<span>${ic('ink')}${c}</span></button>
+    </div>
+    <button class="sb-a x" id="bbX" aria-label="Cerrar">${ic('x')}</button>
+  </div>`;
+}
 function bindBuild(stg) {
-  const row = $('.tray-row', stg); try { const k = 'tray.' + trayTab; row.scrollLeft = +(sessionStorage.getItem(k) || 0); row.onscroll = () => sessionStorage.setItem(k, row.scrollLeft); } catch {}
-  stg.querySelectorAll('[data-tray]').forEach(b => b.onclick = () => { trayTab = b.dataset.tray; tool = trayTab === 'suelo' ? (tool === 'move' ? 'grass' : tool) : 'move'; buzz(5); go(); });
+  const row = $('.tray-row', stg); try { const k = 'tray.' + trayTab + invSub + shopSub; row.scrollLeft = +(sessionStorage.getItem(k) || 0); row.onscroll = () => sessionStorage.setItem(k, row.scrollLeft); } catch {}
+  stg.querySelectorAll('[data-tray]').forEach(b => b.onclick = () => { trayTab = b.dataset.tray; buyPick = null; if (trayTab === 'suelo') sel = null; tool = trayTab === 'suelo' ? (tool === 'move' ? 'grass' : tool) : 'move'; buzz(5); go(); });
+  stg.querySelectorAll('[data-isub]').forEach(b => b.onclick = () => { invSub = b.dataset.isub; buzz(5); go(); });
+  stg.querySelectorAll('[data-ssub]').forEach(b => b.onclick = () => { shopSub = b.dataset.ssub; buyPick = null; buzz(5); go(); });
   stg.querySelectorAll('[data-place]').forEach(b => b.onclick = () => {
-    const it = findIt(b.dataset.place);
+    const it = findIt(b.dataset.place); buyPick = null;
     if (it.t ? shownObjs() >= objCap() : !monFits(it)) { buzz(30); return toast(it.t ? `置 La isla ya tiene ${objCap()} objetos · ampliala` : `獣 No quedan plazas para ${it.k} · guardá a otro KANJŪ`); }
     if (settle(it) !== 'grid') { buzz(30); return toast('No hay lugar libre · mové o guardá algo'); }
     it.prodAt ??= Date.now(); sel = it.id; buzz(12); save(); go();
   });
-  stg.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => {
-    const k = b.dataset.buy, d = OBJS[k], c = objCost(k);
-    if (S.ink < c) { buzz(30); return toast(`Te faltan ${c - S.ink} 墨 para ${d.name}`); }
-    S.ink -= c; const o = newObj(k); buzz(12);
-    if (o.pos) { sel = o.id; toast(`${d.name} · 和+${d.har} · arrastralo a su lugar`); } else { trayTab = 'inv'; toast(`${d.name} quedó en la Mochila: no hay lugar libre`); }
-    hud(); go();
+  stg.querySelectorAll('[data-pick]').forEach(b => b.onclick = () => { buyPick = buyPick === b.dataset.pick ? null : b.dataset.pick; sel = null; buzz(6); go(); });
+  $('#bbX', stg) && ($('#bbX', stg).onclick = () => { buyPick = null; go(); });
+  $('#bbBuy', stg) && ($('#bbBuy', stg).onclick = () => {
+    const k = buyPick, d = OBJS[k], c = objCost(k);
+    if (S.ink < c) return;
+    S.ink -= c; const o = newObj(k); buyPick = null; buzz([10, 40, 20]);
+    if (o.pos) { sel = o.id; toast(`¡Comprado! ${d.name} · arrastralo a su lugar`); } else { trayTab = 'inv'; invSub = 'obj'; toast(`¡Comprado! ${d.name} quedó en tu Mochila: no hay lugar libre`); }
+    save(); hud(); go();
   });
   stg.querySelectorAll('.selbar [data-a]').forEach(b => b.onclick = () => {
     const it = findIt(sel), a = b.dataset.a;
     if (a === 'x') sel = null;
-    else if (a === 'store') { gather(it); it.pos = null; sel = null; toast(`${it.t ? OBJS[it.t].name : it.k} guardado en la Mochila`); }
+    else if (a === 'store') { gather(it); it.pos = null; sel = null; toast(`${it.t ? OBJS[it.t].name : it.k} guardado en tu Mochila`); }
     else if (a === 'up') { gather(it); S.ink -= upCost(it); it.lv++; toast(`${OBJS[it.t].name} subió a Nv${it.lv}`); buzz(20); }
     else if (a === 'sell') { S.ink += sellValue(it); S.objs = S.objs.filter(o => o !== it); sel = null; toast('Vendido'); }
     buzz(6); save(); hud(); go();
@@ -188,7 +219,7 @@ function tap3d(id) {
   const it = findIt(id);
   if (!it) { if (focusId) { focusId = null; setFocus(null); go(); } return; }
   buzz(8);
-  if (build) { if (it.away) return toast(`${it.k} está de viaje`); sel = sel === id ? null : id; return go(); }
+  if (build) { if (it.away) return toast(`${it.k} está de viaje`); sel = sel === id ? null : id; buyPick = null; return go(); }
   if (it.t) return toast(`${OBJS[it.t].k} ${OBJS[it.t].name} Nv${it.lv} · ${OBJS[it.t].desc}`);
   if (it.away) return toast(`${it.k} está de viaje`);
   if (it.egg) {
@@ -227,7 +258,7 @@ const TOOL_HINT = { move: 'Tocá un objeto o KANJŪ para moverlo, guardarlo o me
 function bindDock(v) {
   if (placing) { $('#cancelPlace', v).onclick = () => { placing = null; go(); }; }
   else {
-    $('#build', v) && ($('#build', v).onclick = () => { build = !build; tool = 'move'; sel = null; trayTab = 'inv'; focusId = null; setFocus(null); buzz(6); go(); });
+    $('#build', v) && ($('#build', v).onclick = () => { build = !build; tool = 'move'; sel = null; buyPick = null; trayTab = 'inv'; focusId = null; setFocus(null); buzz(6); go(); });
     $('#store', v) && ($('#store', v).onclick = () => openStorage());
     $('#collectAll', v) && ($('#collectAll', v).onclick = e => harvest(placed(), e.currentTarget));
     $('#dojo', v) && ($('#dojo', v).onclick = openDojo);

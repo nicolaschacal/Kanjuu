@@ -624,9 +624,11 @@ function sanctuary() {
     const dayRainIn = new THREE.Color('#CDD3D6'), dayRainOut = new THREE.Color('#AEB8BF'), nRainIn = new THREE.Color('#2A2F3F'), nRainOut = new THREE.Color('#1B1E2B');
     grad.material.uniforms.cin.value.copy(sk.in).lerp(dayRainIn.lerp(nRainIn, night), rk * .85);
     grad.material.uniforms.cout.value.copy(sk.out).lerp(dayRainOut.lerp(nRainOut, night), rk * .85);
-    const asp = bgCam.right, dp = Math.min(1, Math.max(0, (h - 6) / 12)), np = ((h - 18 + 24) % 24) / 12;
-    sunM.position.set(-asp * .7 + dp * asp * 1.4, .36 + Math.sin(dp * Math.PI) * .4, 0); sunM.rotation.z = t * .04; sunM.material.opacity = (1 - night) * (1 - rk * .92);
-    moonM.position.set(-asp * .7 + Math.min(1, np) * asp * 1.4, .4 + Math.sin(Math.min(1, np) * Math.PI) * .35, 0); moonM.material.opacity = night * (1 - rk * .85);
+    const asp = bgCam.right, cl = v => Math.min(1, Math.max(0, v));
+    // El sol sólo existe de 5:30 a 19:30 y se hunde al ponerse; la luna sale de 18:30 a 6:30
+    const dp = cl((h - 5.5) / 14), mt = (h - 18.5 + 24) % 24, np = cl(mt / 12), sunVis = cl((h - 5.5) / .8) * cl((19.5 - h) / .8), moonVis = cl(mt / .8) * cl((12 - mt) / .8);
+    sunM.position.set(-asp * .7 + dp * asp * 1.4, .1 + Math.sin(dp * Math.PI) * .66, 0); sunM.rotation.z = t * .04; sunM.material.opacity = sunVis * (1 - rk * .92); sunM.visible = sunVis > .01;
+    moonM.position.set(-asp * .7 + np * asp * 1.4, .15 + Math.sin(np * Math.PI) * .6, 0); moonM.material.opacity = moonVis * (1 - rk * .85); moonM.visible = moonVis > .01;
     stars.forEach(s => { const u = s.userData; s.position.set(u.x * asp, u.y, 0); s.material.opacity = night * (1 - rk) * (.55 + .45 * Math.sin(t * 2 + u.p)); });
     const cc = new THREE.Color('#FFFFFF').lerp(new THREE.Color('#9AA3AB'), rk).lerp(new THREE.Color('#5D6592'), night * .8);
     skyClouds.forEach(c => { const u = c.userData; u.x += u.v * dt * (1 + rk); if (u.x * asp > asp + .5) u.x = -(asp + .5) / asp; c.position.set(u.x * asp, u.y, 0); c.material.color.copy(cc); c.material.opacity = u.extra ? rk : 1; });
