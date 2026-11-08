@@ -10,7 +10,7 @@ import { openAcademy, acadDue, reviewAcademy, DAILY_GOAL } from './academy.js';
 import { openAISettings, aiStatus } from './ai.js';
 import { startTutorial, emit } from './tutorial.js';
 import { ISLANDS, island, buyIsland, objCap, shownObjs, harmony, harmonyMult, monCap, shownMons, syncGrid, COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
-import { $, buzz, home, owned, ui, go, hud, toast, modal, floatText } from './main.js';
+import { $, buzz, home, owned, ui, go, hud, toast, modal, floatText, covered } from './main.js';
 import { openCreature } from './sheet.js';
 import { allDue, openDojo, acadCtx } from './dojo.js';
 import { webgl, mountScene, emoteAt, hopAll, poke, setFocus } from './scene3d.js';
@@ -31,14 +31,14 @@ function viewHome3d(v) {
     <div class="stage" id="stage">
       <div class="stage-fx" aria-hidden="true"></div>
       <div class="stage-ov">${placing || build || focusId ? '' : bubbles}</div>
-      <div class="stage-top">${placing || focusId ? '' : goalHTML()}</div>
       ${build && nextI ? `<button class="expand-row" id="expandRow">拡 ${nextI.name} ${nextI.n}×${nextI.n} · ${nextI.cost} 墨${S.rank.lv < nextI.rank ? ` · rango ${nextI.rank}` : ''}</button>` : ''}
       ${build ? `<div class="build-hint"><b>匠 ${island().name} ${S.cols}×${S.rows}</b><span>獣 ${shownMons()}/${monCap()} KANJŪ · 置 ${shownObjs()}/${objCap()} objetos · 和 Armonía ${Math.round(harmony())} (+${Math.round((harmonyMult() - 1) * 100)}% tinta)</span></div>` : ''}
-      ${placing || focusId ? '' : ctrlHTML(pend)}
+      ${placing || focusId ? '' : ctrlHTML()}
       ${focusId ? focusHTML(findIt(focusId)) : ''}
     </div>
     ${placing ? `<div class="place-bar">Tocá dónde colocar <b>${placing.t ? OBJS[placing.t].k : placing.k}</b><button class="btn ghost" id="cancelPlace">Cancelar</button></div>` : ''}
   </div>`;
+  document.getElementById('app').classList.toggle('focus', !!focusId); covered();
   const stg = $('#stage', v);
   const items = placed().map(it => {
     const [w, h] = foot(it), b = { id: it.id, x: it.pos.x, y: it.pos.y, w, h };
@@ -113,16 +113,10 @@ function dockHTML(pend) {
       <button class="dk ${allDue() ? 'ready' : ''}" id="dojo"><i>修</i><span>Repaso</span>${allDue() ? `<b>${allDue()}</b>` : ''}</button>
     </div>`;
 }
-// Controles flotantes sobre la escena (estilo del tablero visual)
-function ctrlHTML(pend) {
-  const due = allDue(), acadLow = (S.acad?.day?.xp || 0) < DAILY_GOAL;
-  return `<div class="sc-ctrl">
-      ${build ? '' : `<button class="fab ${acadLow ? 'hot' : ''}" id="acadFab" aria-label="Academia">${ic('cap')}<span>Academia</span></button>`}
-      <button class="fab ${build ? 'on' : ''}" id="build" aria-label="Construir">${ic(build ? 'check' : 'hammer')}<span>${build ? 'Listo' : 'Construir'}</span></button>
-      <button class="fab" id="store" aria-label="Almacén">${ic('box')}<span>Almacén</span>${S.gate.length ? `<b>${S.gate.length}</b>` : ''}</button>
-    </div>
-    ${build ? '' : `<button class="collect-pill ${pend ? 'ready' : ''}" id="collectAll">${ic('ink')}<span>${pend ? `+${pend}` : `${totalRate()}/h`}</span></button>
-    <button class="review-pill ${due ? 'hot' : ''}" id="dojo">${ic('refresh')}<span>${due ? `Repasar · ${due}` : 'Repaso al día'}</span></button>`}`;
+// Sobre la escena sólo queda Construir (abajo a la derecha); en modo construcción, también la Mochila
+function ctrlHTML() {
+  return `${build ? `<button class="build-pill alt" id="store">${ic('bag')}<span>Mochila</span>${S.gate.length ? `<b>${S.gate.length}</b>` : ''}</button>` : ''}
+    <button class="build-pill ${build ? 'on' : ''}" id="build">${ic(build ? 'check' : 'hammer')}<span>${build ? 'Listo' : 'Construir'}</span></button>`;
 }
 function bindDock(v) {
   if (placing) { $('#cancelPlace', v).onclick = () => { placing = null; go(); }; }
@@ -258,30 +252,10 @@ export function buyRow() {
 let storeTab = 'mon';
 export function openStorage(tab) {
   if (tab) storeTab = tab;
-  const mons = S.creatures.filter(c => !c.pos && !c.away), objs = S.objs.filter(o => !o.pos);
-  const pcs = Object.keys(PIECES).filter(p => S.pieces[p]), cons = CONSUMABLES.filter(c => S.items[c.id]);
-  const tabs = [['mon', '獣', 'KANJŪ', mons.length + S.gate.length], ['obj', '飾', 'Objetos', objs.length], ['evo', '部', 'Evolución', pcs.reduce((a, p) => a + S.pieces[p], 0)], ['con', '品', 'Consumibles', cons.reduce((a, c) => a + S.items[c.id], 0)]];
-  let body = '';
-  if (storeTab === 'mon') body = `<p class="muted">Descansan aquí: no ocupan la isla ni producen tinta. ${mons.length}/${S.storeCap} lugares.</p>
-    ${S.gate.length ? `<h4>門 Esperando en la puerta</h4>${S.gate.map((g, i) => `<div class="shop-row"><div class="gate-mon">${creatureSVG(g.k, { gold: g.gold })}</div><div><b>${g.k} · ${KANJI[g.k].m}</b></div><button class="btn ok" data-gin="${i}" ${storeFree() > 0 ? '' : 'disabled'}>Recibir</button><button class="btn ghost" data-gout="${i}">+${6 + kLevel(g.k) * 4}墨</button></div>`).join('')}` : ''}
-    <div class="store-grid">${mons.map(c => `<button class="st-it" data-s="${c.id}">${creatureSVG(c.k, { egg: c.egg, gold: c.gold })}<small>${c.k} Nv${c.lv}${c.stars ? ' ★' + c.stars : ''}</small><em>${foot(c).join('×')}</em></button>`).join('') || '<p class="muted">Ningún KANJŪ descansando.</p>'}</div>
-    ${STORE_COSTS[(S.storeCap - 10) / 5] ? `<button class="btn ghost wide" id="moreStore">蔵 +5 lugares · ${STORE_COSTS[(S.storeCap - 10) / 5]} 墨</button>` : ''}`;
-  if (storeTab === 'obj') body = `<p class="muted">Decoración y edificios guardados. Tocá uno para colocarlo en la isla (${shownObjs()}/${objCap()} colocados).</p>
-    <div class="store-grid">${objs.map(o => `<button class="st-it" data-s="${o.id}"><i class="st-k">${OBJS[o.t].k}</i><small>${OBJS[o.t].name}</small><em>Nv${o.lv} · ${OBJS[o.t].w}×${OBJS[o.t].h}</em></button>`).join('') || '<p class="muted">No hay objetos guardados. Comprá decoración en 店 Tienda.</p>'}</div>`;
-  if (storeTab === 'evo') body = `<p class="muted">Piezas 部品: se equipan desde la ficha de una criatura para evolucionar o se suman en la fusión.</p>
-    <div class="store-grid">${pcs.map(p => `<div class="st-it"><i class="st-k">${p}</i><small>${PIECES[p].name}</small><em>×${S.pieces[p]}</em></div>`).join('') || '<p class="muted">Sin piezas. Salen de viajes, cofres y la Tienda.</p>'}</div>`;
-  if (storeTab === 'con') body = `<p class="muted">Objetos de un solo uso.</p>
-    ${cons.map(c => `<div class="shop-row"><i>${c.k}</i><div><b>${c.name} · ×${S.items[c.id]}</b><small>${c.use}</small></div></div>`).join('') || '<p class="muted">No tenés consumibles. Están en 店 Tienda.</p>'}`;
-  const m = modal(`<h3>蔵 Almacén</h3>
-    <div class="st-tabs">${tabs.map(([id, k, l, n]) => `<button class="${storeTab === id ? 'on' : ''}" data-tab-s="${id}"><i>${k}</i><span>${l}</span>${n ? `<b>${n}</b>` : ''}</button>`).join('')}</div>
-    <div class="st-body">${body}</div>`);
-  m.querySelectorAll('[data-tab-s]').forEach(b => b.onclick = () => { m.close(); openStorage(b.dataset.tabS); });
-  m.querySelectorAll('[data-s]').forEach(b => b.onclick = () => storedMenu(findIt(b.dataset.s), m));
-  m.querySelectorAll('[data-gin]').forEach(b => b.onclick = () => { const g = S.gate.splice(+b.dataset.gin, 1)[0]; arrive(g.k, { gold: g.gold }); m.close(); go(); openStorage(); });
-  m.querySelectorAll('[data-gout]').forEach(b => b.onclick = () => { const g = S.gate.splice(+b.dataset.gout, 1)[0]; S.ink += 6 + kLevel(g.k) * 4; m.close(); go(); openStorage(); });
-  $('#moreStore', m) && ($('#moreStore', m).onclick = () => { const c = STORE_COSTS[(S.storeCap - 10) / 5]; if (S.ink < c) return toast(`Te faltan ${c - S.ink} 墨`); S.ink -= c; S.storeCap += 5; m.close(); hud(); openStorage(); });
+  ui.sub = storeTab === 'mon' ? 'kan' : 'bag'; ui.tab = 'trainer'; go();
 }
-const CONSUMABLES = [
+export const storeTabNow = () => storeTab, setStoreTab = t => storeTab = t;
+export const CONSUMABLES = [
   { id: 'scroll', k: '巻', name: 'Pergamino de saber', use: '+60 EXP: usalo desde la ficha de una criatura' },
   { id: 'wind', k: '風', name: 'Viento veloz', use: 'Termina un viaje al instante: usalo en 旅 Viajes' },
 ];

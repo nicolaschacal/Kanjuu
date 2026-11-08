@@ -7,7 +7,7 @@ const STEPS = [
   { ev: 'sheet', sel: ['.it.mon:not(.egg)'], text: 'Este es tu KANJŪ. Tocalo para conocerlo.' },
   { ev: 'pet', sel: ['#pet'], text: 'Tocalo para mimarlo ♥. Así crece su vínculo y su ánimo.' },
   { ev: 'train', sel: ['#train', '[data-g]', '.game'], text: 'Entrenalo con un desafío. Aprende su kanji y produce el doble de tinta durante 1 hora.' },
-  { ev: 'harvest', sel: ['#collectAll'], text: 'Tus KANJŪ producen tinta 墨 mientras viven en el santuario. ¡Recogela!', prep: 'ink' },
+  { ev: 'harvest', sel: ['#shopBtn.claim', '#shopBtn'], text: 'Tus KANJŪ producen tinta 墨 mientras viven en el santuario. ¡Recogela!', prep: 'ink' },
   { ev: 'lesson', sel: ['.node.cur', '#acadBtn'], text: 'La Academia te enseña japonés desde cero. Hacé tu primera lección.' },
   { ev: 'trip', sel: ['[data-send]', '[data-tab=exp]'], text: 'Mandá a tu KANJŪ de viaje: puede volver con un amigo nuevo.' },
   { ev: 'end', sel: [], text: '' },

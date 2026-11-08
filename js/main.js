@@ -10,7 +10,9 @@ import { openAcademy, acadDue, reviewAcademy, DAILY_GOAL } from './academy.js';
 import { openAISettings, aiStatus } from './ai.js';
 import { startTutorial, emit } from './tutorial.js';
 import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
-import { viewHome } from './sanctuary.js';
+import { viewHome, harvest } from './sanctuary.js';
+import { viewTrainer } from './trainer.js';
+import { allDue } from './dojo.js';
 import { viewLab } from './lab.js';
 import { viewExp, fmt } from './trips.js';
 import { viewDex, openQuests } from './atlas.js';
@@ -62,42 +64,75 @@ export const ACHIEVEMENTS = [
 ];
 export const owned = () => Object.values(S.dex).filter(d => d.owned).length;
 
-export const ui = { tab: 'home' };
+export const ui = { tab: 'home', sub: 'kan' };
 
 // ---------- Shell ----------
+// El mapa siempre queda debajo. Cada sección es una hoja con pestañas que sube sobre el mapa;
+// mientras hay una hoja o un modal abierto, desaparecen el HUD y la barra inferior.
+export const NAV = [['trainer', 'user', 'Entrenador'], ['lab', 'fusion', 'Fusión'], ['arena', 'swords', 'Arena'], ['exp', 'compass', 'Viajes'], ['dex', 'book', 'Atlas']];
+const TITLES = { lab: 'Fusión', arena: 'Arena', exp: 'Viajes', dex: 'Atlas', shop: 'Tienda' };
+export const TRAINER_TABS = [['bag', 'bag', 'Mochila'], ['kan', 'paw', 'KANJŪ'], ['me', 'user', 'Usuario']];
 export function shell() {
   app.innerHTML = `
   <header class="hud">
-    <button class="hud-me" id="rankBtn" aria-label="Menú">
-      <span class="me-seal"><i>守</i></span>
-      <span class="me-txt"><b>Guardián <em id="rankN">${S.rank.lv}</em></b><span class="me-bar"><i id="rankBar" style="width:${S.rank.xp / rankNeed(S.rank.lv) * 100}%"></i></span></span>
-      <span class="me-menu">${ic('menu')}</span>
-    </button>
+    <button class="hud-clock" id="clock" aria-label="Hora y clima"><b id="clkT">${clock()}</b><span class="wx" id="wx" hidden><i id="wxI"></i><small id="wxT"></small></span></button>
     <div class="hud-r">
-      <button class="wallet-p" id="shopBtn" aria-label="Tienda"><span class="wc">${ic('ink', 'ink')}<b id="ink">${S.ink}</b></span><span class="wc">${ic('ticket', 'tix')}<b id="tix">${S.tickets}</b></span></button>
+      <div class="hud-row">
+        <button class="wallet-p" id="shopBtn" aria-label="Tinta y tienda"><span class="wc">${ic('ink', 'ink')}<b id="ink">${S.ink}</b></span><span class="wc">${ic('ticket', 'tix')}<b id="tix">${S.tickets}</b></span><i class="ink-dot" id="inkDot" hidden></i></button>
+        <button class="gear-b" id="gearBtn" aria-label="Configuración">${ic('gear')}</button>
+      </div>
       <button class="quest-card" id="questBtn" aria-label="Misiones de hoy"><span class="qc-ic">${ic('list')}</span><span class="qc-t"><b>Misiones</b><small id="questTxt"></small></span><b class="qc-n" id="questN"></b></button>
     </div>
   </header>
   <main id="view"></main>
-  <nav class="tabs">${[['home', 'torii', 'Santuario'], ['lab', 'fusion', 'Fusión'], ['arena', 'swords', 'Arena'], ['exp', 'compass', 'Viajes'], ['dex', 'book', 'Atlas']]
-      .map(([id, k, l]) => `<button data-tab="${id}" class="${ui.tab === id ? 'on' : ''} ${id === 'arena' ? 'center' : ''}"><i>${ic(k)}</i><span>${l}</span></button>`).join('')}</nav>
+  <div id="panel"></div>
+  <nav class="tabs">${NAV.map(([id, k, l]) => `<button data-tab="${id}" class="${id === 'arena' ? 'center' : ''}"><i>${ic(k)}</i><span>${l}</span></button>`).join('')}</nav>
   <div id="layer"></div>`;
+  homeOn = false;
   app.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { ui.tab = b.dataset.tab; buzz(5); go(); });
   $('#questBtn').onclick = openQuests;
-  $('#shopBtn').onclick = () => { ui.tab = 'shop'; buzz(5); go(); };
-  $('#rankBtn').onclick = openMenu;
+  $('#shopBtn').onclick = e => totalPending() ? harvest(placed(), $('#ink')) : (ui.tab = 'shop', buzz(5), go());
+  $('#gearBtn').onclick = openMenu;
+  $('#clock').onclick = () => weather(true);
+  new MutationObserver(covered).observe($('#layer'), { childList: true });
+  weather(false);
   go();
 }
+let homeOn = false;
+export const covered = () => app.classList.toggle('covered', ui.tab !== 'home' || !!$('#layer')?.children.length || app.classList.contains('focus'));
 export function go() {
-  app.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === ui.tab));
-  const v = $('#view'); v.className = 'view v-' + ui.tab;
-  app.classList.toggle('on-home', ui.tab === 'home'); $('#shopBtn')?.classList.toggle('on', ui.tab === 'shop');
-  ({ home: viewHome, lab: viewLab, exp: viewExp, arena: viewArena, shop: viewShop, dex: viewDex })[ui.tab](v);
-  hud();
+  const panel = ui.tab !== 'home';
+  // El mapa sólo se vuelve a dibujar cuando está a la vista (o la primera vez)
+  if (!panel || !homeOn) { const v = $('#view'); v.className = 'view v-home'; viewHome(v); homeOn = true; }
+  renderPanel();
+  covered(); hud();
+}
+export const closePanel = () => { ui.tab = 'home'; go(); };
+function renderPanel() {
+  const p = $('#panel'), t = ui.tab;
+  if (t === 'home') {
+    if (p.classList.contains('open')) { p.classList.add('out'); setTimeout(() => { if (ui.tab === 'home') { p.className = ''; p.innerHTML = ''; } }, 230); }
+    return;
+  }
+  const fresh = !p.classList.contains('open') || p.classList.contains('out') || p.dataset.t !== t;
+  const old = $('#pnBody', p), top = fresh ? 0 : old?.scrollTop || 0;
+  const head = t === 'trainer'
+    ? `<div class="pn-tabs">${TRAINER_TABS.map(([id, k, l]) => `<button class="${ui.sub === id ? 'on' : ''}" data-sub="${id}">${ic(k)}<span>${l}</span></button>`).join('')}</div>`
+    : `<b class="pn-title">${TITLES[t]}</b>`;
+  p.className = 'open' + (fresh && p.dataset.t !== t && !p.classList.contains('open') ? ' in' : '');
+  p.dataset.t = t;
+  p.innerHTML = `<div class="pn-card"><div class="pn-head">${head}<button class="pn-x" id="pnX" aria-label="Cerrar">${ic('x')}</button></div><div class="pn-body view v-${t}${t === 'trainer' ? ' sub-' + ui.sub : ''}" id="pnBody"></div></div>`;
+  p.onclick = e => { if (e.target === p) closePanel(); };
+  $('#pnX', p).onclick = closePanel;
+  p.querySelectorAll('[data-sub]').forEach(b => b.onclick = () => { ui.sub = b.dataset.sub; buzz(5); go(); });
+  const body = $('#pnBody', p);
+  ({ lab: viewLab, exp: viewExp, arena: viewArena, shop: viewShop, dex: viewDex, trainer: viewTrainer })[t](body);
+  body.scrollTop = top;
 }
 export function hud() {
   $('#ink').textContent = S.ink;
-  const rb = $('#rankBar'); if (rb) { rb.style.width = S.rank.xp / rankNeed(S.rank.lv) * 100 + '%'; $('#rankN').textContent = S.rank.lv; }
+  const ct = $('#clkT'); if (ct) ct.textContent = clock();
+  const dot = $('#inkDot'), pend = totalPending(); if (dot) { dot.hidden = !pend; $('#shopBtn').classList.toggle('claim', !!pend); }
   rollDaily();
   const ready = MISSIONS.filter(m => (S.daily.p[m.id] || 0) >= m.goal && !S.daily.claimed.includes(m.id)).length
     + WEEKLY.filter(m => (S.weekly.p[m.id] || 0) >= m.goal && !S.weekly.claimed.includes(m.id)).length;
@@ -110,26 +145,45 @@ export function hud() {
   app.querySelector('[data-tab=exp]')?.classList.toggle('dot', expDone);
   const ar = S.arena; app.querySelector('[data-tab=arena]')?.classList.toggle('dot', !!ar && (ar.chests.some((c, i) => i === 0 && c.pts >= ({ wood: 6, silver: 12, gold: 24 })[c.t]) || ROAD.some(r => ar.best >= r.at && !ar.road.includes(r.at))));
   app.querySelector('[data-tab=dex]')?.classList.toggle('dot', ACHIEVEMENTS.some(a => a[2]() && !S.ach.includes(a[0])));
+  app.querySelector('[data-tab=trainer]')?.classList.toggle('dot', !!S.gate.length || !!allDue());
   save();
 }
-const ICONS = { '店': 'bag', '旅': 'compass', '錬': 'fusion', '闘': 'swords', '図': 'book' };
-// Menú: rango, Academia, Tienda, Cuenta y ayuda de lectura
-export function openMenu() {
-  const need = rankNeed(S.rank.lv);
-  const m = modal(`<div class="sh-head"><span class="sh-seal"><i>守</i></span><div class="sh-t"><b>Guardián ${S.rank.lv}</b><small>${S.rank.xp}/${need} para el próximo rango</small></div></div>
-    <div class="bar-k"><i style="width:${S.rank.xp / need * 100}%"></i></div>
-    <p class="muted">Subís de rango entrenando, repasando, recogiendo tinta y descubriendo kanji.</p>
-    <div class="menu-list">
-      <button class="row-k" id="mAcad"><span class="row-ic">${ic('cap')}</span><span class="row-t"><b>Academia</b><small>Lecciones de kana, vocabulario y gramática</small></span>${ic('right', 'chev')}</button>
-      <button class="row-k" id="mShop"><span class="row-ic">${ic('bag')}</span><span class="row-t"><b>Tienda</b><small>Invocar, decorar, edificios y piezas</small></span>${ic('right', 'chev')}</button>
-      <button class="row-k" id="mAcct"><span class="row-ic">${ic('user')}</span><span class="row-t"><b>Cuenta</b><small>${cloud.user ? esc(cloud.user.email) : 'Guardado en la nube y seguridad'}</small></span>${ic('right', 'chev')}</button>
-      <label class="row-k"><span class="row-ic">${ic('kana')}</span><span class="row-t"><b>Ayuda de lectura</b><small>Furigana sobre los kanji de la interfaz</small></span><input type="checkbox" class="sw" id="mFuri" ${helpOn() ? 'checked' : ''}></label>
-    </div>`);
-  $('#mAcad', m).onclick = () => { m.close(); openAcademy(acadCtx()); };
-  $('#mShop', m).onclick = () => { m.close(); ui.tab = 'shop'; go(); };
-  $('#mAcct', m).onclick = () => { m.close(); openAccount(); };
-  $('#mFuri', m).onchange = e => { setHelp(e.target.checked); go(); };
+// ---------- Hora y clima (Open-Meteo, sin clave). La ubicación sólo se pide al tocar el reloj. ----------
+const clock = () => new Date().toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
+const WX = c => c <= 1 ? 'sun' : c <= 3 ? 'cloud' : c <= 48 ? 'fog' : c <= 67 || (c >= 80 && c <= 82) ? 'rain' : c <= 86 ? 'snow' : 'storm';
+const GEO = 'kanjuu.geo', WXC = 'kanjuu.wx';
+export async function weather(ask) {
+  const show = w => { const el = $('#wx'); if (!el) return; el.hidden = false; $('#wxI').innerHTML = ic(!w.day && w.c <= 1 ? 'moon' : WX(w.c)); $('#wxT').textContent = Math.round(w.t) + '°'; };
+  try { const w = JSON.parse(localStorage.getItem(WXC)); if (w) { show(w); if (Date.now() - w.at < 18e5 && !ask) return; } } catch {}
+  let pos; try { pos = JSON.parse(localStorage.getItem(GEO)); } catch {}
+  if (!pos) {
+    if (!navigator.geolocation) return ask && toast('Este dispositivo no comparte su ubicación');
+    if (!ask) { const p = await navigator.permissions?.query({ name: 'geolocation' }).catch(() => null); if (p?.state !== 'granted') return; }
+    pos = await new Promise(res => navigator.geolocation.getCurrentPosition(p => res({ lat: +p.coords.latitude.toFixed(2), lon: +p.coords.longitude.toFixed(2) }), () => res(null), { timeout: 10000, maximumAge: 36e5 }));
+    if (!pos) return ask && toast('Activá la ubicación para ver el clima');
+    try { localStorage.setItem(GEO, JSON.stringify(pos)); } catch {}
+  }
+  try {
+    const r = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.lat}&longitude=${pos.lon}&current=temperature_2m,weather_code,is_day`)).json();
+    const w = { t: r.current.temperature_2m, c: r.current.weather_code, day: !!r.current.is_day, at: Date.now() };
+    localStorage.setItem(WXC, JSON.stringify(w)); show(w);
+  } catch { if (ask) toast('No se pudo cargar el clima'); }
 }
+// Configuración: cuenta, IA, ayuda de lectura y clima
+export function openMenu() {
+  const m = modal(`<h3>${ic('gear')} Configuración</h3>
+    <div class="menu-list">
+      <button class="row-k" id="mAcct"><span class="row-ic">${ic('user')}</span><span class="row-t"><b>Cuenta</b><small>${cloud.user ? esc(cloud.user.email) : 'Guardado en la nube y seguridad'}</small></span>${ic('right', 'chev')}</button>
+      <button class="row-k" id="mAI"><span class="row-ic">${ic('sparkles')}</span><span class="row-t"><b>IA propia</b><small>Tu clave para cuentos y explicaciones</small></span>${ic('right', 'chev')}</button>
+      <label class="row-k"><span class="row-ic">${ic('kana')}</span><span class="row-t"><b>Ayuda de lectura</b><small>Furigana sobre los kanji de la interfaz</small></span><input type="checkbox" class="sw" id="mFuri" ${helpOn() ? 'checked' : ''}></label>
+      <button class="row-k" id="mWx"><span class="row-ic">${ic('sun')}</span><span class="row-t"><b>Clima</b><small>Usa tu ubicación aproximada para el clima del HUD</small></span>${ic('right', 'chev')}</button>
+    </div>`);
+  $('#mAcct', m).onclick = () => { m.close(); openAccount(); };
+  $('#mAI', m).onclick = () => { m.close(); openAISettings(modal, toast, go); };
+  $('#mFuri', m).onchange = e => { setHelp(e.target.checked); go(); };
+  $('#mWx', m).onclick = () => { m.close(); try { localStorage.removeItem(GEO); } catch {} weather(true); };
+}
+const ICONS = { '店': 'bag', '旅': 'compass', '錬': 'fusion', '闘': 'swords', '図': 'book' };
 // Encabezado común de pantalla: sello con kanji · título · una línea · dato a la derecha
 export const scrHead = (k, title, sub, right = '') => `<header class="scr-h"><span class="scr-k">${ICONS[k] ? ic(ICONS[k]) : `<i>${k}</i>`}</span><div class="scr-t"><b>${title}</b><small>${sub}</small></div>${right ? `<div class="scr-r">${right}</div>` : ''}</header>`;
 export function toast(msg) {

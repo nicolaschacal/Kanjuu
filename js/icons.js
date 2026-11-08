@@ -1,6 +1,13 @@
 // KANJŪ · icons.js — íconos de interfaz propios, de trazo fino (24×24, currentColor).
 // Los kanji quedan para el contenido que se aprende; la interfaz usa estos íconos.
 const P = {
+  paw: '<circle cx="12" cy="15.5" r="3.6"/><circle cx="6.5" cy="10" r="1.8"/><circle cx="17.5" cy="10" r="1.8"/><circle cx="9.5" cy="5.5" r="1.7"/><circle cx="14.5" cy="5.5" r="1.7"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/>',
+  cloud: '<path d="M7 18h10a4 4 0 0 0 .4-8A5.5 5.5 0 0 0 7 9.5 4.3 4.3 0 0 0 7 18z"/>',
+  fog: '<path d="M7 13h10a3.5 3.5 0 0 0 .3-7A5 5 0 0 0 7.6 6.6 3.3 3.3 0 0 0 7 13z"/><path d="M4 17h16M6 20.5h12"/>',
+  rain: '<path d="M7 14h10a3.5 3.5 0 0 0 .3-7A5 5 0 0 0 7.6 7.6 3.3 3.3 0 0 0 7 14z"/><path d="M8.5 17l-1 3M12.5 17l-1 3M16.5 17l-1 3"/>',
+  snow: '<path d="M7 14h10a3.5 3.5 0 0 0 .3-7A5 5 0 0 0 7.6 7.6 3.3 3.3 0 0 0 7 14z"/><path d="M8.5 18h.01M12 20h.01M15.5 18h.01"/>',
+  storm: '<path d="M7 14h10a3.5 3.5 0 0 0 .3-7A5 5 0 0 0 7.6 7.6 3.3 3.3 0 0 0 7 14z"/><path d="m12.5 15-2 3.5h3l-2 3.5"/>',
   home: '<path d="M4 10.5 12 4l8 6.5"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/>',
   torii: '<path d="M3 6c6 1.2 12 1.2 18 0"/><path d="M5 9.5h14"/><path d="M7 7v13M17 7v13"/><path d="M12 7v2.5"/>',
   fusion: '<circle cx="8" cy="8" r="4"/><circle cx="16" cy="8" r="4"/><path d="M8 12c0 4 4 4 4 8M16 12c0 4-4 4-4 8"/>',
@@ -15,7 +22,7 @@ const P = {
   ticket: '<path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4z"/><path d="M14 6v12" stroke-dasharray="2 2"/>',
   hammer: '<path d="m14 7 3-3 3 3-3 3"/><path d="M14 7 4 17l3 3 10-10"/>',
   box: '<path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/>',
-  gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>',
+  gear: '<path d="M10.3 3h3.4l.5 2.4 1.9.8 2-1.4 2.4 2.4-1.4 2 .8 1.9 2.4.5v3.4l-2.4.5-.8 1.9 1.4 2-2.4 2.4-2-1.4-1.9.8-.5 2.4h-3.4l-.5-2.4-1.9-.8-2 1.4-2.4-2.4 1.4-2-.8-1.9L2.3 13.7v-3.4l2.4-.5.8-1.9-1.4-2 2.4-2.4 2 1.4 1.9-.8z"/><circle cx="12" cy="12" r="3"/>',
   user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/>',
   x: '<path d="M6 6l12 12M18 6 6 18"/>',
   left: '<path d="m15 5-7 7 7 7"/>',
