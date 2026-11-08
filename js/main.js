@@ -102,7 +102,7 @@ export function shell() {
   go();
 }
 let homeOn = false;
-export const covered = () => app.classList.toggle('covered', ui.tab !== 'home' || !!$('#layer')?.children.length || app.classList.contains('focus'));
+export const covered = () => app.classList.toggle('covered', ui.tab !== 'home' || !!$('#layer')?.children.length || app.classList.contains('focus') || app.classList.contains('building'));
 export function go() {
   const panel = ui.tab !== 'home';
   // El mapa sólo se vuelve a dibujar cuando está a la vista (o la primera vez)

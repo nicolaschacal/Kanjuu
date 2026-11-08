@@ -13,6 +13,7 @@ import { ISLANDS, island, buyIsland, objCap, shownObjs, harmony, harmonyMult, mo
 import { $, buzz, home, owned, ui, go, hud, toast, modal, floatText, covered } from './main.js';
 import { openCreature } from './sheet.js';
 import { allDue, openDojo, acadCtx } from './dojo.js';
+import { artThumb } from './paper.js';
 import { webgl, mountScene, emoteAt, hopAll, poke, setFocus, rotateCam, zoomCam } from './scene3d.js';
 import { openTraining } from './sheet.js';
 import { TYPES, typeOf, gradeTag } from './data.js';
@@ -21,26 +22,32 @@ import { TYPES, typeOf, gradeTag } from './data.js';
 let idleT, build = false, placing = null, seenGoal = '', focusId = null, tool = 'move';
 export function viewHome(v) { return webgl() && !new URLSearchParams(location.search).has('2d') ? viewHome3d(v) : viewHome2d(v); }
 
-// Santuario 3D: la escena dibuja la grilla; la UI (objetivo, burbujas, dock) va por encima en HTML
+// Santuario 3D: la escena dibuja la grilla; la UI (objetivo, burbujas, dock) va por encima en HTML.
+// Construir ocupa toda la pantalla (sin HUD ni barra): arriba Listo y la isla, abajo una bandeja con
+// la Mochila, la Tienda de decoración y edificios, y el Suelo. Los objetos se arrastran para moverlos.
+let sel = null, trayTab = 'inv';
 function viewHome3d(v) {
-  const pend = totalPending(), nextI = ISLANDS[(S.island || 0) + 1];
+  const nextI = ISLANDS[(S.island || 0) + 1];
   if (focusId && (build || placing || !S.creatures.some(c => c.id === focusId && c.pos))) focusId = null;
+  if (sel && (!build || !findIt(sel)?.pos)) sel = null;
   const bubbles = placed().filter(it => pending(it) >= 1).map(it => `<button class="bubble-ink ${full(it) ? 'full' : ''}" data-c="${it.id}" data-anchor="${it.id}" aria-label="Recoger ${pending(it)} de tinta">${ic('ink')}</button>`).join('');
+  const editing = build && !placing;
   v.innerHTML = `
   <div class="home home3d">
     <div class="stage" id="stage">
       <div class="stage-fx" aria-hidden="true"></div>
       <div class="stage-ov">${placing || build || focusId ? '' : bubbles}</div>
-      ${build && nextI ? `<button class="expand-row" id="expandRow">拡 ${nextI.name} ${nextI.n}×${nextI.n} · ${nextI.cost} 墨${S.rank.lv < nextI.rank ? ` · rango ${nextI.rank}` : ''}</button>` : ''}
-      ${build ? `<div class="build-hint"><b>匠 ${island().name} ${S.cols}×${S.rows}</b><span>獣 ${shownMons()}/${monCap()} plazas · 置 ${shownObjs()}/${objCap()} objetos · 和 Armonía ${Math.round(harmony())} (+${Math.round((harmonyMult() - 1) * 100)}% tinta)</span></div>` : ''}
-      ${placing || focusId ? '' : ctrlHTML()}
+      ${editing ? buildTopHTML(nextI) : ''}
+      ${placing || focusId || build ? '' : ctrlHTML()}
       ${focusId ? '' : camHTML()}
-      ${build && !placing ? toolsHTML() : ''}
+      ${editing && sel ? selHTML(findIt(sel)) : ''}
+      ${editing ? trayHTML() : ''}
       ${focusId ? focusHTML(findIt(focusId)) : ''}
     </div>
     ${placing ? `<div class="place-bar">Tocá dónde colocar <b>${placing.t ? OBJS[placing.t].k : placing.k}</b><button class="btn ghost" id="cancelPlace">Cancelar</button></div>` : ''}
   </div>`;
-  document.getElementById('app').classList.toggle('focus', !!focusId); covered();
+  const app = document.getElementById('app');
+  app.classList.toggle('focus', !!focusId); app.classList.toggle('building', build || !!placing); covered();
   const stg = $('#stage', v);
   const items = placed().map(it => {
     const [w, h] = foot(it), b = { id: it.id, x: it.pos.x, y: it.pos.y, w, h };
@@ -48,10 +55,14 @@ function viewHome3d(v) {
     if (it.away) return { ...b, kind: 'away' };
     return { ...b, kind: it.egg ? 'egg' : 'mon', svg: creatureSVG(it.k, { mood: it.mood, egg: it.egg, gold: it.gold }), insp: it.insp > Date.now() };
   });
-  let valid = null;
-  if (placing) { const [w, h] = foot(placing); valid = []; for (let y = 0; y < S.rows; y++) for (let x = 0; x < S.cols; x++) if (fits(w, h, x, y, placing)) valid.push([x, y]); }
-  const t = build && !placing ? tool : 'move';
-  const opts = { cols: S.cols, rows: S.rows, focus: focusId, items, OBJS, tiles: S.tiles, tool: t, paints: !!GROUNDS[t], rain: raining, mode: placing ? 'placing' : build ? 'build' : 'play', valid, onTap: tap3d, onCell: (x, y) => tapCell(x, y, null) };
+  const cells = it => { const [w, h] = foot(it), out = []; for (let y = 0; y < S.rows; y++) for (let x = 0; x < S.cols; x++) if (fits(w, h, x, y, it)) out.push([x, y]); return out; };
+  const valid = placing ? cells(placing) : editing && sel ? cells(findIt(sel)).filter(([x, y]) => x !== findIt(sel).pos.x || y !== findIt(sel).pos.y) : null;
+  const t = editing ? tool : 'move';
+  const opts = { cols: S.cols, rows: S.rows, focus: focusId, items, OBJS, tiles: S.tiles, tool: t, paints: !!GROUNDS[t], rain: raining, mode: placing ? 'placing' : build ? 'build' : 'play', valid, selected: sel,
+    onTap: tap3d, onCell: (x, y) => placing ? tapCell(x, y, null) : moveSel(x, y),
+    canPlace: (id, x, y) => { const it = findIt(id), [w, h] = foot(it); return fits(w, h, x, y, it); },
+    onMove: (id, x, y) => { const it = findIt(id); if (x === null) { buzz(30); toast('No entra ahí'); return; } it.pos = { x, y }; sel = id; buzz(12); save(); go(); },
+    onLong: id => { const it = findIt(id); if (!it || it.away) return; build = true; tool = 'move'; sel = id; focusId = null; setFocus(null); buzz([10, 30, 10]); go(); } };
   // Herramientas de suelo: cada toque cambia la casilla y se vuelve a armar sólo la isla (sin redibujar la pantalla)
   let errAt = 0;
   opts.onTile = (x, y) => {
@@ -60,19 +71,13 @@ function viewHome3d(v) {
     buzz(5); save(); mountScene(stg, { ...opts, tiles: S.tiles });
   };
   mountScene(stg, opts);
-  stg.querySelectorAll('[data-tool]').forEach(b => b.onclick = () => { tool = b.dataset.tool; buzz(6); go(); });
+  stg.querySelectorAll('[data-tool]').forEach(b => b.onclick = () => { tool = tool === b.dataset.tool ? 'move' : b.dataset.tool; sel = null; buzz(6); go(); });
   $('#rotL', stg) && ($('#rotL', stg).onclick = () => rotateCam(-1));
   $('#rotR', stg) && ($('#rotR', stg).onclick = () => rotateCam(1));
   $('#zIn', stg) && ($('#zIn', stg).onclick = () => zoomCam(1.2));
   $('#zOut', stg) && ($('#zOut', stg).onclick = () => zoomCam(1 / 1.2));
   stg.querySelectorAll('.bubble-ink').forEach(b => b.onclick = e => { e.stopPropagation(); harvest([findIt(b.dataset.c)], b); });
-  // El objetivo se muestra unos segundos y se pliega a un ícono; tocarlo lo abre de nuevo
-  const gEl = stg.querySelector('.goal');
-  if (gEl) {
-    const txt = gEl.textContent;
-    if (txt === seenGoal) gEl.classList.add('min'); else { seenGoal = txt; setTimeout(() => gEl.classList.add('min'), 5000); }
-    gEl.onclick = () => gEl.classList.toggle('min');
-  }
+  if (editing) bindBuild(stg);
   bindDock(v);
   if (focusId) bindFocus(stg, findIt(focusId));
   clearInterval(idleT);
@@ -83,6 +88,80 @@ function viewHome3d(v) {
     if (mons.length > 1 && Math.random() < .35) emoteAt(mons[Math.random() * mons.length | 0].id, ['♪', '♥', '！', '…', 'ｚ', '✿'][Math.random() * 6 | 0]);
     if (!stg.querySelector('.bubble-ink') && placed().some(it => pending(it) >= 1)) go();
   }, 2500);
+}
+// ---------- Construir ----------
+const thumb = it => it.t ? `<img src="${artThumb(OBJS[it.t].art)}" alt="">` : creatureSVG(it.k, { mood: it.mood, egg: it.egg, gold: it.gold });
+const itName = it => it.t ? `${OBJS[it.t].name} · Nv${it.lv}` : it.egg ? 'Huevo' : `${it.k} · ${KANJI[it.k].m}`;
+function buildTopHTML(nextI) {
+  return `<div class="bld-top">
+    <button class="bt-done" id="build">${ic('check')}<span>Listo</span></button>
+    <div class="bt-info"><b>${island().name} ${S.cols}×${S.rows}</b><small>獣 ${shownMons()}/${monCap()} · 置 ${shownObjs()}/${objCap()} · 和 ${Math.round(harmony())} <em>+${Math.round((harmonyMult() - 1) * 100)}% 墨</em></small></div>
+    <span class="bt-ink">${ic('ink')}<b>${S.ink}</b></span>
+  </div>
+  ${nextI ? `<button class="bt-exp" id="expandRow">拡 Ampliar a ${nextI.n}×${nextI.n} · ${nextI.cost} 墨${S.rank.lv < nextI.rank ? ` · rango ${nextI.rank}` : ''}</button>` : ''}`;
+}
+// Lo seleccionado: se arrastra para moverlo; las acciones quedan a un toque
+function selHTML(it) {
+  const isObj = !!it.t;
+  return `<div class="selbar">
+    <span class="sb-th">${thumb(it)}</span>
+    <span class="sb-t"><b>${itName(it)}</b><small>Arrastralo o tocá una casilla libre</small></span>
+    <button class="sb-a" data-a="store" ${!isObj && storeFree() <= 0 ? 'disabled' : ''}>${ic('box')}<span>Guardar</span></button>
+    ${isObj && it.lv < OBJ_MAX ? `<button class="sb-a" data-a="up" ${S.ink < upCost(it) ? 'disabled' : ''}>${ic('sparkles')}<span>${upCost(it)} 墨</span></button>` : ''}
+    ${isObj ? `<button class="sb-a" data-a="sell">${ic('ink')}<span>+${sellValue(it)}</span></button>` : ''}
+    <button class="sb-a x" data-a="x" aria-label="Soltar">${ic('x')}</button>
+  </div>`;
+}
+const TRAY = [['inv', 'bag', 'Mochila'], ['dec', 'leaf', 'Decorar'], ['bld', 'home', 'Edificios'], ['suelo', 'box', 'Suelo']];
+function trayHTML() {
+  const inv = stored(), card = (attrs, th, name, sub, cls = '') => `<button class="tc ${cls}" ${attrs}><span class="tc-th">${th}</span><b>${name}</b><small>${sub}</small></button>`;
+  let body = '';
+  if (trayTab === 'inv') body = inv.length ? inv.map(it => card(`data-place="${it.id}"`, thumb(it), it.t ? OBJS[it.t].name : it.k, it.t ? `Nv${it.lv} · ${OBJS[it.t].w}×${OBJS[it.t].h}` : it.egg ? 'Huevo' : `Nv${it.lv}`)).join('')
+    : `<p class="tc-empty">La mochila está vacía · comprá en Decorar o Edificios</p>`;
+  else if (trayTab === 'suelo') {
+    const b = (id, inner, n) => `<button class="tl ${tool === id ? 'on' : ''}" data-tool="${id}" aria-pressed="${tool === id}">${inner}<span>${n}</span></button>`;
+    body = `${Object.entries(GROUNDS).map(([id, g]) => b(id, `<span class="tl-sw" style="background:${g.c}"></span>`, g.n)).join('')}<i class="tl-sep"></i>
+      ${b('raise', TOOL_SVG.raise, 'Relieve')}${b('ramp', TOOL_SVG.ramp, 'Rampa')}${b('fall', TOOL_SVG.fall, 'Cascada')}`;
+  } else body = Object.entries(OBJS).filter(([, d]) => (d.kind === 'decor') === (trayTab === 'dec') && !d.hide).map(([k, d]) => {
+    const lock = S.rank.lv < d.rank, c = objCost(k), n = S.objs.filter(o => o.t === k).length;
+    return card(`data-buy="${k}" ${lock ? 'disabled' : ''}`, `<img src="${artThumb(d.art)}" alt="">`, d.name, lock ? `Rango ${d.rank}` : `${c} 墨${n ? ` · ×${n}` : ''}`, `${lock ? 'lock' : S.ink < c ? 'poor' : ''}`);
+  }).join('');
+  const hint = trayTab === 'suelo' ? (TOOL_HINT[tool] || 'Pintá casillas arrastrando el dedo') : trayTab === 'inv' ? 'Tocá para ponerlo en la isla' : 'Tocá para comprarlo y ponerlo en la isla';
+  return `<div class="tray">
+    <div class="tray-tabs">${TRAY.map(([id, i, l]) => `<button class="${trayTab === id ? 'on' : ''}" data-tray="${id}">${ic(i)}<span>${l}</span>${id === 'inv' && inv.length ? `<b>${inv.length}</b>` : ''}</button>`).join('')}</div>
+    <div class="tray-hint">${hint}</div>
+    <div class="tray-row">${body}</div>
+  </div>`;
+}
+function bindBuild(stg) {
+  const row = $('.tray-row', stg); try { const k = 'tray.' + trayTab; row.scrollLeft = +(sessionStorage.getItem(k) || 0); row.onscroll = () => sessionStorage.setItem(k, row.scrollLeft); } catch {}
+  stg.querySelectorAll('[data-tray]').forEach(b => b.onclick = () => { trayTab = b.dataset.tray; tool = trayTab === 'suelo' ? (tool === 'move' ? 'grass' : tool) : 'move'; buzz(5); go(); });
+  stg.querySelectorAll('[data-place]').forEach(b => b.onclick = () => {
+    const it = findIt(b.dataset.place);
+    if (it.t ? shownObjs() >= objCap() : !monFits(it)) { buzz(30); return toast(it.t ? `置 La isla ya tiene ${objCap()} objetos · ampliala` : `獣 No quedan plazas para ${it.k} · guardá a otro KANJŪ`); }
+    if (settle(it) !== 'grid') { buzz(30); return toast('No hay lugar libre · mové o guardá algo'); }
+    it.prodAt ??= Date.now(); sel = it.id; buzz(12); save(); go();
+  });
+  stg.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => {
+    const k = b.dataset.buy, d = OBJS[k], c = objCost(k);
+    if (S.ink < c) { buzz(30); return toast(`Te faltan ${c - S.ink} 墨 para ${d.name}`); }
+    S.ink -= c; const o = newObj(k); buzz(12);
+    if (o.pos) { sel = o.id; toast(`${d.name} · 和+${d.har} · arrastralo a su lugar`); } else { trayTab = 'inv'; toast(`${d.name} quedó en la Mochila: no hay lugar libre`); }
+    hud(); go();
+  });
+  stg.querySelectorAll('.selbar [data-a]').forEach(b => b.onclick = () => {
+    const it = findIt(sel), a = b.dataset.a;
+    if (a === 'x') sel = null;
+    else if (a === 'store') { gather(it); it.pos = null; sel = null; toast(`${it.t ? OBJS[it.t].name : it.k} guardado en la Mochila`); }
+    else if (a === 'up') { gather(it); S.ink -= upCost(it); it.lv++; toast(`${OBJS[it.t].name} subió a Nv${it.lv}`); buzz(20); }
+    else if (a === 'sell') { S.ink += sellValue(it); S.objs = S.objs.filter(o => o !== it); sel = null; toast('Vendido'); }
+    buzz(6); save(); hud(); go();
+  });
+}
+function moveSel(x, y) {
+  const it = sel && findIt(sel);
+  if (it) { const [w, h] = foot(it); if (fits(w, h, x, y, it)) { it.pos = { x, y }; buzz(12); save(); return go(); } }
+  if (sel) { sel = null; go(); }
 }
 // Vista de primer plano (como en Rebyters): la cámara se acerca a la criatura y aparece su tarjeta
 function focusHTML(c) {
@@ -109,7 +188,7 @@ function tap3d(id) {
   const it = findIt(id);
   if (!it) { if (focusId) { focusId = null; setFocus(null); go(); } return; }
   buzz(8);
-  if (build) return itemMenu(it);
+  if (build) { if (it.away) return toast(`${it.k} está de viaje`); sel = sel === id ? null : id; return go(); }
   if (it.t) return toast(`${OBJS[it.t].k} ${OBJS[it.t].name} Nv${it.lv} · ${OBJS[it.t].desc}`);
   if (it.away) return toast(`${it.k} está de viaje`);
   if (it.egg) {
@@ -145,18 +224,10 @@ const TOOL_SVG = {
   fall: '<svg viewBox="0 0 46 46" aria-hidden="true"><path d="M4 14 H24 V40 H4 Z" fill="#A47D55" stroke="#2E2620" stroke-width="2.5"/><path d="M4 12 H26 V16 H4 Z" fill="#5AA5D2" stroke="#2E2620" stroke-width="2"/><path d="M26 14 C33 16 32 28 33 40" fill="none" stroke="#5AA5D2" stroke-width="6" stroke-linecap="round"/><path d="M24 40 H44" stroke="#5AA5D2" stroke-width="4" stroke-linecap="round"/></svg>',
 };
 const TOOL_HINT = { move: 'Tocá un objeto o KANJŪ para moverlo, guardarlo o mejorarlo', raise: 'Tocá una casilla para subirla; en la cima vuelve a llano', ramp: 'Tocá una casilla al pie de una colina', fall: 'Tocá agua para subirla; cae por los bordes más bajos' };
-function toolsHTML() {
-  const b = (id, inner, n) => `<button class="tl ${tool === id ? 'on' : ''}" data-tool="${id}" aria-pressed="${tool === id}">${inner}<span>${n}</span></button>`;
-  return `<div class="tools"><div class="tl-hint">${TOOL_HINT[tool] || 'Pintá casillas arrastrando el dedo'}</div><div class="tl-row">
-    ${b('move', ic('hand'), 'Mover')}<i class="tl-sep"></i>
-    ${Object.entries(GROUNDS).map(([id, g]) => b(id, `<span class="tl-sw" style="background:${g.c}"></span>`, g.n)).join('')}<i class="tl-sep"></i>
-    ${b('raise', TOOL_SVG.raise, 'Relieve')}${b('ramp', TOOL_SVG.ramp, 'Rampa')}${b('fall', TOOL_SVG.fall, 'Cascada')}
-  </div></div>`;
-}
 function bindDock(v) {
   if (placing) { $('#cancelPlace', v).onclick = () => { placing = null; go(); }; }
   else {
-    $('#build', v) && ($('#build', v).onclick = () => { build = !build; tool = 'move'; focusId = null; setFocus(null); buzz(6); go(); });
+    $('#build', v) && ($('#build', v).onclick = () => { build = !build; tool = 'move'; sel = null; trayTab = 'inv'; focusId = null; setFocus(null); buzz(6); go(); });
     $('#store', v) && ($('#store', v).onclick = () => openStorage());
     $('#collectAll', v) && ($('#collectAll', v).onclick = e => harvest(placed(), e.currentTarget));
     $('#dojo', v) && ($('#dojo', v).onclick = openDojo);

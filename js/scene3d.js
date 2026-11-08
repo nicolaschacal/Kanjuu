@@ -262,18 +262,28 @@ function engine() {
   const gap = () => { const [a, b] = [...pts.values()]; return Math.hypot(a.x - b.x, a.y - b.y); };
   el.addEventListener('pointerdown', e => {
     pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); el.setPointerCapture(e.pointerId);
-    if (pts.size === 2) { pinch0 = gap(); E.W?.pinchStart?.(); if (down) { down.moved = true; down.pinch = true; } E.W?.dragEnd?.(); return; }
+    if (pts.size === 2) { pinch0 = gap(); E.W?.pinchStart?.(); if (down) { clearTimeout(down.lp); if (down.grab) E.W.grabEnd(); down.grab = false; down.moved = true; down.pinch = true; } E.W?.dragEnd?.(); return; }
     down = { x: e.clientX, y: e.clientY, moved: false }; E.W?.dragStart?.();
     if (E.W?.paintMode) E.W.paint(rayAt(e));
+    else if (E.W?.grab?.(rayAt(e))) down.grab = true;
+    else if (E.W?.longPress) { const ev = { clientX: e.clientX, clientY: e.clientY }; down.lp = setTimeout(() => { if (down && !down.moved && pts.size === 1) { down.long = true; E.W.longPress(rayAt(ev)); } }, 480); }
   });
   el.addEventListener('pointermove', e => {
     if (pts.has(e.pointerId)) pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pts.size >= 2) { if (pinch0) E.W?.pinch?.(gap() / pinch0); return; }
     if (!down || down.pinch) return; const dx = e.clientX - down.x, dy = e.clientY - down.y; if (Math.hypot(dx, dy) > 8) down.moved = true;
+    if (down.moved) clearTimeout(down.lp);
+    if (down.grab) { if (down.moved) E.W.grabMove(rayAt(e)); return; }
     if (E.W?.paintMode) { if (down.moved) E.W.paint(rayAt(e)); return; }
     E.W?.drag?.(dx, dy);
   });
-  const up = e => { pts.delete(e.pointerId); if (pts.size < 2) pinch0 = 0; if (pts.size) return; if (e.type === 'pointerup' && down && !down.moved) tap(e); down = null; E.W?.dragEnd?.(); };
+  const up = e => {
+    pts.delete(e.pointerId); if (pts.size < 2) pinch0 = 0; if (pts.size) return;
+    if (down) clearTimeout(down.lp);
+    if (down?.grab) { if (down.moved) E.W.grabEnd(); else { E.W.grabbing = null; if (e.type === 'pointerup') tap(e); } }
+    else if (e.type === 'pointerup' && down && !down.moved && !down.long) tap(e);
+    down = null; E.W?.dragEnd?.();
+  };
   el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
   el.addEventListener('wheel', e => { if (!E.W?.zoomBy) return; e.preventDefault(); E.W.zoomBy(e.deltaY < 0 ? 1.1 : 1 / 1.1); }, { passive: false });
   addEventListener('resize', () => E.host && resize());
@@ -298,7 +308,7 @@ function hitItem(W, ray) {
   const hits = ray.intersectObjects([...W.items.values()].map(o => o.group), true).filter(h => h.object.userData.id);
   return hits[0]?.object.userData.id;
 }
-function screenOf(id, W = E?.W, foot = false) {
+export function screenOf(id, W = E?.W, foot = false) {
   const o = W?.items.get(id); if (!o) return null;
   const v = new THREE.Vector3(); o.sprite ? o.sprite.getWorldPosition(v) : o.group.getWorldPosition(v);
   v.y += foot ? 0 : (o.size || 1) * .95; v.project(W.camera);
@@ -509,7 +519,7 @@ function paperProp(id, w, shadow = true) {
   return m;
 }
 let _wmat, _fallMat, _foamMat;
-const waterMat = () => _wmat ??= new THREE.MeshLambertMaterial({ color: GROUND_C.water, emissive: '#1F5E86', emissiveIntensity: .25, transparent: true, opacity: .93 });
+const waterMat = () => _wmat ??= new THREE.MeshLambertMaterial({ color: GROUND_C.water, emissive: '#1F5E86', emissiveIntensity: .25 });
 const fallMat = () => _fallMat ??= new THREE.MeshLambertMaterial({ color: GROUND_C.water, emissive: '#1F5E86', emissiveIntensity: .18, side: THREE.DoubleSide });
 const foamMat = () => _foamMat ??= new THREE.MeshLambertMaterial({ map: paper.artTex('espuma'), transparent: true, alphaTest: .04, side: THREE.DoubleSide, emissive: '#FFFFFF', emissiveMap: paper.artTex('espuma'), emissiveIntensity: .6 });
 const groundMats = new Map();
@@ -565,7 +575,7 @@ function sanctuary() {
   for (let i = 0; i < RN; i++) drop(i, true);
   let az0 = 0;
   W.dragStart = () => { az0 = W.az; W.dragging = true; };
-  W.drag = dx => { if (W.paintMode || W.focus) return; W.az = W.azT = az0 - dx * .009; };
+  W.drag = dx => { if (W.paintMode || W.focus || W.grabbing) return; W.az = W.azT = az0 - dx * .009; };
   W.dragEnd = () => { W.dragging = false; };
   W.pinchStart = () => { W.z0 = W.zoom; };
   W.pinch = k => { W.zoom = Math.min(2.6, Math.max(.6, (W.z0 || 1) * k)); };
@@ -576,8 +586,34 @@ function sanctuary() {
     const { mode, onTap, onCell, tool, onTile } = W.opts;
     if (mode === 'placing') { const t = tileHit(ray); if (t) onCell?.(t.x, t.y); return; }
     if (tool && tool !== 'move') { if (W.paintMode) return; const t = tileHit(ray); if (t) onTile?.(t.x, t.y); return; }
-    const id = hitItem(W, ray); if (id) { poke(id); onTap?.(id); }
+    const id = hitItem(W, ray); if (id) { poke(id); onTap?.(id); return; }
+    if (mode === 'build') { const t = tileHit(ray); if (t) onCell?.(t.x, t.y); }
   };
+  // Construir: se agarra un objeto o KANJŪ y se arrastra; la huella se pinta verde (entra) o roja (no entra)
+  const ghost = new THREE.Group(); world.add(ghost);
+  const gq = (col) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(.94, .94), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: .55, depthWrite: false, depthTest: false })); m.rotation.x = -Math.PI / 2; m.renderOrder = 5; return m; };
+  W.grab = ray => {
+    const { mode, tool } = W.opts; if (mode !== 'build' || (tool && tool !== 'move')) return false;
+    const id = hitItem(W, ray), o = id && W.items.get(id); if (!o || o.d.kind === 'away') return false;
+    const t = tileHit(ray), d = o.d;
+    W.grabbing = { id, o, ox: t ? Math.min(d.w - 1, Math.max(0, t.x - d.x)) : 0, oy: t ? Math.min(d.h - 1, Math.max(0, t.y - d.y)) : 0, x: d.x, y: d.y, ok: true, moved: false };
+    return true;
+  };
+  W.grabMove = ray => {
+    const g = W.grabbing, t = g && tileHit(ray); if (!t) return;
+    const d = g.o.d, x = Math.min(W.cols - d.w, Math.max(0, t.x - g.ox)), y = Math.min(W.rows - d.h, Math.max(0, t.y - g.oy));
+    if (x === g.x && y === g.y && g.moved) return;
+    g.x = x; g.y = y; g.moved = x !== d.x || y !== d.y; g.ok = !g.moved || !!W.opts.canPlace?.(g.id, x, y);
+    const [cx, cy, cz] = toWorld(W, { ...d, x, y }); g.o.group.position.set(cx, cy + .18, cz);
+    ghost.clear(); const ox = (W.cols - 1) / 2, oz = (W.rows - 1) / 2;
+    for (let j = 0; j < d.h; j++) for (let i = 0; i < d.w; i++) { const q = gq(g.ok ? '#5DB84F' : '#E8452C'); q.position.set(x + i - ox, W.tY(x + i, y + j) + .05, y + j - oz); ghost.add(q); }
+  };
+  W.grabEnd = () => {
+    const g = W.grabbing; W.grabbing = null; ghost.clear(); if (!g) return;
+    const [cx, cy, cz] = toWorld(W, g.o.d); g.o.group.position.set(cx, cy, cz);
+    if (g.moved) W.opts.onMove?.(g.id, g.ok ? g.x : null, g.ok ? g.y : null);
+  };
+  W.longPress = ray => { const id = hitItem(W, ray); if (id && W.opts.mode === 'play') W.opts.onLong?.(id); };
 
   const tmp = new THREE.Vector3();
   W.update = (t, dt) => {
@@ -646,7 +682,6 @@ function sanctuary() {
     W.ringT = (W.ringT || 0) - dt;
     if (W.ringT <= 0 && W.waters?.length) { W.ringT = (rk > .5 ? .12 : .7) + Math.random() * .4; const r = rings.find(r => !r.visible); if (r) { const [x, y, z] = W.waters[Math.random() * W.waters.length | 0]; r.position.set(x + (Math.random() - .5) * .7, y + .02, z + (Math.random() - .5) * .7); r.userData.life = 1; r.visible = true; } }
     rings.forEach(r => { if (!r.visible) return; r.userData.life -= dt * .7; const s = .08 + (1 - r.userData.life) * .42; r.scale.set(s, s, s); r.material.opacity = Math.max(0, r.userData.life) * .8; if (r.userData.life <= 0) r.visible = false; });
-    W.tops.forEach(m => { if (m.userData.water) m.position.y = m.userData.base + Math.sin(t * 1.6 + m.userData.x * 1.3 + m.userData.y) * .012; });
     rain.visible = rk > .05; rain.material.opacity = .55 * rk;
     if (rain.visible) { for (let i = 0; i < RN; i++) { const o = i * 6; rpos[o] += dt * W.wind * .4; rpos[o + 3] += dt * W.wind * .4; rpos[o + 1] -= dt * 9; rpos[o + 4] -= dt * 9; if (rpos[o + 4] < -.2) drop(i, false); } rg.attributes.position.needsUpdate = true; rain.position.set(c0, 0, c0); }
   };
@@ -665,7 +700,7 @@ function buildIsland(W, cols, rows, tiles, items) {
   const tY = (x, y) => { const t = T(x, y); return t.g === 'water' ? t.h * LV - .12 : t.h * LV + (t.r ? LV / 2 : (hash(x, y, 13) - .5) * .06); };
   W.tY = tY;
   const occ = new Set(); items.forEach(d => { if (d.kind === 'obj') for (let j = 0; j < d.h; j++) for (let i = 0; i < d.w; i++) occ.add((d.x + i) + ',' + (d.y + j)); });
-  const slab = new THREE.BoxGeometry(1, SLAB, 1), lvBox = new THREE.BoxGeometry(1, LV, 1);
+  const slab = new THREE.BoxGeometry(1, SLAB, 1), wSlab = new THREE.BoxGeometry(.985, SLAB, .985), lvBox = new THREE.BoxGeometry(1, LV, 1);
   const corner = (x, y) => { const sx = x === 0 ? -1 : x === cols - 1 ? 1 : 0, sz = y === 0 ? -1 : y === rows - 1 ? 1 : 0; return sx && sz ? [sx, sz] : null; };
   const cornerGeo = (h, c) => extrudeY(roundSquare(1, 1, [[-1, 1], [1, 1], [1, -1], [-1, -1]].map(([px, py]) => px === c[0] && py === c[1] ? .32 : 0)), h);
   let rampGeo = null;
@@ -677,7 +712,7 @@ function buildIsland(W, cols, rows, tiles, items) {
     if (t.r) {
       if (!rampGeo) { const s = new THREE.Shape(); s.moveTo(-.5, -SLAB); s.lineTo(.5, -SLAB); s.lineTo(.5, LV); s.lineTo(-.5, 0); s.closePath(); const g = new THREE.ExtrudeGeometry(s, { depth: 1, bevelEnabled: false }); g.translate(0, 0, -.5); rampGeo = boxUV(g); }
       top = new THREE.Mesh(rampGeo, mat); top.rotation.y = Math.atan2(-t.r[1], t.r[0]); top.position.set(wx, t.h * LV, wz); edges(top, island);
-    } else { top = new THREE.Mesh(c ? cornerGeo(SLAB, c) : slab, mat); top.position.set(wx, base, wz); }
+    } else { top = new THREE.Mesh(c ? cornerGeo(SLAB, c) : t.g === 'water' ? wSlab : slab, mat); top.position.set(wx, base, wz); if (c && t.g === 'water') top.scale.set(.985, 1, .985); }
     top.castShadow = top.receiveShadow = true; top.userData = { x, y, base, water: t.g === 'water' }; island.add(top); W.tops.set(x + ',' + y, top);
     if (t.g === 'water') W.waters.push([wx, tY(x, y), wz]);
     for (let l = 0; l < t.h; l++) { const m = new THREE.Mesh(c ? cornerGeo(LV, c) : lvBox, gMat(STRATA[Math.min(l, 2)])); m.position.set(wx, -SLAB + l * LV + LV / 2, wz); m.castShadow = m.receiveShadow = true; island.add(m); edges(m, island); }
@@ -703,7 +738,7 @@ function buildIsland(W, cols, rows, tiles, items) {
   }
   // base: meseta invertida, cada escalón un anillo más chico
   let yy = -SLAB + .04;
-  const tiers = [{ w: cols, d: rows, h: .34, c: '#9A7550' }, { w: cols, d: rows, h: .32, c: '#8E857A' }];
+  const tiers = [{ w: cols - .06, d: rows - .06, h: .34, c: '#9A7550' }, { w: cols - .1, d: rows - .1, h: .32, c: '#8E857A' }];
   for (let j = 1; Math.min(cols, rows) - 2 * j >= 5; j++) tiers.push({ w: cols - 2 * j, d: rows - 2 * j, h: TIER_H, c: j % 2 ? '#857C71' : '#8E857A' });
   tiers.forEach(tr => { const r = Math.min(.32, Math.min(tr.w, tr.d) * .3), m = new THREE.Mesh(extrudeY(roundSquare(tr.w, tr.d, [r, r, r, r]), tr.h), gMat(tr.c)); m.position.set(0, yy - tr.h / 2, 0); m.castShadow = m.receiveShadow = true; island.add(m); edges(m, island); yy -= tr.h; });
   const s = W.scene.children.find(o => o.isDirectionalLight)?.shadow.camera; if (s) { const r = W.N / 2 + 3.5; Object.assign(s, { left: -r, right: r, top: r, bottom: -r, near: .5, far: 45 }); s.updateProjectionMatrix(); }
@@ -769,7 +804,7 @@ function drawEditor(W) {
   const lm = new THREE.LineBasicMaterial({ color: '#FFFDF6', transparent: true, opacity: .85 });
   for (let y = 0; y < W.rows; y++) for (let x = 0; x < W.cols; x++) { const l = new THREE.Line(sq, lm); l.position.set(x - ox, W.tY(x, y) + .03, y - oz); W.ov.add(l); }
   const quad = (x, y, col, op) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(.92, .92), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: op, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.set(x - ox, W.tY(x, y) + .04, y - oz); W.ov.add(m); };
-  if (mode === 'build') items.forEach(d => { for (let j = 0; j < d.h; j++) for (let i = 0; i < d.w; i++) quad(d.x + i, d.y + j, '#F2B544', .32); });
+  if (mode === 'build') items.forEach(d => { const sel = d.id === W.opts.selected; for (let j = 0; j < d.h; j++) for (let i = 0; i < d.w; i++) quad(d.x + i, d.y + j, sel ? '#F2B544' : '#FFFFFF', sel ? .7 : .14); });
   (valid || []).forEach(([x, y]) => quad(x, y, '#FFFFFF', .42));
 }
 // =====================================================================
