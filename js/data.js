@@ -112,7 +112,47 @@ export const KANJI = {
   '藻': { m: 'alga', on: ['ソウ'], kun: ['も'], recipes: [['艸', '澡']], form: 'arriba-abajo', note: '艸 aparece como 艹', mn: 'La hierba que vive en el agua: un alga.' },
 };
 
-export const WORDS = [
+// Palabra clave de cada kanji: la palabra real más útil para hablar (la que se escucha al tocarlo)
+// [palabra, lectura en kana, significado]
+export const VOCAB = {
+  '一': ['一つ', 'ひとつ', 'uno (una cosa)'], '木': ['木', 'き', 'árbol'], '人': ['人', 'ひと', 'persona'],
+  '日': ['毎日', 'まいにち', 'todos los días'], '月': ['今月', 'こんげつ', 'este mes'], '火': ['火', 'ひ', 'fuego'],
+  '田': ['田んぼ', 'たんぼ', 'arrozal'], '力': ['力', 'ちから', 'fuerza'], '女': ['女の人', 'おんなのひと', 'mujer'],
+  '子': ['子供', 'こども', 'niño, niña'], '口': ['口', 'くち', 'boca'], '十': ['十', 'じゅう', 'diez'],
+  '目': ['目', 'め', 'ojo'], '生': ['先生', 'せんせい', 'profesor, profesora'], '心': ['心', 'こころ', 'corazón'],
+  '皿': ['お皿', 'おさら', 'plato'], '水': ['水', 'みず', 'agua'], '艸': ['草', 'くさ', 'hierba (hoy se escribe 草)'],
+  '手': ['手', 'て', 'mano'], '糸': ['糸', 'いと', 'hilo'], '示': ['示す', 'しめす', 'mostrar, señalar'],
+  '衣': ['衣服', 'いふく', 'ropa'], '立': ['立つ', 'たつ', 'ponerse de pie'], '車': ['車', 'くるま', 'auto'],
+  '止': ['止まる', 'とまる', 'detenerse'], '土': ['土曜日', 'どようび', 'sábado'], '寸': ['寸法', 'すんぽう', 'medidas'],
+  '皮': ['皮', 'かわ', 'piel, cáscara'], '毛': ['毛', 'け', 'pelo'], '豆': ['豆', 'まめ', 'poroto, frijol'],
+  '斤': ['一斤', 'いっきん', 'una hogaza de pan'], '林': ['林', 'はやし', 'arboleda'],
+  '休': ['休み', 'やすみ', 'descanso, vacaciones'], '本': ['本', 'ほん', 'libro'], '明': ['明るい', 'あかるい', 'luminoso, alegre'],
+  '炎': ['炎', 'ほのお', 'llama'], '男': ['男の人', 'おとこのひと', 'hombre'], '好': ['好き', 'すき', 'que te gusta'],
+  '品': ['品物', 'しなもの', 'mercadería, artículo'], '晶': ['水晶', 'すいしょう', 'cristal de cuarzo'],
+  '星': ['星', 'ほし', 'estrella'], '姓': ['姓', 'せい', 'apellido'], '杏': ['杏', 'あんず', 'albaricoque'],
+  '旦': ['元旦', 'がんたん', 'día de Año Nuevo'], '朋': ['朋', 'とも', 'amigo (literario; hoy se usa 友)'],
+  '古': ['古い', 'ふるい', 'viejo (cosa)'], '相': ['相手', 'あいて', 'la otra persona, rival'], '思': ['思う', 'おもう', 'pensar, creer'],
+  '加': ['参加', 'さんか', 'participar'], '字': ['字', 'じ', 'letra'], '安': ['安い', 'やすい', 'barato'],
+  '見': ['見る', 'みる', 'ver, mirar'], '兄': ['お兄さん', 'おにいさん', 'hermano mayor'], '枚': ['一枚', 'いちまい', 'una hoja (contador)'],
+  '近': ['近い', 'ちかい', 'cerca'], '床': ['床', 'ゆか', 'piso, suelo'], '享': ['享受', 'きょうじゅ', 'disfrutar de algo'],
+  '音': ['音楽', 'おんがく', 'música'], '新': ['新しい', 'あたらしい', 'nuevo'], '軍': ['軍', 'ぐん', 'ejército'],
+  '連': ['連れて行く', 'つれていく', 'llevar a alguien'], '疲': ['疲れた', 'つかれた', 'estoy cansado'],
+  '正': ['正しい', 'ただしい', 'correcto'], '寺': ['お寺', 'おてら', 'templo'], '尾': ['尻尾', 'しっぽ', 'cola'],
+  '圧': ['圧力', 'あつりょく', 'presión'], '厚': ['厚い', 'あつい', 'grueso'], '同': ['同じ', 'おなじ', 'igual, el mismo'],
+  '内': ['内側', 'うちがわ', 'el lado de adentro'], '句': ['文句', 'もんく', 'queja'], '旬': ['旬', 'しゅん', 'temporada (de un alimento)'],
+  '杉': ['杉', 'すぎ', 'cedro japonés'], '登': ['山に登る', 'やまにのぼる', 'subir una montaña'], '森': ['森', 'もり', 'bosque'],
+  '体': ['体', 'からだ', 'cuerpo'], '焚': ['焚き火', 'たきび', 'fogata'], '盟': ['同盟', 'どうめい', 'alianza'],
+  '枯': ['枯れる', 'かれる', 'marchitarse'], '想': ['想像', 'そうぞう', 'imaginación'], '案': ['案内', 'あんない', 'guiar, mostrar el camino'],
+  '視': ['視線', 'しせん', 'mirada'], '故': ['事故', 'じこ', 'accidente'], '運': ['運動', 'うんどう', 'ejercicio'],
+  '症': ['症状', 'しょうじょう', 'síntoma'], '待': ['待って', 'まって', '¡esperá!'], '持': ['持つ', 'もつ', 'tener, llevar'],
+  '時': ['時間', 'じかん', 'tiempo, horas'], '居': ['居間', 'いま', 'sala de estar'], '延': ['延期', 'えんき', 'postergar'],
+  '禁': ['禁止', 'きんし', 'prohibido'], '意': ['意味', 'いみ', 'significado'], '薪': ['薪', 'まき', 'leña'],
+  '操': ['体操', 'たいそう', 'gimnasia'], '燥': ['乾燥', 'かんそう', 'sequedad'], '繰': ['繰り返す', 'くりかえす', 'repetir'],
+  '襟': ['襟', 'えり', 'cuello (de ropa)'], '億': ['一億', 'いちおく', 'cien millones'], '憶': ['記憶', 'きおく', 'memoria'],
+  '藻': ['海藻', 'かいそう', 'algas marinas'],
+};
+
+const BASE_WORDS = [
   ['森林', 'しんりん', 'bosque'], ['休日', 'きゅうじつ', 'día libre'], ['日本', 'にほん', 'Japón'],
   ['本日', 'ほんじつ', 'hoy'], ['明日', 'あした', 'mañana'], ['月日', 'つきひ', 'el tiempo'],
   ['男子', 'だんし', 'chico'], ['女子', 'じょし', 'chica'], ['火力', 'かりょく', 'potencia de fuego'],
@@ -131,6 +171,25 @@ export const WORDS = [
   ['毛糸', 'けいと', 'lana'], ['土木', 'どぼく', 'obras públicas'], ['正月', 'しょうがつ', 'Año Nuevo'],
   ['水力', 'すいりょく', 'fuerza hidráulica'], ['新月', 'しんげつ', 'luna nueva'], ['木立', 'こだち', 'arboleda'],
 ];
+
+// Vocabulario de uso diario (N5) para el juego Palabra y los ejemplos de lectura
+const DAILY_WORDS = [
+  ['日曜日', 'にちようび', 'domingo'], ['月曜日', 'げつようび', 'lunes'], ['火曜日', 'かようび', 'martes'], ['水曜日', 'すいようび', 'miércoles'],
+  ['木曜日', 'もくようび', 'jueves'], ['日本人', 'にほんじん', 'japonés, japonesa'], ['一人', 'ひとり', 'una persona, solo'], ['人気', 'にんき', 'popular'],
+  ['女の子', 'おんなのこ', 'niña'], ['男の子', 'おとこのこ', 'niño'], ['休む', 'やすむ', 'descansar, faltar'], ['夏休み', 'なつやすみ', 'vacaciones de verano'],
+  ['上手', 'じょうず', 'hábil'], ['手紙', 'てがみ', 'carta'], ['時計', 'とけい', 'reloj'], ['何時', 'なんじ', '¿qué hora es?'], ['時々', 'ときどき', 'a veces'],
+  ['新聞', 'しんぶん', 'diario'], ['見せる', 'みせる', 'mostrar'], ['近く', 'ちかく', 'cerca, los alrededores'], ['意見', 'いけん', 'opinión'],
+  ['音', 'おと', 'sonido'], ['体育', 'たいいく', 'educación física'], ['生まれる', 'うまれる', 'nacer'], ['学生', 'がくせい', 'estudiante'],
+  ['思い出', 'おもいで', 'recuerdo'], ['心配', 'しんぱい', 'preocupación'], ['火事', 'かじ', 'incendio'], ['目的', 'もくてき', 'objetivo'],
+  ['手伝う', 'てつだう', 'ayudar'], ['見物', 'けんぶつ', 'hacer turismo'], ['安全', 'あんぜん', 'seguro, sin peligro'], ['立派', 'りっぱ', 'espléndido'],
+  ['子犬', 'こいぬ', 'cachorro'], ['好物', 'こうぶつ', 'comida favorita'], ['正直', 'しょうじき', 'honesto'], ['車内', 'しゃない', 'dentro del vehículo'],
+  ['電車', 'でんしゃ', 'tren'], ['自転車', 'じてんしゃ', 'bicicleta'], ['口座', 'こうざ', 'cuenta bancaria'], ['入口', 'いりぐち', 'entrada'],
+  ['出口', 'でぐち', 'salida'], ['水着', 'みずぎ', 'traje de baño'], ['登山', 'とざん', 'montañismo'], ['運転', 'うんてん', 'manejar'],
+  ['待合室', 'まちあいしつ', 'sala de espera'], ['気持ち', 'きもち', 'sentimiento'], ['時代', 'じだい', 'época'], ['禁煙', 'きんえん', 'prohibido fumar'],
+];
+const _seen = new Set();
+export const WORDS = [...BASE_WORDS, ...DAILY_WORDS, ...Object.values(VOCAB).filter(w => [...w[0]].length > 1)]
+  .filter(w => !_seen.has(w[0]) && _seen.add(w[0]));
 
 export const ELEMENTS = {
   wood: ['#7ccf6a', '#3f8f3a', 'Madera'], sun: ['#ffcb47', '#d98b12', 'Sol'], moon: ['#8f9cff', '#4b55b8', 'Luna'],
@@ -219,6 +278,15 @@ export const learnGate = c => depth(c) <= 1 ? 2 : depth(c) + 2;
 export const MAX_LV = 15;
 export const reads = k => [...KANJI[k].on, ...KANJI[k].kun];
 export const plain = r => r.replace(/[()]/g, '');
+// Palabra clave y lo que dice el audio: la palabra real; si no hay, la kun'yomi
+export const keyWord = k => VOCAB[k] || null;
+export const sayText = k => VOCAB[k]?.[1] || plain(KANJI[k]?.kun[0] || KANJI[k]?.on[0] || '');
+// やす(む) → やす + む atenuado (okurigana) · 休む como palabra escrita
+export const okuHTML = r => r.replace(/\((.+?)\)/, '<i class="oku">$1</i>');
+export const kunWord = (k, r) => k + (r.match(/\((.+?)\)/)?.[1] || '');
+const hira = s => s.replace(/[\u30a1-\u30f6]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
+// Una palabra donde el kanji suena con esa on'yomi (キュウ → 休日)
+export const onExample = (k, r) => WORDS.find(w => [...w[0]].length > 1 && w[0].includes(k) && w[1].includes(hira(r)));
 
 // --- Tipos 五行 (gogyō): los cinco elementos japoneses tradicionales ---
 // Ciclo de dominio (相剋 sōkoku): 木 vence a 土, 土 a 水, 水 a 火, 火 a 金, 金 a 木.

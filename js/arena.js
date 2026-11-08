@@ -1,7 +1,7 @@
 // KANJŪ · arena.js — Duelos 3 contra 3 con copas, arenas, cofres que se abren estudiando y camino de copas.
 import { ic } from './icons.js';
 import { webgl, mountArena, arenaHit, emoteAt } from './scene3d.js';
-import { KANJI, TYPES, typeOf, typeMult, kLevel, reads, PIECES } from './data.js';
+import { KANJI, TYPES, typeOf, typeMult, kLevel, reads, PIECES, VOCAB, sayText } from './data.js';
 import { S, save, bump, mastery } from './state.js';
 import { creatureSVG } from './creature.js';
 import { addXP } from './world.js';
@@ -227,11 +227,12 @@ function challenge(k, root) {
   return new Promise(done => {
     const K = KANJI[k], useRead = reads(k).length && Math.random() < .45;
     const others = Object.keys(KANJI).filter(x => x !== k).sort(() => Math.random() - .5);
-    const correct = useRead ? reads(k)[0] : K.m;
-    const opts = [correct, ...others.map(x => useRead ? reads(x)[0] : KANJI[x].m).filter(o => o && o !== correct && !(useRead && reads(k).includes(o)))].filter((v, i, s) => s.indexOf(v) === i).slice(0, 4).sort(() => Math.random() - .5);
+    const W = useRead && VOCAB[k], rd = x => W ? VOCAB[x]?.[1] : reads(x)[0];
+    const correct = W ? W[1] : useRead ? reads(k)[0] : K.m;
+    const opts = [correct, ...others.map(x => useRead ? rd(x) : KANJI[x].m).filter(o => o && o !== correct && !(useRead && reads(k).includes(o)))].filter((v, i, s) => s.indexOf(v) === i).slice(0, 4).sort(() => Math.random() - .5);
     const T = 7000, t0 = Date.now();
     const box = document.createElement('div'); box.className = 'chal';
-    box.innerHTML = `<p>${useRead ? '¿Cómo se lee?' : '¿Qué significa?'}</p><div class="ck">${k}</div><div class="ctime"><i></i></div>
+    box.innerHTML = `<p>${useRead ? '¿Cómo se lee?' : '¿Qué significa?'}</p><div class="ck${W ? ' cw' : ''}">${W ? W[0] : k}</div><div class="ctime"><i></i></div>
       <div class="copts">${opts.map(o => `<button class="co">${o}${useRead && helpOn() ? `<i class="rmj">${romaji(o)}</i>` : ''}</button>`).join('')}</div>`;
     root.append(box);
     requestAnimationFrame(() => requestAnimationFrame(() => { box.querySelector('.ctime i').style.transitionDuration = T + 'ms'; box.querySelector('.ctime i').style.width = '0%'; }));
@@ -240,7 +241,7 @@ function challenge(k, root) {
       if (ended) return; ended = true; clearTimeout(to);
       const fast = ok && Date.now() - t0 < 2500;
       box.querySelectorAll('.co').forEach(b => { b.disabled = true; if (b.firstChild.textContent === correct) b.classList.add('right'); });
-      if (ok) speak(reads(k)[0] || '');
+      if (ok) speak(sayText(k));
       setTimeout(() => { box.remove(); done({ ok, fast, useSpecial: true }); }, ok ? 350 : 900);
     };
     const to = setTimeout(() => end(false), T);

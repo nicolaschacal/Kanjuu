@@ -1,4 +1,4 @@
-import { KANJI, WORDS, PIECES, isPiece, reads, plain } from './data.js';
+import { KANJI, WORDS, PIECES, isPiece, reads, plain, VOCAB, keyWord, sayText, okuHTML, kunWord, onExample } from './data.js';
 import { ic } from './icons.js';
 import { STROKES } from './strokes.js';
 import { S } from './state.js';
@@ -25,10 +25,23 @@ export const canSpeak = () => !!jaVoice;
 export function speak(text) {
   try { const u = new SpeechSynthesisUtterance(plain(text)); u.lang = 'ja-JP'; if (jaVoice) u.voice = jaVoice; u.rate = .85; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch {}
 }
+// Palabra clave + lecturas con ejemplo: 訓 やす·む → 休む · 音 キュウ → 休日
+const rm = r => helpOn() && r ? `<i class="rmj">${romaji(r)}</i>` : '';
+const rmIn = r => helpOn() && r ? `<small class="rmi">${romaji(r)}</small>` : '';
+export function wordHTML(k, btn = '') {
+  const w = keyWord(k); if (!w) return '';
+  return `<div class="kw">${btn}<span class="kw-w">${w[0]}</span><span class="kw-r">${w[1]}${rm(w[1])}</span><span class="kw-m">${w[2]}</span></div>`;
+}
+export function readsHTML(k) {
+  const K = KANJI[k];
+  const kun = K.kun.map(r => `<span class="lec"><b>訓</b>${okuHTML(r)}${rmIn(r)}${r.includes('(') ? `<em>${kunWord(k, r)}</em>` : ''}</span>`);
+  const on = K.on.map(r => { const ex = onExample(k, r); return `<span class="lec on"><b>音</b>${r}${rmIn(r)}${ex ? `<em>${ex[0]}</em>` : ''}</span>`; });
+  return [...kun, ...on].join('') || '<span class="lec">—</span>';
+}
 // Tarjeta de historia mnemotécnica: se muestra al descubrir o al fallar
 export function storyHTML(k) {
   const K = KANJI[k];
-  return `<div class="story"><span class="story-k">${k}</span><div><b>${K.m}</b><small>${reads(k).map(rr).join('・') || '—'}</small>
+  return `<div class="story"><span class="story-k">${k}</span><div><b>${K.m}</b>${keyWord(k) ? `<small class="kw-s">${keyWord(k)[0]} · ${keyWord(k)[1]} · ${keyWord(k)[2]}</small>` : ''}<small>${reads(k).map(rr).join('・') || '—'}</small>
     ${K.recipes ? `<div class="story-parts">${K.recipes[0].map(p => `<span class="${isPiece(p) ? 'pc' : ''}">${p}<i>${(KANJI[p] || PIECES[p]).m}</i></span>`).join('<em>+</em>')}</div>` : ''}
     <p>知 ${K.mn}</p>${S.notes?.[k] ? `<p class="mine">筆 ${S.notes[k].replace(/</g, '&lt;')}</p>` : ''}</div></div>`;
 }
@@ -170,10 +183,12 @@ function parts(k, know, body, end) {
 }
 
 function listen(k, know, body, end) {
-  const r = pick(reads(k)), opts = shuffle([k, ...shuffle(Object.keys(S.dex).filter(x => x !== k && !reads(x).includes(r))).slice(0, 3)]);
-  while (opts.length < 4) { const x = pick(Object.keys(KANJI)); if (!opts.includes(x) && !reads(x).includes(r)) opts.push(x); }
+  const w = keyWord(k), r = w && Math.random() < .7 ? w[1] : pick(reads(k));
+  const clash = x => reads(x).includes(r) || VOCAB[x]?.[1] === r;
+  const opts = shuffle([k, ...shuffle(Object.keys(S.dex).filter(x => x !== k && KANJI[x] && !clash(x))).slice(0, 3)]);
+  while (opts.length < 4) { const x = pick(Object.keys(KANJI)); if (!opts.includes(x) && !clash(x)) opts.push(x); }
   const show = !canSpeak() || know < 1;
-  body.innerHTML = `<p class="hint">¿Qué kanji se lee así?</p><button class="speaker" aria-label="Escuchar">${ic('sound')}<span>${show ? rr(r) : ''}</span></button>
+  body.innerHTML = `<p class="hint">${w && r === w[1] ? `¿Qué kanji tiene la palabra que escuchás?${know < 2 ? ` <small>(${w[2]})</small>` : ''}` : '¿Qué kanji se lee así?'}</p><button class="speaker" aria-label="Escuchar">${ic('sound')}<span>${show ? rr(r) : ''}</span></button>
     <div class="opts">${opts.map(o => `<button class="opt">${o}</button>`).join('')}</div>`;
   const say = () => speak(r); say();
   body.querySelector('.speaker').onclick = () => { say(); body.querySelector('.speaker span').textContent = r; };
@@ -204,7 +219,8 @@ export function review(list, root, onGrade) {
       let q, opts, correct;
       if (type === 'k2m') { q = `<div class="qk">${k}</div><p class="hint">¿Qué significa?</p>`; opts = shuffle([K.m, ...others.map(o => KANJI[o].m)]); correct = K.m; }
       else if (type === 'm2k' || type === 'parts') { q = `<p class="hint">¿Cuál es el kanji de</p><div class="qm">«${K.m}»</div>${type === 'parts' ? `<p class="muted">Pista: ${K.recipes[0].join(' + ')}</p>` : ''}`; opts = shuffle([k, ...others]); correct = k; }
-      else if (type === 'listen') { const r = pick(reads(k)); q = `<button class="speaker" aria-label="Escuchar">${ic('sound')}<span>${canSpeak() ? '' : r}</span></button><p class="hint">¿Qué kanji se lee así?</p>`; opts = shuffle([k, ...others.filter(o => !reads(o).includes(r))]); correct = k; setTimeout(() => speak(r), 200); body.dataset.r = r; }
+      else if (type === 'listen') { const r = VOCAB[k] && Math.random() < .6 ? VOCAB[k][1] : pick(reads(k)); q = `<button class="speaker" aria-label="Escuchar">${ic('sound')}<span>${canSpeak() ? '' : r}</span></button><p class="hint">${VOCAB[k]?.[1] === r ? '¿Qué kanji tiene esta palabra?' : '¿Qué kanji se lee así?'}</p>`; opts = shuffle([k, ...others.filter(o => !reads(o).includes(r) && VOCAB[o]?.[1] !== r)]); correct = k; setTimeout(() => speak(r), 200); body.dataset.r = r; }
+      else if (VOCAB[k]) { const [wd, r, es] = VOCAB[k]; const pool = shuffle(Object.values(VOCAB).map(v => v[1]).filter(x => x !== r)); q = `<div class="qk qw">${wd}</div><p class="hint">¿Cómo se lee? <small>(${es})</small></p>`; opts = shuffle([r, ...pool.slice(0, 3)]); correct = r; }
       else { const r = reads(k)[0]; const pool = shuffle(all.flatMap(reads).filter(x => !reads(k).includes(x))); q = `<div class="qk">${k}</div><p class="hint">¿Cómo se lee?</p>`; opts = shuffle([r, ...[...new Set(pool)].slice(0, 3)]); correct = r; }
       body.innerHTML = `${q}<div class="opts ${type === 'k2m' || type === 'k2r' ? 'txt' : ''}">${opts.map(o => `<button class="opt">${o}</button>`).join('')}</div>`;
       const sp = body.querySelector('.speaker'); if (sp) sp.onclick = () => { speak(body.dataset.r); sp.querySelector('span').textContent = body.dataset.r; };

@@ -229,6 +229,9 @@ b,strong{font-weight:700}
 .modal.cr .reads span{background:#F6EBD014;color:var(--paper);border:1.5px solid #F6EBD040;border-radius:10px}
 .modal.cr .reads .say{background:var(--paper);color:var(--line);border-radius:10px;width:36px;height:32px;display:grid;place-items:center}
 .modal.cr .reads .say .ic{width:18px;height:18px}
+.modal.cr .kw{background:var(--paper);color:var(--line);border:var(--b);box-shadow:var(--sh-d)}
+.modal.cr .kw .say{background:var(--line);color:var(--paper);border-radius:10px;width:36px;height:32px;display:grid;place-items:center;border:0}
+.modal.cr .kw .say .ic{width:18px;height:18px}
 .acts{gap:8px}
 .act{background:var(--paper3)!important;color:var(--line);border:var(--b)!important;border-radius:14px!important;box-shadow:var(--sh)!important;padding:8px 4px!important}
 .act i{font-size:22px;line-height:1.1;display:block}

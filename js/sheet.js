@@ -1,9 +1,9 @@
 // KANJŪ · sheet.js
 import { ic } from './icons.js';
-import { KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
+import { KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads, keyWord, sayText } from './data.js';
 import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
-import { GAMES, hasWord, hasParts, play, review, storyHTML, speak } from './games.js';
+import { GAMES, hasWord, hasParts, play, review, storyHTML, speak, wordHTML, readsHTML } from './games.js';
 import * as cloud from './cloud.js';
 import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn } from './help.js';
 import { openAcademy, acadDue, reviewAcademy, DAILY_GOAL } from './academy.js';
@@ -25,7 +25,8 @@ export function openCreature(id) {
     <div class="cr-top" style="--el:${fill}">
       <button class="cr-art" id="pet">${creatureSVG(c.k, { mood: c.mood, gold: c.gold })}${c.acc ? `<span class="acc-hat big">${c.acc}</span>` : ''}</button>
       <div class="cr-name"><span class="big-k">${c.k}</span><div><b>${K.m}</b><small><b class="tbadge" style="--t:${TYPES[typeOf(c.k)].col}">${TYPES[typeOf(c.k)].k} ${TYPES[typeOf(c.k)].name}</b> fuerte contra ${TYPES[TYPES[typeOf(c.k)].beats].k} · ${ELEMENTS[element(c.k)][2]} · Nivel KANJŪ ${kLevel(c.k)}${c.gen ? ` · Gen ${c.gen}` : ''}</small></div></div>
-      <div class="reads"><button class="say" id="say" aria-label="Escuchar">${ic('sound')}</button><span>音 ${K.on.map(rr).join('・') || '—'}</span><span>訓 ${K.kun.map(rr).join('・') || '—'}</span><span class="mast" title="Maestría">熟 ${'★'.repeat(mastery(c.k))}${'☆'.repeat(Math.max(0, 6 - mastery(c.k)))}</span></div>
+      ${wordHTML(c.k, `<button class="say" id="say" aria-label="Escuchar">${ic('sound')}</button>`)}
+      <div class="reads">${keyWord(c.k) ? '' : `<button class="say" id="say" aria-label="Escuchar">${ic('sound')}</button>`}${readsHTML(c.k)}<span class="mast" title="Maestría">熟 ${'★'.repeat(mastery(c.k))}${'☆'.repeat(Math.max(0, 6 - mastery(c.k)))}</span></div>
     </div>
     <div class="bars">
       <div class="bar"><label>Lv ${c.lv}${c.lv >= MAX_LV ? ' MAX' : ''}</label><div><i style="width:${c.exp / expNeed(c.lv) * 100}%"></i></div></div>
@@ -56,7 +57,7 @@ export function openCreature(id) {
   $('#snack', m).onclick = () => { S.ink -= 5; c.mood = 1; c.bond += 3; const up = giveExp(c, 8); m.close(); toast(`${c.k} disfrutó el mochi ${up ? '· ¡Subió de nivel!' : ''}`); go(); setTimeout(() => openCreature(id), 260); };
   $('#train', m).onclick = () => openTraining(c, m);
   $('#awaken', m) && ($('#awaken', m).onclick = () => { if (!confirm(`Se consumirá otro ${c.k}. ¿Despertar?`)) return; awaken(c); m.close(); go(); buzz([20, 60, 20]); toast(`覚 ${c.k} despertó: ★${c.stars}`); setTimeout(() => openCreature(id), 260); });
-  $('#say', m).onclick = () => speak(reads(c.k)[0] || '');
+  $('#say', m).onclick = () => speak(sayText(c.k));
   $('#note', m).onchange = e => { S.notes ??= {}; S.notes[c.k] = e.target.value.trim(); save(); toast('筆 Historia guardada'); };
   $('#free', m).onclick = () => {
     if (!confirm(`${c.k} volverá a la naturaleza y te dejará tinta. Su entrada en el atlas se conserva. ¿Liberar?`)) return;
@@ -123,7 +124,7 @@ export function evolveFX(c, to, from = c.acc && KANJI[to].recipes.some(r => r.in
   const fx = document.createElement('div'); fx.className = 'evofx';
   fx.innerHTML = `<div class="rays"></div><div class="parts">${from.map(k => `<span>${k}</span>`).join('')}</div>
     <div class="old">${creatureSVG(from[0])}</div><div class="new">${creatureSVG(to, { mood: 1 })}</div>
-    <div class="evo-cap"><span class="big-k">${to}</span><b>${KANJI[to].m}</b><small>${KANJI[to].on.join('・')} · ${KANJI[to].kun.join('・')}</small><small>${from.join(' + ')} = ${to} · Nivel KANJŪ ${kLevel(to)}</small><p class="evo-mn">知 ${KANJI[to].mn}</p><button class="btn ok">¡Genial!</button></div>`;
+    <div class="evo-cap"><span class="big-k">${to}</span><b>${KANJI[to].m}</b><small>${keyWord(to) ? `${keyWord(to)[0]} (${keyWord(to)[1]}) · ${keyWord(to)[2]} — ` : ''}${KANJI[to].on.join('・')} · ${KANJI[to].kun.join('・')}</small><small>${from.join(' + ')} = ${to} · Nivel KANJŪ ${kLevel(to)}</small><p class="evo-mn">知 ${KANJI[to].mn}</p><button class="btn ok">¡Genial!</button></div>`;
   if (from[0] === c.k && byId(c.id)) { evolve(c, to); if (settle(c) === 'store') setTimeout(() => toast(`${to} creció y no entra en su lugar: está en el almacén`), 2600); }
   addXP(40);
   document.body.append(fx); buzz([20, 60, 40]); bump('evo');

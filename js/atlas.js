@@ -1,6 +1,6 @@
 // KANJŪ · atlas.js
 import { ic } from './icons.js';
-import { FAMILIES, PIECES } from './data.js';
+import { FAMILIES, PIECES, sayText } from './data.js';
 const famReward = f => 30 * f.members.length;import { KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
 import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
@@ -44,7 +44,7 @@ export function viewDex(v) {
       <p class="muted">Nivel KANJŪ ${kLevel(k)} · composition_depth ${depth(k)}</p>
       ${K.recipes ? `<p>${K.recipes.map(r => r.join(' + ') + ' = ' + k).join('<br>')}</p>` : '<p class="muted">Componente fundamental</p>'}
       ${evolutionsOf(k).length ? `<p class="muted">Forma parte de: ${evolutionsOf(k).map(t => S.dex[t]?.seen ? t : '？').join(' ')}</p>` : ''}
-      ${S.srs[k] ? `<p class="muted">Maestría ${mastery(k)}/6 · aciertos ${S.srs[k].ok} · fallos ${S.srs[k].miss}</p>` : ''}</div>`).querySelector('#say2').onclick = () => speak(reads(k)[0] || '');
+      ${S.srs[k] ? `<p class="muted">Maestría ${mastery(k)}/6 · aciertos ${S.srs[k].ok} · fallos ${S.srs[k].miss}</p>` : ''}</div>`).querySelector('#say2').onclick = () => speak(sayText(k));
   });
   v.querySelectorAll('.fam.claim').forEach(b => b.onclick = () => {
     const f = FAMILIES.find(x => x.root === b.dataset.fam); S.fams = [...(S.fams || []), f.root]; S.ink += famReward(f); S.tickets++;

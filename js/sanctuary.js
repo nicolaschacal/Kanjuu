@@ -1,6 +1,6 @@
 // KANJŪ · sanctuary.js
 import { ic } from './icons.js';
-import { PIECES, KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
+import { PIECES, KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads, sayText } from './data.js';
 import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
 import { GAMES, hasWord, hasParts, play, review, storyHTML, speak } from './games.js';
@@ -216,7 +216,7 @@ export function tapItem(id, el, e) {
 }
 export function hatched(c) {
   const m = modal(`<div class="result"><h3>¡Nació ${c.k}!</h3>${creatureSVG(c.k, { mood: 1, gold: c.gold })}${c.gold ? '<p class="g">✦ ¡Variante dorada! Produce +50% de tinta</p>' : ''}${c.gen ? `<p class="g">Gen ${c.gen} · +${c.gen * 25}% EXP permanente</p>` : ''}${storyHTML(c.k)}<button class="btn ok wide">¡Bienvenido!</button></div>`);
-  speak(reads(c.k)[0] || ''); $('.btn', m).onclick = () => m.close();
+  speak(sayText(c.k)); $('.btn', m).onclick = () => m.close();
 }
 export function itemMenu(it) {
   const isObj = !!it.t, d = isObj && OBJS[it.t];
