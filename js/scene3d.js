@@ -573,7 +573,7 @@ function buildField(W, cols, rows, kind) {
   W.dress = { lights: [], banners: [], trees: [], smoke: [] };
   const g = new THREE.Group(), pw = cols * T, pd = rows * T, seed = cols * 7 + rows, rnd = mulberry(seed * 5);
   // Encuadre: el rectángulo jugable ocupa casi todo el ancho; cámara más alta (se ve más piso, menos cielo)
-  W.geo = { rx: pw / 2 + (kind === 'patio' ? .55 : .2), rz: pd / 2 + .4, zc: 0, elev: kind === 'patio' ? .86 : .92, lookZ: -pd * .2 };
+  W.geo = { rx: pw / 2 + (kind === 'patio' ? .55 : .2), rz: pd / 2 + .4, zc: 0, elev: +(new URLSearchParams(location.search).get('ang') || 28) * Math.PI / 180, lookZ: -pd * +(new URLSearchParams(location.search).get('lz') || .4) };
   // Piso enorme: llega hasta los bordes de la pantalla y al horizonte
   const BW = pw + 40, BD = pd + 60;
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(BW, BD), new THREE.MeshLambertMaterial({ map: grassRep(BW, BD), color: kind === 'patio' ? '#B9CFA0' : '#FFFFFF' }));
