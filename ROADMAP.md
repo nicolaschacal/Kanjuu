@@ -102,9 +102,6 @@ Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. El arte definitivo queda p
 - ✅ Distribución orgánica: cada criatura nueva va a la casilla más alejada de las demás
 - ✅ Criaturas de papel con silueta por tipo 五行, ojos grandes, sombra cel y kanji con pincel
 - ✅ Arena 3D: patio de templo de noche, torii, faroles de papel, escenario de madera; ataques con proyectil del color del tipo, onda de impacto y anillo de objetivo
-- ✅ Interfaz de Rebyters adaptada: HUD con reloj del mundo, billetera con aviso de tinta para recoger, misiones con progreso, barra flotante (Usuario · Fusión · Arena · Viajes · Atlas) y panel de Usuario con repaso, Academia, tienda, inventario, cuenta y ajustes
-- ✅ Editor de la isla (botón Editar): KANJŪ y objetos para poner, mover, guardar, mejorar o vender; ampliar la isla desde ahí
-- ✅ Cielo de Rebyters (mañana, día, atardecer y noche según la hora) con nubes low-poly; la escena ocupa toda la pantalla
 - 🔜 Ficha de criatura con escena 3D
 - ⬜ Criaturas ilustradas por familia con 3 etapas visuales y animaciones idle/feliz/triste
 - ⬜ Fondos del santuario por hábitat, día/noche según la hora real

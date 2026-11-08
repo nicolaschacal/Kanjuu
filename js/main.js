@@ -10,13 +10,12 @@ import { openAcademy, acadDue, reviewAcademy, DAILY_GOAL } from './academy.js';
 import { openAISettings, aiStatus } from './ai.js';
 import { startTutorial, emit } from './tutorial.js';
 import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
-import { viewHome, harvest, openStorage } from './sanctuary.js';
-import { hourNow } from './scene3d.js';
+import { viewHome } from './sanctuary.js';
 import { viewLab } from './lab.js';
 import { viewExp, fmt } from './trips.js';
 import { viewDex, openQuests } from './atlas.js';
 import { viewShop, openLogin } from './shop.js';
-import { acadCtx, allDue, openDojo } from './dojo.js';
+import { acadCtx } from './dojo.js';
 import { openAccount, authWall } from './account.js';
 
 export const $ = (s, r = document) => r.querySelector(s);
@@ -65,35 +64,28 @@ export const owned = () => Object.values(S.dex).filter(d => d.owned).length;
 
 export const ui = { tab: 'home' };
 
-// ---------- Shell (HUD y barra como Rebyters) ----------
-// Hora del mundo: la misma que usa la escena (día/noche según la hora local)
-const PERIODS = [[5, 'Noche', 'moon'], [8.5, 'Mañana', 'sunrise'], [17.5, 'Día', 'sun'], [20.5, 'Atardecer', 'sunset'], [24, 'Noche', 'moon']];
-export const period = (h = hourNow()) => PERIODS.find(p => h < p[0]);
-const clockTxt = () => { const h = hourNow(), m = Math.round((h % 1) * 60); return `${String(Math.floor(h) % 24).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`; };
-const NAV = [['me', 'user', 'Usuario'], ['lab', 'fusion', 'Fusión'], ['arena', 'swords', 'Arena'], ['exp', 'compass', 'Viajes'], ['dex', 'book', 'Atlas']];
+// ---------- Shell ----------
 export function shell() {
   app.innerHTML = `
   <header class="hud">
-    <div class="hud-l" id="hudL"></div>
+    <button class="hud-me" id="rankBtn" aria-label="Menú">
+      <span class="me-seal"><i>守</i></span>
+      <span class="me-txt"><b>Guardián <em id="rankN">${S.rank.lv}</em></b><span class="me-bar"><i id="rankBar" style="width:${S.rank.xp / rankNeed(S.rank.lv) * 100}%"></i></span></span>
+      <span class="me-menu">${ic('menu')}</span>
+    </button>
     <div class="hud-r">
-      <div class="w-wallet">
-        <button class="w-cell" id="inkBtn" aria-label="Tinta"><i class="w-coin">${ic('ink')}</i><span class="w-num"><b id="ink">${S.ink}</b><small id="inkSub">墨 tinta</small></span><em class="w-pend" id="inkPend"></em></button>
-        <button class="w-cell" id="shopBtn" aria-label="Tienda"><i class="w-tix">${ic('ticket')}</i><span class="w-num"><b id="tix">${S.tickets}</b><small>札 boletos</small></span></button>
-      </div>
-      <button class="w-daily" id="questBtn" aria-label="Misiones de hoy"><span class="wd-badge" id="questIc">${ic('list')}</span><span class="wd-copy"><b>Misiones</b><small id="questTxt"></small><span class="wd-pips" id="questPips"></span></span>${ic('right', 'wd-go')}</button>
+      <button class="wallet-p" id="shopBtn" aria-label="Tienda"><span class="wc">${ic('ink', 'ink')}<b id="ink">${S.ink}</b></span><span class="wc">${ic('ticket', 'tix')}<b id="tix">${S.tickets}</b></span></button>
+      <button class="quest-card" id="questBtn" aria-label="Misiones de hoy"><span class="qc-ic">${ic('list')}</span><span class="qc-t"><b>Misiones</b><small id="questTxt"></small></span><b class="qc-n" id="questN"></b></button>
     </div>
   </header>
   <main id="view"></main>
-  <nav class="tabs">${NAV.map(([id, k, l]) => `<button data-tab="${id}" class="${id === 'arena' ? 'center' : ''}"><i>${ic(k)}</i><span>${l}</span></button>`).join('')}</nav>
+  <nav class="tabs">${[['home', 'torii', 'Santuario'], ['lab', 'fusion', 'Fusión'], ['arena', 'swords', 'Arena'], ['exp', 'compass', 'Viajes'], ['dex', 'book', 'Atlas']]
+      .map(([id, k, l]) => `<button data-tab="${id}" class="${ui.tab === id ? 'on' : ''} ${id === 'arena' ? 'center' : ''}"><i>${ic(k)}</i><span>${l}</span></button>`).join('')}</nav>
   <div id="layer"></div>`;
-  app.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
-    buzz(5);
-    if (b.dataset.tab === 'me') return openMenu();
-    ui.tab = ui.tab === b.dataset.tab ? 'home' : b.dataset.tab; go();
-  });
+  app.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { ui.tab = b.dataset.tab; buzz(5); go(); });
   $('#questBtn').onclick = openQuests;
   $('#shopBtn').onclick = () => { ui.tab = 'shop'; buzz(5); go(); };
-  $('#inkBtn').onclick = e => { if (ui.tab === 'home' && totalPending() > 0) return harvest(placed(), e.currentTarget); ui.tab = 'shop'; buzz(5); go(); };
+  $('#rankBtn').onclick = openMenu;
   go();
 }
 export function go() {
@@ -103,74 +95,39 @@ export function go() {
   ({ home: viewHome, lab: viewLab, exp: viewExp, arena: viewArena, shop: viewShop, dex: viewDex })[ui.tab](v);
   hud();
 }
-function hudLeft() {
-  const L = $('#hudL'); if (!L) return;
-  const mode = ui.tab === 'home' ? 'clock' : 'back';
-  if (L.dataset.mode !== mode) {
-    L.dataset.mode = mode;
-    L.innerHTML = mode === 'clock'
-      ? `<div class="w-clock" title="Hora del santuario"><span class="w-face" id="clkF"></span><span><b id="clkP"></b><small id="clkT"></small></span></div>`
-      : `<button class="w-back" id="backBtn">${ic('left')}<span>Isla</span></button>`;
-    $('#backBtn', L) && ($('#backBtn', L).onclick = () => { ui.tab = 'home'; buzz(5); go(); });
-  }
-  if (mode === 'clock') {
-    const [, name, icon] = period(), f = $('#clkF', L);
-    if (f.dataset.i !== icon) { f.dataset.i = icon; f.innerHTML = ic(icon); f.className = 'w-face ' + icon; }
-    $('#clkP', L).textContent = name; $('#clkT', L).textContent = clockTxt();
-  }
-}
 export function hud() {
-  hudLeft();
   $('#ink').textContent = S.ink;
+  const rb = $('#rankBar'); if (rb) { rb.style.width = S.rank.xp / rankNeed(S.rank.lv) * 100 + '%'; $('#rankN').textContent = S.rank.lv; }
   rollDaily();
   const ready = MISSIONS.filter(m => (S.daily.p[m.id] || 0) >= m.goal && !S.daily.claimed.includes(m.id)).length
     + WEEKLY.filter(m => (S.weekly.p[m.id] || 0) >= m.goal && !S.weekly.claimed.includes(m.id)).length;
+  $('#questN').textContent = ready || '';
   $('#questBtn').classList.toggle('hot', !!ready);
-  $('#questIc').innerHTML = ic(ready ? 'gift' : 'list');
   const tix = $('#tix'); if (tix) tix.textContent = S.tickets;
   const done = MISSIONS.filter(m => (S.daily.p[m.id] || 0) >= m.goal).length;
   const qt = $('#questTxt'); if (qt) qt.textContent = ready ? `${ready} para cobrar` : `${done}/${MISSIONS.length} hoy`;
-  $('#questPips').innerHTML = MISSIONS.map(m => `<i class="${S.daily.claimed.includes(m.id) ? 'claimed' : (S.daily.p[m.id] || 0) >= m.goal ? 'done' : ''}"></i>`).join('');
-  // La tinta producida se avisa sobre la tinta: tocarla la recoge
-  const pend = totalPending(), pe = $('#inkPend'), ib = $('#inkBtn');
-  pe.textContent = pend ? `+${pend}` : ''; ib.classList.toggle('ready', !!pend && ui.tab === 'home'); ib.classList.toggle('full', placed().some(full));
-  $('#inkSub').textContent = pend && ui.tab === 'home' ? 'tocá para recoger' : `墨 · ${totalRate()}/h`;
   const expDone = S.creatures.some(c => c.away && Date.now() >= c.away.end);
   app.querySelector('[data-tab=exp]')?.classList.toggle('dot', expDone);
   const ar = S.arena; app.querySelector('[data-tab=arena]')?.classList.toggle('dot', !!ar && (ar.chests.some((c, i) => i === 0 && c.pts >= ({ wood: 6, silver: 12, gold: 24 })[c.t]) || ROAD.some(r => ar.best >= r.at && !ar.road.includes(r.at))));
   app.querySelector('[data-tab=dex]')?.classList.toggle('dot', ACHIEVEMENTS.some(a => a[2]() && !S.ach.includes(a[0])));
-  app.querySelector('[data-tab=me]')?.classList.toggle('dot', allDue() > 0 || (S.acad?.day?.xp || 0) < DAILY_GOAL);
   save();
 }
 const ICONS = { '店': 'bag', '旅': 'compass', '錬': 'fusion', '闘': 'swords', '図': 'book' };
-// Usuario: todo lo del jugador en un panel (rango, repaso, Academia, Tienda, inventario, cuenta y ajustes)
+// Menú: rango, Academia, Tienda, Cuenta y ayuda de lectura
 export function openMenu() {
-  const need = rankNeed(S.rank.lv), due = allDue(), acadXp = S.acad?.day?.xp || 0;
-  const row = (id, icon, t, sub, badge = '', hot = false) => `<button class="row-k ${hot ? 'hot' : ''}" id="${id}"><span class="row-ic">${ic(icon)}</span><span class="row-t"><b>${t}</b><small>${sub}</small></span>${badge ? `<b class="row-n">${badge}</b>` : ''}${ic('right', 'chev')}</button>`;
-  const m = modal(`<div class="me-head"><span class="me-avatar">${ic('user')}</span><div class="me-id"><small>${cloud.user ? esc(cloud.user.email) : 'Jugador'}</small><b>Guardián ${S.rank.lv}</b><span class="me-xp"><i style="width:${S.rank.xp / need * 100}%"></i></span><small>${S.rank.xp}/${need} para el próximo rango</small></div></div>
-    <div class="me-stats"><span><b>${owned()}</b><small>Kanji</small></span><span><b>${S.creatures.length}</b><small>KANJŪ</small></span><span><b>${S.arena?.best || 0}</b><small>Copas</small></span></div>
-    <p class="me-label">Estudio</p>
+  const need = rankNeed(S.rank.lv);
+  const m = modal(`<div class="sh-head"><span class="sh-seal"><i>守</i></span><div class="sh-t"><b>Guardián ${S.rank.lv}</b><small>${S.rank.xp}/${need} para el próximo rango</small></div></div>
+    <div class="bar-k"><i style="width:${S.rank.xp / need * 100}%"></i></div>
+    <p class="muted">Subís de rango entrenando, repasando, recogiendo tinta y descubriendo kanji.</p>
     <div class="menu-list">
-      ${row('mDojo', 'refresh', due ? 'Repasar' : 'Repaso al día', due ? 'Kanji, kana y vocabulario para hoy' : 'No hay nada pendiente: volvé mañana', due || '', !!due)}
-      ${row('mAcad', 'cap', 'Academia', `Meta de hoy: ${Math.min(acadXp, DAILY_GOAL)}/${DAILY_GOAL} XP`, '', acadXp < DAILY_GOAL)}
-    </div>
-    <p class="me-label">Santuario</p>
-    <div class="menu-list">
-      ${row('mShop', 'bag', 'Tienda', 'Invocar, decorar, islas y piezas')}
-      ${row('mInv', 'box', 'Inventario', 'Piezas de evolución y consumibles')}
-    </div>
-    <p class="me-label">Cuenta y ajustes</p>
-    <div class="menu-list">
-      ${row('mAcct', 'user', 'Cuenta', cloud.user ? 'Guardado en la nube y seguridad' : 'Guardado en la nube y seguridad')}
-      ${row('mAI', 'sparkles', 'Inteligencia artificial', 'Tu clave para cuentos y explicaciones')}
+      <button class="row-k" id="mAcad"><span class="row-ic">${ic('cap')}</span><span class="row-t"><b>Academia</b><small>Lecciones de kana, vocabulario y gramática</small></span>${ic('right', 'chev')}</button>
+      <button class="row-k" id="mShop"><span class="row-ic">${ic('bag')}</span><span class="row-t"><b>Tienda</b><small>Invocar, decorar, edificios y piezas</small></span>${ic('right', 'chev')}</button>
+      <button class="row-k" id="mAcct"><span class="row-ic">${ic('user')}</span><span class="row-t"><b>Cuenta</b><small>${cloud.user ? esc(cloud.user.email) : 'Guardado en la nube y seguridad'}</small></span>${ic('right', 'chev')}</button>
       <label class="row-k"><span class="row-ic">${ic('kana')}</span><span class="row-t"><b>Ayuda de lectura</b><small>Furigana sobre los kanji de la interfaz</small></span><input type="checkbox" class="sw" id="mFuri" ${helpOn() ? 'checked' : ''}></label>
-    </div>`, 'me-sheet');
-  $('#mDojo', m).onclick = () => { m.close(); openDojo(); };
+    </div>`);
   $('#mAcad', m).onclick = () => { m.close(); openAcademy(acadCtx()); };
   $('#mShop', m).onclick = () => { m.close(); ui.tab = 'shop'; go(); };
-  $('#mInv', m).onclick = () => { m.close(); openStorage('evo'); };
   $('#mAcct', m).onclick = () => { m.close(); openAccount(); };
-  $('#mAI', m).onclick = () => { m.close(); openAISettings(modal, toast, () => {}); };
   $('#mFuri', m).onchange = e => { setHelp(e.target.checked); go(); };
 }
 // Encabezado común de pantalla: sello con kanji · título · una línea · dato a la derecha
