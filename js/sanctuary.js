@@ -15,7 +15,7 @@ import { openCreature } from './sheet.js';
 import { allDue, openDojo, acadCtx } from './dojo.js';
 import { webgl, mountScene, emoteAt, hopAll, poke, setFocus } from './scene3d.js';
 import { openTraining } from './sheet.js';
-import { TYPES, typeOf } from './data.js';
+import { TYPES, typeOf, gradeTag } from './data.js';
 
 // ---------- Santuario (grilla de tiles) ----------
 let idleT, build = false, placing = null, seenGoal = '', focusId = null;
@@ -73,7 +73,7 @@ function focusHTML(c) {
   const K = KANJI[c.k], t = TYPES[typeOf(c.k)];
   return `<div class="focus-card" style="--t:${t.col}">
     <button class="fc-x" id="fcX" aria-label="Volver a la isla">${ic('x')}</button>
-    <div class="fc-top"><span class="fc-k">${c.k}</span><div class="fc-info"><b>${K.m}</b><small><span class="fc-t">${t.k} ${t.name}</span> · Nv ${c.lv}${c.stars ? ' · ' + '★'.repeat(c.stars) : ''}</small>
+    <div class="fc-top"><span class="fc-k">${c.k}</span><div class="fc-info"><b>${K.m}</b><small>${gradeTag(c.k, 'short')} <span class="fc-t">${t.k} ${t.name}</span> · Nv ${c.lv}/${MAX_LV}${c.stars ? ' · ' + '★'.repeat(c.stars) : ''}</small>
       <div class="fc-bars"><span title="EXP"><i style="width:${c.exp / expNeed(c.lv) * 100}%"></i></span><span class="b" title="Ánimo"><i style="width:${c.mood * 100}%"></i></span></div></div></div>
     <div class="fc-acts"><button class="fc-a main" id="fcTrain">${ic('target')}Entrenar</button><button class="fc-a" id="fcPet">${ic('heart')}Mimar</button><button class="fc-a" id="fcSheet">${ic('book')}Ficha</button></div>
   </div>`;
@@ -265,7 +265,7 @@ export function storedMenu(it, parent) {
   const why = !capOk ? (isObj ? `La isla ya tiene ${objCap()} objetos. Guardá uno o ampliá la isla.` : `Ocupa ${slot(it)} ${slot(it) === 1 ? 'plaza' : 'plazas'} y en la isla quedan ${free} de ${monCap()}. Guardá uno o ampliá la isla.`)
     : spot ? '' : 'No hay lugar libre de ese tamaño. Ampliá la isla o guardá algo.';
   const m = modal(`<h3>${isObj ? `${OBJS[it.t].k} ${OBJS[it.t].name}` : egg ? '卵 Huevo misterioso' : `${it.k} · ${KANJI[it.k].m}`}</h3>
-    ${egg ? '<p class="muted">Colocalo en la isla y tocalo 3 veces para que nazca.</p>' : isObj ? '' : `<p class="muted">Nivel KANJŪ ${slot(it)} · ocupa ${slot(it)} ${slot(it) === 1 ? 'plaza' : 'plazas'} (${monCap() - shownMons()} libres)</p>`}
+    ${egg ? '<p class="muted">Colocalo en la isla y tocalo 3 veces para que nazca.</p>' : isObj ? '' : `<p class="muted">${gradeTag(it.k)} · ocupa ${slot(it)} ${slot(it) === 1 ? 'plaza' : 'plazas'} (${monCap() - shownMons()} libres)</p>`}
     <div class="menu-acts">
     <button class="btn ok" id="put" ${spot && capOk ? '' : 'disabled'}>✥ Colocar en la isla</button>
     ${isObj ? `<button class="btn ghost" id="sell">Vender · +${sellValue(it)} 墨</button>` : egg ? '' : `<button class="btn ghost" id="see">Ver ficha</button><button class="btn ghost" id="free" ${S.creatures.filter(c => !c.egg).length <= 1 ? 'disabled' : ''}>放 Liberar</button>`}</div>

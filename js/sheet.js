@@ -13,7 +13,7 @@ import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCos
 import { $, buzz, esc, home, ui, go, hud, toast, modal, floatText } from './main.js';
 import { rankUp } from './sanctuary.js';
 import { STROKES } from './strokes.js';
-import { PIECES, isPiece, TYPES, typeOf } from './data.js';
+import { PIECES, isPiece, TYPES, typeOf, gradeTag } from './data.js';
 
 // ---------- Hoja de criatura ----------
 export function openCreature(id) {
@@ -24,11 +24,11 @@ export function openCreature(id) {
   const m = modal(`
     <div class="cr-top" style="--el:${fill}">
       <button class="cr-art" id="pet">${creatureSVG(c.k, { mood: c.mood, gold: c.gold })}${c.acc ? `<span class="acc-hat big">${c.acc}</span>` : ''}</button>
-      <div class="cr-name"><span class="big-k">${c.k}</span><div><b>${K.m}</b><small><b class="tbadge" style="--t:${TYPES[typeOf(c.k)].col}">${TYPES[typeOf(c.k)].k} ${TYPES[typeOf(c.k)].name}</b> fuerte contra ${TYPES[TYPES[typeOf(c.k)].beats].k} · ${ELEMENTS[element(c.k)][2]} · Nivel KANJŪ ${kLevel(c.k)}${c.gen ? ` · Gen ${c.gen}` : ''}</small></div></div>
+      <div class="cr-name"><span class="big-k">${c.k}</span><div><b>${K.m}</b>${gradeTag(c.k)}<small><b class="tbadge" style="--t:${TYPES[typeOf(c.k)].col}">${TYPES[typeOf(c.k)].k} ${TYPES[typeOf(c.k)].name}</b> fuerte contra ${TYPES[TYPES[typeOf(c.k)].beats].k} · ${ELEMENTS[element(c.k)][2]}${c.gen ? ` · Gen ${c.gen}` : ''}</small></div></div>
       <div class="reads"><button class="say" id="say" aria-label="Escuchar">${ic('sound')}</button>${reads(c.k).map((r, i) => `<span class="${i ? 'r2' : 'r1'}" ${i ? `title="Se pide desde maestría 3"` : ''}><b>${K.kun.includes(r) ? '訓' : '音'}</b>${okuHTML(rr(r))}${i && mastery(c.k) < 3 ? ` ${ic('lock')}` : ''}</span>`).join('') || '<span>—</span>'}<span class="mast" title="Maestría">熟 ${'★'.repeat(mastery(c.k))}${'☆'.repeat(Math.max(0, 6 - mastery(c.k)))}</span></div>
     </div>
     <div class="bars">
-      <div class="bar"><label>Lv ${c.lv}${c.lv >= MAX_LV ? ' MAX' : ''}</label><div><i style="width:${c.exp / expNeed(c.lv) * 100}%"></i></div></div>
+      <div class="bar"><label>Nv ${c.lv}<small>/${MAX_LV}</small>${c.lv >= MAX_LV ? ' MAX' : ''}</label><div><i style="width:${c.exp / expNeed(c.lv) * 100}%"></i></div></div>
       <div class="bar bond"><label>絆 ${'♥'.repeat(Math.min(5, c.bond / 10 | 0))}${'♡'.repeat(5 - Math.min(5, c.bond / 10 | 0))}</label><div><i style="width:${c.mood * 100}%"></i></div></div>
     </div>
     <div class="acts a4">
@@ -123,7 +123,7 @@ export function evolveFX(c, to, from = c.acc && KANJI[to].recipes.some(r => r.in
   const fx = document.createElement('div'); fx.className = 'evofx';
   fx.innerHTML = `<div class="rays"></div><div class="parts">${from.map(k => `<span>${k}</span>`).join('')}</div>
     <div class="old">${creatureSVG(from[0])}</div><div class="new">${creatureSVG(to, { mood: 1 })}</div>
-    <div class="evo-cap"><span class="big-k">${to}</span><b>${KANJI[to].m}</b><small>${KANJI[to].on.join('・')} · ${KANJI[to].kun.join('・')}</small><small>${from.join(' + ')} = ${to} · Nivel KANJŪ ${kLevel(to)}</small><p class="evo-mn">知 ${KANJI[to].mn}</p><button class="btn ok">¡Genial!</button></div>`;
+    <div class="evo-cap"><span class="big-k">${to}</span><b>${KANJI[to].m}</b><small>${KANJI[to].on.join('・')} · ${KANJI[to].kun.join('・')}</small><small>${from.join(' + ')} = ${to}</small>${gradeTag(to)}<p class="evo-mn">知 ${KANJI[to].mn}</p><button class="btn ok">¡Genial!</button></div>`;
   if (from[0] === c.k && byId(c.id)) { evolve(c, to); if (settle(c) === 'store') setTimeout(() => toast(`${to} creció y no entra en su lugar: está en el almacén`), 2600); }
   addXP(40);
   document.body.append(fx); buzz([20, 60, 40]); bump('evo');

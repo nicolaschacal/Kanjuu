@@ -212,6 +212,16 @@ export function depth(k) {
   return (memo[k] = r ? 1 + Math.max(...r[0].map(depth)) : 0);
 }
 export const kLevel = k => Math.min(5, depth(k) + 1);
+// Grado: el tipo de kanji según su composición (fijo, 1–5). No confundir con el Nivel (Nv), que sube con EXP hasta MAX_LV.
+export const GRADES = [
+  { n: 'Fundamental', d: 'Componentes fundamentales' },
+  { n: 'Compuesto', d: 'Primera composición' },
+  { n: 'Intermedio', d: 'Composición intermedia' },
+  { n: 'Complejo', d: 'Composición compleja' },
+  { n: 'Avanzado', d: 'Composición avanzada' },
+];
+export const gradeTag = (k, mode = 'full') => { const L = kLevel(k), G = GRADES[L - 1];
+  return `<span class="grade g${L} ${mode}" title="Grado ${L} · ${G.d}"><i>${L}</i>${mode === 'gem' ? '' : mode === 'short' ? `Grado ${L}` : `Grado ${L} · ${G.n}`}</span>`; };
 // Espacios que ocupa una criatura: crecen con su nivel KANJŪ
 export const size = k => kLevel(k);
 

@@ -472,3 +472,25 @@ b,strong{font-weight:700}
 .pn-body .fam,.pn-body .ach{background:var(--paper2)}
 .pn-body .ach{opacity:.75}.pn-body .ach.got,.pn-body .ach.claim{opacity:1;background:var(--paper3)}
 .pn-body .fm i{color:#1A122055}.pn-body .fm i.on{color:var(--line)}
+
+/* 階 Grado del kanji (fijo, 1–5): insignia con color propio, distinta del Nivel (Nv) que sube con EXP */
+.grade{--g:#8C8A7A;display:inline-flex;align-items:center;gap:5px;vertical-align:middle;font-family:var(--f-title);font-size:11.5px;font-weight:800;line-height:1;color:var(--line);background:color-mix(in srgb,var(--g) 18%,#FFF8E8);border:1.5px solid var(--g);border-radius:8px;padding:2px 7px 2px 2px;white-space:nowrap;letter-spacing:0}
+.grade i{width:17px;height:17px;display:grid;place-items:center;background:var(--g);color:#fff;font-style:normal;font-family:var(--f-jp);font-weight:900;font-size:11px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+.grade.g1{--g:#8C8A7A}.grade.g2{--g:#3E9A5A}.grade.g3{--g:#2F7FC1}.grade.g4{--g:#8A4FD1}.grade.g5{--g:#D9951A}
+.grade.g5{background:linear-gradient(90deg,#FFF1C9,#FFE08A);box-shadow:0 0 0 1px #fff8 inset}
+.grade.short{padding-right:6px;font-size:10.5px}
+.grade.gem{position:absolute;right:3px;bottom:3px;padding:0;border:none;background:none}
+.grade.gem i{width:19px;height:19px;font-size:11px;box-shadow:0 1px 0 #0004}
+.tr-th{position:relative}
+.cr-name .grade{display:flex;width:max-content;margin:4px 0 3px}
+.fc-info small .grade{margin-right:2px}
+.evo-cap .grade{margin:6px auto 0}
+h4.gh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+h4.gh .grade{font-size:13px;padding:3px 9px 3px 3px}h4.gh .grade i{width:20px;height:20px;font-size:12px}
+.dex-detail .grade{font-size:13px}
+.bar label small{font-size:.75em;opacity:.6;font-weight:700}
+.grade i{font-family:var(--f-title)!important;font-size:11.5px!important}
+.cr-name .grade{font-size:12px!important}
+.grade.gem{left:auto!important;top:auto!important;right:2px!important;bottom:2px!important;width:auto!important;height:auto!important}
+.loc{white-space:nowrap}
+.pn-body .dex-c.seen small{display:none!important}

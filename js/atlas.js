@@ -1,6 +1,6 @@
 // KANJŪ · atlas.js
 import { ic } from './icons.js';
-import { FAMILIES, PIECES } from './data.js';
+import { FAMILIES, PIECES, GRADES, gradeTag } from './data.js';
 const famReward = f => 30 * f.members.length;import { KANJI, ELEMENTS, REGIONS, DECOR, EXPANSIONS, CAP_STEP, depth, kLevel, size, element, evolutionsOf, evoLevel, learnGate, MAX_LV, reads } from './data.js';
 import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
@@ -23,7 +23,7 @@ export function viewDex(v) {
   if (tab === 'atlas') body = `<p class="eyebrow">Tu colección</p><h2 class="pn-h">Atlas</h2>
     <p class="pn-lead">${owned()} de ${all.length} kanji descubiertos · tocá uno para ver su historia</p>
     <div class="tbar dex-bar"><i style="width:${owned() / all.length * 100}%"></i></div>
-    ${[...new Set(all.map(kLevel))].map(L => `<h4>Nivel KANJŪ ${L} <small>${['Componentes fundamentales', 'Primera composición', 'Composición intermedia', 'Composición compleja', 'Composición avanzada'][L - 1]} · ${all.filter(k => kLevel(k) === L && S.dex[k]?.owned).length}/${all.filter(k => kLevel(k) === L).length}</small></h4>
+    ${[...new Set(all.map(kLevel))].map(L => `<h4 class="gh">${gradeTag(all.find(k => kLevel(k) === L))}<small>${GRADES[L - 1].d} · ${all.filter(k => kLevel(k) === L && S.dex[k]?.owned).length}/${all.filter(k => kLevel(k) === L).length}</small></h4>
     <div class="dex-grid">${all.filter(k => kLevel(k) === L).map(k => {
       const d = S.dex[k];
       return `<button class="dex-c ${d?.owned ? 'own' : d?.seen ? 'seen' : 'lock'}" data-k="${k}">${d?.owned ? creatureSVG(k) : d?.seen ? `<span class="sil">${k}</span>` : `<span class="lk">${ic('lock')}</span>`}<small>${d?.owned || d?.seen ? k : ''}</small>${d?.owned ? `<i class="mdots">${'●'.repeat(Math.min(6, mastery(k)))}</i>` : ''}</button>`;
@@ -48,7 +48,7 @@ export function viewDex(v) {
     const K = KANJI[k];
     modal(`<div class="dex-detail">${d.owned ? creatureSVG(k) : `<span class="sil big">${k}</span>`}
       ${storyHTML(k)}<button class="btn ghost" id="say2">${ic('sound')} Escuchar</button>
-      <p class="muted">Nivel KANJŪ ${kLevel(k)} · composition_depth ${depth(k)}</p>
+      <p>${gradeTag(k)}</p><p class="muted">${GRADES[kLevel(k) - 1].d} · composition_depth ${depth(k)}</p>
       ${K.recipes ? `<p>${K.recipes.map(r => r.join(' + ') + ' = ' + k).join('<br>')}</p>` : '<p class="muted">Componente fundamental</p>'}
       ${evolutionsOf(k).length ? `<p class="muted">Forma parte de: ${evolutionsOf(k).map(t => S.dex[t]?.seen ? t : '？').join(' ')}</p>` : ''}
       ${S.srs[k] ? `<p class="muted">Maestría ${mastery(k)}/6 · aciertos ${S.srs[k].ok} · fallos ${S.srs[k].miss}</p>` : ''}</div>`).querySelector('#say2').onclick = () => speak(reads(k)[0] || '');

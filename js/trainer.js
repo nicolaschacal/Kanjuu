@@ -1,6 +1,6 @@
 // KANJŪ · trainer.js — hoja del Entrenador (como Rebyters): Mochila · KANJŪ · Usuario
 import { ic } from './icons.js';
-import { KANJI, PIECES, kLevel, MAX_LV } from './data.js';
+import { KANJI, PIECES, kLevel, MAX_LV, gradeTag } from './data.js';
 import { creatureSVG } from './creature.js';
 import { S, save, mastery, expNeed } from './state.js';
 import { OBJS, STORE_COSTS, foot, storeFree, arrive, rankNeed, shownObjs, objCap, totalRate } from './world.js';
@@ -49,8 +49,8 @@ function kanTab(v) {
     <p class="pn-lead">${list.length} compañeros · ${owned()}/${Object.keys(KANJI).length} kanji en el Atlas · almacén ${inStore}/${S.storeCap}</p>
     ${S.gate.length ? `<h4>門 Esperando en la puerta</h4><div class="tr-list">${S.gate.map((g, i) => `<div class="tr-card wide"><span class="tr-th">${creatureSVG(g.k, { gold: g.gold })}</span><span class="tr-t"><b>${g.k} · ${KANJI[g.k].m}</b><small>No entra en el almacén</small></span><span class="tr-acts"><button class="btn ok" data-gin="${i}" ${storeFree() > 0 ? '' : 'disabled'}>Recibir</button><button class="btn ghost" data-gout="${i}">+${6 + kLevel(g.k) * 4}墨</button></span></div>`).join('')}</div>` : ''}
     <div class="tr-grid">${list.map(c => { const [k, l, cls] = where(c);
-      return `<button class="tr-card" data-c="${c.id}"><span class="tr-th ${c.gold ? 'gold' : ''}">${creatureSVG(c.k, { egg: c.egg, gold: c.gold, mood: c.mood })}</span>
-        <span class="tr-t"><b>${c.egg ? 'Huevo' : `${c.k} ${KANJI[c.k].m}`}</b><small>${c.egg ? '¿?' : `Nv ${c.lv}${c.lv >= MAX_LV ? ' MAX' : ''}${c.stars ? ' · ' + '★'.repeat(c.stars) : ''}`}</small><em class="loc ${cls}">${k} ${l}</em></span></button>`; }).join('')}</div>
+      return `<button class="tr-card" data-c="${c.id}"><span class="tr-th ${c.gold ? 'gold' : ''}">${creatureSVG(c.k, { egg: c.egg, gold: c.gold, mood: c.mood })}${c.egg ? '' : gradeTag(c.k, 'gem')}</span>
+        <span class="tr-t"><b>${c.egg ? 'Huevo' : `${c.k} ${KANJI[c.k].m}`}</b><small>${c.egg ? '¿?' : `Nv ${c.lv}/${MAX_LV}${c.lv >= MAX_LV ? ' MAX' : ''}${c.stars ? ' · ' + '★'.repeat(c.stars) : ''}`}</small><em class="loc ${cls}">${k} ${l}</em></span></button>`; }).join('')}</div>
     ${more ? `<button class="btn ghost wide" id="moreStore">蔵 +5 lugares en el almacén · ${more} 墨</button>` : ''}</div>`;
   v.querySelectorAll('[data-c]').forEach(b => b.onclick = () => {
     const c = findIt(b.dataset.c); buzz(6);

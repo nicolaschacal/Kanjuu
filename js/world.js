@@ -4,7 +4,7 @@ import { S, addCreature, see, mastery } from './state.js';
 
 // --- La isla: siempre básica; el jugador la decora y la agranda (3 niveles, como en Rebyters) ---
 // Las criaturas ocupan casillas según su nivel (Nv1 1×1, Nv2 2×1, Nv3 2×2…). Cada nivel de isla tiene
-// plazas para KANJŪ: cada uno ocupa tantas plazas como su nivel KANJŪ (un huevo, 1). Isla 5×5 = 5 plazas:
+// plazas para KANJŪ: cada uno ocupa tantas plazas como su grado (1–5) (un huevo, 1). Isla 5×5 = 5 plazas:
 // cinco KANJŪ de nivel 1, o uno de nivel 3 y dos de nivel 1, etc. Los objetos tienen su propio tope.
 export const ISLANDS = [
   { n: 5, mons: 5, objs: 12, cost: 0, rank: 1, name: 'Isla pequeña' },
