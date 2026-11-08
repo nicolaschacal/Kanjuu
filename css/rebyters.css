@@ -219,3 +219,45 @@ body{color:var(--ui-text)}
 .arena-card .ak{background:var(--ui-primary)!important;border:2px solid #FFF7E6!important;box-shadow:var(--ui-shadow-primary)!important}
 .tracks{color:var(--ui-warn)}
 .region .muted{color:var(--ui-text-2)}
+
+/* ---------- Atlas (como el de Rebyters): solo KANJŪ en casillas + linaje ---------- */
+.atl{display:flex;flex-direction:column;gap:16px;padding-bottom:120px}
+.atl-opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.atl-opt{position:relative;height:44px;border-radius:14px;background:var(--ui-hud);border:1px solid var(--ui-line-c);box-shadow:var(--ui-shadow-hud);display:flex;align-items:center;justify-content:center;gap:7px;color:var(--ui-text);font:700 13px var(--f-ui)}
+.atl-opt .ic{width:18px;height:18px;color:var(--ui-accent)}
+.atl-opt em{position:absolute;top:-6px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--ui-accent);color:var(--ui-on-accent);font:800 10px/18px var(--f-ui);font-style:normal;box-sizing:border-box}
+.atl-prog{background:var(--ui-card);border:1px solid var(--ui-line-c);border-radius:16px;padding:12px 14px}
+.atl-prog span{font:600 12px var(--f-ui);color:var(--ui-text-2)}.atl-prog b{color:var(--ui-text);font-weight:800}
+.atl-prog>div{height:6px;border-radius:6px;background:var(--ui-well);margin-top:8px;overflow:hidden}.atl-prog i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#E2A23B,var(--ui-accent))}
+.atl-stage h2{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:0 0 10px;font:800 12px var(--f-ui);letter-spacing:.04em;color:var(--ui-text-2)}
+.atl-stage h2 span{color:var(--ui-accent);font-size:11px}
+.atl-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.atl-card{aspect-ratio:1/1.08;min-width:0;border-radius:14px;background:var(--ui-hud);border:1px solid var(--ui-line-c);box-shadow:var(--ui-shadow-hud);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 4px;color:var(--ui-text);overflow:hidden}
+.atl-card .atl-art{width:62%;aspect-ratio:1;display:flex;align-items:center;justify-content:center}
+.atl-card .atl-art svg{width:100%;height:100%}
+.atl-card b{font:900 15px/1.1 var(--f-jp,'Zen Kaku Gothic New'),sans-serif}
+.atl-card small{font:600 9px/1.2 var(--f-ui);color:var(--ui-text-3);max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.atl-card.locked{background:var(--ui-card);box-shadow:none;border-style:dashed;color:var(--ui-text-3)}
+.atl-card.locked .atl-art{width:36%}.atl-card.locked .atl-art svg{width:22px;height:22px;color:var(--ui-text-3)}
+.atl-card.locked b{font:800 11px var(--f-ui);letter-spacing:.12em}
+.atl-card.active{border-color:var(--ui-line-accent);background:var(--ui-selected),var(--ui-hud);box-shadow:0 0 0 2px rgba(182,58,43,.25),var(--ui-shadow-hud)}
+.atl-back{align-self:flex-start;display:flex;align-items:center;gap:4px;padding:6px 2px;background:none;border:0;color:var(--ui-text-2);font:700 13px var(--f-ui)}
+.atl-back .ic{width:18px;height:18px}
+.atl-title small{font:800 10px var(--f-ui);letter-spacing:.12em;color:var(--ui-text-3)}
+.atl-title h1{margin:4px 0 6px;font:900 30px/1.1 var(--f-jp,'Zen Kaku Gothic New'),sans-serif;color:var(--ui-text)}
+.atl-title h1 span{font:700 16px var(--f-ui);color:var(--ui-text-2)}
+.atl-title p{margin:0;font:500 13px/1.5 var(--f-ui);color:var(--ui-text-2)}
+.atl-story{margin-top:12px;height:38px;padding:0 14px;border-radius:12px;background:var(--ui-hud);border:1px solid var(--ui-line-c);box-shadow:var(--ui-shadow-hud);display:inline-flex;align-items:center;gap:7px;color:var(--ui-text);font:700 13px var(--f-ui)}
+.atl-story .ic{width:17px;height:17px;color:var(--ui-accent)}
+.atl-map{display:flex;flex-direction:column;gap:6px}
+.atl-lv-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:var(--ui-text-2)}
+.atl-lv-label small{font:800 10px var(--f-ui);color:var(--ui-accent)}.atl-lv-label strong{font:800 12px var(--f-ui);letter-spacing:.06em}
+.atl-lv-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.atl-lv-cards .atl-card{aspect-ratio:auto;padding:12px 6px 10px}
+.atl-lv-cards .atl-art{width:78px}
+.atl-lv-cards .atl-card.locked .atl-art{width:78px;height:66px}
+.atl-arrow{height:26px;display:grid;place-items:center;color:var(--ui-text-3)}.atl-arrow .ic{width:20px;height:20px;transform:rotate(90deg)}
+.atl-gens{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 14px}.atl-gens span{padding:6px 10px;border-radius:10px;background:var(--ui-card);border:1px solid var(--ui-line-c);font:600 12px var(--f-ui)}
+.atl-lv{display:block!important;width:100%}
+.atl-arrow{width:100%}
+.atl-grid .atl-card.locked .atl-art{width:40%}
