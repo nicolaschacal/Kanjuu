@@ -217,7 +217,7 @@ pre.spec { margin: 0; background: var(--chip); border: 1px solid var(--line); bo
   <header class="hero">
     <p class="eyebrow">Propuesta para aprobar <span class="ver">v0.2</span></p>
     <h1>Biblia de diseño<span class="jp">漢獣</span></h1>
-    <p class="lede">Cada kanji es una criatura con su propia forma, como en Pokémon o Digimon: 火 es una flamita, 日 un solecito, 月 una media luna. Lo que todos comparten es el kit de la marca: el papel recortado, el pliegue, su kanji a pincel, los ojos y el sello del elemento. Al evolucionar, la forma cambia y conserva un rasgo de sus componentes, para que la familia se reconozca.</p>
+    <p class="lede">Cada kanji es una criatura con su propia forma, como en Pokémon o Digimon: 火 es una flamita, 日 un solecito, 月 una media luna. Lo que todos comparten es el kit de la marca: el papel recortado, el pliegue, su kanji a pincel, los ojos y la paleta de su elemento. Al evolucionar, la forma cambia y conserva un rasgo de sus componentes, para que la familia se reconozca.</p>
     <div class="stage" id="hero"></div>
     <p class="chainline"><span><b>口</b> boca</span><span>×3 → <b>品</b> artículo</span><span>+ 木 → <b>喿</b> piar de pájaros</span><span>+ 氵 → <b>澡</b> lavar</span><span>+ 艹 → <b>藻</b> alga</span><span>La cadena real hasta el grado 5: cinco criaturas distintas, unidas por la caja de 口 y los pajaritos de 喿.</span></p>
   </header>
@@ -253,8 +253,7 @@ pre.spec { margin: 0; background: var(--chip); border: 1px solid var(--line); bo
       <div class="fig" id="anatFig"></div>
       <ol start="4">
         <li><span class="n">4</span><div><h3>Ojos de tinta</h3><p>Un solo estilo para todo el juego y siempre del mismo tamaño, aunque la criatura crezca. Parpadean y siguen tu dedo.</p></div></li>
-        <li><span class="n">5</span><div><h3>Sello del elemento</h3><p>Un hanko rojo con 木 火 土 金 o 水. Confirma el elemento para quien todavía no lee los colores.</p></div></li>
-        <li><span class="n">6</span><div><h3>Paleta y movimiento del elemento</h3><p>Tres tonos por elemento y una forma de moverse quieto. Es lo único del elemento que se impone; la silueta es libre.</p></div></li>
+                <li><span class="n">5</span><div><h3>Paleta y movimiento del elemento</h3><p>Tres tonos por elemento y una forma de moverse quieto. El color basta para leer el elemento, sin carteles ni sellos; la silueta es libre.</p></div></li>
       </ol>
     </div>
   </section>
@@ -295,7 +294,7 @@ pre.spec { margin: 0; background: var(--chip); border: 1px solid var(--line); bo
       <div class="card step"><h3>Elegir el arquetipo</h3><p><b>Objeto vivo</b> si se puede tocar (日 sol, 口 caja). <b>Símbolo con alma</b> si es una idea (止 señal de alto, 正 sello ○). <b>Personaje en acción</b> si es un verbo (休 dormido contra un árbol).</p></div>
       <div class="card step"><h3>Silueta propia</h3><p>Dibujar la forma en negro. Tiene que reconocerse a 64 px y no confundirse con ninguna otra criatura de la camada.</p></div>
       <div class="card step"><h3>Heredar un rasgo</h3><p>Si es compuesto, tomar un rasgo visible de cada componente directo, como máximo dos: las chispas de 火 en 炎, la caja de 口 en 品.</p></div>
-      <div class="card step"><h3>Aplicar el kit</h3><p>Paleta y movimiento de su elemento, pliegue, kanji a pincel, ojos, mejillas y sello. Hojas y tamaño según su grado.</p></div>
+      <div class="card step"><h3>Aplicar el kit</h3><p>Paleta y movimiento de su elemento, pliegue, kanji a pincel, ojos y mejillas. Hojas y tamaño según su grado.</p></div>
       <div class="card step"><h3>Probar</h3><p>Silueta en negro, tamaño 64 px, las seis expresiones y el idle. Si algo falla, se corrige la forma, no se agregan adornos.</p></div>
     </div>
   </section>
@@ -336,7 +335,7 @@ pre.spec { margin: 0; background: var(--chip); border: 1px solid var(--line); bo
         <h3>Qué se dibuja y qué sale solo</h3>
         <ul>
           <li><b>Se dibuja por kanji:</b> la silueta y sus piezas propias. Es un archivo corto por criatura.</li>
-          <li><b>Sale solo del kit:</b> papel, pliegue, grano, kanji, ojos, expresiones, mejillas, sello, paleta, hojas de grado, halo, idle y animaciones.</li>
+          <li><b>Sale solo del kit:</b> papel, pliegue, grano, kanji, ojos, expresiones, mejillas, paleta, hojas de grado, halo, idle y animaciones.</li>
           <li>El elemento y el grado ya están en el juego (salen del árbol de composición); el diseño no los decide.</li>
           <li>Ritmo esperado: 8–12 criaturas por turno de trabajo del equipo. Los 101 kanji actuales y las 16 piezas, en unas dos semanas de turnos.</li>
         </ul>
@@ -379,7 +378,6 @@ export default {
       <div class="card"><h3>Estilo de ojos</h3><p>Ojo de papel: disco blanco con pupila de tinta que sigue tu dedo. Es el más "papel" y el que mejor anima.</p><span class="rec">Papel</span></div>
       <div class="card"><h3>Color por tipo</h3><p>Pasar de 17 colores de sub-elemento a 5 paletas de tipo 五行.</p><span class="rec">Sí</span></div>
       <div class="card"><h3>El pliegue como firma</h3><p>Todas las criaturas dobladas una vez por la mitad, con el lado derecho más oscuro.</p><span class="rec">Sí</span></div>
-      <div class="card"><h3>Sello hanko del elemento</h3><p>Visible siempre; se oculta en tamaños menores a 48 px.</p><span class="rec">Sí</span></div>
       <div class="card"><h3>Un diseño por kanji, sin etapas</h3><p>Evolucionar ya convierte la criatura en otro kanji con otra forma. Las estrellas y la variante dorada cambian detalles, no el dibujo.</p><span class="rec">Sí</span></div>
     </div>
   </section>
@@ -588,7 +586,6 @@ export default {
         </g>
         <text x="${kx}" y="${ky}" text-anchor="middle" dominant-baseline="central" font-family="'Yuji Syuku', 'Hiragino Mincho ProN', serif" font-size="${ks}" fill="${INK}" transform="rotate(-4 ${kx} ${ky})">${k}</text>
         ${face}
-        <g transform="translate(${hx} ${hy}) rotate(-8)"><rect x="-6.5" y="-6.5" width="13" height="13" rx="2.2" fill="${RED}" stroke="${W}" stroke-width="1.8" paint-order="stroke"/><text x="0" y=".5" text-anchor="middle" dominant-baseline="central" font-family="'Yuji Syuku', serif" font-size="9.5" fill="${W}">${t.k}</text></g>
         ${x.front || ''}
       </g></g></g>
     </svg>`;
