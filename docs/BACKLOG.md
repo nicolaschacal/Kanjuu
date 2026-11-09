@@ -8,8 +8,9 @@ El estado de cada tarea vive en GitHub: rama `sprint-NN/ID-…` y su pull reques
 
 ### S1-01 · Infraestructura de idiomas (español + inglés)
 - `js/i18n.js` con `t('clave', vars)`, plurales con `Intl.PluralRules`
-- `locales/es.json` y `locales/en.json`
-- Idioma automático según el dispositivo; selector en Configuración; se guarda junto con la partida
+- `locales/es.json` (español neutro con tú), `locales/es-rp.json` (variante Río de la Plata con voseo, solo las claves que cambian; el resto cae a `es`) y `locales/en.json`
+- Los textos actuales con voseo se mueven a `es-rp` y se reescriben con tú en `es`
+- Idioma automático según el dispositivo (Uruguay y Argentina → Río de la Plata); selector en Configuración; se guarda junto con la partida
 - Traducir la **interfaz de primer nivel**: HUD, barra inferior, Configuración y los títulos de cada hoja. El resto se migra en tareas siguientes
 - Script `tools/check_i18n.mjs` que detecta claves faltantes entre idiomas
 

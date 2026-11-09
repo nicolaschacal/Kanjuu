@@ -75,7 +75,7 @@ El juego sale en **español e inglés**; portugués queda para después del lanz
 9. ⬜ Revisión del inglés por un hablante nativo antes del lanzamiento
 10. ⬜ Portugués (Brasil) después del lanzamiento
 
-Decisión pendiente: el español actual usa voseo (tocás, respondés). Para todo el mercado hispano conviene un español neutro con tú; se puede ofrecer el voseo como variante "Español (Río de la Plata)".
+**Decidido (9 de noviembre de 2026):** el español base es **neutro, con tú** (toca, responde, elige). El voseo actual pasa a ser la variante **"Español (Río de la Plata)"** (`es-419-rp`), seleccionable en Configuración y elegida automáticamente en Uruguay y Argentina. Inglés base: `en`.
 
 ## 3. Diseño de criaturas — FASE 2 (aprobar antes de producir)
 - 🔜 **Propuesta de sistema visual:** silueta por tipo 五行 (木 vertical y orgánica, 火 puntiaguda, 土 baja y pesada, 金 angular, 水 fluida), kanji a pincel sobre el cuerpo, ojos grandes, sombra cel, textura de papel
@@ -244,3 +244,4 @@ Por qué estos números: Duolingo Super ronda los USD 13 al mes; KANJŪ es más 
 - **Modelo principal:** suscripción KANJŪ Plus centrada en el tutor IA; pase, expansiones y jade como complementos (§8)
 - **Expansiones:** agregan kanji nuevos, temáticos y fuera del currículo JLPT; el camino para aprender japonés sigue siendo gratis (§8)
 - **Precios:** fijados en §8, a revisar tras el soft launch
+- **Idiomas:** español neutro con tú como base, voseo como variante Río de la Plata, e inglés (§2b)

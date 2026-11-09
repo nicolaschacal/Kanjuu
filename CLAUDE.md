@@ -19,14 +19,14 @@ Antes de trabajar, leer: `docs/SPRINTS.md` (proceso), `docs/BACKLOG.md` (qué ha
 - El juego enseña kanji reales: recetas de fusión verificadas con KanjiVG (`docs/NIVELES.md`); cada criatura muestra solo lecturas exactas de su kanji (`docs/LECTURAS.md`).
 - Nunca vender kanji del currículo central, evoluciones, maestría ni ventaja en la Arena. Sin anuncios. Público: todos (ver `ROADMAP.md` §8 y §9).
 - Sin rachas punitivas, sin energía que bloquee jugar.
-- **Idiomas:** español e inglés. Una vez que exista `js/i18n.js`, todo texto nuevo va con `t()` y en ambos diccionarios.
+- **Idiomas:** español neutro con tú (base), variante Río de la Plata con voseo, e inglés. Una vez que exista `js/i18n.js`, todo texto nuevo va con `t()` y en ambos diccionarios.
 - La furigana en la interfaz es necesaria y se puede apagar; no quitarla.
 - Íconos estilo sistema operativo, no emojis.
 
 ## Calidad
 - Probar en viewport de teléfono (390 × 844) con Playwright: sin errores de consola y con el flujo cambiado funcionando.
 - Respetar "reducir movimiento" y el rendimiento en teléfonos (sin trabajo por cuadro innecesario).
-- Mensajes de commit y textos de PR en español.
+- Textos del juego en español neutro con tú. Mensajes de commit y textos de PR en español.
 
 ## Equipo (`.claude/agents/`)
 La sesión principal es el **director**: planifica, reparte y vigila que nadie se vaya por las ramas. Roles: `integrador` (código), `disenador-gui` (interfaz), `educador` (aprendizaje), `artista-2d` (arte), `revisor` (verificación independiente).
