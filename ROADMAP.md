@@ -11,7 +11,7 @@ Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. Revisado el 9 de noviembre
 | 3 | **Economía instrumentada** | Antes de tocar retención o cobrar hay que medir fuentes y sumideros y validar en servidor |
 | 4 | **Retención** | Recompensa de regreso, temporadas gratuitas, notificaciones, social liviano |
 | 5 | **Empaquetado nativo y tiendas** | Capacitor, requisitos legales, TestFlight / prueba interna |
-| 6 | **Monetización** | Recién con retención D7 validada y anti-trampas; se lanza con el soft launch |
+| 6 | **Monetización** | KANJŪ Plus con tutor IA; recién con retención D7 validada y anti-trampas; se lanza con el soft launch |
 
 Santuario (con su modo editor) y Arenas están **cerrados**: diseño aprobado e implementado. Solo reciben ajustes.
 
@@ -88,7 +88,7 @@ Siguiente, en orden:
 ### Principios
 - **Estudiar rinde más que esperar:** la tinta por aprendizaje debe superar a la idle en todo perfil de jugador
 - **Máximo 3 monedas visibles** al principio (tinta, boletos y, más adelante, jade 玉); el resto se muestra al desbloquearse
-- **Todo kanji y toda evolución se consiguen gratis**; el dinero nunca acelera el aprendizaje
+- **Todo kanji del currículo central (JLPT N5 → N1) y toda evolución se consiguen gratis**; el dinero nunca acelera el aprendizaje (las expansiones suman kanji temáticos fuera de ese currículo, ver §8)
 
 ### Tareas
 1. 🔜 **Telemetría de economía:** cada evento de tinta/boletos/piezas con fuente y sumidero; panel de saldo medio por día de juego
@@ -135,7 +135,7 @@ Siguiente, en orden:
 - ⬜ Analítica de producto (embudo de onboarding, eventos del loop) y reporte de errores (Sentry)
 - ⬜ Íconos, splash, capturas y video para las tiendas
 - ⬜ Política de privacidad y términos; etiquetas de privacidad (App Store) y seguridad de datos (Play)
-- ⬜ Clasificación por edad (IARC); decidir si apunta a menores (afecta anuncios y COPPA / Families)
+- ⬜ Clasificación por edad (IARC) y flujo de audiencia mixta: pantalla de edad y consentimiento parental (ver §9)
 - ⬜ Accesibilidad: tamaño de texto, contraste, sin animaciones
 - ⬜ Localización: español, inglés, portugués
 - ⬜ TestFlight y prueba interna de Play con 20–50 jugadores; soft launch en 1–2 países antes del lanzamiento global
@@ -144,33 +144,85 @@ Siguiente, en orden:
 
 ## 8. Monetización — FASE 6 (ética, después de validar retención)
 
+### El mecanismo central: KANJŪ Plus (como Duolingo Super)
+Duolingo no cobra por avanzar: cobra por **aprender mejor y con menos fricción** dentro de un hábito que el jugador ya valora. KANJŪ hace lo mismo. El juego gratis es completo; **Plus es el tutor**.
+
+La palanca más fuerte que tenemos: hoy la IA (cuentos, "¿Por qué?", conversaciones) exige que el jugador traiga su propia clave, algo que casi nadie hace. **Plus incluye la IA lista para usar**, con nuestro servidor pagando un modelo económico. Es lo mismo que Duolingo Max hace con "Explicá mi respuesta" y "Roleplay".
+
+**Qué incluye Plus**
+- **Tutor IA sin clave:** explicación de cada error, conversaciones con tus KANJŪ, cuentos con tus criaturas (con topes diarios generosos)
+- **Taller de errores:** repaso personalizado de lo que más fallás
+- **Curva del olvido personal** y estadísticas de retención
+- **Test de ubicación ilimitados** para saltar unidades
+- **Todas las expansiones** mientras dure la suscripción (lo obtenido se conserva al cancelar)
+- **Pase de temporada premium** incluido
+- **Comodidad, nunca poder:** producción acumula 12 h en vez de 6, una cola extra de viajes, un espacio más de cofre
+- Un estilo de papel exclusivo por mes para una criatura (se conserva)
+
+**Cómo convierte (sin presión)**
+- **Prueba gratis de 7 días**, ofrecida solo en momentos de valor: al terminar una unidad, al fallar y querer la explicación, al terminar un cuento
+- Aviso propio el día 5 de la prueba antes del cobro
+- **Plan anual como opción destacada** (es el que más retiene) y **plan familiar** hasta 6 cuentas
+- El paywall muestra lo logrado ("aprendiste 48 kanji, dominás 12") y lo que Plus suma, nunca lo que el jugador "pierde"
+- Quien prefiera, sigue usando su propia clave de IA gratis (solo adultos, ver §9)
+
 ### Líneas rojas
-- Nunca vender kanji, evoluciones, maestría ni progreso lingüístico
+- Nunca vender kanji del **currículo central** (JLPT N5 → N1 y sus piezas), evoluciones, maestría ni progreso lingüístico
 - Nunca vender ventaja de combate en la Arena (estadísticas, criaturas exclusivas)
 - Sin energía que bloquee jugar ni esperas que solo se saltan pagando
-- **No vender boletos de invocación con dinero real** (evita las regulaciones de cajas de botín, y la invocación da criaturas, que son progreso)
+- **No vender boletos de invocación con dinero real** (regulaciones de cajas de botín, y la invocación da criaturas, que son progreso)
+- **Sin anuncios** de ningún tipo (decisión por ser para todo público, ver §9)
 - Ningún tipo de compra presionada: sin contadores falsos ni ofertas que aparecen al perder
 
-### Productos, por prioridad
-| Producto | Qué da | Precio de referencia |
-|---|---|---|
-| **Pase de temporada premium** | Segunda pista del pase: estilos de papel para criaturas (washi, origami, sumi-e), decoración temática, marco de perfil | USD 4,99 por temporada |
-| **Jade 玉 (moneda premium)** | Cosméticos: estilos de criaturas, temas de isla, tipos de suelo especiales, decoración premium, efectos de ataque en la Arena | Paquetes desde USD 0,99 |
-| **Mecenas del santuario** (suscripción) | Comodidad, nunca poder: producción acumula 12 h en vez de 6, una cola extra de viajes, un espacio más de cofre, tema de isla exclusivo | USD 2,99–3,99 por mes |
-| **Paquetes de expansión** | Regiones con historia, decoración y misiones extra; los kanji que contengan también se consiguen gratis por otra vía | USD 2,99–4,99 |
-| **Paquete de bienvenida** (una sola vez) | Decoración y jade con descuento, disponible la primera semana | USD 1,99 |
-| *Anuncios con recompensa* (decisión pendiente) | Opcionales, máx. 3 por día (duplicar tinta de un viaje); se descartan si el juego apunta a menores | — |
+### Expansiones con kanji nuevos
+Agregan kanji, pero **fuera del currículo central**: kanji temáticos y culturales que no exige ningún nivel JLPT. Así el camino para aprender japonés sigue siendo gratis y la expansión vende algo que da ganas de tener.
+
+- Ejemplos: **Yōkai 妖** (鬼 狐 狸 妖 魅…), **Cocina 食** (鮨 鰻 麺 餅…), **Mar 海** (鯨 鮫 蛸 鯛…), **Mitos y dioses 神**
+- Cada una trae región con historia, familia de criaturas nueva con su cadena de fusión, misiones, una arena temática y decoración
+- Si un kanji de expansión aparece más tarde en el currículo central, pasa a ser gratis para todos (regla escrita, sin excepciones)
+- Se compran sueltas o vienen incluidas en Plus
+
+### Precios (USD; el resto de países con los precios regionales de cada tienda)
+| Producto | Precio |
+|---|---|
+| **KANJŪ Plus mensual** | USD 6,99 |
+| **KANJŪ Plus anual** (destacado) | USD 47,99 (≈ USD 4 al mes, 43% menos) |
+| **KANJŪ Plus familiar anual** (hasta 6) | USD 79,99 |
+| **Pase de temporada premium** (suelto, 6 semanas) | USD 4,99 |
+| **Expansión** (suelta, permanente) | USD 3,99 |
+| **Paquete de bienvenida** (una vez, primera semana) | USD 1,99: 600 jade + decoración |
+| **Jade 玉** | 100 = 0,99 · 550 = 4,99 · 1.200 = 9,99 · 2.600 = 19,99 |
+
+Referencias de diseño: los cosméticos cuestan entre 80 y 600 jade; el pase gratuito regala un poco de jade cada temporada para que todos prueben la tienda.
+
+Por qué estos números: Duolingo Super ronda los USD 13 al mes; KANJŪ es más chico y nuevo, así que va a la mitad. Con la comisión reducida de las tiendas para desarrolladores chicos (15%), el plan anual deja unos USD 3,40 por mes por suscriptor, y el tutor IA con un modelo económico y topes diarios debería costar bastante menos de USD 1 por mes por usuario. **Se revisan tras el soft launch** con datos de conversión y costo real de IA.
 
 ### Tareas
-1. ⬜ Requisitos previos: validación en servidor (§5), cuentas con Apple/Google, política de privacidad
-2. ⬜ Compras in-app con StoreKit / Google Play Billing vía RevenueCat, validación de recibos en servidor
-3. ⬜ Tienda de jade separada de la tienda de tinta, con precios regionales (Uruguay y LatAm)
-4. ⬜ Primer pase de temporada premium junto con la segunda temporada
-5. ⬜ Medir conversión (objetivo 2–4% de pagadores) y que la retención de no pagadores no caiga
+1. ⬜ Requisitos previos: validación en servidor (§5), Sign in with Apple/Google, política de privacidad
+2. ⬜ Proxy de IA en el servidor para Plus: modelo económico, topes diarios, filtro de contenido, medición de costo por usuario
+3. ⬜ Compras y suscripciones con StoreKit / Google Play Billing vía RevenueCat, recibos validados en servidor
+4. ⬜ Paywall de Plus con prueba de 7 días, plan anual destacado y familiar
+5. ⬜ Tienda de jade separada de la tienda de tinta
+6. ⬜ Primera expansión (Yōkai 妖) junto con la segunda temporada
+7. ⬜ Métricas: inicio de prueba → pago (objetivo ≥ 35%), suscriptores sobre activos mensuales (objetivo 3–5%), costo de IA por suscriptor, retención de no pagadores sin caídas
 
 ---
 
-## Decisiones pendientes del director
-- ¿El juego apunta a menores? Define anuncios, clasificación y datos que se pueden pedir
-- Precio exacto del pase y la suscripción tras ver retención en el soft launch
-- Si los paquetes de expansión agregan kanji nuevos o solo historia y cosméticos
+## 9. Público: todo público (decidido)
+"Todo público" significa que habrá menores, así que el juego se diseña como **audiencia mixta**. Hay que confirmar los detalles con un abogado antes de publicar.
+
+- **Clasificación:** apuntar a 4+ en App Store y PEGI 3 / Everyone en Play, completando con cuidado el cuestionario (la IA debe quedar acotada al contenido del juego)
+- **No entrar en la categoría Niños de Apple** (exige restricciones que no aportan); sí cumplir la política de Familias de Google Play porque el público incluye menores
+- **Sin anuncios** y sin identificadores publicitarios: no hace falta pedir permiso de rastreo y se simplifica todo
+- **Pantalla de edad neutral** al crear la cuenta (pedir año de nacimiento sin sugerir respuesta)
+- **Menores de 13:** cuenta creada con el email de un adulto responsable que da su consentimiento (requisito de COPPA en EE. UU.); sin chat libre con IA (sí explicaciones y cuentos con filtro); sin clave de IA propia (los proveedores suelen exigir mayoría de edad); sin funciones sociales abiertas, solo regalos y visitas entre amigos aprobados
+- **Compras de menores:** las controla la tienda (Pedir permiso de Apple, controles parentales de Google); el paywall nunca se muestra en medio de una lección a cuentas de menores
+- **Analítica sin datos personales** para todas las edades
+
+---
+
+## Decisiones del director (9 de noviembre de 2026)
+- **Público:** todo público, diseñado como audiencia mixta y sin anuncios (§9)
+- **Modelo principal:** suscripción KANJŪ Plus centrada en el tutor IA; pase, expansiones y jade como complementos (§8)
+- **Expansiones:** agregan kanji nuevos, temáticos y fuera del currículo JLPT; el camino para aprender japonés sigue siendo gratis (§8)
+- **Precios:** fijados en §8, a revisar tras el soft launch
