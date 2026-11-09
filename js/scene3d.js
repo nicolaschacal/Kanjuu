@@ -304,9 +304,15 @@ function tap(e) {
   E.ray.setFromCamera(new THREE.Vector2((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1), E.W.camera);
   E.W.tap(E.ray);
 }
+// Toque preciso: sólo cuenta si cae sobre el dibujo (no sobre la parte transparente del recorte)
+function opaqueAt(h) {
+  const img = h.object.material?.map?.image; if (!img?.getContext || !h.uv) return true;
+  const x = Math.min(img.width - 1, Math.max(0, h.uv.x * img.width | 0)), y = Math.min(img.height - 1, Math.max(0, (1 - h.uv.y) * img.height | 0));
+  try { return img.getContext('2d').getImageData(x, y, 1, 1).data[3] > 60; } catch { return true; }
+}
 function hitItem(W, ray) {
   const hits = ray.intersectObjects([...W.items.values()].map(o => o.group), true).filter(h => h.object.userData.id);
-  return hits[0]?.object.userData.id;
+  return (hits.find(opaqueAt) || hits[0])?.object.userData.id;
 }
 export function screenOf(id, W = E?.W, foot = false) {
   const o = W?.items.get(id); if (!o) return null;
@@ -850,7 +856,7 @@ function drawEditor(W) {
 // Tus KANJŪ de espaldas abajo a la izquierda, los rivales de frente arriba a la derecha.
 // =====================================================================
 const AW = 5, AJ0 = -1, AJ1 = 8, AOFF = 4, AMID = 4, ALOW = .68; // z = j − AOFF; franja central en z = 0
-const SLOT = { m: [[-.95, 2.25], [-.1, 3.05], [.85, 2.4]], e: [[-1.05, -2.25], [-.1, -3.05], [.95, -2.4]] };
+const SLOT = { m: [[-1.05, 2.5], [0, 2.75], [1.05, 2.5]], e: [[-.95, -2.5], [0, -2.75], [.95, -2.5]] }; // una fila por equipo, sin taparse
 const ARENA_SCENES = [
   // 芽 Arena del Brote → Hanami en Kioto
   { sky: ['#FFF6F3', '#FBE1E3', '#EDBCC8'], sun: ['sol', .3, .7, .08], hemi: ['#FFF2F2', '#7A5E66', 2.1], light: ['#FFE6E0', 2.7, [-6, 12, 5]], base: ['#8E7564', '#7F6A5C', '#715F53'],
@@ -989,10 +995,11 @@ function arena() {
       o.sprite.material.emissive.set(o.flash > 0 ? '#FF3A2A' : '#FFFFFF');
       o.sprite.material.emissiveIntensity = o.flash > 0 ? .5 + o.flash * .6 : .4;
       const down = d.down; o.dn = Math.min(1, Math.max(0, (o.dn || 0) + (down ? dt * 2 : -dt * 4)));
-      o.sprite.rotation.z = -o.dn * 1.35; o.sprite.material.color.setScalar(1 - o.dn * .55); o.blob.material.opacity = 1 - o.dn * .6;
+      // caído: se acuesta de costado sobre el piso (se levanta lo que giró para no hundirse)
+      o.sprite.rotation.z = -o.dn * 1.35; o.sprite.position.y += Math.sin(o.dn * 1.35) * o.size * .42; o.sprite.material.color.setScalar(1 - o.dn * .55); o.blob.material.opacity = 1 - o.dn * .6;
       if (d.target && !down) tgt = o;
     });
-    ring.visible = !!tgt; if (tgt) { ring.position.x = tgt.group.position.x; ring.position.z = tgt.group.position.z; ring.scale.setScalar(tgt.size * .75 * (1 + Math.sin(t * 5) * .06)); }
+    ring.visible = !!tgt; if (tgt) { ring.position.x = tgt.group.position.x; ring.position.z = tgt.group.position.z; ring.scale.setScalar(tgt.size * .62 * (1 + Math.sin(t * 5) * .06)); }
     W.fx = W.fx.filter(f => f(t, dt));
   };
   W.shot = shot; W.wave = wave;
@@ -1006,7 +1013,7 @@ export function mountArena(host, { items, onTap, scene: idx = 0 }) {
   const seen = new Set();
   items.forEach(d => {
     seen.add(d.id); let o = W.items.get(d.id);
-    const size = d.side === 'm' ? 1.95 : 1.7, svg = d.side === 'm' ? backSVG(d.svg) : d.svg;
+    const size = d.side === 'm' ? 1.5 : 1.38, svg = d.side === 'm' ? backSVG(d.svg) : d.svg;
     if (!o || o.svg !== svg) {
       if (o) W.scene.remove(o.group);
       const s = makeSprite(svg, size, d.id); o = { ...s, svg, lunge: o?.lunge, dn: o?.dn }; W.scene.add(o.group); W.items.set(d.id, o);

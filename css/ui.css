@@ -763,3 +763,6 @@ h4.gh .grade{font-size:13px;padding:3px 9px 3px 3px}h4.gh .grade i{width:20px;he
 .duel.d3 .duel-end{position:relative;z-index:4;width:auto;max-width:360px;align-self:center;margin:0 16px;box-sizing:border-box}
 .duel.d3 .duel-end h2{font-size:30px;line-height:1.1;margin:0}
 .duel.d3 .duel-end p{margin:0}
+.ulabel.e{cursor:pointer}
+.ulabel.e[aria-current="true"] .lt{background:#E8452C;color:#fff;border-color:#1A1220}
+.ulabel.e[aria-current="true"] .lt small{color:#FFE1D9}

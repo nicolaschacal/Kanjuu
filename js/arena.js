@@ -122,7 +122,10 @@ function rivalTeam() {
 export function startDuel() {
   const a = A(), mine = myTeam().map(c => ({ c, ...stats(c), max: stats(c).hp })), foes = rivalTeam().map(c => ({ c, ...stats(c), max: stats(c).hp }));
   const rival = RIVALS[Math.random() * RIVALS.length | 0];
-  let combo = 0, special = 0, over = false, busy = false;
+  let combo = 0, special = 0, over = false, busy = false, pick = 0;
+  // Objetivo elegido: tocás un rival para apuntarle; si cae, pasa al siguiente que siga en pie
+  const target = () => foes[pick]?.hp > 0 ? foes[pick] : alive(foes)[0];
+  const aim = j => { if (busy || foes[j]?.hp <= 0 || pick === j) return; pick = j; buzz(8); render(); };
   const w = document.createElement('div'); w.className = 'duel';
   document.body.append(w);
   const alive = s => s.filter(x => x.hp > 0);
@@ -130,45 +133,47 @@ export function startDuel() {
   if (has3d) { w.classList.add('d3'); w.innerHTML = `<div class="duel-stage"><div class="stage-ov"></div></div><div class="duel-ui"></div>`; }
   function render(msg = '') {
     if (has3d) return render3d(msg);
-    const ef = alive(foes)[0];
+    const ef = target();
     w.innerHTML = `<div class="duel-head"><span>${rival} · 杯${Math.max(0, a.cups + Math.round(Math.random() * 60 - 30))}</span><button class="x">✕</button></div>
       <div class="side foes">${foes.map((f, j) => unit(f, true, f === ef)).join('')}</div>
       <div class="duel-mid"><p>${msg || 'Elegí quién ataca'}</p><div class="sp"><i style="width:${special / 3 * 100}%"></i><span>必殺 ${special >= 3 ? '¡LISTO!' : ''}</span></div>${combo >= 2 ? `<b class="combo hot">炎 ${combo}</b>` : ''}</div>
       <div class="side mine">${mine.map(f => unit(f, false)).join('')}</div>`;
     w.querySelector('.x').onclick = () => { if (confirm('¿Rendirte? Perdés copas.')) finish(false); };
     w.querySelectorAll('[data-atk]').forEach(b => b.onclick = () => !busy && attack(mine[+b.dataset.atk]));
+    w.querySelectorAll('[data-tgt]').forEach(b => b.onclick = () => aim(+b.dataset.tgt));
   }
   // Arena 3D: la escena muestra a las criaturas; arriba de cada una, su nombre y vida
   function render3d(msg) {
-    const ef = alive(foes)[0], ui = w.querySelector('.duel-ui'), stage = w.querySelector('.duel-stage'), ov = stage.querySelector('.stage-ov');
+    const ef = target(), ui = w.querySelector('.duel-ui'), stage = w.querySelector('.duel-stage'), ov = stage.querySelector('.stage-ov');
     ui.innerHTML = `<div class="duel-head"><span class="rv"><i>敵</i>${rival}<small>杯${Math.max(0, a.cups + 12)}</small></span><button class="x" aria-label="Rendirse">✕</button></div>
-      <div class="duel-mid"><p>${msg || 'Tocá a uno de tus KANJŪ para atacar'}</p><div class="sp"><i style="width:${special / 3 * 100}%"></i><span>必殺 ${special >= 3 ? '¡LISTO!' : ''}</span></div>${combo >= 2 ? `<b class="combo hot">連 ×${combo}</b>` : ''}</div>`;
+      <div class="duel-mid"><p>${msg || 'Elegí un rival y tocá a tu KANJŪ para atacar'}</p><div class="sp"><i style="width:${special / 3 * 100}%"></i><span>必殺 ${special >= 3 ? '¡LISTO!' : ''}</span></div>${combo >= 2 ? `<b class="combo hot">連 ×${combo}</b>` : ''}</div>`;
     const lab = (f, enemy, j) => {
       const t = TYPES[typeOf(f.c.k)], mult = !enemy && ef ? typeMult(typeOf(f.c.k), typeOf(ef.c.k)) : 1;
-      return `<button class="ulabel ${enemy ? 'e' : 'm'} ${f.hp <= 0 ? 'down' : ''}" data-anchor="${enemy ? 'e' : 'm'}${j}" ${enemy ? '' : 'data-foot'} ${!enemy && f.hp > 0 ? `data-atk="${j}"` : 'disabled'} style="--t:${t.col}">
+      return `<button class="ulabel ${enemy ? 'e' : 'm'} ${f.hp <= 0 ? 'down' : ''}" data-anchor="${enemy ? 'e' : 'm'}${j}" ${enemy ? '' : 'data-foot'} ${f.hp <= 0 ? 'disabled' : enemy ? `data-tgt="${j}"` : `data-atk="${j}"`} ${enemy && f === ef ? 'aria-current="true"' : ''} style="--t:${t.col}">
         <span class="lt"><span class="tb">${t.k}</span><b>${f.c.k}</b><small>Nv${f.c.lv}</small>${!enemy && mult !== 1 && f.hp > 0 ? `<em class="${mult > 1 ? 'up' : 'dn'}">${mult > 1 ? '▲' : '▼'}</em>` : ''}</span>
         <span class="hp"><i style="width:${Math.max(0, f.hp / f.max * 100)}%"></i></span></button>`;
     };
     ov.innerHTML = foes.map((f, j) => lab(f, true, j)).join('') + mine.map((f, j) => lab(f, false, j)).join('');
     const it = (f, side, j) => ({ id: side + j, side, slot: j, svg: creatureSVG(f.c.k, { mood: f.hp / f.max > .3 ? 1 : .2, gold: f.c.gold }), down: f.hp <= 0, target: side === 'e' && f === ef });
-    mountArena(stage, { scene: arenaIdx(a.cups), items: [...foes.map((f, j) => it(f, 'e', j)), ...mine.map((f, j) => it(f, 'm', j))], onTap: id => { if (id[0] === 'm' && !busy && mine[+id[1]].hp > 0) attack(mine[+id[1]]); } });
+    mountArena(stage, { scene: arenaIdx(a.cups), items: [...foes.map((f, j) => it(f, 'e', j)), ...mine.map((f, j) => it(f, 'm', j))], onTap: id => { if (id[0] === 'e') return aim(+id[1]); if (!busy && mine[+id[1]].hp > 0) attack(mine[+id[1]]); } });
     ui.querySelector('.x').onclick = () => { if (confirm('¿Rendirte? Perdés copas.')) finish(false); };
     ov.querySelectorAll('[data-atk]').forEach(b => b.onclick = () => !busy && attack(mine[+b.dataset.atk]));
+    ov.querySelectorAll('[data-tgt]').forEach(b => b.onclick = () => aim(+b.dataset.tgt));
   }
   function fx(fromSel, toSel, cls1, txt, from, to, k) {
     if (!has3d) { hit(fromSel, cls1); hit(toSel, 'shake', txt); return; }
     arenaHit(from, to, TYPES[typeOf(k)].col).then(() => emoteAt(to, txt, 'dmg3d', 950));
   }
   function unit(f, enemy, target) {
-    const t = TYPES[typeOf(f.c.k)], ef = alive(foes)[0];
+    const t = TYPES[typeOf(f.c.k)], ef = target();
     const mult = !enemy && ef ? typeMult(typeOf(f.c.k), typeOf(ef.c.k)) : 1;
-    return `<button class="unit ${f.hp <= 0 ? 'down' : ''} ${target ? 'target' : ''}" ${!enemy && f.hp > 0 ? `data-atk="${mine.indexOf(f)}"` : 'disabled'} data-u="${enemy ? 'e' : 'm'}${(enemy ? foes : mine).indexOf(f)}" style="--t:${t.col}">
+    return `<button class="unit ${f.hp <= 0 ? 'down' : ''} ${target ? 'target' : ''}" ${f.hp <= 0 ? 'disabled' : enemy ? `data-tgt="${foes.indexOf(f)}"` : `data-atk="${mine.indexOf(f)}"`} data-u="${enemy ? 'e' : 'm'}${(enemy ? foes : mine).indexOf(f)}" style="--t:${t.col}">
       <span class="tb">${t.k}</span>${!enemy && mult !== 1 && f.hp > 0 ? `<span class="adv ${mult > 1 ? 'up' : 'down'}">${mult > 1 ? '▲' : '▼'}</span>` : ''}
       ${creatureSVG(f.c.k, { mood: f.hp / f.max > .3 ? 1 : .2, gold: f.c.gold })}<b>${f.c.k}</b><small>Lv${f.c.lv}</small>
       <div class="hp"><i style="width:${Math.max(0, f.hp / f.max * 100)}%"></i></div></button>`;
   }
   async function attack(me) {
-    const foe = alive(foes)[0]; if (!foe || me.hp <= 0) return;
+    const foe = target(); if (!foe || me.hp <= 0) return;
     busy = true;
     const res = await challenge(me.c.k, w);
     const mult = typeMult(typeOf(me.c.k), typeOf(foe.c.k));
