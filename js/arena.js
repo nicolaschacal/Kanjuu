@@ -1,6 +1,6 @@
 // KANJŪ · arena.js — Duelos 3 contra 3 con copas, arenas, cofres que se abren estudiando y camino de copas.
 import { ic } from './icons.js';
-import { webgl, mountArena, arenaHit, emoteAt } from './scene3d.js';
+import { webgl, mountArena, arenaHit, arenaCheer, emoteAt } from './scene3d.js';
 import { KANJI, TYPES, typeOf, typeMult, kLevel, reads, PIECES } from './data.js';
 import { S, save, bump, mastery } from './state.js';
 import { creatureSVG } from './creature.js';
@@ -10,6 +10,8 @@ import { speak } from './games.js';
 import { $, buzz, toast, modal, go, hud, ui } from './main.js';
 import { scrHead } from './main.js';
 
+// Las peleas son siempre 3 contra 3. cap = nivel máximo de los kanji rivales en esa arena.
+// Escenario de cada una (scene3d.js): Hanami · Bambú de Arashiyama · Fushimi Inari · Sapporo · Osaka · Fuji
 export const ARENAS = [
   { k: '芽', name: 'Arena del Brote', min: 0, cap: 1 },
   { k: '林', name: 'Bosque de los Ecos', min: 200, cap: 2 },
@@ -149,7 +151,7 @@ export function startDuel() {
     };
     ov.innerHTML = foes.map((f, j) => lab(f, true, j)).join('') + mine.map((f, j) => lab(f, false, j)).join('');
     const it = (f, side, j) => ({ id: side + j, side, slot: j, svg: creatureSVG(f.c.k, { mood: f.hp / f.max > .3 ? 1 : .2, gold: f.c.gold }), down: f.hp <= 0, target: side === 'e' && f === ef });
-    mountArena(stage, { items: [...foes.map((f, j) => it(f, 'e', j)), ...mine.map((f, j) => it(f, 'm', j))], onTap: id => { if (id[0] === 'm' && !busy && mine[+id[1]].hp > 0) attack(mine[+id[1]]); } });
+    mountArena(stage, { scene: arenaIdx(a.cups), items: [...foes.map((f, j) => it(f, 'e', j)), ...mine.map((f, j) => it(f, 'm', j))], onTap: id => { if (id[0] === 'm' && !busy && mine[+id[1]].hp > 0) attack(mine[+id[1]]); } });
     ui.querySelector('.x').onclick = () => { if (confirm('¿Rendirte? Perdés copas.')) finish(false); };
     ov.querySelectorAll('[data-atk]').forEach(b => b.onclick = () => !busy && attack(mine[+b.dataset.atk]));
   }
@@ -210,11 +212,14 @@ export function startDuel() {
     }
     const ups = addXP(win ? 15 : 5); save();
     const promoted = arenaIdx(a.cups) > ar0;
-    w.innerHTML = `<div class="duel-end ${win ? 'win' : 'lose'}"><h2>${win ? '勝利 ¡Victoria!' : '敗北 Derrota'}</h2>
+    const card = `<div class="duel-end ${win ? 'win' : 'lose'}"><h2>${win ? '勝利 ¡Victoria!' : '敗北 Derrota'}</h2>
       <p class="cupd">${ic('trophy')} ${delta > 0 ? '+' : ''}${delta}</p>
       ${win ? `<p>+${ink} 墨${chest ? ` · ${CHESTS[chest].k} ${CHESTS[chest].name}` : ' · <span class="r">cofres llenos: abrí alguno estudiando</span>'}</p>` : '<p class="muted">Entrená a tus KANJŪ y estudiá sus kanji para atacar más fuerte.</p>'}
       ${promoted ? `<div class="promo"><span>${arenaOf(a.cups).k}</span><b>¡Nueva arena!</b><small>${arenaOf(a.cups).name}</small></div>` : ''}
       <button class="btn ok wide">Continuar</button></div>`;
+    // En 3D el resultado aparece sobre la arena (que sigue viva) y el equipo ganador festeja
+    if (has3d) { w.querySelector('.stage-ov').innerHTML = ''; w.querySelector('.duel-ui').innerHTML = card; arenaCheer(win ? 'm' : 'e'); }
+    else w.innerHTML = card;
     w.querySelector('.btn').onclick = () => { w.remove(); hud(); go(); };
     if (promoted) buzz([30, 80, 30, 80, 60]);
   }

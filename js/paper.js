@@ -332,6 +332,56 @@ Object.assign(SIZE, { suzuri:[200,130], brasero:[180,186], cerca:[220,134], arbo
 /* ---------- Texturas y miniaturas ---------- */
 const CNV = {}, TEXO = {}, URLS = {};
 function bake(id) { const s = SIZE[id], c = mk(s[0], s[1]); DRAW[id](c.getContext('2d')); return paperize(c, RAD[id]); }
+
+/* --- arenas: monumentos y adornos de cada escenario --- */
+const R_ = (x, a, b, w, h, c) => { x.fillStyle = c; x.fillRect(a, b, w, h); };
+Object.assign(DRAW, {
+  fuji: x => {
+    poly(x, [0,420, 300,40, 340,40, 640,420], '#5E7FA6'); poly(x, [300,40, 340,40, 640,420, 470,420], '#4E6E95');
+    poly(x, [300,40, 340,40, 420,140, 392,128, 372,158, 350,132, 326,170, 304,136, 282,160, 262,130, 236,148], '#F7F4EC');
+    poly(x, [340,40, 420,140, 392,128, 372,158, 350,132, 330,60], '#E1E6EE');
+    for (const [cx, cy, r] of [[60,400,46],[150,384,58],[250,404,44],[360,392,56],[470,402,50],[570,388,52],[620,410,30]]) circ(x, cx, cy, r, '#FBF6EC');
+  },
+  reloj: x => {
+    R_(x, 40, 250, 360, 150, '#F4F1EA'); x.fillStyle = '#D9D3C6'; for (let r = 0; r < 9; r++) x.fillRect(40, 262 + r*16, 360, 3);
+    poly(x, [20,256, 220,170, 420,256], '#C8412E'); poly(x, [20,256, 420,256, 410,268, 30,268], '#A83526');
+    for (const px of [70, 140, 270, 340]){ R_(x, px, 290, 34, 56, '#5A6E80'); R_(x, px + 4, 294, 26, 48, '#9FB5C6'); R_(x, px + 15, 294, 4, 48, '#F4F1EA'); }
+    R_(x, 200, 320, 40, 80, '#7A4E32');
+    R_(x, 168, 92, 104, 110, '#F4F1EA'); poly(x, [156,96, 220,40, 284,96], '#C8412E');
+    circ(x, 220, 146, 36, '#2B2320'); circ(x, 220, 146, 31, '#FFFDF6');
+    x.strokeStyle = '#2B2320'; x.lineWidth = 5; x.lineCap = 'round'; x.beginPath(); x.moveTo(220, 146); x.lineTo(220, 124); x.moveTo(220, 146); x.lineTo(236, 150); x.stroke();
+    R_(x, 214, 18, 12, 24, '#2B2320'); poly(x, [208,22, 232,22, 220,6], '#C8412E');
+    poly(x, [150,98, 290,98, 286,88, 154,88], '#FFFFFF'); poly(x, [16,258, 424,258, 410,246, 30,246], '#FFFFFF');
+  },
+  muneco: x => { circ(x, 70, 150, 54, '#FFFFFF'); circ(x, 70, 74, 40, '#FFFFFF'); ell(x, 92, 150, 22, 40, 0, '#E3EAF2'); ell(x, 86, 76, 14, 28, 0, '#E3EAF2');
+    circ(x, 56, 68, 5, '#2B2320'); circ(x, 82, 68, 5, '#2B2320'); poly(x, [66,80, 86,84, 66,88], '#F08A3C');
+    R_(x, 34, 104, 74, 14, '#C8412E'); R_(x, 84, 104, 14, 40, '#C8412E'); poly(x, [40,40, 100,40, 92,20, 48,20], '#3B6E66'); },
+  pinoNieve: x => { R_(x, 88, 232, 24, 58, '#7A4E32');
+    poly(x, [20,240, 100,120, 180,240], '#3D7347'); poly(x, [34,180, 100,64, 166,180], '#4C8A53'); poly(x, [50,120, 100,8, 150,120], '#5C9E5E');
+    poly(x, [60,170, 100,120, 140,170, 120,162, 100,176, 80,162], '#FFFFFF'); poly(x, [70,108, 100,64, 130,108, 112,100, 100,112, 88,100], '#FFFFFF'); poly(x, [80,52, 100,8, 120,52, 100,44], '#FFFFFF');
+    poly(x, [30,236, 100,184, 170,236, 150,228, 128,240, 100,226, 72,240, 50,228], '#FFFFFF'); },
+  kitsune: x => { R_(x, 30, 196, 140, 30, '#8F8A80'); R_(x, 40, 186, 120, 14, '#A7A296');
+    ell(x, 100, 140, 46, 52, 0, '#F7F4EC'); poly(x, [70,90, 76,40, 96,80], '#F7F4EC'); poly(x, [130,90, 124,40, 104,80], '#F7F4EC');
+    poly(x, [78,80, 80,52, 92,76], '#E9A4A0'); poly(x, [122,80, 120,52, 108,76], '#E9A4A0');
+    ell(x, 100, 98, 34, 30, 0, '#F7F4EC'); poly(x, [86,104, 114,104, 100,124], '#F7F4EC'); circ(x, 100, 120, 4, '#2B2320');
+    poly(x, [80,92, 94,96, 82,98], '#C8412E'); poly(x, [120,92, 106,96, 118,98], '#C8412E');
+    poly(x, [72,130, 128,130, 100,170], '#C8412E'); ell(x, 150, 168, 18, 40, -.5, '#F7F4EC'); ell(x, 160, 140, 8, 14, -.5, '#F2B544'); },
+  momiji: x => { R_(x, 92, 200, 22, 90, '#6E4A35'); poly(x, [102,220, 60,160, 72,156, 104,200], '#6E4A35');
+    for (const [cx, cy, r, c] of [[60,120,48,'#D9533B'],[130,80,58,'#E8743A'],[180,128,48,'#C8412E'],[100,150,46,'#F29B3E'],[150,160,40,'#D9533B'],[110,108,42,'#F2B544']]) circ(x, cx, cy, r, c); },
+  // Arashiyama: cañas altas y el torii de madera oscura de Nonomiya
+  bambuAlto: x => { const st = (bx, c) => { R_(x, bx, 0, 16, 600, c); x.fillStyle = 'rgba(0,0,0,.16)'; for (let y = 40; y < 600; y += 70) x.fillRect(bx - 2, y, 20, 5); };
+    st(14, '#7FB04E'); st(52, '#6AA043'); st(92, '#8CBD58'); st(128, '#76A94A');
+    for (const [cx, cy, r] of [[30,30,0.5],[80,12,-0.4],[120,46,0.6],[60,70,-0.6]]) ell(x, cx, cy, 30, 9, r, '#5C9A3E'); },
+  toriiNegro: x => { R_(x, 48, 70, 26, 222, '#4A3626'); R_(x, 186, 70, 26, 222, '#4A3626'); R_(x, 44, 276, 34, 18, '#2B2320'); R_(x, 182, 276, 34, 18, '#2B2320');
+    R_(x, 26, 112, 208, 18, '#5A4230'); poly(x, [0,26, 130,40, 260,26, 246,58, 130,66, 14,58], '#3A2A1E'); R_(x, 16, 58, 228, 16, '#5A4230');
+    x.strokeStyle = '#E8D9B0'; x.lineWidth = 6; x.beginPath(); x.moveTo(60, 150); x.quadraticCurveTo(130, 176, 200, 150); x.stroke();
+    x.fillStyle = '#FFFDF6'; for (const px of [96, 130, 164]) poly(x, [px - 5,162, px + 5,162, px + 2,172, px + 7,172, px + 3,186, px - 5,186, px - 1,172, px - 6,172], '#FFFDF6'); },
+  solPalido: x => { circ(x, 110, 110, 70, '#FFF7E3'); circ(x, 110, 110, 56, '#FFFDF4'); },
+  chispa: x => { const s = []; for (let i = 0; i < 16; i++){ const a = i/16*Math.PI*2 - Math.PI/2, r = i % 2 ? 26 : 62; s.push(70 + Math.cos(a)*r, 70 + Math.sin(a)*r); } poly(x, s, '#F6B73C'); circ(x, 70, 70, 22, '#FFF4C9'); },
+});
+Object.assign(SIZE, { fuji:[640,440], reloj:[440,404], muneco:[140,210], pinoNieve:[200,292], kitsune:[200,230], momiji:[230,290], bambuAlto:[160,600], toriiNegro:[260,300], solPalido:[220,220], chispa:[140,140] });
+Object.assign(RAD, { fuji:12, reloj:10 });
+
 export const has = id => !!DRAW[id];
 export function art(id) { return CNV[id] || (CNV[id] = bake(id)); }
 export function artTex(id) {

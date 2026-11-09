@@ -755,3 +755,11 @@ h4.gh .grade{font-size:13px;padding:3px 9px 3px 3px}h4.gh .grade i{width:20px;he
 .bm-isle>b{font-size:12px}
 .bm-pips{font-size:10px;gap:4px}
 .bm-pips em{margin-right:1px}
+/* Arena de papel: resultado centrado sobre la escena */
+.duel.d3{background:#E3D2B4}
+.duel.d3 .duel-stage.paper.grain::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background-image:var(--grain);background-size:160px;mix-blend-mode:multiply;opacity:.5}
+.duel.d3 .duel-stage .stage-ov{z-index:2}
+.duel-ui:has(.duel-end){justify-content:center;background:rgba(26,18,32,.28)}
+.duel.d3 .duel-end{position:relative;z-index:4;width:auto;max-width:360px;align-self:center;margin:0 16px;box-sizing:border-box}
+.duel.d3 .duel-end h2{font-size:30px;line-height:1.1;margin:0}
+.duel.d3 .duel-end p{margin:0}
