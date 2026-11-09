@@ -1,4 +1,5 @@
 import { ELEMENTS, element, roots, depth, typeOf } from './data.js';
+import { artSVG, hasArt } from './art.js';
 
 // Criaturas de papel: la silueta dice el tipo 五行 (hoja, llama, roca, campana, gota), el color dice el
 // elemento, el kanji va pintado con pincel en el pecho y cada raíz suma un rasgo. Borde crema de recorte.
@@ -26,8 +27,11 @@ const SHAPES = {
     shade: 'M60 126 C34 126 16 112 16 88 C30 112 90 112 104 88 C104 112 86 126 60 126Z' },
 };
 
-export function creatureSVG(k, { mood = 1, egg = false, gold = false } = {}) {
+export function creatureSVG(k, opts = {}) {
+  const { mood = 1, egg = false, gold = false } = opts;
   if (egg) return eggSVG(typeOf(k), element(k), gold);
+  // Arte aprobado (js/art.js): una forma propia por kanji. El dibujo procedural queda como respaldo.
+  if (hasArt(k)) return artSVG(k, { mood: opts.mood, gold });
   const d = depth(k), type = typeOf(k), sh = SHAPES[type];
   let [fill, dark] = gold ? ['#F2C94C', '#B8862A'] : ELEMENTS[element(k)];
   const shade = mix(fill, dark, .55), light = mix(fill, '#FFFFFF', .45);

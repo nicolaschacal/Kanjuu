@@ -77,14 +77,12 @@ El juego sale en **español e inglés**; portugués queda para después del lanz
 
 **Decidido (9 de noviembre de 2026):** el español base es **neutro, con tú** (toca, responde, elige). El voseo actual pasa a ser la variante **"Español (Río de la Plata)"** (`es-419-rp`), seleccionable en Configuración y elegida automáticamente en Uruguay y Argentina. Inglés base: `en`.
 
-## 3. Diseño de criaturas — FASE 2 (aprobar antes de producir)
-- 🔜 **Propuesta de sistema visual:** silueta por tipo 五行 (木 vertical y orgánica, 火 puntiaguda, 土 baja y pesada, 金 angular, 水 fluida), kanji a pincel sobre el cuerpo, ojos grandes, sombra cel, textura de papel
-- 🔜 **Piloto: familia 木** (木 林 森 本 休 杏) × 3 etapas = 18 sprites
-- 🔜 **Biblia de estilo:** paleta, prompt base, ejemplos aprobados; pipeline IA gratuita → quitar fondo → limpieza → exportación
-- 🔜 Criterio de aceptación: reconocible a 64 px y coherente con el papel del santuario
-- ⬜ Animaciones idle / feliz / triste; secuencia de evolución
-- ⬜ Escalar al resto de familias (101 kanji + 16 piezas)
-- ⬜ Ficha de criatura con escena 3D
+## 3. Diseño de criaturas — FASE 2
+- ✅ **Estilo aprobado (9 de noviembre de 2026):** una forma propia por kanji que muestra solo lo que significa (dos significados → se ven los dos); ojos de papel con pupila de píldora y cinco temperamentos; tinta y bermellón en la cara; broche dorado en las piezas; marcas de grado; el elemento se lee por el color. Referencia: docs/arte/estilo.html
+- ✅ **Los 101 kanji diseñados e integrados al juego** (js/art.js): santuario 3D, Atlas, fichas, Entrenador, Arena, Fusión y Viajes
+- 🔜 Las 16 piezas 部品 con el mismo estilo
+- 🔜 Secuencia de evolución animada (la lámina gira y vuelve con la forma nueva)
+- ⬜ Cada kanji nuevo que entre al juego se diseña con el método de la biblia antes de publicarse
 - ⬜ Música ambiental y efectos por acción (tocar, evolucionar, fusionar)
 
 ## 4. Contenido

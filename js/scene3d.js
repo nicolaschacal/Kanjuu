@@ -3,6 +3,7 @@
 // En el santuario la grilla de tiles (world.js) manda: cada ítem va al centro de sus casillas y la
 // grilla sólo se dibuja en modo construcción.
 import * as THREE from './vendor/three.module.min.js';
+import { artBack } from './art.js';
 import * as paper from './paper.js';
 
 const CREAM = '#FFF4DC';
@@ -46,8 +47,11 @@ function paperTexture(svg) {
   if (texCache.has(svg)) return texCache.get(svg);
   const S = 256, M = 12, c = canvas(S), t = tex(c);
   texCache.set(svg, t);
-  const texts = [];
+  const texts = [], vb = +(svg.match(/viewBox="[-\d.]+ [-\d.]+ ([\d.]+)/) || [])[1] || 120;
+  const kt = svg.match(/data-kt="([\d.]+),([\d.]+),([\d.]+)"/); // arte nuevo: el kanji se pinta en su posición final
+  if (kt) texts.push({ x: +kt[1], y: +kt[2], fs: +kt[3], txt: svg.match(/aria-label="([^"]+)"/)?.[1] || '' });
   const s = svg.replace(/<text([^>]*)>([^<]*)<\/text>/g, (_, a, txt) => {
+    if (kt) return '';
     const g = n => +(a.match(new RegExp(`\\b${n}="([\\d.]+)"`)) || [])[1];
     texts.push({ x: g('x'), y: g('y'), fs: g('font-size'), txt }); return '';
   }).replace(/<ellipse[^>]*kj-shadow[^>]*\/>/g, '')
@@ -55,9 +59,9 @@ function paperTexture(svg) {
   const img = new Image();
   img.onload = async () => {
     await fontReady;
-    const base = canvas(S), b = base.getContext('2d'), k = (S - 2 * M) / 120;
+    const base = canvas(S), b = base.getContext('2d'), k = (S - 2 * M) / vb;
     b.drawImage(img, M, M, S - 2 * M, S - 2 * M);
-    b.fillStyle = '#2B1D16'; b.textAlign = 'center'; b.textBaseline = 'middle';
+    b.fillStyle = kt ? '#1E1A24' : '#2B1D16'; b.textAlign = 'center'; b.textBaseline = 'middle';
     texts.forEach(x => { b.font = `${x.fs * k}px "Yuji Syuku", serif`; b.fillText(x.txt, M + x.x * k, M + x.y * k + 1); });
     const o = c.getContext('2d'), r = 3;
     for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; o.drawImage(base, Math.cos(a) * r, Math.sin(a) * r); }
@@ -899,7 +903,7 @@ function decalTex(kind) {
   return decals[kind] = tex(c);
 }
 // Espalda de tu KANJŪ: el mismo dibujo sin cara ni etiqueta (lo ves desde atrás)
-const backSVG = svg => svg.replace(/<g class="kj-eyes"[\s\S]*?<\/g>/, '').replace(/<path d="[^"]*" stroke="#1A1220" stroke-width="[\d.]+"[^>]*\/>/g, '').replace(/<path d="[^"]*" fill="#7CC4F2"\/>/g, '')
+const backSVG = svg => svg.includes('kj2') ? artBack(svg) : svg.replace(/<g class="kj-eyes"[\s\S]*?<\/g>/, '').replace(/<path d="[^"]*" stroke="#1A1220" stroke-width="[\d.]+"[^>]*\/>/g, '').replace(/<path d="[^"]*" fill="#7CC4F2"\/>/g, '')
   .replace(/<ellipse[^>]*fill="#F28C8C"[^>]*\/>/g, '').replace(/<ellipse[^>]*fill="#F6EBD0"\/>/, '').replace(/<text[\s\S]*?<\/text>/, '');
 function arena() {
   if (E.worlds.arena) return E.worlds.arena;
