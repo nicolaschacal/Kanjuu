@@ -6,6 +6,7 @@ Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. Revisado el 9 de noviembre
 
 | # | Fase | Por qué en este orden |
 |---|---|---|
+| 0 | **Idiomas: base español + inglés** | Hay que montar la infraestructura antes de seguir sumando textos; cada pantalla nueva nace traducida |
 | 1 | **Academia** | Es la mitad del juego que menos engancha hoy; sin aprendizaje que retenga no hay producto |
 | 2 | **Diseño de criaturas** (con aprobación previa) | El apego a las criaturas es el motor de la retención y de la monetización cosmética |
 | 3 | **Economía instrumentada** | Antes de tocar retención o cobrar hay que medir fuentes y sumideros y validar en servidor |
@@ -14,6 +15,8 @@ Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. Revisado el 9 de noviembre
 | 6 | **Monetización** | KANJŪ Plus con tutor IA; recién con retención D7 validada y anti-trampas; se lanza con el soft launch |
 
 Santuario (con su modo editor) y Arenas están **cerrados**: diseño aprobado e implementado. Solo reciben ajustes.
+
+El trabajo se organiza en sprints semanales que ejecuta el equipo de agentes sin supervisión; cada cambio llega como pull request para aprobar. Ver **docs/SPRINTS.md** y **docs/BACKLOG.md**.
 
 ---
 
@@ -57,6 +60,22 @@ Siguiente, en orden:
 8. 🔜 Mnemotecnias propias del jugador
 9. ⬜ Torres JLPT N5 → N1 desbloqueables
 10. ⬜ Curva del olvido personal (estadísticas de retención para el jugador)
+
+## 2b. Idiomas — español e inglés desde el lanzamiento
+El juego sale en **español e inglés**; portugués queda para después del lanzamiento. El idioma elegido es el de la interfaz y también el idioma desde el que se aprende japonés (significados, mnemotecnias, explicaciones y cursos).
+
+1. 🔜 **Infraestructura:** módulo `js/i18n.js` con `t('clave', vars)`, diccionarios `locales/es.json` y `locales/en.json`, plurales con `Intl.PluralRules`, números y fechas con `Intl`
+2. 🔜 **Idioma automático** según el dispositivo, con selector en Configuración; se guarda en la cuenta
+3. 🔜 **Interfaz traducida:** HUD, menús, hojas, Tienda, Arena, tutorial, ayudas y errores
+4. 🔜 **Datos de kanji en dos idiomas:** significado, mnemotecnia, historia al fallar y descripción de piezas (`meaning: { es, en }`)
+5. 🔜 **Academia en inglés:** consignas, traducciones de frases, explicaciones de gramática; los ejercicios de traducir y armar oraciones usan el idioma del jugador
+6. 🔜 **IA en el idioma del jugador:** cuentos, "¿Por qué?" y conversaciones reciben el idioma como parámetro
+7. 🔜 **Control de calidad:** script que detecta claves faltantes entre `es` y `en` y textos escritos directamente en el código; corre antes de cada pull request
+8. ⬜ Ficha de las tiendas, capturas, política de privacidad y términos en ambos idiomas
+9. ⬜ Revisión del inglés por un hablante nativo antes del lanzamiento
+10. ⬜ Portugués (Brasil) después del lanzamiento
+
+Decisión pendiente: el español actual usa voseo (tocás, respondés). Para todo el mercado hispano conviene un español neutro con tú; se puede ofrecer el voseo como variante "Español (Río de la Plata)".
 
 ## 3. Diseño de criaturas — FASE 2 (aprobar antes de producir)
 - 🔜 **Propuesta de sistema visual:** silueta por tipo 五行 (木 vertical y orgánica, 火 puntiaguda, 土 baja y pesada, 金 angular, 水 fluida), kanji a pincel sobre el cuerpo, ojos grandes, sombra cel, textura de papel
@@ -137,7 +156,6 @@ Siguiente, en orden:
 - ⬜ Política de privacidad y términos; etiquetas de privacidad (App Store) y seguridad de datos (Play)
 - ⬜ Clasificación por edad (IARC) y flujo de audiencia mixta: pantalla de edad y consentimiento parental (ver §9)
 - ⬜ Accesibilidad: tamaño de texto, contraste, sin animaciones
-- ⬜ Localización: español, inglés, portugués
 - ⬜ TestFlight y prueba interna de Play con 20–50 jugadores; soft launch en 1–2 países antes del lanzamiento global
 
 ---
