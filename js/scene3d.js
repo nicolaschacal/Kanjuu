@@ -587,7 +587,7 @@ function sanctuary() {
     if (mode === 'placing') { const t = tileHit(ray); if (t) onCell?.(t.x, t.y); return; }
     if (tool && tool !== 'move') { if (W.paintMode) return; const t = tileHit(ray); if (t) onTile?.(t.x, t.y); return; }
     const id = hitItem(W, ray); if (id) { poke(id); onTap?.(id); return; }
-    if (mode === 'build') { const t = tileHit(ray); if (t) onCell?.(t.x, t.y); }
+    if (mode === 'build') { const t = tileHit(ray); if (t) onCell?.(t.x, t.y); else W.opts.onMiss?.(); }
   };
   // Construir: se agarra un objeto o KANJŪ y se arrastra; la huella se pinta verde (entra) o roja (no entra)
   const ghost = new THREE.Group(); world.add(ghost);
@@ -641,9 +641,10 @@ function sanctuary() {
     W.az += (W.azT - W.az) * Math.min(1, dt * 7);
     const bd = baseDepth(W.N), hf = Math.tan(FOV * Math.PI / 360), asp3 = camera.aspect;
     let halfH = Math.max(W.N * .62 + 1.1 + bd * .32, (W.N * .8 + .3) / asp3) / W.zoom, el = ELEV;
-    let tx = c0, ty = -.6 - bd * .3 - (W.opts.mode === 'play' ? 0 : W.N * .12), tz = c0;
+    let tx = c0, ty = -.6 - bd * .3 - (W.opts.mode === 'play' ? 0 : W.N * (W.opts.preview ? .5 : .12)), tz = c0;
     const fo = W.focus && W.items.get(W.focus);
     if (fo?.sprite) { fo.sprite.getWorldPosition(tmp); halfH = fo.size * 1.25; el = .32; tx = tmp.x; ty = tmp.y + fo.size * .45; tz = tmp.z; }
+    else if (W.opts.closeUp && W.opts.selected && !W.grabbing) { const so = W.items.get(W.opts.selected); if (so) { so.group.getWorldPosition(tmp); halfH *= .72; tx += (tmp.x - tx) * .6; tz += (tmp.z - tz) * .6; ty = tmp.y - halfH * .18; } }
     const a = W.az + (W.dragging ? 0 : Math.sin(t * .22) * .02), D = halfH / hf * 1.02;
     const want = new THREE.Vector3(tx + Math.sin(a) * Math.cos(el) * D, ty + Math.sin(el) * D, tz + Math.cos(a) * Math.cos(el) * D), look = new THREE.Vector3(tx, ty, tz);
     W.cam ??= { p: want.clone(), l: look.clone() };
@@ -652,6 +653,7 @@ function sanctuary() {
     const camAz = Math.atan2(camera.position.x - W.cam.l.x, camera.position.z - W.cam.l.z);
     // recortes: miran a la cámara y se mecen con el viento
     W.wind = .35 + .25 * Math.sin(t * .5) + rk * .5;
+    if (W.pvMesh) W.pvMesh.rotation.y = camAz;
     W.tufts.forEach(m => { m.rotation.y = camAz; m.rotation.z = Math.sin(t * 2.3 + m.userData.p) * .14 * (.5 + W.wind) - W.wind * .1; });
     W.foams.forEach(f => { const s = 1 + Math.round(Math.sin(t * 5 + f.userData.p) * 2) * .06; f.scale.set(1, s, 1); });
     seaClouds.forEach(m => { const u = m.userData; u.a += u.v * dt * .1; const R = W.N * .9 + 3; m.position.set(c0 + Math.cos(u.a) * R, -bd * .75 - 1 - u.y * 1.4, c0 + Math.sin(u.a) * R); m.rotation.y = camAz; m.material.color.copy(cc); });
@@ -777,6 +779,20 @@ function updateItem(W, o, d, OBJ) {
   o.d = d;
   const [cx, cy, cz] = toWorld(W, d); o.group.position.set(cx, cy, cz);
 }
+// Casilla del santuario bajo un punto de la pantalla (para soltar objetos arrastrados desde la Mochila)
+export function tileAtScreen(cx, cy) {
+  const W = E?.worlds.sanct; if (!W || E.W !== W) return null;
+  const r = E.renderer.domElement.getBoundingClientRect(); if (cx < r.left || cx > r.right || cy < r.top || cy > r.bottom) return null;
+  E.ray.setFromCamera(new THREE.Vector2((cx - r.left) / r.width * 2 - 1, -(cy - r.top) / r.height * 2 + 1), W.camera);
+  const h = E.ray.intersectObjects([...W.tops.values()], false)[0]; return h ? { x: h.object.userData.x, y: h.object.userData.y } : null;
+}
+// Destello sobre la casilla recién pintada
+export function flashTile(x, y) {
+  const W = E?.worlds.sanct; if (!W?.tY) return;
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(.96, .96), new THREE.MeshBasicMaterial({ color: '#FFFDF6', transparent: true, opacity: .7, depthWrite: false }));
+  m.rotation.x = -Math.PI / 2; m.position.set(x - (W.cols - 1) / 2, W.tY(x, y) + .06, y - (W.rows - 1) / 2); m.renderOrder = 6; W.fx.add(m);
+  const t0 = performance.now(), step = () => { const k = (performance.now() - t0) / 380; if (k >= 1) { W.fx.remove(m); m.geometry.dispose(); return; } m.material.opacity = .7 * (1 - k); requestAnimationFrame(step); }; step();
+}
 export function setFocus(id) { const W = E?.worlds.sanct; if (W) W.focus = id; }
 export function rotateCam(dir) { const W = E?.worlds.sanct; if (!W) return; W.azT = Math.round((W.azT - Math.PI / 4) / (Math.PI / 2)) * (Math.PI / 2) + Math.PI / 4 + dir * Math.PI / 2; }
 export function zoomCam(k) { E?.worlds.sanct?.zoomBy(k); }
@@ -807,7 +823,26 @@ function drawEditor(W) {
   for (let y = 0; y < W.rows; y++) for (let x = 0; x < W.cols; x++) { const l = new THREE.Line(sq, lm); l.position.set(x - ox, W.tY(x, y) + .03, y - oz); W.ov.add(l); }
   const quad = (x, y, col, op) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(.92, .92), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: op, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.set(x - ox, W.tY(x, y) + .04, y - oz); W.ov.add(m); };
   if (mode === 'build') items.forEach(d => { const sel = d.id === W.opts.selected; for (let j = 0; j < d.h; j++) for (let i = 0; i < d.w; i++) quad(d.x + i, d.y + j, sel ? '#F2B544' : '#FFFFFF', sel ? .7 : .14); });
-  (valid || []).forEach(([x, y]) => quad(x, y, '#FFFFFF', .42));
+  (valid || []).forEach(([x, y]) => quad(x, y, mode === 'placing' ? '#FFFFFF' : '#5DB84F', .42));
+  // Seleccionado: huella dorada con borde punteado blanco
+  const sd = items.find(d => d.id === W.opts.selected);
+  if (sd) {
+    const y0 = Math.max(...Array.from({ length: sd.w * sd.h }, (_, i) => W.tY(sd.x + i % sd.w, sd.y + (i / sd.w | 0)))) + .05;
+    const x0 = sd.x - .5 - ox + .04, z0 = sd.y - .5 - oz + .04, x1 = sd.x + sd.w - .5 - ox - .04, z1 = sd.y + sd.h - .5 - oz - .04;
+    const g = new THREE.BufferGeometry().setFromPoints([[x0, z0], [x1, z0], [x1, z1], [x0, z1], [x0, z0]].map(([a, b]) => new THREE.Vector3(a, y0, b)));
+    const l = new THREE.Line(g, new THREE.LineDashedMaterial({ color: '#FFFDF6', dashSize: .14, gapSize: .09, depthTest: false })); l.computeLineDistances(); l.renderOrder = 6; W.ov.add(l);
+  }
+  // Vista previa de una compra: el objeto translúcido sobre su casilla verde
+  const pv = W.opts.preview;
+  if (pv) {
+    for (let j = 0; j < pv.h; j++) for (let i = 0; i < pv.w; i++) { quad(pv.x + i, pv.y + j, '#5DB84F', .75); const q = W.ov.children.at(-1); q.material.depthTest = false; q.renderOrder = 6; }
+    const def = W.opts.OBJS?.[pv.t] || {}, id = def.art || 'roca';
+    if (!def.flat) {
+      const art = paper.art(id), w = pv.t === 'bridge' ? 2 * art.width / (art.width - 42) : (ART_W[id] || .9) * Math.max(pv.w, 1);
+      const m = paperProp(id, w, false); m.material = m.material.clone(); m.material.opacity = .8; m.material.depthTest = false; m.renderOrder = 7;
+      const [cx, cy, cz] = toWorld(W, { x: pv.x, y: pv.y, w: pv.w, h: pv.h }); m.position.set(cx, cy + .02, cz); m.userData.preview = 1; W.ov.add(m); W.pvMesh = m;
+    }
+  } else W.pvMesh = null;
 }
 // =====================================================================
 // ARENA · patio de templo de noche con faroles

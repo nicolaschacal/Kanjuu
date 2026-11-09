@@ -9,12 +9,12 @@ import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn } from './help.js';
 import { openAcademy, acadDue, reviewAcademy, DAILY_GOAL } from './academy.js';
 import { openAISettings, aiStatus } from './ai.js';
 import { startTutorial, emit } from './tutorial.js';
-import { ISLANDS, island, buyIsland, objCap, shownObjs, harmony, harmonyMult, monCap, shownMons, monFits, slot, syncGrid, COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld, GROUNDS, paintTile, raiseTile, rampTile, cascadeTile, raining } from './world.js';
+import { ISLANDS, island, buyIsland, objCap, shownObjs, harmony, harmonyMult, monCap, shownMons, monFits, slot, syncGrid, COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld, CATS, objEff, GROUNDS, paintTile, raiseTile, rampTile, cascadeTile, raining } from './world.js';
 import { $, buzz, home, owned, ui, go, hud, toast, modal, floatText, covered } from './main.js';
 import { openCreature } from './sheet.js';
 import { allDue, openDojo, acadCtx } from './dojo.js';
 import { artThumb } from './paper.js';
-import { webgl, mountScene, emoteAt, hopAll, poke, setFocus, rotateCam, zoomCam } from './scene3d.js';
+import { webgl, mountScene, emoteAt, hopAll, poke, setFocus, rotateCam, zoomCam, tileAtScreen, flashTile } from './scene3d.js';
 import { openTraining } from './sheet.js';
 import { TYPES, typeOf, gradeTag } from './data.js';
 
@@ -23,25 +23,31 @@ let idleT, build = false, placing = null, seenGoal = '', focusId = null, tool = 
 export function viewHome(v) { return webgl() && !new URLSearchParams(location.search).has('2d') ? viewHome3d(v) : viewHome2d(v); }
 
 // Santuario 3D: la escena dibuja la grilla; la UI (objetivo, burbujas, dock) va por encima en HTML.
-// Construir ocupa toda la pantalla (sin HUD ni barra): arriba Listo y la isla, abajo una bandeja con
-// la Mochila, la Tienda de decoración y edificios, y el Suelo. Los objetos se arrastran para moverlos.
-let sel = null, trayTab = 'inv';
+// Construir (pantalla completa, sin HUD ni barra), tal como la maqueta:
+//  arriba Listo · isla 5×5 con 置 獣 和 y "+" para ampliar · tinta
+//  abajo un panel de tres pestañas con color propio: Mochila (lo tuyo) · Tienda (se paga) · Terreno
+//  comprar abre una ficha con vista previa en la isla; al tocar un objeto la cámara se acerca y
+//  aparecen Guardar / Mejorar / Vender debajo de él, con deshacer y confirmar abajo.
+let sel = null, selFrom = null, trayTab = 'inv', invSub = 'obj', shopSub = 'deco', buyPick = null;
+const undoStack = []; let undoAt = 0;
 function viewHome3d(v) {
-  const nextI = ISLANDS[(S.island || 0) + 1];
   if (focusId && (build || placing || !S.creatures.some(c => c.id === focusId && c.pos))) focusId = null;
   if (sel && (!build || !findIt(sel)?.pos)) sel = null;
+  if (!build) buyPick = null;
   const bubbles = placed().filter(it => pending(it) >= 1).map(it => `<button class="bubble-ink ${full(it) ? 'full' : ''}" data-c="${it.id}" data-anchor="${it.id}" aria-label="Recoger ${pending(it)} de tinta">${ic('ink')}</button>`).join('');
-  const editing = build && !placing;
+  const editing = build && !placing, mode = !editing ? '' : buyPick ? 'buy' : sel ? 'sel' : trayTab;
+  const preview = mode === 'buy' ? previewSpot(buyPick) : null;
   v.innerHTML = `
   <div class="home home3d">
-    <div class="stage" id="stage">
+    <div class="stage ${editing ? 'bm bm-' + mode : ''}" id="stage">
       <div class="stage-fx" aria-hidden="true"></div>
-      <div class="stage-ov">${placing || build || focusId ? '' : bubbles}</div>
-      ${editing ? buildTopHTML(nextI) : ''}
+      <div class="stage-ov">${placing || build || focusId ? '' : bubbles}${mode === 'sel' ? ctxHTML(findIt(sel)) : ''}</div>
+      ${mode === 'buy' ? `<div class="bm-scrim"></div>` : ''}
+      ${editing ? topHTML(mode) : ''}
       ${placing || focusId || build ? '' : ctrlHTML()}
-      ${focusId ? '' : camHTML()}
-      ${editing && sel ? selHTML(findIt(sel)) : editing && buyPick && trayTab === 'shop' ? buyHTML(buyPick) : ''}
-      ${editing ? trayHTML() : ''}
+      ${focusId ? '' : !editing ? camHTML() : mode === 'inv' || mode === 'shop' ? `<div class="bm-cam"><button id="rotL" aria-label="Girar a la izquierda">${ic('rotL')}</button><i></i><button id="rotR" aria-label="Girar a la derecha">${ic('rotR')}</button></div>` : ''}
+      ${mode === 'suelo' ? `<button class="bm-undo" id="undo" aria-label="Deshacer" ${undoStack.length ? '' : 'disabled'}>${ic('undo')}</button>` : ''}
+      ${mode === 'buy' ? buyHTML(buyPick, preview) : mode === 'sel' ? miniHTML(findIt(sel)) : editing ? sheetHTML() : ''}
       ${focusId ? focusHTML(findIt(focusId)) : ''}
     </div>
     ${placing ? `<div class="place-bar">Tocá dónde colocar <b>${placing.t ? OBJS[placing.t].k : placing.k}</b><button class="btn ghost" id="cancelPlace">Cancelar</button></div>` : ''}
@@ -56,22 +62,26 @@ function viewHome3d(v) {
     return { ...b, kind: it.egg ? 'egg' : 'mon', svg: creatureSVG(it.k, { mood: it.mood, egg: it.egg, gold: it.gold }), insp: it.insp > Date.now() };
   });
   const cells = it => { const [w, h] = foot(it), out = []; for (let y = 0; y < S.rows; y++) for (let x = 0; x < S.cols; x++) if (fits(w, h, x, y, it)) out.push([x, y]); return out; };
-  const valid = placing ? cells(placing) : editing && sel ? cells(findIt(sel)).filter(([x, y]) => x !== findIt(sel).pos.x || y !== findIt(sel).pos.y) : null;
-  const t = editing ? tool : 'move';
-  const opts = { cols: S.cols, rows: S.rows, focus: focusId, items, OBJS, tiles: S.tiles, tool: t, paints: !!GROUNDS[t], rain: raining, mode: placing ? 'placing' : build ? 'build' : 'play', valid, selected: sel,
-    onTap: tap3d, onCell: (x, y) => placing ? tapCell(x, y, null) : moveSel(x, y),
+  const valid = placing ? cells(placing) : mode === 'sel' ? cells(findIt(sel)).filter(([x, y]) => x !== findIt(sel).pos.x || y !== findIt(sel).pos.y) : null;
+  const t = mode === 'suelo' ? tool : 'move';
+  const opts = { cols: S.cols, rows: S.rows, focus: focusId, items, OBJS, tiles: S.tiles, tool: t, paints: !!GROUNDS[t], rain: raining, mode: placing ? 'placing' : build ? 'build' : 'play', valid, selected: mode === 'sel' ? sel : null, preview, closeUp: mode === 'sel',
+    onTap: tap3d, onCell: (x, y) => placing ? tapCell(x, y, null) : moveSel(x, y), onMiss: () => { if (sel) { sel = null; go(); } },
     canPlace: (id, x, y) => { const it = findIt(id), [w, h] = foot(it); return fits(w, h, x, y, it); },
-    onMove: (id, x, y) => { const it = findIt(id); if (x === null) { buzz(30); toast('No entra ahí'); return; } it.pos = { x, y }; sel = id; buzz(12); save(); go(); },
-    onLong: id => { const it = findIt(id); if (!it || it.away) return; build = true; tool = 'move'; sel = id; focusId = null; setFocus(null); buzz([10, 30, 10]); go(); } };
-  // Herramientas de suelo: cada toque cambia la casilla y se vuelve a armar sólo la isla (sin redibujar la pantalla)
+    onMove: (id, x, y) => { const it = findIt(id); if (x === null) { buzz(30); toast('No entra ahí'); return; } if (sel !== id) { sel = id; selFrom = { ...it.pos }; } it.pos = { x, y }; buzz(12); save(); go(); },
+    onLong: id => { const it = findIt(id); if (!it || it.away) return; build = true; tool = 'move'; pick(id); focusId = null; setFocus(null); buzz([10, 30, 10]); go(); } };
+  // Terreno: cada toque cambia la casilla y se vuelve a armar sólo la isla (sin redibujar la pantalla)
   let errAt = 0;
   opts.onTile = (x, y) => {
+    const before = JSON.stringify(S.tiles);
     const err = GROUNDS[t] ? paintTile(x, y, t) : t === 'raise' ? raiseTile(x, y) : t === 'ramp' ? rampTile(x, y) : t === 'fall' ? cascadeTile(x, y) : null;
     if (err) { if (Date.now() - errAt > 1500) { toast(err); buzz(30); } errAt = Date.now(); return; }
-    buzz(5); save(); mountScene(stg, { ...opts, tiles: S.tiles });
+    if (JSON.stringify(S.tiles) === before) return;
+    if (Date.now() - undoAt > 700) { undoStack.push(before); if (undoStack.length > 40) undoStack.shift(); }
+    undoAt = Date.now();
+    const u = $('#undo', stg); if (u) u.disabled = false;
+    flashTile(x, y); buzz(5); save(); mountScene(stg, { ...opts, tiles: S.tiles });
   };
   mountScene(stg, opts);
-  stg.querySelectorAll('[data-tool]').forEach(b => b.onclick = () => { tool = tool === b.dataset.tool ? 'move' : b.dataset.tool; sel = null; buzz(6); go(); });
   $('#rotL', stg) && ($('#rotL', stg).onclick = () => rotateCam(-1));
   $('#rotR', stg) && ($('#rotR', stg).onclick = () => rotateCam(1));
   $('#zIn', stg) && ($('#zIn', stg).onclick = () => zoomCam(1.2));
@@ -90,99 +100,165 @@ function viewHome3d(v) {
   }, 2500);
 }
 // ---------- Construir ----------
+const pick = id => { sel = id; selFrom = findIt(id)?.pos ? { ...findIt(id).pos } : null; buyPick = null; };
 const thumb = it => it.t ? `<img src="${artThumb(OBJS[it.t].art)}" alt="">` : creatureSVG(it.k, { mood: it.mood, egg: it.egg, gold: it.gold });
-const itName = it => it.t ? `${OBJS[it.t].name} · Nv${it.lv}` : it.egg ? 'Huevo' : `${it.k} · ${KANJI[it.k].m}`;
-function buildTopHTML(nextI) {
-  return `<div class="bld-top">
-    <button class="bt-done" id="build">${ic('check')}<span>Listo</span></button>
-    <div class="bt-info"><b>${island().name} ${S.cols}×${S.rows}</b><small>獣 ${shownMons()}/${monCap()} · 置 ${shownObjs()}/${objCap()} · 和 ${Math.round(harmony())} <em>+${Math.round((harmonyMult() - 1) * 100)}% 墨</em></small></div>
-    <span class="bt-ink">${ic('ink')}<b>${S.ink}</b></span>
-  </div>
-  ${nextI ? `<button class="bt-exp" id="expandRow">拡 Ampliar a ${nextI.n}×${nextI.n} · ${nextI.cost} 墨${S.rank.lv < nextI.rank ? ` · rango ${nextI.rank}` : ''}</button>` : ''}`;
-}
-// Lo seleccionado: se arrastra para moverlo; las acciones quedan a un toque
-function selHTML(it) {
-  const isObj = !!it.t;
-  return `<div class="selbar">
-    <span class="sb-th">${thumb(it)}</span>
-    <span class="sb-t"><b>${itName(it)}</b><small>Arrastralo o tocá una casilla libre</small></span>
-    <button class="sb-a" data-a="store" ${!isObj && storeFree() <= 0 ? 'disabled' : ''}>${ic('box')}<span>Guardar</span></button>
-    ${isObj && it.lv < OBJ_MAX ? `<button class="sb-a" data-a="up" ${S.ink < upCost(it) ? 'disabled' : ''}>${ic('sparkles')}<span>${upCost(it)} 墨</span></button>` : ''}
-    ${isObj ? `<button class="sb-a" data-a="sell">${ic('ink')}<span>+${sellValue(it)}</span></button>` : ''}
-    <button class="sb-a x" data-a="x" aria-label="Soltar">${ic('x')}</button>
-  </div>`;
-}
-// Bandeja de Construir: lo TUYO (Mochila) y lo que se COMPRA (Tienda) nunca se mezclan.
-// Mochila = tarjetas de papel con "Poner"; Tienda = tarjetas doradas con etiqueta de precio y confirmación.
-const TRAY = [['inv', 'bag', 'Mochila'], ['shop', 'shop', 'Tienda'], ['suelo', 'mount', 'Terreno']];
-let invSub = 'obj', shopSub = 'dec', buyPick = null;
-function trayHTML() {
-  const inv = stored(), invO = inv.filter(it => it.t), invM = inv.filter(it => !it.t);
-  const chip = (attr, id, cur, label, n) => `<button class="tr-chip ${cur === id ? 'on' : ''}" ${attr}="${id}">${label}${n != null ? ` <i>${n}</i>` : ''}</button>`;
-  let chips = '', body = '', hint = '';
-  if (trayTab === 'inv') {
-    chips = chip('data-isub', 'obj', invSub, 'Objetos', invO.length) + chip('data-isub', 'mon', invSub, 'KANJŪ', invM.length);
-    const list = invSub === 'obj' ? invO : invM;
-    body = list.length ? list.map(it => `<button class="tc mine" data-place="${it.id}"><span class="tc-th">${thumb(it)}</span><b>${it.t ? OBJS[it.t].name : it.k}</b><small>${it.t ? `Nv${it.lv}` : it.egg ? 'Huevo' : `Nv${it.lv}`}</small><span class="tc-go">Poner</span></button>`).join('')
-      : `<div class="tc-empty">${invSub === 'obj' ? `No tenés objetos guardados.<button class="tc-link" data-tray="shop">${ic('shop')} Ir a la Tienda</button>` : 'Todos tus KANJŪ están en la isla'}</div>`;
-    hint = 'Lo que ya es tuyo · gratis';
-  } else if (trayTab === 'shop') {
-    chips = chip('data-ssub', 'dec', shopSub, 'Decoración') + chip('data-ssub', 'bld', shopSub, 'Edificios') + `<span class="tr-wallet">${ic('ink')}<b>${S.ink}</b></span>`;
-    body = Object.entries(OBJS).filter(([, d]) => (d.kind === 'decor') === (shopSub === 'dec') && !d.hide).map(([k, d]) => {
-      const lock = S.rank.lv < d.rank, c = objCost(k), mine = invO.filter(o => o.t === k).length;
-      return `<button class="tc buy ${lock ? 'lock' : S.ink < c ? 'poor' : ''} ${buyPick === k ? 'pick' : ''}" data-pick="${k}" ${lock ? 'disabled' : ''}>
-        ${mine ? `<span class="tc-own">Tenés ${mine}</span>` : ''}<span class="tc-th">${lock ? ic('lock') : `<img src="${artThumb(d.art)}" alt="">`}</span><b>${d.name}</b>
-        <span class="tc-price">${lock ? `Rango ${d.rank}` : `${ic('ink')}${c}`}</span></button>`;
-    }).join('');
-    hint = 'Se paga con tinta 墨';
-  } else {
-    const b = (id, inner, n) => `<button class="tl ${tool === id ? 'on' : ''}" data-tool="${id}" aria-pressed="${tool === id}">${inner}<span>${n}</span></button>`;
-    body = `${Object.entries(GROUNDS).map(([id, g]) => b(id, `<span class="tl-sw" style="background:${g.c}"></span>`, g.n)).join('')}<i class="tl-sep"></i>
-      ${b('raise', TOOL_SVG.raise, 'Relieve')}${b('ramp', TOOL_SVG.ramp, 'Rampa')}${b('fall', TOOL_SVG.fall, 'Cascada')}`;
-    hint = (TOOL_HINT[tool] || 'Pintá casillas arrastrando el dedo') + ' · gratis';
+const short = n => n.split(' ')[0];
+const inkSvg = s => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3c3 4.5 6 7.6 6 11a6 6 0 0 1-12 0c0-3.4 3-6.5 6-11z"/></svg>`;
+// Dónde aparece lo que se compra: la casilla libre más cerca del centro de la isla (bien a la vista)
+function previewSpot(k) {
+  const d = OBJS[k]; let best = null, bd = 1e9;
+  for (let y = 0; y < S.rows; y++) for (let x = 0; x < S.cols; x++) {
+    if (!fits(d.w, d.h, x, y)) continue;
+    const dd = Math.hypot(x + d.w / 2 - S.cols / 2, y + d.h / 2 - S.rows / 2); if (dd < bd) { bd = dd; best = { x, y }; }
   }
-  return `<div class="tray t-${trayTab}">
-    <div class="tray-tabs">${TRAY.map(([id, i, l]) => `<button class="${trayTab === id ? 'on' : ''}" data-tray="${id}">${ic(i)}<span>${l}</span>${id === 'inv' && inv.length ? `<b>${inv.length}</b>` : ''}</button>`).join('')}</div>
-    <div class="tray-sub">${chips ? `<div class="tr-chips">${chips}</div>` : ''}<span class="tray-hint">${hint}</span></div>
-    <div class="tray-row">${body}</div>
+  return best ? { t: k, ...best, w: d.w, h: d.h } : null;
+}
+function topHTML(mode) {
+  const wallet = `<div class="bm-wallet ${mode === 'shop' || mode === 'buy' ? 'dark' : ''}">${inkSvg(16)}<b>${S.ink}</b></div>`;
+  if (mode === 'buy') return `<div class="bm-top">${wallet}</div>`;
+  const nextI = ISLANDS[(S.island || 0) + 1];
+  return `<div class="bm-top">
+    <button class="bm-done" id="build" aria-label="Terminar de construir"><span>${ic('check')}</span>Listo</button>
+    <div class="bm-isle"><b>${S.cols}×${S.rows}</b><div class="bm-pips"><span><em>置</em>${shownObjs()}/${objCap()}</span><span><em>獣</em>${shownMons()}/${monCap()}</span><span><em>和</em>${Math.round(harmony())}</span></div>
+      ${nextI ? `<button class="bm-plus" id="expandRow" aria-label="Ampliar a ${nextI.n}×${nextI.n} por ${nextI.cost} de tinta">${ic('plus')}</button>` : ''}</div>
+    ${wallet}
   </div>`;
 }
-// Confirmación de compra: muestra qué es, qué da y cuánto cuesta antes de gastar
-function buyHTML(k) {
-  const d = OBJS[k], c = objCost(k), mine = stored().find(o => o.t === k), poor = S.ink < c;
-  return `<div class="buybar">
-    <span class="bb-th"><img src="${artThumb(d.art)}" alt=""></span>
-    <span class="bb-t"><b>${d.name}</b><small>${d.desc} · 和+${d.har} · ${d.w}×${d.h}</small></span>
-    <div class="bb-acts">
-      ${mine ? `<button class="bb-mine" data-place="${mine.id}">${ic('bag')}Usar el tuyo</button>` : ''}
-      <button class="bb-buy" id="bbBuy" ${poor ? 'disabled' : ''}>${poor ? `Faltan ${c - S.ink}` : 'Comprar'}<span>${ic('ink')}${c}</span></button>
+const SEG = [['inv', 'bag', 'Mochila'], ['shop', 'shop', 'Tienda'], ['suelo', 'mount', 'Terreno']];
+function sheetHTML() {
+  const inv = stored(), invO = inv.filter(it => it.t), invM = inv.filter(it => !it.t);
+  const chip = (attr, id, cur, label, n) => `<button class="bm-chip ${cur === id ? 'on' : ''}" ${attr}="${id}">${label}${n != null ? ` <small>${n}</small>` : ''}</button>`;
+  const pages = (cards, empty) => {
+    if (!cards.length) return `<div class="bm-empty">${empty}</div>`;
+    const out = []; for (let i = 0; i < cards.length; i += 8) out.push(`<div class="bm-page">${cards.slice(i, i + 8).join('')}</div>`);
+    return `<div class="bm-pages" data-n="${out.length}">${out.join('')}</div>`;
+  };
+  const pager = n => n > 1 ? `<div class="bm-pager">${Array.from({ length: n }, (_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>` : '';
+  let body = '', foot = '', n = 1;
+  if (trayTab === 'inv') {
+    // Objetos iguales (mismo tipo y nivel) se apilan con ×N
+    let cards;
+    if (invSub === 'mon') cards = invM.map(it => `<button class="bm-tile" data-place="${it.id}">${thumb(it)}<span class="lv">${it.k} · ${it.egg ? 'Huevo' : 'Nv' + it.lv}</span></button>`);
+    else {
+      const g = new Map(); invO.filter(it => invSub === 'obj' || OBJS[it.t].cat === invSub).forEach(it => { const k = it.t + '|' + it.lv; g.set(k, [...(g.get(k) || []), it]); });
+      cards = [...g.values()].map(l => { const it = l[0]; return `<button class="bm-tile" data-place="${it.id}">${l.length > 1 ? `<span class="cnt">×${l.length}</span>` : ''}${thumb(it)}<span class="lv">${short(OBJS[it.t].name)} · Nv${it.lv}</span></button>`; });
+    }
+    n = Math.ceil(cards.length / 8);
+    body = `<div class="bm-chips">${chip('data-isub', 'obj', invSub, 'Objetos', invO.length)}${chip('data-isub', 'mon', invSub, 'KANJŪ', invM.length)}${chip('data-isub', 'nat', invSub, 'Naturaleza')}${chip('data-isub', 'luz', invSub, 'Luces')}</div>
+      ${pages(cards, invSub === 'mon' ? 'Todos tus KANJŪ están en la isla' : `No tenés objetos guardados<button class="bm-link" data-seg="shop">${ic('shop')}Ir a la Tienda</button>`)}`;
+    foot = `<span class="bm-hint">${ic('hand')}Arrastralo a la isla · gratis</span>`;
+  } else if (trayTab === 'shop') {
+    const own = t => S.objs.filter(o => o.t === t).length;
+    const cards = Object.entries(OBJS).filter(([, d]) => !d.hide && d.cat === shopSub).sort((a, b) => a[1].rank - b[1].rank || a[1].cost - b[1].cost).map(([k, d]) => {
+      const lock = S.rank.lv < d.rank, c = objCost(k), o = own(k);
+      if (lock) return `<button class="bm-card lock" disabled aria-label="${d.name}: rango ${d.rank}"><img src="${artThumb(d.art)}" alt=""><span class="lk">${ic('lock')}Rango ${d.rank}</span></button>`;
+      return `<button class="bm-card" data-pick="${k}" aria-label="${d.name}, ${c} de tinta">${o ? `<span class="tag own">TENÉS ${o}</span>` : d.rank === S.rank.lv ? `<span class="tag new">NUEVO</span>` : ''}<img src="${artThumb(d.art)}" alt=""><span class="price ${S.ink < c ? 'no' : ''}">${inkSvg(11)}${c}</span></button>`;
+    });
+    n = Math.ceil(cards.length / 8);
+    body = `<div class="bm-chips">${Object.entries(CATS).map(([id, l]) => chip('data-ssub', id, shopSub, l)).join('')}</div>${pages(cards, 'Nada por acá todavía')}`;
+    foot = `<span class="bm-hint">Tocá para ver el detalle antes de comprar</span>`;
+  } else {
+    body = `<div class="bm-lab">Pintar suelo <span>Arrastrá el dedo · gratis</span></div>
+      <div class="bm-sw">${Object.entries(GROUNDS).filter(([id]) => id !== 'snow').map(([id, g]) => `<button class="${tool === id ? 'on' : ''}" data-tool="${id}" aria-pressed="${tool === id}"><i style="background:${g.c}"></i>${g.n}</button>`).join('')}</div>
+      <div class="bm-lab">Dar forma</div>
+      <div class="bm-tools">${[['raise', 'Relieve', 'Subir 1·2·3'], ['ramp', 'Rampa', 'Une alturas'], ['fall', 'Cascada', 'Sube el agua']].map(([id, l, s]) => `<button class="${tool === id ? 'on' : ''}" data-tool="${id}" aria-pressed="${tool === id}">${TOOL_SVG[id]}<span>${l}<small>${s}</small></span></button>`).join('')}</div>`;
+  }
+  return `<div class="bm-sheet t-${trayTab}">
+    <div class="bm-grab"></div>
+    <div class="bm-seg">${SEG.map(([id, i, l]) => `<button class="${trayTab === id ? 'on' : ''}" data-seg="${id}">${ic(i)}${l}${id === 'inv' && inv.length ? ` <span class="n">${inv.length}</span>` : ''}</button>`).join('')}</div>
+    ${body}
+    ${foot ? `<div class="bm-foot">${foot}${pager(n)}</div>` : ''}
+  </div>`;
+}
+// Ficha de compra: qué es, qué da y cuánto cuesta; la isla muestra dónde va a aparecer
+function buyHTML(k, spot) {
+  const d = OBJS[k], c = objCost(k), mine = stored().filter(o => o.t === k), poor = S.ink < c, [e1, e2] = objEff(k), K = KANJI[d.k];
+  const read = K ? `${d.k} ${romaji((K.kun?.[0] || K.on?.[0] || '').replace(/[.-].*/, ''))} · ${K.m}` : d.k;
+  const lit = ['farol', 'chochin', 'brasero', 'incienso'].includes(d.art) && e1 !== 'De noche';
+  return `<div class="bm-sheet bm-buy">
+    <div class="bm-grab"></div>
+    <button class="bm-x" id="bbX" aria-label="Cerrar">${ic('x')}</button>
+    <div class="bb-hero"><div class="bb-art"><img src="${artThumb(d.art)}" alt=""></div>
+      <div><div class="bb-kind">${CATS[d.cat]} · ${d.w}×${d.h}</div><h2>${d.name}</h2><div class="bb-k">${read}</div></div></div>
+    <div class="bb-stats"><div><b>${e1}</b><small>${e2}</small></div><div><b>和 +${d.har}</b><small>Armonía</small></div><div><b>${lit ? 'De noche' : d.w + '×' + d.h}</b><small>${lit ? 'se enciende' : 'casillas'}</small></div></div>
+    ${mine.length ? `<div class="bb-own"><span>Ya tenés ${mine.length} en la Mochila</span><button data-place="${mine[0].id}">Usar el mío</button></div>` : ''}
+    <button class="bb-buy" id="bbBuy" ${poor ? 'disabled' : ''}>${poor ? `Faltan ${c - S.ink}` : 'Comprar'} <span>${inkSvg(14)}${c}</span></button>
+    <p class="bb-after">${poor ? 'Conseguí tinta cuidando a tus KANJŪ' : `Te quedan ${S.ink - c} 墨 · ${spot ? 'aparece en la casilla verde' : 'va a tu Mochila: no hay lugar libre'}`}</p>
+  </div>`;
+}
+// Seleccionado: nombre y acciones debajo del objeto (siguen a la cámara), flechas para arrastrar
+function ctxHTML(it) {
+  const isObj = !!it.t, name = isObj ? OBJS[it.t].name : `${it.k} · ${KANJI[it.k].m}`, sub = isObj ? `Nv${it.lv} · ${objEff(it.t).join(' ')}` : it.egg ? 'Huevo' : `Nv${it.lv}`;
+  return `<div class="bm-ctx" data-anchor="${it.id}" data-foot>
+    <i class="ar a1">${ic('left')}</i><i class="ar a2">${ic('right')}</i><i class="ar a3">${ic('left')}</i>
+    <div class="nm">${name}<small>${sub}</small></div>
+    <div class="acts">
+      <button class="bm-act" data-a="store" ${!isObj && storeFree() <= 0 ? 'disabled' : ''}><span>${ic('bagIn')}</span>Guardar</button>
+      ${isObj && it.lv < OBJ_MAX ? `<button class="bm-act up" data-a="up" ${S.ink < upCost(it) ? 'disabled' : ''}><span>${ic('arrowUp')}</span>Mejorar <em>墨 ${upCost(it)}</em></button>` : ''}
+      ${isObj ? `<button class="bm-act sell" data-a="sell"><span>${ic('trash')}</span>Vender <em>+${sellValue(it)}</em></button>` : ''}
     </div>
-    <button class="sb-a x" id="bbX" aria-label="Cerrar">${ic('x')}</button>
+  </div>`;
+}
+function miniHTML(it) {
+  const name = it.t ? OBJS[it.t].name.toLowerCase() : it.k;
+  return `<div class="bm-mini"><span class="bm-grab"></span>
+    <p><b>Moviendo ${it.t ? 'el ' + short(name) : 'a ' + name}</b>Arrastralo a una casilla verde. Tocá afuera para soltarlo.</p>
+    <button class="bm-circ" data-a="undo" aria-label="Deshacer" ${selFrom && (selFrom.x !== it.pos.x || selFrom.y !== it.pos.y) ? '' : 'disabled'}>${ic('undo')}</button>
+    <button class="bm-circ ok" data-a="x" aria-label="Confirmar">${ic('check')}</button>
   </div>`;
 }
 function bindBuild(stg) {
-  const row = $('.tray-row', stg); try { const k = 'tray.' + trayTab + invSub + shopSub; row.scrollLeft = +(sessionStorage.getItem(k) || 0); row.onscroll = () => sessionStorage.setItem(k, row.scrollLeft); } catch {}
-  stg.querySelectorAll('[data-tray]').forEach(b => b.onclick = () => { trayTab = b.dataset.tray; buyPick = null; if (trayTab === 'suelo') sel = null; tool = trayTab === 'suelo' ? (tool === 'move' ? 'grass' : tool) : 'move'; buzz(5); go(); });
+  const pg = $('.bm-pages', stg), dots = stg.querySelectorAll('.bm-pager i');
+  if (pg) {
+    const k = 'bm.' + trayTab + invSub + shopSub;
+    try { pg.scrollLeft = +(sessionStorage.getItem(k) || 0); } catch {}
+    const upd = () => { const i = Math.round(pg.scrollLeft / pg.clientWidth); dots.forEach((d, j) => d.classList.toggle('on', i === j)); try { sessionStorage.setItem(k, pg.scrollLeft); } catch {} };
+    pg.onscroll = upd; upd();
+  }
+  stg.querySelectorAll('[data-seg]').forEach(b => b.onclick = () => { trayTab = b.dataset.seg; buyPick = null; sel = null; tool = trayTab === 'suelo' ? (tool === 'move' ? 'grass' : tool) : 'move'; buzz(5); go(); });
   stg.querySelectorAll('[data-isub]').forEach(b => b.onclick = () => { invSub = b.dataset.isub; buzz(5); go(); });
-  stg.querySelectorAll('[data-ssub]').forEach(b => b.onclick = () => { shopSub = b.dataset.ssub; buyPick = null; buzz(5); go(); });
-  stg.querySelectorAll('[data-place]').forEach(b => b.onclick = () => {
-    const it = findIt(b.dataset.place); buyPick = null;
-    if (it.t ? shownObjs() >= objCap() : !monFits(it)) { buzz(30); return toast(it.t ? `置 La isla ya tiene ${objCap()} objetos · ampliala` : `獣 No quedan plazas para ${it.k} · guardá a otro KANJŪ`); }
-    if (settle(it) !== 'grid') { buzz(30); return toast('No hay lugar libre · mové o guardá algo'); }
-    it.prodAt ??= Date.now(); sel = it.id; buzz(12); save(); go();
+  stg.querySelectorAll('[data-ssub]').forEach(b => b.onclick = () => { shopSub = b.dataset.ssub; buzz(5); go(); });
+  stg.querySelectorAll('[data-tool]').forEach(b => b.onclick = () => { tool = b.dataset.tool; buzz(6); go(); });
+  $('#undo', stg) && ($('#undo', stg).onclick = () => { const prev = undoStack.pop(); if (!prev) return; S.tiles = JSON.parse(prev); buzz(8); save(); go(); });
+  const place = (id, at) => {
+    const it = findIt(id);
+    if (it.t ? shownObjs() >= objCap() : !monFits(it)) { buzz(30); return toast(it.t ? `置 La isla ya tiene ${objCap()} objetos · tocá + para ampliarla` : `獣 No quedan plazas para ${it.k} · guardá a otro KANJŪ`); }
+    if (settle(it, at) !== 'grid') { buzz(30); return toast('No hay lugar libre · mové o guardá algo'); }
+    it.prodAt ??= Date.now(); pick(it.id); selFrom = null; buzz(12); save(); go();
+  };
+  // Mochila: tocar lo pone en un lugar libre; arrastrarlo hacia arriba lo suelta en la casilla elegida
+  stg.querySelectorAll('[data-place]').forEach(b => {
+    b.onclick = () => { if (!b.dataset.dragged) place(b.dataset.place); };
+    b.onpointerdown = e => {
+      const x0 = e.clientX, y0 = e.clientY; let ghost = null;
+      const mv = ev => {
+        if (!ghost && y0 - ev.clientY > 18 && Math.abs(ev.clientX - x0) < y0 - ev.clientY) {
+          ghost = b.querySelector('img,svg').cloneNode(true); ghost.classList.add('bm-ghost'); document.body.append(ghost); b.dataset.dragged = 1; buzz(6);
+        }
+        if (ghost) { ev.preventDefault(); ghost.style.transform = `translate(${ev.clientX}px, ${ev.clientY}px) translate(-50%, -85%)`; }
+      };
+      const up = ev => {
+        removeEventListener('pointermove', mv); removeEventListener('pointerup', up); removeEventListener('pointercancel', up);
+        if (!ghost) return; ghost.remove(); setTimeout(() => delete b.dataset.dragged, 0);
+        if (ev.type === 'pointerup') { const t = tileAtScreen(ev.clientX, ev.clientY); if (t) place(b.dataset.place, t); }
+      };
+      addEventListener('pointermove', mv, { passive: false }); addEventListener('pointerup', up); addEventListener('pointercancel', up);
+    };
   });
-  stg.querySelectorAll('[data-pick]').forEach(b => b.onclick = () => { buyPick = buyPick === b.dataset.pick ? null : b.dataset.pick; sel = null; buzz(6); go(); });
+  stg.querySelectorAll('[data-pick]').forEach(b => b.onclick = () => { buyPick = b.dataset.pick; sel = null; buzz(6); go(); });
   $('#bbX', stg) && ($('#bbX', stg).onclick = () => { buyPick = null; go(); });
   $('#bbBuy', stg) && ($('#bbBuy', stg).onclick = () => {
-    const k = buyPick, d = OBJS[k], c = objCost(k);
+    const k = buyPick, d = OBJS[k], c = objCost(k), spot = previewSpot(k);
     if (S.ink < c) return;
     S.ink -= c; const o = newObj(k); buyPick = null; buzz([10, 40, 20]);
-    if (o.pos) { sel = o.id; toast(`¡Comprado! ${d.name} · arrastralo a su lugar`); } else { trayTab = 'inv'; invSub = 'obj'; toast(`¡Comprado! ${d.name} quedó en tu Mochila: no hay lugar libre`); }
+    if (spot && o.pos) { o.pos = { ...spot }; settle(o, spot); }
+    if (o.pos) { pick(o.id); selFrom = null; toast(`¡Comprado! ${d.name}`); } else { trayTab = 'inv'; invSub = 'obj'; toast(`¡Comprado! ${d.name} quedó en tu Mochila`); }
     save(); hud(); go();
   });
-  stg.querySelectorAll('.selbar [data-a]').forEach(b => b.onclick = () => {
+  stg.querySelectorAll('[data-a]').forEach(b => b.onclick = () => {
     const it = findIt(sel), a = b.dataset.a;
     if (a === 'x') sel = null;
+    else if (a === 'undo') { if (selFrom) it.pos = { ...selFrom }; }
     else if (a === 'store') { gather(it); it.pos = null; sel = null; toast(`${it.t ? OBJS[it.t].name : it.k} guardado en tu Mochila`); }
     else if (a === 'up') { gather(it); S.ink -= upCost(it); it.lv++; toast(`${OBJS[it.t].name} subió a Nv${it.lv}`); buzz(20); }
     else if (a === 'sell') { S.ink += sellValue(it); S.objs = S.objs.filter(o => o !== it); sel = null; toast('Vendido'); }
@@ -219,7 +295,7 @@ function tap3d(id) {
   const it = findIt(id);
   if (!it) { if (focusId) { focusId = null; setFocus(null); go(); } return; }
   buzz(8);
-  if (build) { if (it.away) return toast(`${it.k} está de viaje`); sel = sel === id ? null : id; buyPick = null; return go(); }
+  if (build) { if (it.away) return toast(`${it.k} está de viaje`); if (sel === id) sel = null; else pick(id); return go(); }
   if (it.t) return toast(`${OBJS[it.t].k} ${OBJS[it.t].name} Nv${it.lv} · ${OBJS[it.t].desc}`);
   if (it.away) return toast(`${it.k} está de viaje`);
   if (it.egg) {
@@ -250,7 +326,7 @@ function camHTML() {
 }
 // Modo Construir: mover objetos o editar el suelo (tiles, relieve, rampa y cascada)
 const TOOL_SVG = {
-  raise: '<span class="tl-lv"><i style="height:10px"></i><i style="height:22px"></i><i style="height:14px"></i></span>',
+  raise: '<svg viewBox="0 0 46 46" aria-hidden="true"><rect x="4" y="26" width="10" height="14" fill="#8DBF5E" stroke="#1A1220" stroke-width="2.5"/><rect x="18" y="10" width="10" height="30" fill="#8DBF5E" stroke="#1A1220" stroke-width="2.5"/><rect x="32" y="18" width="10" height="22" fill="#8DBF5E" stroke="#1A1220" stroke-width="2.5"/></svg>',
   ramp: '<svg viewBox="0 0 46 46" aria-hidden="true"><path d="M4 40 L42 40 L42 14 Z" fill="#8DBF5E" stroke="#2E2620" stroke-width="2.5" stroke-linejoin="round"/><path d="M14 34 L30 24" stroke="#2E2620" stroke-width="2.5" stroke-linecap="round"/><path d="M24 23 L30 24 L28 30" fill="none" stroke="#2E2620" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   fall: '<svg viewBox="0 0 46 46" aria-hidden="true"><path d="M4 14 H24 V40 H4 Z" fill="#A47D55" stroke="#2E2620" stroke-width="2.5"/><path d="M4 12 H26 V16 H4 Z" fill="#5AA5D2" stroke="#2E2620" stroke-width="2"/><path d="M26 14 C33 16 32 28 33 40" fill="none" stroke="#5AA5D2" stroke-width="6" stroke-linecap="round"/><path d="M24 40 H44" stroke="#5AA5D2" stroke-width="4" stroke-linecap="round"/></svg>',
 };
@@ -258,7 +334,7 @@ const TOOL_HINT = { move: 'Tocá un objeto o KANJŪ para moverlo, guardarlo o me
 function bindDock(v) {
   if (placing) { $('#cancelPlace', v).onclick = () => { placing = null; go(); }; }
   else {
-    $('#build', v) && ($('#build', v).onclick = () => { build = !build; tool = 'move'; sel = null; buyPick = null; trayTab = 'inv'; focusId = null; setFocus(null); buzz(6); go(); });
+    $('#build', v) && ($('#build', v).onclick = () => { build = !build; tool = 'move'; sel = null; buyPick = null; trayTab = 'inv'; undoStack.length = 0; focusId = null; setFocus(null); buzz(6); go(); });
     $('#store', v) && ($('#store', v).onclick = () => openStorage());
     $('#collectAll', v) && ($('#collectAll', v).onclick = e => harvest(placed(), e.currentTarget));
     $('#dojo', v) && ($('#dojo', v).onclick = openDojo);

@@ -80,7 +80,15 @@ export const OBJS = {
 const ART = { suzuri: 'suzuri', lantern: 'farol', pine: 'pino', pond: 'estanque', shrine: 'templo', bell: 'campana', torii: 'torii', brazier: 'brasero', stone: 'losa', rock: 'roca', shrub: 'arbusto', flowers: 'flores', fence: 'cerca', banner: 'nobori', bamboo: 'bambu', tree: 'arbol', altar: 'incienso', house: 'minka', sakura: 'cerezo', pagoda: 'pagoda', chochin: 'chochin', ema: 'ema', komainu: 'komainu', refugio: 'refugio', bridge: 'puente', sacred: 'sagrada', teahouse: 'casate', temple: 'templo', castle: 'castillo' };
 Object.entries(ART).forEach(([t, a]) => OBJS[t].art = a);
 OBJS.pond.flat = OBJS.stone.flat = true; OBJS.pond.water = true; OBJS.rock.water = true;
-OBJS.stone.hide = true; // los caminos ahora se pintan como casillas en el editor
+OBJS.stone.hide = true;
+// Categorías de la Tienda y la Mochila (lo que no está en ninguna es Decoración)
+export const CATS = { deco: 'Decoración', nat: 'Naturaleza', luz: 'Luces', edif: 'Edificios' };
+Object.entries({ nat: 'pine pond rock shrub flowers bamboo tree sakura sacred', luz: 'lantern brazier chochin altar', edif: 'shrine bell torii house pagoda refugio bridge teahouse temple castle' })
+  .forEach(([c, l]) => l.split(' ').forEach(t => OBJS[t].cat = c));
+Object.values(OBJS).forEach(d => d.cat ??= 'deco');
+// Efecto en dos líneas para la ficha de compra
+const EFF = { suzuri: ['+5 墨/h', 'producción'], lantern: ['+15%', 'EXP a vecinos'], pine: ['+40% 墨', 'Madera y Vida'], pond: ['+12% 墨', 'a vecinos'], shrine: ['+25% 墨', 'a vecinos'], bell: ['+1 墨', 'por acierto'], torii: ['−10%', 'tiempo de viaje'], brazier: ['+40% 墨', 'Fuego y Sol'], chochin: ['De noche', 'se enciende'], refugio: ['Refugio', 'para la lluvia'], sakura: ['Pétalos', 'sobre la isla'], altar: ['Incienso', 'humo de templo'] };
+export const objEff = t => EFF[t] || ['Adorno', 'decoración']; // los caminos ahora se pintan como casillas en el editor
 
 // Armonía que aporta cada objeto (los edificios también embellecen)
 Object.entries({ suzuri: 2, lantern: 3, pine: 3, pond: 5, shrine: 10, bell: 4, torii: 6, brazier: 3, stone: 1, rock: 1, shrub: 1, flowers: 2, fence: 1, banner: 2, bamboo: 2, tree: 3, altar: 4, house: 9, sakura: 9, pagoda: 18, chochin: 2, ema: 2, komainu: 3, refugio: 3, bridge: 4, sacred: 4, teahouse: 5, temple: 12, castle: 25 }).forEach(([t, h]) => OBJS[t].har = h);
