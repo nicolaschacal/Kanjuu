@@ -14,7 +14,7 @@ El estado de cada tarea vive en GitHub: rama `sprint-NN/ID-…` y su pull reques
 - Traducir la **interfaz de primer nivel**: HUD, barra inferior, Configuración y los títulos de cada hoja. El resto se migra en tareas siguientes
 - Script `tools/check_i18n.mjs` que detecta claves faltantes entre idiomas
 
-**Aceptación:** cambiar el idioma en Configuración cambia esos textos sin recargar ni perder la partida; el script pasa sin errores; en español todo se ve igual que antes.
+**Aceptación:** cambiar el idioma en Configuración cambia esos textos sin recargar ni perder la partida; el script pasa sin errores; en "Español (Río de la Plata)" todo se ve igual que antes y en español neutro los mismos textos aparecen con tú.
 
 ### S1-02 · Analítica de la Academia
 - Eventos: lección iniciada, terminada, abandonada (con pantalla en la que se dejó), error por tipo de ejercicio, tiempo por lección
