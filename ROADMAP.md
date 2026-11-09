@@ -1,108 +1,176 @@
 # KANJŪ — Roadmap hacia App Store y Google Play
 
-Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. El arte definitivo queda para después de validar el loop.
+Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. Revisado el 9 de noviembre de 2026 contra el código.
+
+## Orden de trabajo
+
+| # | Fase | Por qué en este orden |
+|---|---|---|
+| 1 | **Academia** | Es la mitad del juego que menos engancha hoy; sin aprendizaje que retenga no hay producto |
+| 2 | **Diseño de criaturas** (con aprobación previa) | El apego a las criaturas es el motor de la retención y de la monetización cosmética |
+| 3 | **Economía instrumentada** | Antes de tocar retención o cobrar hay que medir fuentes y sumideros y validar en servidor |
+| 4 | **Retención** | Recompensa de regreso, temporadas gratuitas, notificaciones, social liviano |
+| 5 | **Empaquetado nativo y tiendas** | Capacitor, requisitos legales, TestFlight / prueba interna |
+| 6 | **Monetización** | Recién con retención D7 validada y anti-trampas; se lanza con el soft launch |
+
+Santuario (con su modo editor) y Arenas están **cerrados**: diseño aprobado e implementado. Solo reciben ajustes.
+
+---
 
 ## 1. Núcleo jugable
-- ✅ Santuario vivo, criaturas SVG procedurales, interacción directa
+- ✅ Santuario vivo, criaturas que deambulan dentro de sus casillas, interacción directa
 - ✅ Evolución ramificada por EXP, fusión con recetas verificadas, renacimiento con legado
-- ✅ Expediciones asíncronas (9 regiones, desbloqueo por colección, huellas y exploraciones diarias por región)
-- ✅ Santuario en grilla de tiles: criaturas (1×1, 2×1, 2×2) y objetos ocupan casillas; modo construcción para mover
-- ✅ Almacén para criaturas y objetos fuera de juego; puerta como desborde; expandir terreno y almacén
-- ✅ Producción idle de tinta por criatura (sube con nivel, maestría, ánimo, estrellas, auras); se acumula hasta 8 h
-- ✅ Objetos con aura y mejora hasta Nv5 (puzzle de ubicación), objetos globales
-- ✅ Altar de invocación con tinta o boletos, piedad transparente, variantes doradas, despertar con duplicados
-- ✅ Rango de guardián que desbloquea terreno y objetos; calendario de 7 días sin reinicios
-- 🔜 Habitats por familia (bosque, cielo, agua…) con bonificación al convivir criaturas afines
-- 🔜 Rasgos de personalidad (tímido, juguetón…) que cambian animaciones y preferencias de entrenamiento
-- ✅ Arena 闘 estilo Clash Royale: duelos 3v3 con desafíos de kanji, tipos 五行, copas, 6 arenas, camino de copas y cofres que se abren estudiando
-- ✅ Familias 族 con premio al completarlas
-- 🔜 Duelos contra amigos (asíncronos) y temporadas de Arena
-- ⬜ Eventos de santuario: visitantes raros que solo aparecen si cumplís condiciones
-
-## 2. Aprendizaje (técnicas con evidencia)
-- ✅ Repetición espaciada (cajas de Leitner) en el Dojo con maestría por kanji
-- ✅ Recuperación activa: el jugador produce la respuesta, no solo la reconoce
-- ✅ Intercalado: cada repaso mezcla significado, lectura, audio y composición
-- ✅ Mnemotecnias por kanji y descomposición en componentes (codificación elaborativa)
-- ✅ Codificación dual: criatura + glifo + audio japonés
-- ✅ Feedback inmediato con historia al fallar y reaprendizaje en la misma sesión
-- ✅ Trazo, Lecturas, Palabra, Ensamblar, Escuchar
-- ✅ Capa para principiantes: furigana en la interfaz (desactivable), romaji en lecturas
-- ✅ Academia estilo Duolingo: 7 unidades (bienvenida, hiragana I y II, katakana, primeras frases, verbos y tiempos, lecturas)
-- ✅ 9 tipos de ejercicio: introducción con audio, kana↔romaji, escuchar, unir pares, significado, traducir, armar oraciones, completar partículas, tiempos verbales
-- ✅ Errores vuelven al final de la lección, combo, coronas (hasta 3), meta diaria de XP, premio por unidad, repaso espaciado de kana y vocabulario
-- ✅ Lecturas graduadas con tus kanji: furigana adaptativa (desaparece al dominar el kanji), traducción por oración, audio y preguntas de comprensión
-- ✅ IA propia del jugador (patrón heey.me): detección de proveedor, Gemini/Groq/Claude/OpenAI/OpenRouter; llamadas directas desde el dispositivo, sin costo de servidor
-- 🔜 App nativa: guardar la clave en Keychain/Keystore (plugin de almacenamiento seguro)
-- ✅ Cuentos generados con tus criaturas como protagonistas, solo con tus kanji, tu vocabulario y tu gramática; validación en servidor; biblioteca
-- ✅ "¿Por qué?": la IA explica cada error en la Academia
-- 🔜 Conversaciones guiadas con las criaturas (practicar frases en contexto)
-- 🔜 Más unidades: て-form, querer/poder, contadores, números, hora y fechas; test para saltar unidades
-- ✅ Orden de trazos real con KanjiVG: demostración animada y evaluación trazo por trazo
-- 🔜 Mnemotecnias propias del jugador (escribir su historia; las suyas se recuerdan mejor)
-- 🔜 Oraciones de contexto con furigana y audio
-- ⬜ Pruebas de nivel JLPT N5 → N1 como "torres" desbloqueables
-- ⬜ Estadísticas de retención para el jugador (curva del olvido personal)
-
-## 3. Contenido
-- ✅ 101 kanji en los 5 niveles KANJŪ (24 fundamentales; recetas verificadas con KanjiVG, ver docs/NIVELES.md)
-- ✅ 16 piezas 部品 como accesorios (宀 儿 攵 辶 广 亠 冖 疒 彳 尸 厂 冂 勹 彡 癶 廴): se equipan para evolucionar o se suman en la fusión; se consiguen en Tienda, viajes y Academia
-- 🔜 Más piezas y los kanji comunes que habilitan (objetivo: N5 completo)
-- 🔜 Pipeline de datos: kanji + componentes + lecturas desde KANJIDIC2 / KanjiVG, revisión humana de recetas
-- 🔜 Llevar a 100 kanji (todo N5) con niveles KANJŪ 4–5
-- ⬜ Temporadas temáticas (estaciones del año, festivales) con regiones nuevas
-
-## 4. Retención y economía
-- ✅ Misiones diarias y semanales sin castigo, logros cobrables, objetivo guiado
-- ✅ Primera sesión guiada (6 pasos con recompensa) y repaso del día unificado (kanji + kana + vocabulario)
-- ✅ Tinta 墨 como moneda blanda; tienda con ampliaciones, objetos y decoraciones
-- 🔜 Recompensa de regreso ("mientras no estabas…") en vez de rachas punitivas
-- 🔜 Pase de temporada gratuito con recompensas cosméticas
-- 🔜 Notificaciones locales: expedición lista, kanji para repasar (opt-in)
-- ⬜ Amigos: visitar santuarios, intercambiar huevos, ranking semanal del Dojo
-- ✅ Balance de economía con simulación de 30 días (docs/ECONOMIA.md); el Atlas exige maestría
-- 🔜 Validar con telemetría real (fuentes y sumideros de tinta)
-
-## 5. Monetización ética (no en el MVP)
-- ⬜ Moneda premium 玉 solo para cosméticos, decoraciones y ampliaciones extra
-- ⬜ Pase de temporada premium (cosmético + regiones extra)
-- ⬜ Paquetes de expansión (regiones, familias de kanji)
-- ⬜ Sin vender evoluciones ni progreso lingüístico; sin energía que bloquee jugar
-
-## 6. Cuenta y backend
-- ✅ Cuenta email/contraseña, guardado en la nube (Vercel + Neon)
-- ✅ Límite de intentos de login (por email e IP), código de recuperación, cambiar contraseña
-- 🔜 Recuperación por email (Resend) como alternativa al código
-- 🔜 Validación de partida en servidor (anti-trampas en economía)
-- ⬜ Sign in with Apple (obligatorio en iOS si hay otros logins sociales) y Google
-- ✅ Borrado de cuenta desde la app (requisito de App Store y Google Play)
-
-## 7. Empaquetado nativo
-- 🔜 Capacitor: proyecto iOS y Android desde esta misma web
-- 🔜 Haptics, audio y notificaciones con plugins nativos
-- ⬜ Íconos, splash, capturas, video de vista previa para las tiendas
-- ⬜ Compras in-app con StoreKit / Google Play Billing (RevenueCat)
-- ⬜ Analítica (eventos del loop, embudo de onboarding) y reporte de errores (Sentry)
-
-## 8. Requisitos de publicación
-- ⬜ Política de privacidad y términos; etiquetas de privacidad de App Store; formulario de seguridad de datos de Play
-- ⬜ Clasificación por edad (IARC); revisar si apunta a menores (COPPA / Families)
-- ⬜ Accesibilidad: tamaños de texto, contraste, modo sin animaciones (ya respeta "reducir movimiento")
-- ⬜ Localización: español, inglés, portugués
-- ⬜ TestFlight y prueba interna de Play con 20–50 jugadores; iterar retención D1/D7
-
-## 9. Arte y audio (fase gráfica)
-- ✅ Santuario 3D (three.js): isla diorama con luz y sombras reales, día/noche según la hora, cielo, capas de papel, mar de nubes, luciérnagas, faroles que se encienden de noche; criaturas como recortes de papel 2D que deambulan dentro de sus casillas
-- ✅ La grilla de tiles sigue mandando y sólo se ve en modo construcción (huellas y casillas válidas)
-- ✅ Isla siempre básica (pasto, acantilados, rocas flotantes); la decoración la arma el jugador
-- ✅ 3 niveles de isla comprables (5×5, 7×7, 9×9) con tope de KANJŪ (4/6/8) y de objetos (12/24/40)
-- ✅ Decoración 飾 en la Tienda (camino de piedra, rocas, arbustos, flores, cercas, estandartes, bambú, árbol, altar de incienso, casita, cerezo, pagoda); cada objeto suma 和 Armonía (+1% tinta por punto, tope +60%) y se mejora
-- ✅ Vista de primer plano: tocar un KANJŪ acerca la cámara y muestra su tarjeta (Entrenar, Mimar, Ficha)
+- ✅ Expediciones asíncronas (9 regiones, desbloqueo por colección, huellas y viajes diarios por región)
+- ✅ Grilla de tiles: criaturas (1×1, 2×1, 2×2) y objetos ocupan casillas
+- ✅ **Modo editor (Construir):** suelo con 7 tipos de casilla (pasto, musgo, tierra, arena, losa, nieve, agua), relieve 0–3 con rampas, cascadas; la grilla solo se ve en este modo
 - ✅ Almacén por categorías: KANJŪ, Objetos, Evolución (piezas) y Consumibles
-- ✅ Distribución orgánica: cada criatura nueva va a la casilla más alejada de las demás
-- ✅ Criaturas de papel con silueta por tipo 五行, ojos grandes, sombra cel y kanji con pincel
-- ✅ Arena 3D: patio de templo de noche, torii, faroles de papel, escenario de madera; ataques con proyectil del color del tipo, onda de impacto y anillo de objetivo
-- 🔜 Ficha de criatura con escena 3D
-- ⬜ Criaturas ilustradas por familia con 3 etapas visuales y animaciones idle/feliz/triste
-- ⬜ Fondos del santuario por hábitat, día/noche según la hora real
+- ✅ Producción idle de tinta por criatura (nivel, maestría, ánimo, estrellas, auras)
+- ✅ Objetos con aura y mejora hasta Nv5, objetos globales, Armonía 和 por decoración
+- ✅ Altar de invocación con tinta o boletos, piedad transparente, variantes doradas, despertar con duplicados
+- ✅ Rango de guardián, calendario de 7 días sin reinicios
+- ✅ **Arena 闘 3v3:** desafíos de kanji, tipos 五行, copas, camino de copas, cofres que se abren estudiando, reloj por turno y bonus 必殺
+- ✅ **6 arenas de papel** con mismo tamaño (5×10) y misma cámara: Hanami en Kioto, bambú de Arashiyama, Fushimi Inari, Sapporo nevado, castillo de Osaka, monte Fuji
+- ✅ Familias 族 con premio al completarlas
+- 🔜 Al dominar una arena se obtienen sus objetos para el santuario
+- 🔜 Rasgos de personalidad (tímido, juguetón…) que cambian animaciones y preferencias
+- 🔜 Hábitats por familia con bonificación al convivir criaturas afines
+- ⬜ Eventos de santuario: visitantes raros que aparecen si cumplís condiciones
+
+## 2. Academia y aprendizaje — FASE 1
+Hecho:
+- ✅ Repetición espaciada (Leitner) en el Dojo con maestría por kanji
+- ✅ Recuperación activa, intercalado, mnemotecnias, codificación dual, feedback con historia al fallar
+- ✅ Trazo con orden real (KanjiVG), Lecturas, Palabra, Ensamblar, Escuchar
+- ✅ Furigana desactivable, romaji en lecturas
+- ✅ Academia con 8 unidades: Bienvenida, Piezas 部品, Hiragana I y II, Katakana, Primeras frases, Verbos y tiempos, Lecturas
+- ✅ 9 tipos de ejercicio, coronas, meta diaria de XP, premio por unidad, repaso espaciado de kana y vocabulario
+- ✅ Lecturas graduadas con furigana adaptativa; cuentos con IA usando tus criaturas; "¿Por qué?" explica cada error
+
+Siguiente, en orden:
+1. 🔜 **Analítica de la Academia:** abandono por lección, tasa de error por tipo de ejercicio, tiempo por pantalla
+2. 🔜 **Test de ubicación** para saltar unidades (kana ya conocido, etc.)
+3. 🔜 **Mapa de unidades** con camino y una criatura guía que avanza con el jugador
+4. 🔜 **Cada unidad termina desbloqueando un kanji o una pieza del juego** (la Academia alimenta el santuario)
+5. 🔜 **Ejercicios no basados en elegir:** escribir kana con el dedo, armar frases tocando tarjetas, dictado corto, completar con teclado kana
+6. 🔜 **Más unidades:** て-form, querer/poder, contadores, números, hora y fechas
+7. 🔜 Conversaciones guiadas con las criaturas (frases en contexto, con IA propia)
+8. 🔜 Mnemotecnias propias del jugador
+9. ⬜ Torres JLPT N5 → N1 desbloqueables
+10. ⬜ Curva del olvido personal (estadísticas de retención para el jugador)
+
+## 3. Diseño de criaturas — FASE 2 (aprobar antes de producir)
+- 🔜 **Propuesta de sistema visual:** silueta por tipo 五行 (木 vertical y orgánica, 火 puntiaguda, 土 baja y pesada, 金 angular, 水 fluida), kanji a pincel sobre el cuerpo, ojos grandes, sombra cel, textura de papel
+- 🔜 **Piloto: familia 木** (木 林 森 本 休 杏) × 3 etapas = 18 sprites
+- 🔜 **Biblia de estilo:** paleta, prompt base, ejemplos aprobados; pipeline IA gratuita → quitar fondo → limpieza → exportación
+- 🔜 Criterio de aceptación: reconocible a 64 px y coherente con el papel del santuario
+- ⬜ Animaciones idle / feliz / triste; secuencia de evolución
+- ⬜ Escalar al resto de familias (101 kanji + 16 piezas)
+- ⬜ Ficha de criatura con escena 3D
 - ⬜ Música ambiental y efectos por acción (tocar, evolucionar, fusionar)
+
+## 4. Contenido
+- ✅ 101 kanji en los 5 niveles KANJŪ (recetas verificadas con KanjiVG, ver docs/NIVELES.md)
+- ✅ 16 piezas 部品 como accesorios
+- 🔜 Pipeline de datos desde KANJIDIC2 / KanjiVG con revisión humana de recetas
+- 🔜 N5 completo y más piezas
+- ⬜ Contenido de temporada (ver §6)
+
+---
+
+## 5. Economía del juego — FASE 3
+
+### Estado actual
+- Monedas: **tinta 墨** (blanda), **boletos** (invocación), **piezas 部品** (material de evolución)
+- Fuentes: producción idle (tope 6 h), repasos, entrenar, misiones, viajes, cofres de Arena, premios de unidad
+- Sumideros: invocación, tienda (ampliaciones, objetos +50% por copia, decoración), mejoras de objetos, niveles de isla
+- Simulación de 30 días en docs/ECONOMIA.md (hecha con 40 kanji)
+
+### Principios
+- **Estudiar rinde más que esperar:** la tinta por aprendizaje debe superar a la idle en todo perfil de jugador
+- **Máximo 3 monedas visibles** al principio (tinta, boletos y, más adelante, jade 玉); el resto se muestra al desbloquearse
+- **Todo kanji y toda evolución se consiguen gratis**; el dinero nunca acelera el aprendizaje
+
+### Tareas
+1. 🔜 **Telemetría de economía:** cada evento de tinta/boletos/piezas con fuente y sumidero; panel de saldo medio por día de juego
+2. 🔜 **Validación de partida en servidor** (anti-trampas): el servidor recalcula producción idle, premios y compras; requisito para cualquier monetización
+3. 🔜 **Re-simular con 101 kanji y la Arena** (hoy la simulación no incluye cofres ni copas)
+4. 🔜 **Sumideros de largo plazo** para que la tinta no se acumule sin sentido: decoración por niveles, variantes de suelo del editor, mejoras de objetos más caras en Nv4–5, coste de renacimiento que devuelve legado
+5. 🔜 **Precios de la Tienda que rotan a diario** (3 ofertas en tinta) para dar un motivo de visita sin castigar
+6. ⬜ **Objetivos de balance** a validar con datos: primera evolución en el día 1, primera fusión en el día 2, 50% del Atlas en la semana 3, Atlas completo en 2–3 meses para jugador normal
+7. ⬜ Intercambio limitado entre amigos (regalos diarios de tinta, no de criaturas) para no romper la economía
+
+---
+
+## 6. Retención — FASE 4
+
+### Ritmo de visitas (sin rachas punitivas)
+| Ciclo | Qué ofrece | Estado |
+|---|---|---|
+| **Cada sesión (2–5 min)** | Recoger tinta, repaso del día, abrir cofre, mandar viajes | ✅ |
+| **Diario** | Misiones diarias, meta de XP, viajes renovados, ofertas de tienda | ✅ / 🔜 ofertas |
+| **Semanal** | Misiones semanales, **familia de la semana** (bonus al entrenar esos kanji), torneo de Arena de fin de semana | ✅ / 🔜 |
+| **Temporada (4–6 semanas)** | Tema estacional, pase gratuito, arena y objetos temporales, región nueva | 🔜 |
+| **Largo plazo** | Atlas, familias, camino de copas, torres JLPT, renacimiento, embellecer el santuario | ✅ / ⬜ |
+
+### Tareas
+1. 🔜 **Desbloqueo progresivo de sistemas:** día 1 solo santuario, entrenar y Academia; Arena, Altar, editor y expediciones se abren con hitos (resuelve la sobrecarga inicial)
+2. 🔜 **Recompensa de regreso** ("mientras no estabas…"): resumen de lo que hicieron tus KANJŪ, tinta extra escalonada por días de ausencia (con tope), nunca pérdida
+3. 🔜 **Constancia semanal en vez de racha:** premio por estudiar 4 de 7 días; perderse un día no reinicia nada
+4. 🔜 **Notificaciones locales opt-in:** expedición lista, kanji para repasar, cofre abierto; máximo 1 por día, con horario elegido por el jugador, sin tono culposo
+5. 🔜 **Primera temporada: Otoño de momiji 紅葉** (objetos de arce, arena temática, misiones con kanji de la estación); luego Invierno, Sakura, Verano/festivales
+6. 🔜 **Pase de temporada gratuito:** pista de recompensas que se llena estudiando y jugando (cosméticos, boletos, decoración)
+7. 🔜 **Eventos de santuario:** visitantes raros que aparecen si cumplís condiciones (por ejemplo, un lago y 3 KANJŪ de tipo 水)
+8. ⬜ **Social liviano:** visitar santuarios de amigos, dejar un regalo diario, ranking semanal del Dojo por ligas (como las ligas de Duolingo), duelos asíncronos contra amigos
+9. ⬜ **Temporadas de Arena** con reinicio parcial de copas y premio cosmético por la mejor arena alcanzada
+10. ⬜ Medir D1/D7/D30, sesiones por día y duración; objetivos iniciales: D1 ≥ 40%, D7 ≥ 15%, D30 ≥ 7%, 2–3 sesiones por día
+
+---
+
+## 7. Empaquetado nativo y publicación — FASE 5
+- 🔜 Capacitor: proyecto iOS y Android desde esta misma web
+- 🔜 Clave de IA en Keychain/Keystore (almacenamiento seguro)
+- 🔜 Haptics, audio y notificaciones con plugins nativos
+- 🔜 Recuperación de cuenta por email (Resend)
+- ⬜ Sign in with Apple y Google
+- ⬜ Analítica de producto (embudo de onboarding, eventos del loop) y reporte de errores (Sentry)
+- ⬜ Íconos, splash, capturas y video para las tiendas
+- ⬜ Política de privacidad y términos; etiquetas de privacidad (App Store) y seguridad de datos (Play)
+- ⬜ Clasificación por edad (IARC); decidir si apunta a menores (afecta anuncios y COPPA / Families)
+- ⬜ Accesibilidad: tamaño de texto, contraste, sin animaciones
+- ⬜ Localización: español, inglés, portugués
+- ⬜ TestFlight y prueba interna de Play con 20–50 jugadores; soft launch en 1–2 países antes del lanzamiento global
+
+---
+
+## 8. Monetización — FASE 6 (ética, después de validar retención)
+
+### Líneas rojas
+- Nunca vender kanji, evoluciones, maestría ni progreso lingüístico
+- Nunca vender ventaja de combate en la Arena (estadísticas, criaturas exclusivas)
+- Sin energía que bloquee jugar ni esperas que solo se saltan pagando
+- **No vender boletos de invocación con dinero real** (evita las regulaciones de cajas de botín, y la invocación da criaturas, que son progreso)
+- Ningún tipo de compra presionada: sin contadores falsos ni ofertas que aparecen al perder
+
+### Productos, por prioridad
+| Producto | Qué da | Precio de referencia |
+|---|---|---|
+| **Pase de temporada premium** | Segunda pista del pase: estilos de papel para criaturas (washi, origami, sumi-e), decoración temática, marco de perfil | USD 4,99 por temporada |
+| **Jade 玉 (moneda premium)** | Cosméticos: estilos de criaturas, temas de isla, tipos de suelo especiales, decoración premium, efectos de ataque en la Arena | Paquetes desde USD 0,99 |
+| **Mecenas del santuario** (suscripción) | Comodidad, nunca poder: producción acumula 12 h en vez de 6, una cola extra de viajes, un espacio más de cofre, tema de isla exclusivo | USD 2,99–3,99 por mes |
+| **Paquetes de expansión** | Regiones con historia, decoración y misiones extra; los kanji que contengan también se consiguen gratis por otra vía | USD 2,99–4,99 |
+| **Paquete de bienvenida** (una sola vez) | Decoración y jade con descuento, disponible la primera semana | USD 1,99 |
+| *Anuncios con recompensa* (decisión pendiente) | Opcionales, máx. 3 por día (duplicar tinta de un viaje); se descartan si el juego apunta a menores | — |
+
+### Tareas
+1. ⬜ Requisitos previos: validación en servidor (§5), cuentas con Apple/Google, política de privacidad
+2. ⬜ Compras in-app con StoreKit / Google Play Billing vía RevenueCat, validación de recibos en servidor
+3. ⬜ Tienda de jade separada de la tienda de tinta, con precios regionales (Uruguay y LatAm)
+4. ⬜ Primer pase de temporada premium junto con la segunda temporada
+5. ⬜ Medir conversión (objetivo 2–4% de pagadores) y que la retención de no pagadores no caiga
+
+---
+
+## Decisiones pendientes del director
+- ¿El juego apunta a menores? Define anuncios, clasificación y datos que se pueden pedir
+- Precio exacto del pase y la suscripción tras ver retención en el soft launch
+- Si los paquetes de expansión agregan kanji nuevos o solo historia y cosméticos
