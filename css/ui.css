@@ -766,3 +766,15 @@ h4.gh .grade{font-size:13px;padding:3px 9px 3px 3px}h4.gh .grade i{width:20px;he
 .ulabel.e{cursor:pointer}
 .ulabel.e[aria-current="true"] .lt{background:#E8452C;color:#fff;border-color:#1A1220}
 .ulabel.e[aria-current="true"] .lt small{color:#FFE1D9}
+/* Reloj del turno (verde → rojo al final) + bonus 必殺 con tres llamas */
+.tturn{width:100%;max-width:360px;height:12px;border-radius:8px;background:#0A040A;border:2px solid var(--paper);overflow:hidden;box-shadow:0 2px 0 var(--line)}
+.tturn i{display:block;height:100%;width:100%;border-radius:6px;background:linear-gradient(90deg,#E8452C 0%,#F2B33D 30%,#7FC86A 60%);background-size:360px 100%;transition:width linear}
+.tturn.idle i{opacity:.25}
+.bonus{display:flex;align-items:center;gap:3px;background:var(--paper);color:var(--line);border:2px solid var(--line);border-radius:12px;padding:2px 9px 2px 5px;box-shadow:0 2px 0 var(--line);font-size:11px}
+.bonus span{width:18px;height:18px;display:grid;place-items:center;color:#C9B8A0}
+.bonus span svg{width:16px;height:16px}
+.bonus span.on{color:#E8452C}.bonus span.on svg{fill:#F2B33D}
+.bonus b{font-weight:800;margin-left:3px}
+.bonus em{font-style:normal;font-weight:800;margin-left:6px;background:var(--gold);border-radius:7px;padding:0 6px}
+.bonus.ready{background:#E8452C;color:#fff;animation:glow .8s infinite}.bonus.ready span.on{color:#fff}
+.duel:not(.d3) .tturn{width:60%}

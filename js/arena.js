@@ -123,6 +123,11 @@ export function startDuel() {
   const a = A(), mine = myTeam().map(c => ({ c, ...stats(c), max: stats(c).hp })), foes = rivalTeam().map(c => ({ c, ...stats(c), max: stats(c).hp }));
   const rival = RIVALS[Math.random() * RIVALS.length | 0];
   let combo = 0, special = 0, over = false, busy = false, pick = 0;
+  // Reloj del turno: si no atacás a tiempo, el rival ataca igual
+  const TURN = 12000; let turnEnd = 0, turnTO = 0;
+  const startTurn = () => { clearTimeout(turnTO); if (over) return; turnEnd = Date.now() + TURN; turnTO = setTimeout(timeUp, TURN); };
+  const stopTurn = () => { clearTimeout(turnTO); turnEnd = 0; };
+  async function timeUp() { if (busy || over) return; busy = true; stopTurn(); combo = 0; buzz([20, 40, 20]); render('⏳ ¡Se acabó tu tiempo!'); await wait(900); await foeTurn(); }
   // Objetivo elegido: tocás un rival para apuntarle; si cae, pasa al siguiente que siga en pie
   const target = () => foes[pick]?.hp > 0 ? foes[pick] : alive(foes)[0];
   const aim = j => { if (busy || foes[j]?.hp <= 0 || pick === j) return; pick = j; buzz(8); render(); };
@@ -131,22 +136,30 @@ export function startDuel() {
   const alive = s => s.filter(x => x.hp > 0);
   const has3d = webgl();
   if (has3d) { w.classList.add('d3'); w.innerHTML = `<div class="duel-stage"><div class="stage-ov"></div></div><div class="duel-ui"></div>`; }
+  // Barra de tiempo del turno + bonus 必殺 (tres llamas que se llenan con aciertos) y combo
+  const meters = () => {
+    const left = turnEnd ? Math.max(0, turnEnd - Date.now()) : 0, f = left / TURN;
+    return `<div class="tturn ${busy ? 'idle' : ''}" role="timer" aria-label="Tiempo del turno"><i style="width:${busy ? 0 : f * 100}%" data-left="${busy ? 0 : left}"></i></div>
+      <div class="bonus ${special >= 3 ? 'ready' : ''}" aria-label="Bonus especial ${special} de 3">${[0, 1, 2].map(k => `<span class="${k < special ? 'on' : ''}">${ic('flame')}</span>`).join('')}<b>${special >= 3 ? '必殺 ¡listo!' : '必殺'}</b>${combo >= 2 ? `<em>連 ×${combo}</em>` : ''}</div>`;
+  };
+  const runBar = () => { const i = w.querySelector('.tturn i'); if (!i || busy) return; const left = +i.dataset.left; requestAnimationFrame(() => requestAnimationFrame(() => { i.style.transitionDuration = left + 'ms'; i.style.width = '0%'; })); };
   function render(msg = '') {
     if (has3d) return render3d(msg);
     const ef = target();
     w.innerHTML = `<div class="duel-head"><span>${rival} · 杯${Math.max(0, a.cups + Math.round(Math.random() * 60 - 30))}</span><button class="x">✕</button></div>
       <div class="side foes">${foes.map((f, j) => unit(f, true, f === ef)).join('')}</div>
-      <div class="duel-mid"><p>${msg || 'Elegí quién ataca'}</p><div class="sp"><i style="width:${special / 3 * 100}%"></i><span>必殺 ${special >= 3 ? '¡LISTO!' : ''}</span></div>${combo >= 2 ? `<b class="combo hot">炎 ${combo}</b>` : ''}</div>
+      <div class="duel-mid"><p>${msg || 'Elegí un rival y quién ataca'}</p>${meters()}</div>
       <div class="side mine">${mine.map(f => unit(f, false)).join('')}</div>`;
     w.querySelector('.x').onclick = () => { if (confirm('¿Rendirte? Perdés copas.')) finish(false); };
     w.querySelectorAll('[data-atk]').forEach(b => b.onclick = () => !busy && attack(mine[+b.dataset.atk]));
     w.querySelectorAll('[data-tgt]').forEach(b => b.onclick = () => aim(+b.dataset.tgt));
+    runBar();
   }
   // Arena 3D: la escena muestra a las criaturas; arriba de cada una, su nombre y vida
   function render3d(msg) {
     const ef = target(), ui = w.querySelector('.duel-ui'), stage = w.querySelector('.duel-stage'), ov = stage.querySelector('.stage-ov');
     ui.innerHTML = `<div class="duel-head"><span class="rv"><i>敵</i>${rival}<small>杯${Math.max(0, a.cups + 12)}</small></span><button class="x" aria-label="Rendirse">✕</button></div>
-      <div class="duel-mid"><p>${msg || 'Elegí un rival y tocá a tu KANJŪ para atacar'}</p><div class="sp"><i style="width:${special / 3 * 100}%"></i><span>必殺 ${special >= 3 ? '¡LISTO!' : ''}</span></div>${combo >= 2 ? `<b class="combo hot">連 ×${combo}</b>` : ''}</div>`;
+      <div class="duel-mid"><p>${msg || 'Elegí un rival y tocá a tu KANJŪ para atacar'}</p>${meters()}</div>`;
     const lab = (f, enemy, j) => {
       const t = TYPES[typeOf(f.c.k)], mult = !enemy && ef ? typeMult(typeOf(f.c.k), typeOf(ef.c.k)) : 1;
       return `<button class="ulabel ${enemy ? 'e' : 'm'} ${f.hp <= 0 ? 'down' : ''}" data-anchor="${enemy ? 'e' : 'm'}${j}" ${enemy ? '' : 'data-foot'} ${f.hp <= 0 ? 'disabled' : enemy ? `data-tgt="${j}"` : `data-atk="${j}"`} ${enemy && f === ef ? 'aria-current="true"' : ''} style="--t:${t.col}">
@@ -159,22 +172,23 @@ export function startDuel() {
     ui.querySelector('.x').onclick = () => { if (confirm('¿Rendirte? Perdés copas.')) finish(false); };
     ov.querySelectorAll('[data-atk]').forEach(b => b.onclick = () => !busy && attack(mine[+b.dataset.atk]));
     ov.querySelectorAll('[data-tgt]').forEach(b => b.onclick = () => aim(+b.dataset.tgt));
+    runBar();
   }
   function fx(fromSel, toSel, cls1, txt, from, to, k) {
     if (!has3d) { hit(fromSel, cls1); hit(toSel, 'shake', txt); return; }
     arenaHit(from, to, TYPES[typeOf(k)].col).then(() => emoteAt(to, txt, 'dmg3d', 950));
   }
-  function unit(f, enemy, target) {
+  function unit(f, enemy, isTgt) {
     const t = TYPES[typeOf(f.c.k)], ef = target();
     const mult = !enemy && ef ? typeMult(typeOf(f.c.k), typeOf(ef.c.k)) : 1;
-    return `<button class="unit ${f.hp <= 0 ? 'down' : ''} ${target ? 'target' : ''}" ${f.hp <= 0 ? 'disabled' : enemy ? `data-tgt="${foes.indexOf(f)}"` : `data-atk="${mine.indexOf(f)}"`} data-u="${enemy ? 'e' : 'm'}${(enemy ? foes : mine).indexOf(f)}" style="--t:${t.col}">
+    return `<button class="unit ${f.hp <= 0 ? 'down' : ''} ${isTgt ? 'target' : ''}" ${f.hp <= 0 ? 'disabled' : enemy ? `data-tgt="${foes.indexOf(f)}"` : `data-atk="${mine.indexOf(f)}"`} data-u="${enemy ? 'e' : 'm'}${(enemy ? foes : mine).indexOf(f)}" style="--t:${t.col}">
       <span class="tb">${t.k}</span>${!enemy && mult !== 1 && f.hp > 0 ? `<span class="adv ${mult > 1 ? 'up' : 'down'}">${mult > 1 ? '▲' : '▼'}</span>` : ''}
       ${creatureSVG(f.c.k, { mood: f.hp / f.max > .3 ? 1 : .2, gold: f.c.gold })}<b>${f.c.k}</b><small>Lv${f.c.lv}</small>
       <div class="hp"><i style="width:${Math.max(0, f.hp / f.max * 100)}%"></i></div></button>`;
   }
   async function attack(me) {
-    const foe = target(); if (!foe || me.hp <= 0) return;
-    busy = true;
+    const foe = target(); if (!foe || me.hp <= 0 || busy) return;
+    busy = true; stopTurn();
     const res = await challenge(me.c.k, w);
     const mult = typeMult(typeOf(me.c.k), typeOf(foe.c.k));
     let dmg = me.atk * mult * (res.ok ? (res.fast ? 1.3 : 1) : .3);
@@ -188,15 +202,19 @@ export function startDuel() {
     buzz(res.ok ? 20 : 8);
     await wait(has3d ? 1200 : 900);
     if (!alive(foes).length) return finish(true);
-    // Turno rival
-    const ef = alive(foes)[0], targets = alive(mine), tg = targets[Math.random() * targets.length | 0];
+    await foeTurn();
+  }
+  // Turno rival: ataca uno de los que siguen en pie; después vuelve a correr tu reloj
+  async function foeTurn() {
+    if (over) return;
+    const ready = alive(foes), ef = ready[Math.random() * ready.length | 0], targets = alive(mine), tg = targets[Math.random() * targets.length | 0];
     const em = typeMult(typeOf(ef.c.k), typeOf(tg.c.k)), ed = Math.max(1, Math.round(ef.atk * em * (.8 + Math.random() * .3)));
     tg.hp -= ed;
     render(`${ef.c.k} ataca a ${tg.c.k}: <b>${ed}</b>${em > 1 ? ' · ¡Muy efectivo!' : em < 1 ? ' · Poco efectivo' : ''}`);
     fx(`[data-u="e${foes.indexOf(ef)}"]`, `[data-u="m${mine.indexOf(tg)}"]`, 'lunge2', `-${ed}`, 'e' + foes.indexOf(ef), 'm' + mine.indexOf(tg), ef.c.k);
     await wait(has3d ? 1200 : 900);
     if (!alive(mine).length) return finish(false);
-    busy = false; render();
+    busy = false; startTurn(); render();
   }
   function hit(sel, cls, txt) {
     const el = w.querySelector(sel); if (!el) return;
@@ -204,7 +222,7 @@ export function startDuel() {
     if (txt) { const f = document.createElement('div'); f.className = 'dmg'; f.textContent = txt; el.append(f); setTimeout(() => f.remove(), 900); }
   }
   function finish(win) {
-    if (over) return; over = true;
+    if (over) return; over = true; stopTurn();
     a.played++;
     const ar0 = arenaIdx(a.cups), floor = arenaOf(a.cups).min;
     const delta = win ? 26 + Math.round(Math.random() * 8) : -Math.min(18 + Math.round(Math.random() * 6), a.cups - floor);
@@ -228,7 +246,7 @@ export function startDuel() {
     w.querySelector('.btn').onclick = () => { w.remove(); hud(); go(); };
     if (promoted) buzz([30, 80, 30, 80, 60]);
   }
-  render();
+  startTurn(); render();
 }
 const wait = ms => new Promise(r => setTimeout(r, ms));
 

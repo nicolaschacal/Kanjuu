@@ -1016,7 +1016,9 @@ export function mountArena(host, { items, onTap, scene: idx = 0 }) {
     const size = d.side === 'm' ? 1.5 : 1.38, svg = d.side === 'm' ? backSVG(d.svg) : d.svg;
     if (!o || o.svg !== svg) {
       if (o) W.scene.remove(o.group);
-      const s = makeSprite(svg, size, d.id); o = { ...s, svg, lunge: o?.lunge, dn: o?.dn }; W.scene.add(o.group); W.items.set(d.id, o);
+      const s = makeSprite(svg, size, d.id); o = { ...s, svg, lunge: o?.lunge, dn: o?.dn, lx: o?.lx, lz: o?.lz };
+      const [bx, bz] = SLOT[d.side][d.slot]; o.group.position.set(bx, 0, bz); // nace en su casilla, no en el centro
+      W.scene.add(o.group); W.items.set(d.id, o);
     }
     o.d = d; o.flip = 1;
   });
@@ -1028,7 +1030,10 @@ export function mountArena(host, { items, onTap, scene: idx = 0 }) {
 export function arenaHit(fromId, toId, color = '#FFD27A') {
   const W = E?.worlds.arena; if (!W) return Promise.resolve();
   const a = W.items.get(fromId), b = W.items.get(toId); if (!a || !b) return Promise.resolve();
-  const pa = a.group.position.clone(), pb = b.group.position.clone();
+  // Desde y hacia la casilla base de cada uno (la posición viva puede estar a mitad de embestida o recién creada)
+  const base = o => { const [x, z] = SLOT[o.d.side][o.d.slot]; return new THREE.Vector3(x, 0, z); };
+  const pa = base(a), pb = base(b);
+  W.wave.visible = false;
   a.lx = (pb.x - pa.x) * .2; a.lz = (pb.z - pa.z) * .2; a.lunge = 1; a.hop = 1;
   return new Promise(res => {
     const t0 = performance.now(); W.shot.material.color.set(color); W.shot.visible = true;
