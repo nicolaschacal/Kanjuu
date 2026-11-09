@@ -1,0 +1,744 @@
+<!doctype html><html><head><meta charset="utf-8"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}</style><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body><title>Biblia KANJŪ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
+<style>
+/* Layout: un cuaderno de taller sobre papel washi frío; las criaturas son el contenido, la tipografía las acompaña */
+:root {
+  --bg: #E9EDEC; --card: #FAFAF7; --fg: #1E1A24; --mute: #5C5866; --line: #D2D7D6;
+  --hanko: #C8412E; --chip: #F0F2F0; --ground: #DCE2DF;
+  --display: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --body: "Zen Kaku Gothic New", "Hiragino Sans", "Segoe UI", system-ui, sans-serif;
+  --brush: "Yuji Syuku", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #16151B; --card: #211F28; --fg: #ECE8F1; --mute: #A9A3B4; --line: #353140;
+  --hanko: #E2654F; --chip: #2B2833; --ground: #2A2832; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #16151B; --card: #211F28; --fg: #ECE8F1; --mute: #A9A3B4; --line: #353140;
+  --hanko: #E2654F; --chip: #2B2833; --ground: #2A2832; color-scheme: dark }
+
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 64px }
+.wrap { max-width: 1080px; margin: 0 auto }
+h1, h2, h3 { font-family: var(--display); line-height: 1.15; text-wrap: balance; margin: 0 }
+h2 { font-size: clamp(24px, 4vw, 34px); font-weight: 900 }
+h3 { font-size: 17px; font-weight: 700 }
+p { margin: 0 }
+.lede { color: var(--mute); max-width: 62ch; margin-top: 8px }
+.eyebrow { font-family: var(--display); font-weight: 700; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--hanko) }
+section { padding-block: 56px 8px; display: grid; gap: 22px }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px }
+.mute { color: var(--mute) }
+small, .small { font-size: 13px }
+code, pre { font-family: var(--mono); font-size: 13px }
+:focus-visible { outline: 3px solid var(--hanko); outline-offset: 2px; border-radius: 6px }
+
+/* ---------- Hero ---------- */
+.hero { padding-block: 36px 8px; display: grid; gap: 18px }
+.hero h1 { font-size: clamp(34px, 7vw, 64px); font-weight: 900; letter-spacing: -.01em }
+.hero h1 .jp { font-family: var(--brush); font-weight: 400; color: var(--hanko); margin-left: .2em }
+.formula { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-family: var(--display); font-weight: 700; font-size: clamp(15px, 2.4vw, 19px) }
+.formula span.t { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 4px 14px }
+.formula span.op { color: var(--mute) }
+.stage { position: relative; display: grid; grid-template-columns: repeat(5, 1fr); align-items: end; gap: 4px; padding: 18px 10px 0; border-radius: 18px;
+  background: linear-gradient(var(--card), var(--card)) padding-box; border: 1px solid var(--line); overflow: hidden }
+.stage::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 30px; background: var(--ground); z-index: 0 }
+.stage figure { margin: 0; display: grid; justify-items: center; position: relative; z-index: 1 }
+.stage figcaption { text-align: center; padding: 6px 0 10px; font-size: 12px; line-height: 1.3 }
+.stage figcaption b { display: block; font-family: var(--display); font-size: 13px }
+.chainline { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--mute) }
+.chainline b { font-family: var(--brush); font-weight: 400; color: var(--fg); font-size: 16px }
+
+/* ---------- Barra de opciones ---------- */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg) }
+.opts { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 10px; margin-top: 18px;
+  display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; border-bottom: 1px solid var(--line) }
+.opts .lbl { font-family: var(--display); font-weight: 700; font-size: 13px; margin-right: 6px }
+.seg { display: inline-flex; background: var(--chip); border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 2px }
+.seg button { font: 600 13px var(--body); color: var(--fg); background: transparent; border: 0; border-radius: 999px; padding: 5px 11px; cursor: pointer; min-height: 32px }
+.seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg) }
+
+/* ---------- Criaturas ---------- */
+svg.kj { display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(2.5px 4px 0 rgba(30, 22, 40, .18)); cursor: pointer; -webkit-tap-highlight-color: transparent }
+.kj .idle { transform-box: fill-box; transform-origin: 50% 100% }
+.kj .idle-wood { animation: sway 3.6s ease-in-out infinite }
+.kj .idle-fire { animation: flick 1.1s ease-in-out infinite }
+.kj .idle-earth { animation: breathe 4.6s ease-in-out infinite }
+.kj .idle-metal { animation: tilt 5s ease-in-out infinite }
+.kj .idle-water { animation: bob 3s ease-in-out infinite }
+.kj .shine { animation: shine 4.2s ease-in-out infinite }
+.kj .blink { transform-box: fill-box; transform-origin: 50% 50%; animation: blink 5.2s infinite }
+.kj .halo { transform-box: fill-box; transform-origin: 50% 50%; animation: spin 40s linear infinite }
+.kj .pup { transform: translate(calc(var(--px, 0) * 2.2px), calc(var(--py, 0) * 1.7px)); transition: transform .12s }
+.kj .zz text { animation: zz 2.4s ease-in-out infinite }
+.kj.tap .whole { animation: tap .5s cubic-bezier(.3, 1.6, .5, 1) }
+.kj.hop .whole { animation: hop .7s cubic-bezier(.3, 1.4, .5, 1) 2 }
+.kj .whole { transform-box: fill-box; transform-origin: 50% 100% }
+.kj.tap .arm-r { animation: wave .5s ease-in-out }
+@keyframes sway { 50% { transform: rotate(2.2deg) } 0%, 100% { transform: rotate(-2.2deg) } }
+@keyframes flick { 0%, 100% { transform: scale(1, 1) } 30% { transform: scale(.97, 1.045) skewX(1.5deg) } 60% { transform: scale(1.02, .985) skewX(-1deg) } }
+@keyframes breathe { 0%, 100% { transform: scale(1, 1) } 50% { transform: scale(1.025, .975) } }
+@keyframes tilt { 0%, 100% { transform: rotate(0) } 40% { transform: rotate(1.4deg) } 70% { transform: rotate(-1deg) } }
+@keyframes bob { 0%, 100% { transform: translateY(0) scale(1, 1) } 50% { transform: translateY(-4px) scale(.985, 1.02) } }
+@keyframes shine { 0%, 55% { transform: translateX(-140px) skewX(-20deg) } 85%, 100% { transform: translateX(140px) skewX(-20deg) } }
+@keyframes blink { 0%, 93%, 100% { transform: scaleY(1) } 95.5% { transform: scaleY(.08) } }
+@keyframes spin { to { transform: rotate(360deg) } }
+@keyframes zz { 0%, 100% { opacity: .35; transform: translateY(0) } 50% { opacity: 1; transform: translateY(-3px) } }
+@keyframes tap { 0% { transform: scale(1) } 30% { transform: scale(1.12, .84) } 60% { transform: scale(.94, 1.08) } 100% { transform: scale(1) } }
+@keyframes hop { 0%, 100% { transform: translateY(0) } 35% { transform: translateY(-16px) scale(.96, 1.05) } 70% { transform: translateY(0) scale(1.08, .92) } }
+@keyframes wave { 0%, 100% { transform: rotate(0) } 50% { transform: rotate(-28deg) } }
+.kj .arm-r, .kj .arm-l { transform-box: fill-box; transform-origin: 0% 50% }
+@media (prefers-reduced-motion: reduce) { .kj *, .kj { animation: none !important; transition: none !important } }
+
+/* ---------- ADN ---------- */
+.anat { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 300px) minmax(0, 1fr); gap: 18px; align-items: center; padding: 22px }
+.anat ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px }
+.anat li { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start }
+.anat li .n { width: 26px; height: 26px; border-radius: 50%; background: var(--hanko); color: #fff; font: 700 13px var(--display); display: grid; place-items: center }
+.anat li p { color: var(--mute); font-size: 14px }
+@media (max-width: 760px) { .anat { grid-template-columns: 1fr } .anat .fig { order: -1; max-width: 260px; margin: 0 auto; width: 100% } }
+
+/* ---------- Elementos ---------- */
+.els { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px }
+.el { padding: 14px; display: grid; gap: 10px; align-content: start; min-width: 0 }
+.el .head { display: flex; align-items: baseline; gap: 8px }
+.el .head .k { font-family: var(--brush); font-size: 28px; line-height: 1 }
+.el .fig { max-width: 150px; width: 100%; margin: 0 auto }
+.el dl { margin: 0; display: grid; gap: 6px; font-size: 13px }
+.el dt { font-weight: 700; font-family: var(--display) }
+.el dd { margin: 0; color: var(--mute) }
+.sw { display: flex; gap: 4px }
+.sw i { flex: 1; height: 16px; border-radius: 4px; border: 1px solid rgba(0, 0, 0, .08) }
+@media (max-width: 860px) {
+  .els { grid-template-columns: 1fr }
+  .el { grid-template-columns: 110px minmax(0, 1fr); align-items: start }
+  .el .fig { grid-row: 1 / span 3; grid-column: 1; max-width: 110px }
+  .el .head, .el .sw, .el dl { grid-column: 2 }
+}
+.map { padding: 16px; display: grid; gap: 10px }
+.map .rows { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px }
+.map .row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px }
+.pill { display: inline-flex; align-items: center; gap: 5px; padding: 2px 10px; border-radius: 999px; background: var(--chip); border: 1px solid var(--line); font-size: 12.5px; white-space: nowrap }
+.pill b { font-family: var(--brush); font-weight: 400; font-size: 15px }
+.dot { width: 10px; height: 10px; border-radius: 50% }
+
+/* ---------- Grado ---------- */
+.ladder { padding: 16px; display: grid; gap: 6px }
+.ladder .lrow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; align-items: end }
+.ladder .lrow figure { margin: 0; display: grid; justify-items: center; gap: 2px }
+.ladder .lrow figcaption { font: 700 12px var(--display); color: var(--mute) }
+.ladder h3 { display: flex; gap: 10px; align-items: center; flex-wrap: wrap }
+.rec { font: 700 11px var(--display); letter-spacing: .06em; text-transform: uppercase; color: #fff; background: var(--hanko); border-radius: 999px; padding: 2px 9px }
+.tbl { overflow-x: auto }
+table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 13.5px }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top }
+th { font-family: var(--display); font-size: 13px }
+td:first-child { font-family: var(--display); font-weight: 700; white-space: nowrap }
+
+/* ---------- Significado ---------- */
+.cats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px }
+.cat { padding: 16px; display: grid; gap: 12px; align-content: start; min-width: 0 }
+.cat .ex { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px }
+.cat figure { margin: 0; display: grid; justify-items: center; text-align: center; gap: 2px }
+.cat figcaption { font-size: 12px; line-height: 1.3 }
+.cat figcaption b { font-family: var(--brush); font-weight: 400; font-size: 17px; display: block }
+@media (max-width: 860px) { .cats { grid-template-columns: 1fr } }
+.slots { padding: 16px; display: grid; grid-template-columns: minmax(180px, 240px) minmax(0, 1fr); gap: 18px; align-items: center }
+@media (max-width: 640px) { .slots { grid-template-columns: 1fr } .slots .fig { max-width: 220px; margin: 0 auto; width: 100% } }
+.slots ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px }
+.heir { padding: 16px; display: grid; gap: 14px }
+.eq { display: flex; align-items: flex-end; gap: 6px; flex-wrap: wrap }
+.eq figure { margin: 0; width: 84px; display: grid; justify-items: center; text-align: center }
+.eq figure.big { width: 108px }
+.eq figcaption { font-size: 12px }
+.eq figcaption b { font-family: var(--brush); font-weight: 400; font-size: 17px; display: block; line-height: 1.1 }
+.eq .op { font: 900 22px var(--display); color: var(--mute); padding-bottom: 46px }
+
+/* ---------- Ojos ---------- */
+.eyes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px }
+.eyeopt { padding: 14px; display: grid; gap: 8px; justify-items: center; text-align: center; cursor: pointer; font: inherit; color: inherit; background: var(--card) }
+.eyeopt[aria-pressed="true"] { border-color: var(--hanko); box-shadow: 0 0 0 2px var(--hanko) }
+.eyeopt .fig { width: 110px }
+.eyeopt h3 { font-size: 15px }
+.eyeopt p { font-size: 12.5px; color: var(--mute) }
+@media (max-width: 760px) { .eyes { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+.exprs { padding: 16px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px }
+.exprs figure { margin: 0; display: grid; justify-items: center; gap: 2px }
+.exprs figcaption { font: 700 12px var(--display); color: var(--mute) }
+@media (max-width: 640px) { .exprs { grid-template-columns: repeat(3, minmax(0, 1fr)) } }
+
+/* ---------- Movimiento ---------- */
+.moves { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px }
+.mv { padding: 14px; display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 12px; align-items: center }
+.mv p { font-size: 13.5px; color: var(--mute) }
+@media (max-width: 860px) { .moves { grid-template-columns: 1fr } }
+
+/* ---------- Taller ---------- */
+.lab { padding: 18px; display: grid; grid-template-columns: minmax(220px, 320px) minmax(0, 1fr); gap: 22px }
+@media (max-width: 760px) { .lab { grid-template-columns: 1fr } }
+.lab .view { display: grid; gap: 10px; justify-items: center; align-content: start }
+.flipper { width: 100%; max-width: 280px; perspective: 700px; background: radial-gradient(closest-side, var(--chip), transparent); border-radius: 16px }
+.flipper .in { transition: transform .32s ease-in }
+.flipper.flip .in { transform: rotateY(90deg) }
+.lab .ctrls { display: grid; gap: 14px; align-content: start; min-width: 0 }
+.field { display: grid; gap: 6px }
+.field > label, .field > .lb { font: 700 13px var(--display) }
+select, input[type=range] { font: inherit; color: var(--fg); background: var(--chip); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; min-height: 40px; width: 100% }
+input[type=range] { padding: 0; accent-color: var(--hanko) }
+.chips { display: flex; flex-wrap: wrap; gap: 6px }
+.chips button { font: 600 13px var(--body); color: var(--fg); background: var(--chip); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer; min-height: 36px; display: inline-flex; align-items: center; gap: 6px }
+.chips button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg) }
+.chips button .k { font-family: var(--brush); font-size: 16px; line-height: 1 }
+.btns { display: flex; gap: 8px; flex-wrap: wrap }
+.btn { font: 700 14px var(--display); border: 0; border-radius: 12px; padding: 10px 16px; cursor: pointer; min-height: 44px; background: var(--fg); color: var(--bg) }
+.btn.alt { background: var(--chip); color: var(--fg); border: 1px solid var(--line) }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px }
+pre.spec { margin: 0; background: var(--chip); border: 1px solid var(--line); border-radius: 10px; padding: 12px; overflow-x: auto; white-space: pre; line-height: 1.5 }
+
+/* ---------- 64 px ---------- */
+.tiny { padding: 16px; display: flex; flex-wrap: wrap; gap: 10px 12px }
+.tiny figure { margin: 0; width: 64px; display: grid; justify-items: center; gap: 2px }
+.tiny figcaption { font-family: var(--brush); font-size: 14px; line-height: 1 }
+
+/* ---------- Producción y decisiones ---------- */
+.prod { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px }
+@media (max-width: 860px) { .prod { grid-template-columns: 1fr } }
+.prod .card { padding: 16px; display: grid; gap: 10px; align-content: start; min-width: 0 }
+.prod ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px }
+.dec { display: grid; gap: 10px }
+.dec .card { padding: 14px 16px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 14px; align-items: center }
+.dec .card p { color: var(--mute); font-size: 14px; grid-column: 1 }
+.dec .card .rec { grid-row: 1 / span 2; grid-column: 2; align-self: center }
+@media (max-width: 520px) { .dec .card { grid-template-columns: 1fr } .dec .card .rec { grid-row: auto; grid-column: 1; justify-self: start } }
+.note { padding: 14px 16px; font-size: 14px; color: var(--mute); border-left: 4px solid var(--hanko); border-radius: 0 12px 12px 0; background: var(--card) }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><pattern id="kgrain" patternUnits="userSpaceOnUse" width="96" height="96"><image id="kgrainImg" width="96" height="96"/></pattern></defs></svg>
+
+<div class="wrap">
+  <header class="hero">
+    <p class="eyebrow">Propuesta v0.1 · para aprobar</p>
+    <h1>Biblia de diseño<span class="jp">漢獣</span></h1>
+    <p class="lede">Cada KANJŪ se arma con la misma receta. Mirándolo tienes que poder adivinar qué significa su kanji, de qué elemento es y qué grado tiene. Todas las criaturas de esta página las dibuja el mismo código a partir de una ficha de cuatro datos, así que el estilo se puede repetir en cientos de kanji sin perder la mano.</p>
+    <div class="formula" aria-label="Fórmula de diseño">
+      <span class="t">Significado → motivo</span><span class="op">×</span>
+      <span class="t">Elemento → color, forma y movimiento</span><span class="op">×</span>
+      <span class="t">Grado → madurez</span><span class="op">=</span>
+      <span class="t">KANJŪ</span>
+    </div>
+    <div class="stage" id="hero"></div>
+    <p class="chainline"><span><b>口</b> boca</span><span>×3 → <b>品</b> artículo</span><span>+ 木 → <b>喿</b> piar de pájaros</span><span>+ 氵 → <b>澡</b> lavar</span><span>+ 艹 → <b>藻</b> alga</span><span>La cadena real hasta el grado 5, con cada criatura heredando un rasgo de sus componentes.</span></p>
+  </header>
+
+  <nav class="opts" aria-label="Opciones de la propuesta">
+    <div><span class="lbl">Ojos</span><span class="seg" id="optEyes">
+      <button type="button" data-v="D" aria-pressed="true">Papel</button><button type="button" data-v="A" aria-pressed="false">Gota</button><button type="button" data-v="B" aria-pressed="false">Punto</button><button type="button" data-v="C" aria-pressed="false">Brillo</button></span></div>
+    <div><span class="lbl">Madurez</span><span class="seg" id="optMat">
+      <button type="button" data-v="B" aria-pressed="true">Madura con el grado</button><button type="button" data-v="A" aria-pressed="false">Siempre blob</button></span></div>
+  </nav>
+
+  <section aria-labelledby="h-adn">
+    <div><p class="eyebrow">Identidad</p><h2 id="h-adn">El ADN: lo que todo KANJŪ tiene</h2>
+    <p class="lede">Cinco constantes que nunca cambian. Son las que hacen que alguien vea una criatura suelta y diga "eso es un KANJŪ".</p></div>
+    <div class="card anat">
+      <ol>
+        <li><span class="n">1</span><div><h3>Recorte de papel</h3><p>Una sola pieza plana con borde blanco de cartulina y sombra corrida dura, sin desenfoque. Grano de papel encima.</p></div></li>
+        <li><span class="n">2</span><div><h3>El pliegue</h3><p>Cada criatura está doblada una vez por la mitad: el lado derecho queda un tono más oscuro y se ve la marca del doblez. Es la firma de la marca.</p></div></li>
+        <li><span class="n">3</span><div><h3>Su kanji a pincel</h3><p>El kanji pintado en tinta sumi sobre una mancha clara del pecho. Es su nombre y nunca se tapa.</p></div></li>
+      </ol>
+      <div class="fig" id="anatFig"></div>
+      <ol start="4">
+        <li><span class="n">4</span><div><h3>Ojos de tinta</h3><p>Siempre el mismo estilo de ojos en todo el juego, siempre del mismo tamaño aunque la criatura crezca. Parpadean y siguen tu dedo.</p></div></li>
+        <li><span class="n">5</span><div><h3>Sello del elemento</h3><p>Un hanko rojo con 木 火 土 金 o 水 en la parte baja del cuerpo. Confirma el elemento para quien todavía no lee los colores.</p></div></li>
+        <li><span class="n" style="background:var(--fg);color:var(--bg)">+</span><div><h3>Mejillas y boca chicas</h3><p>La cara es mínima: dos ojos, mejillas rosadas y una boca de un trazo. La expresión la dan los ojos.</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-el">
+    <div><p class="eyebrow">Eje 1</p><h2 id="h-el">Elemento: color, forma, papel y movimiento</h2>
+    <p class="lede">El elemento se lee primero, desde lejos. Cada uno tiene su propia silueta, su paleta, un tipo de papel y una forma de moverse cuando está quieto. Los cinco de abajo son de grado 1 y sin motivo, para ver el elemento solo.</p></div>
+    <div class="els" id="els"></div>
+    <div class="card map">
+      <h3>Los 17 sub-elementos de hoy pasan a ser 5 colores</h3>
+      <p class="small mute">Hoy cada criatura toma el color de su sub-elemento (sol, luna, voz…), así que hay 17 colores para 5 tipos y el tipo no se lee a simple vista. Propuesta: el color sale solo del tipo 五行 y el sub-elemento se expresa con el motivo (el sol de 日, la luna de 月).</p>
+      <div class="rows" id="map"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-gr">
+    <div><p class="eyebrow">Eje 2</p><h2 id="h-gr">Grado: madurez que se cuenta</h2>
+    <p class="lede">El grado se cuenta en hojas de papel: un grado 3 está hecho de tres hojas apiladas, un grado 5 de cinco. Además crece, y en la opción recomendada también madura: aparecen patas, brazos, la cuerda sagrada y el halo de kirigami. Los ojos no crecen, así que el cuerpo se ve más adulto.</p></div>
+    <div class="card ladder">
+      <h3>Opción B · Madura con el grado <span class="rec">Recomendada</span></h3>
+      <div class="lrow" id="ladB"></div>
+      <h3 style="margin-top:14px">Opción A · Siempre blob</h3>
+      <div class="lrow" id="ladA"></div>
+    </div>
+    <div class="card tbl">
+      <table>
+        <thead><tr><th>Grado</th><th>Hojas</th><th>Tamaño</th><th>Cuerpo</th><th>Rasgos que suma</th><th>Herencia</th></tr></thead>
+        <tbody>
+          <tr><td>1 · Fundamental</td><td>1</td><td>64%</td><td>Blob, cabeza y cuerpo son lo mismo</td><td>Ninguno</td><td>Solo su motivo</td></tr>
+          <tr><td>2 · Primera composición</td><td>2</td><td>74%</td><td>Blob un poco más alto</td><td>Patitas de papel</td><td>Motivo + 1–2 rasgos de sus componentes</td></tr>
+          <tr><td>3 · Intermedio</td><td>3</td><td>84%</td><td>Se estira; aparece la postura</td><td>Brazos que saludan</td><td>Ídem</td></tr>
+          <tr><td>4 · Complejo</td><td>4</td><td>93%</td><td>Alto y estilizado</td><td>Cuerda sagrada 注連縄 con tiras de papel</td><td>Ídem</td></tr>
+          <tr><td>5 · Avanzado</td><td>5</td><td>100%</td><td>Forma adulta</td><td>Halo de kirigami que gira detrás</td><td>Ídem</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-sig">
+    <div><p class="eyebrow">Eje 3</p><h2 id="h-sig">Significado: cómo se dibuja lo que quiere decir</h2>
+    <p class="lede">El cuerpo siempre dice el elemento; el significado se agrega con un <b>motivo</b>. Hay tres tipos de kanji y cada uno se resuelve distinto.</p></div>
+    <div class="cats" id="cats"></div>
+    <div class="card slots">
+      <div class="fig" id="slotFig"></div>
+      <div><h3>Dónde va cada motivo</h3>
+      <ul>
+        <li><b>Cabeza:</b> el motivo propio (hoja, sol, reloj, techo de templo).</li>
+        <li><b>Hombros:</b> los rasgos heredados, más chicos, uno por componente.</li>
+        <li><b>Mano:</b> objetos que la criatura sostiene (la señal de 止, el catalejo de 見).</li>
+        <li><b>Base:</b> lo que va en el suelo (ruedas de 車, patas de 人).</li>
+        <li><b>Cara:</b> solo cuando el significado es la cara (la boca cuadrada de 口, los ojos cerrados de 休).</li>
+      </ul>
+      <p class="small mute" style="margin-top:8px">Máximo 3 motivos por criatura: el propio y los de sus componentes directos. Si dos son iguales, se fusionan (林 = dos hojas, no hoja + hoja + hoja).</p></div>
+    </div>
+    <div class="card heir">
+      <h3>Herencia: los compuestos se reconocen por sus partes</h3>
+      <div class="eq" id="eq1"></div>
+      <div class="eq" id="eq2"></div>
+      <div class="eq" id="eq3"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-eye">
+    <div><p class="eyebrow">Para elegir</p><h2 id="h-eye">Ojos y expresiones</h2>
+    <p class="lede">Los ojos son lo que más apego genera, así que se elige un solo estilo para todo el juego. Toca una opción para verla aplicada a todas las criaturas de la página.</p></div>
+    <div class="eyes" id="eyes"></div>
+    <div class="card exprs" id="exprs"></div>
+  </section>
+
+  <section aria-labelledby="h-mv">
+    <div><p class="eyebrow">Vida</p><h2 id="h-mv">Movimiento</h2>
+    <p class="lede">Movimientos baratos de producir porque son transformaciones del recorte, no animación cuadro a cuadro. Todas las criaturas los heredan sin trabajo extra. Toca cualquier criatura de la página.</p></div>
+    <div class="moves" id="moves"></div>
+  </section>
+
+  <section aria-labelledby="h-lab">
+    <div><p class="eyebrow">Probar</p><h2 id="h-lab">Taller: arma un KANJŪ</h2>
+    <p class="lede">Elige un kanji de ejemplo o cambia sus datos uno por uno. Lo que ves es exactamente lo que generaría el juego con esa ficha.</p></div>
+    <div class="card lab">
+      <div class="view">
+        <div class="flipper" id="flipper"><div class="in" id="labFig"></div></div>
+        <div class="btns"><button class="btn" type="button" id="bTap">Tocar</button><button class="btn" type="button" id="bHop">Feliz</button><button class="btn alt" type="button" id="bEvo">Subir de grado</button></div>
+      </div>
+      <div class="ctrls">
+        <div class="field"><label for="selK">Kanji de ejemplo</label><select id="selK"></select></div>
+        <div class="field"><span class="lb">Elemento</span><div class="chips" id="chType"></div></div>
+        <div class="field"><label for="rgG">Grado <span id="gVal">1</span></label><input type="range" id="rgG" min="1" max="5" step="1" value="1"></div>
+        <div class="two">
+          <div class="field"><label for="selSig">Motivo propio</label><select id="selSig"></select></div>
+          <div class="field"><label for="selP1">Hereda de</label><select id="selP1"></select></div>
+        </div>
+        <div class="field"><span class="lb">Expresión</span><div class="chips" id="chExpr"></div></div>
+        <div class="field"><span class="lb">Ficha que lo genera</span><pre class="spec" id="spec"></pre></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-64">
+    <div><p class="eyebrow">Control de calidad</p><h2 id="h-64">Prueba a 64 píxeles</h2>
+    <p class="lede">Es el tamaño en la grilla del santuario y en el Atlas. A este tamaño todavía tienen que leerse el elemento (color y silueta), el grado (cantidad de hojas) y el motivo.</p></div>
+    <div class="card tiny" id="tiny"></div>
+  </section>
+
+  <section aria-labelledby="h-prod">
+    <div><p class="eyebrow">Escalar a cientos</p><h2 id="h-prod">Manual de producción</h2></div>
+    <div class="prod">
+      <div class="card">
+        <h3>La ficha de cada kanji</h3>
+        <p class="small mute">El juego ya sabe el elemento y el grado de cada kanji (salen de su receta). Diseñar uno nuevo es elegir un motivo y, a lo sumo, una expresión.</p>
+<pre class="spec">{
+  "k": "時",
+  "tipo": "fire",          // del árbol: 日 → sol → fuego
+  "grado": 3,              // del árbol: profundidad + 1
+  "categoria": "concepto", // objeto · concepto · acción
+  "motivo": "reloj",       // lo único que decide el diseñador
+  "hereda": ["日", "寺"],  // del árbol: sus componentes directos
+  "expresion": null        // solo para acciones (休 dormido)
+}</pre>
+      </div>
+      <div class="card">
+        <h3>Reglas</h3>
+        <ul>
+          <li>Un motivo nuevo se dibuja una vez y queda en la librería; los compuestos lo reutilizan.</li>
+          <li>Los 31 kanji fundamentales y las 16 piezas necesitan su motivo. Con eso, los 101 kanji actuales salen solos.</li>
+          <li>Un motivo es una silueta plana de 1 o 2 colores, con borde blanco y legible a 24 px.</li>
+          <li>Conceptos: símbolos que se entienden en Japón y afuera (○ es "correcto" en Japón).</li>
+          <li>Los colores de los motivos salen de la paleta del elemento, salvo el rojo hanko y el dorado.</li>
+        </ul>
+        <h3 style="margin-top:6px">Lo que nunca</h3>
+        <ul>
+          <li>Tapar el kanji del pecho o cambiar el tamaño de los ojos.</li>
+          <li>Degradados, contornos negros o sombras difusas: es papel.</li>
+          <li>Personajes, logos o mascotas de otras marcas.</li>
+          <li>Más de 3 motivos: si no se entiende con 3, el motivo está mal elegido.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">Ya existe una base en el juego (js/creature.js): silueta por tipo, kanji en el pecho y un rasgo por raíz. Esta biblia la ordena y la completa con el pliegue, el sello, las hojas por grado, la madurez, los motivos de significado y la librería de expresiones.</p>
+  </section>
+
+  <section aria-labelledby="h-dec">
+    <div><p class="eyebrow">Tu turno</p><h2 id="h-dec">Decisiones para aprobar</h2>
+    <p class="lede">Con estas seis respuestas el equipo puede producir el resto sin volver a preguntar.</p></div>
+    <div class="dec">
+      <div class="card"><h3>Estilo de ojos</h3><p>Ojo de papel: disco blanco con pupila de tinta que sigue tu dedo. Es el más "papel" y el que mejor anima.</p><span class="rec">Papel</span></div>
+      <div class="card"><h3>Madurez</h3><p>Blob en grado 1 y 2; desde el 3 aparece la postura y en el 5 la forma adulta.</p><span class="rec">Madura con el grado</span></div>
+      <div class="card"><h3>Color por tipo</h3><p>Pasar de 17 colores de sub-elemento a 5 colores de tipo 五行.</p><span class="rec">Sí</span></div>
+      <div class="card"><h3>El pliegue como firma</h3><p>Todas las criaturas dobladas una vez por la mitad, con el lado derecho más oscuro.</p><span class="rec">Sí</span></div>
+      <div class="card"><h3>Sello hanko del elemento</h3><p>Visible siempre en la criatura; se puede ocultar en tamaños menores a 48 px.</p><span class="rec">Sí</span></div>
+      <div class="card"><h3>Una sola forma por kanji</h3><p>Como evolucionar ya convierte la criatura en otro kanji, cada kanji tiene un solo diseño. Las estrellas y la variante dorada cambian detalles, no el dibujo. Ahorra dos tercios del arte.</p><span class="rec">Sí</span></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  // ---------- Grano de papel compartido ----------
+  try {
+    const c = document.createElement('canvas'); c.width = c.height = 96; const x = c.getContext('2d'); const d = x.createImageData(96, 96);
+    for (let i = 0; i < d.data.length; i += 4) { const v = Math.random() * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; }
+    x.putImageData(d, 0, 0); document.getElementById('kgrainImg').setAttribute('href', c.toDataURL());
+  } catch (e) {}
+
+  const INK = '#1E1A24', RED = '#C8412E', W = '#FFFDF8', GOLD = '#F2B937', PINK = '#F39AAE', MOUTH = '#7A2E3A';
+  const T = {
+    wood:  { k: '木', n: 'Madera', f: '#8DC063', d: '#4C8A3E', l: '#D6ECBB', bw: 44, bh: 104, ey: .52, kh: .22, ex: .36,
+      forma: 'Brote alto con la punta inclinada, como una yema.', papel: 'Washi con fibras visibles.', mov: 'Se mece como una planta.' },
+    fire:  { k: '火', n: 'Fuego', f: '#F2825A', d: '#C2432A', l: '#FFD5C2', bw: 46, bh: 108, ey: .44, kh: .2, ex: .36,
+      forma: 'Llama de tres puntas, siempre hacia arriba.', papel: 'Papel de seda que deja pasar luz.', mov: 'Parpadea y late rápido.' },
+    earth: { k: '土', n: 'Tierra', f: '#D8A562', d: '#94612E', l: '#F2DAB2', bw: 58, bh: 84, ey: .56, kh: .24, ex: .3,
+      forma: 'Ancho y bajo, base plana: una montaña o un onigiri.', papel: 'Cartón grueso y mate.', mov: 'Respira lento y pesado.' },
+    metal: { k: '金', n: 'Metal', f: '#C5D0DB', d: '#687A90', l: '#EFF3F7', bw: 44, bh: 100, ey: .54, kh: .22, ex: .36,
+      forma: 'Campana simétrica, con aristas rectas.', papel: 'Papel metalizado plateado.', mov: 'Un destello lo recorre.' },
+    water: { k: '水', n: 'Agua', f: '#72B9E8', d: '#2D6EAD', l: '#CDE8F9', bw: 44, bh: 104, ey: .44, kh: .2, ex: .36,
+      forma: 'Gota con la punta hacia arriba.', papel: 'Papel vegetal translúcido.', mov: 'Flota y ondula.' },
+  };
+  const ORDER = ['wood', 'fire', 'earth', 'metal', 'water'];
+
+  // ---------- Fichas de ejemplo (elemento y grado salen del árbol real del juego) ----------
+  const K = {
+    '一': { t: 'earth', g: 1, m: 'uno', sig: 'one', cat: 'objeto' },
+    '人': { t: 'earth', g: 1, m: 'persona', sig: 'legs', cat: 'objeto' },
+    '木': { t: 'wood', g: 1, m: 'árbol', sig: 'leaf', cat: 'objeto' },
+    '艸': { t: 'wood', g: 1, m: 'hierba', sig: 'grass', cat: 'objeto' },
+    '火': { t: 'fire', g: 1, m: 'fuego', sig: 'sparks', cat: 'objeto' },
+    '日': { t: 'fire', g: 1, m: 'sol · día', sig: 'sun', cat: 'objeto' },
+    '心': { t: 'fire', g: 1, m: 'corazón', sig: 'heart', cat: 'objeto' },
+    '土': { t: 'earth', g: 1, m: 'tierra', sig: 'sprout', cat: 'objeto' },
+    '田': { t: 'earth', g: 1, m: 'arrozal', sig: 'grid', cat: 'objeto' },
+    '止': { t: 'earth', g: 1, m: 'detenerse', sig: 'stop', cat: 'concepto' },
+    '口': { t: 'metal', g: 1, m: 'boca', sig: 'mouth', cat: 'objeto' },
+    '車': { t: 'metal', g: 1, m: 'carro', sig: 'wheels', cat: 'objeto' },
+    '水': { t: 'water', g: 1, m: 'agua', sig: 'splash', cat: 'objeto' },
+    '月': { t: 'water', g: 1, m: 'luna · mes', sig: 'moon', cat: 'objeto' },
+    '目': { t: 'water', g: 1, m: 'ojo', sig: 'eye', cat: 'objeto' },
+    '林': { t: 'wood', g: 2, m: 'arboleda', sig: 'leaf', n: 2, from: ['木', '木'], cat: 'objeto' },
+    '森': { t: 'wood', g: 3, m: 'bosque', sig: 'leaf', n: 3, from: ['林', '木'], cat: 'objeto' },
+    '炎': { t: 'fire', g: 2, m: 'llama', sig: 'crest', from: ['火', '火'], cat: 'objeto' },
+    '明': { t: 'fire', g: 2, m: 'brillante', sig: 'sparkle', from: ['日', '月'], cat: 'concepto' },
+    '品': { t: 'metal', g: 2, m: 'artículo', sig: 'squares', from: ['口', '口', '口'], cat: 'objeto' },
+    '正': { t: 'earth', g: 2, m: 'correcto', sig: 'maru', from: ['一', '止'], cat: 'concepto' },
+    '休': { t: 'earth', g: 2, m: 'descansar', sig: 'zz', from: ['人', '木'], expr: 'dormido', cat: 'acción' },
+    '思': { t: 'earth', g: 2, m: 'pensar', sig: 'thought', from: ['田', '心'], cat: 'concepto' },
+    '寺': { t: 'earth', g: 2, m: 'templo', sig: 'roof', from: ['土'], cat: 'objeto' },
+    '見': { t: 'water', g: 2, m: 'ver', sig: 'spyglass', from: ['目'], expr: 'sorpresa', cat: 'acción' },
+    '喿': { t: 'metal', g: 3, m: 'piar de pájaros', sig: 'chirp', from: ['品', '木'], cat: 'acción' },
+    '時': { t: 'fire', g: 3, m: 'tiempo · hora', sig: 'clock', from: ['日', '寺'], cat: 'concepto' },
+    '待': { t: 'earth', g: 3, m: 'esperar', sig: 'hourglass', from: ['寺'], cat: 'acción' },
+    '澡': { t: 'water', g: 4, m: 'lavar', sig: 'bubbles', from: ['水', '喿'], cat: 'acción' },
+    '藻': { t: 'wood', g: 5, m: 'alga', sig: 'algae', from: ['艸', '澡'], cat: 'objeto' },
+  };
+  const SIGS = {
+    none: 'Ninguno', leaf: 'Hoja (木)', grass: 'Hierba (艸)', sparks: 'Chispas (火)', crest: 'Cresta de llamas (炎)', sun: 'Sol (日)', moon: 'Luna (月)',
+    heart: 'Corazón (心)', sprout: 'Brote (土)', grid: 'Arrozal (田)', stop: 'Señal de alto (止)', mouth: 'Boca cuadrada (口)', squares: 'Tres bocas (品)',
+    wheels: 'Ruedas (車)', splash: 'Salpicaduras (水)', eye: 'Ojo (目)', one: 'Cinta (一)', legs: 'Patas (人)', sparkle: 'Destello (明)', maru: 'Círculo ○ (正)',
+    zz: 'Dormido (休)', thought: 'Pensamiento (思)', roof: 'Techo de templo (寺)', spyglass: 'Catalejo (見)', chirp: 'Pajarito (喿)', clock: 'Reloj (時)',
+    hourglass: 'Reloj de arena (待)', bubbles: 'Burbujas (澡)', algae: 'Algas (藻)',
+  };
+  const SLOT = { stop: 'hand', spyglass: 'hand', hourglass: 'hand', sparks: 'pair', splash: 'pair', wheels: 'base', legs: 'base', mouth: 'face', zz: 'headR', thought: 'headR', chirp: 'headR' };
+
+  // ---------- Opciones globales ----------
+  const S = { eyes: 'D', mat: 'B' };
+  try { const s = JSON.parse(localStorage.getItem('kj.biblia') || '{}'); if (s.eyes) S.eyes = s.eyes; if (s.mat) S.mat = s.mat; } catch (e) {}
+  const save = () => { try { localStorage.setItem('kj.biblia', JSON.stringify(S)); } catch (e) {} };
+
+  // ---------- Siluetas por elemento (origen = centro de la base) ----------
+  function bodyPath(t, w, h) {
+    const f = n => +n.toFixed(1);
+    if (t === 'water') return `M0,${f(-h)} C${f(w*.3)},${f(-h*.7)} ${f(w)},${f(-h*.5)} ${f(w)},${f(-h*.26)} C${f(w)},${f(-h*.06)} ${f(w*.55)},0 0,0 C${f(-w*.55)},0 ${f(-w)},${f(-h*.06)} ${f(-w)},${f(-h*.26)} C${f(-w)},${f(-h*.5)} ${f(-w*.3)},${f(-h*.7)} 0,${f(-h)}Z`;
+    if (t === 'wood') return `M${f(w*.18)},${f(-h)} C${f(w*.78)},${f(-h*.9)} ${f(w)},${f(-h*.62)} ${f(w)},${f(-h*.34)} C${f(w)},${f(-h*.08)} ${f(w*.6)},0 0,0 C${f(-w*.6)},0 ${f(-w)},${f(-h*.08)} ${f(-w)},${f(-h*.34)} C${f(-w)},${f(-h*.68)} ${f(-w*.42)},${f(-h*.92)} ${f(w*.18)},${f(-h)}Z`;
+    if (t === 'fire') return `M0,${f(-h)} C${f(w*.12)},${f(-h*.84)} ${f(w*.3)},${f(-h*.74)} ${f(w*.4)},${f(-h*.66)} C${f(w*.5)},${f(-h*.72)} ${f(w*.58)},${f(-h*.78)} ${f(w*.66)},${f(-h*.84)} C${f(w*1.04)},${f(-h*.54)} ${f(w)},${f(-h*.16)} ${f(w*.62)},${f(-h*.04)} C${f(w*.36)},${f(h*.015)} ${f(-w*.36)},${f(h*.015)} ${f(-w*.62)},${f(-h*.04)} C${f(-w)},${f(-h*.16)} ${f(-w*1.05)},${f(-h*.46)} ${f(-w*.7)},${f(-h*.7)} C${f(-w*.6)},${f(-h*.62)} ${f(-w*.48)},${f(-h*.6)} ${f(-w*.38)},${f(-h*.62)} C${f(-w*.32)},${f(-h*.8)} ${f(-w*.14)},${f(-h*.88)} 0,${f(-h)}Z`;
+    if (t === 'earth') return `M${f(-w)},0 C${f(-w*1.03)},${f(-h*.32)} ${f(-w*.92)},${f(-h*.64)} ${f(-w*.62)},${f(-h*.85)} C${f(-w*.38)},${f(-h*1.01)} ${f(w*.38)},${f(-h*1.01)} ${f(w*.62)},${f(-h*.85)} C${f(w*.92)},${f(-h*.64)} ${f(w*1.03)},${f(-h*.32)} ${f(w)},0Z`;
+    return `M0,${f(-h)} C${f(w*.5)},${f(-h)} ${f(w*.74)},${f(-h*.76)} ${f(w*.76)},${f(-h*.44)} L${f(w*.8)},${f(-h*.17)} L${f(w)},${f(-h*.05)} L${f(w)},0 L${f(-w)},0 L${f(-w)},${f(-h*.05)} L${f(-w*.8)},${f(-h*.17)} L${f(-w*.76)},${f(-h*.44)} C${f(-w*.74)},${f(-h*.76)} ${f(-w*.5)},${f(-h)} 0,${f(-h)}Z`;
+  }
+  const P = (d, fill, sw = 3.2, extra = '') => `<path d="${d}" fill="${fill}" stroke="${W}" stroke-width="${sw}" stroke-linejoin="round" paint-order="stroke" ${extra}/>`;
+
+  // ---------- Librería de motivos (origen = punto de apoyo) ----------
+  const flame = (c, l) => P('M0,0 C-6,0 -8,-6 -5,-11 C-4,-7 -2,-7 -2,-9 C-1,-14 2,-17 3,-21 C4,-15 8,-11 7,-5 C6,-1 3,0 0,0Z', c) + `<path d="M0.5,-1.5 C-2,-2 -3,-5 -1,-8 C0,-6 2,-7 2,-9 C4,-6 4,-3 0.5,-1.5Z" fill="${l}"/>`;
+  const drop = c => P('M0,-16 C3,-10 7,-7 7,-3 C7,1 4,3 0,3 C-4,3 -7,1 -7,-3 C-7,-7 -3,-10 0,-16Z', c);
+  const M = {
+    leaf: (t, n = 1) => { let s = ''; const xs = n === 1 ? [0] : n === 2 ? [-9, 9] : [-14, 0, 14];
+      xs.forEach((x, i) => { const r = n === 1 ? 0 : (i - (n - 1) / 2) * 16;
+        s += `<g transform="translate(${x} 0) rotate(${r})"><path d="M0,0 C0,-5 0,-9 0,-11" stroke="${T.wood.d}" stroke-width="2.4" fill="none" stroke-linecap="round"/>${P('M0,-10 C5,-21 16,-22 21,-15 C14,-10 7,-8 0,-10Z', T.wood.f)}${P('M0,-9 C-4,-17 -13,-18 -17,-12 C-11,-8 -5,-7 0,-9Z', T.wood.d)}</g>`; });
+      return s; },
+    grass: () => P('M-9,0 C-11,-8 -12,-14 -14,-19 C-8,-14 -6,-8 -4,0Z', '#6FAE4E') + P('M-3,0 C-3,-10 -1,-17 1,-24 C4,-16 4,-8 3,0Z', '#86C060') + P('M5,0 C7,-7 10,-12 14,-16 C12,-9 11,-4 10,0Z', '#5D9A44'),
+    sparks: () => flame(T.fire.f, T.fire.l),
+    crest: () => `<g transform="translate(-8 0) rotate(-14) scale(1.05)">${flame(T.fire.d, T.fire.l)}</g><g transform="translate(8 0) rotate(14) scale(1.05)">${flame('#F6A13B', '#FFE3A8')}</g>`,
+    sun: () => { let r = ''; for (let i = 0; i < 8; i++) r += `<path d="M0,-21 L3,-15 L-3,-15Z" fill="${GOLD}" transform="translate(0 -12) rotate(${i * 45}) translate(0 12)"/>`;
+      return `<g stroke="${W}" stroke-width="3" paint-order="stroke" stroke-linejoin="round">${r}</g>` + P('M0,-21 A9,9 0 1,1 0,-3 A9,9 0 1,1 0,-21Z', '#F6C343'); },
+    moon: () => P('M3,-25 A12,12 0 1,0 3,-1 A9.5,9.5 0 1,1 3,-25Z', '#F3E3A0'),
+    heart: () => P('M0,0 C-4,-4 -11,-8 -11,-14 C-11,-19 -5,-21 0,-16 C5,-21 11,-19 11,-14 C11,-8 4,-4 0,0Z', PINK),
+    sprout: () => `<path d="M0,0 L0,-9" stroke="${T.wood.d}" stroke-width="2.4" stroke-linecap="round"/>` + P('M0,-8 C3,-15 10,-16 13,-11 C8,-8 4,-7 0,-8Z', T.wood.f) + P('M0,-8 C-3,-14 -9,-15 -12,-10 C-8,-7 -4,-6 0,-8Z', T.wood.d),
+    grid: () => P('M-10,-1 L10,-1 L10,-19 L-10,-19Z', '#C7A257') + `<path d="M0,-19 V-1 M-10,-10 H10" stroke="${T.earth.d}" stroke-width="2"/>`,
+    stop: () => { let pts = []; for (let i = 0; i < 8; i++) { const a = (22.5 + i * 45) * Math.PI / 180; pts.push((Math.cos(a) * 12).toFixed(1) + ',' + (-30 + Math.sin(a) * 12).toFixed(1)); }
+      return `<path d="M0,2 L0,-20" stroke="#8C6A4A" stroke-width="3" stroke-linecap="round"/>` + `<polygon points="${pts.join(' ')}" fill="${RED}" stroke="${W}" stroke-width="3" paint-order="stroke" stroke-linejoin="round"/><rect x="-7" y="-31.5" width="14" height="3" rx="1.5" fill="${W}"/>`; },
+    squares: () => P('M-4,-22 h8 v8 h-8Z', T.metal.d, 2.6) + P('M-11,-11 h8 v8 h-8Z', T.metal.d, 2.6) + P('M3,-11 h8 v8 h-8Z', T.metal.d, 2.6),
+    mouth: () => P('M-6,-14 h12 v10 h-12Z', MOUTH, 2.6),
+    wheels: () => '',
+    splash: () => drop(T.water.f),
+    eye: () => P('M-13,-11 C-6,-20 6,-20 13,-11 C6,-2 -6,-2 -13,-11Z', W, 2.4, `style="stroke:${T.water.d}"`) + `<circle cx="0" cy="-11" r="4.6" fill="${T.water.d}"/><circle cx="-1.4" cy="-12.6" r="1.4" fill="${W}"/>`,
+    one: () => P('M-14,-6 C-6,-9 6,-9 14,-6 L14,-1 C6,-4 -6,-4 -14,-1Z', RED),
+    legs: () => '',
+    sparkle: () => P('M0,-24 C1.5,-15 3,-13.5 10,-12 C3,-10.5 1.5,-9 0,0 C-1.5,-9 -3,-10.5 -10,-12 C-3,-13.5 -1.5,-15 0,-24Z', GOLD),
+    maru: () => `<circle cx="0" cy="-12" r="9" fill="none" stroke="${W}" stroke-width="8"/><circle cx="0" cy="-12" r="9" fill="none" stroke="${RED}" stroke-width="3.6"/>`,
+    zz: () => `<g class="zz"><text x="-2" y="-6" font-family="var(--display)" font-weight="900" font-size="12" fill="${INK}" stroke="${W}" stroke-width="3" paint-order="stroke">z</text><text x="6" y="-16" font-family="var(--display)" font-weight="900" font-size="9" fill="${INK}" stroke="${W}" stroke-width="3" paint-order="stroke">z</text></g>`,
+    thought: () => P('M-12,-12 C-15,-17 -9,-22 -4,-20 C-2,-25 6,-25 8,-20 C13,-21 16,-15 12,-11 C14,-6 8,-3 4,-6 C1,-2 -6,-2 -7,-6 C-12,-5 -15,-9 -12,-12Z', W, 2.4, `style="stroke:#C9CED4"`) + `<circle cx="-12" cy="-2" r="2.4" fill="${W}" stroke="#C9CED4" stroke-width="1"/><circle cx="-16" cy="3" r="1.5" fill="${W}" stroke="#C9CED4" stroke-width="1"/>`,
+    roof: () => P('M-15,-10 C-9,-13 -5,-17 -3,-21 L3,-21 C5,-17 9,-13 15,-10 L11,-9 L-11,-9Z', '#9B3A2E') + P('M-7,-9 h14 v8 h-14Z', '#E8D6B3', 2.4) + `<path d="M0,-9 v8" stroke="#9B3A2E" stroke-width="1.6"/>`,
+    spyglass: () => `<g transform="rotate(-38)">` + P('M-2,-2 h7 v-14 h-7Z', '#8C6A4A', 2.6) + P('M-3,-16 h9 v-9 h-9Z', '#C9A45C', 2.6) + `<rect x="-3" y="-27" width="9" height="2.6" fill="${T.water.l}"/></g>`,
+    chirp: () => P('M-8,-10 C-8,-17 2,-19 5,-13 L11,-15 L8,-10 C8,-4 -4,-3 -8,-10Z', T.metal.l, 2.6) + `<circle cx="2" cy="-12.5" r="1.3" fill="${INK}"/><path d="M-12,-18 q-3,3 0,6 M-16,-20 q-5,5 0,10" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`,
+    clock: () => P('M0,-24 A11,11 0 1,1 0,-2 A11,11 0 1,1 0,-24Z', W, 2.6, `style="stroke:${W}"`) + `<circle cx="0" cy="-13" r="9.5" fill="none" stroke="${T.fire.d}" stroke-width="2"/><path d="M0,-13 V-19 M0,-13 L5,-11" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>`,
+    hourglass: () => P('M-7,-26 h14 v3 l-5,8 l5,8 v3 h-14 v-3 l5,-8 l-5,-8Z', '#E9D7AE', 2.6) + `<path d="M-3,-10 h6 l1,2.5 h-8Z M-1,-15 h2 v4 h-2Z" fill="#C79A3C"/><path d="M-8,-26 h16 M-8,-4 h16" stroke="#8C6A4A" stroke-width="2.4" stroke-linecap="round"/>`,
+    bubbles: () => `<circle cx="-7" cy="-8" r="5.5" fill="${W}" fill-opacity=".85" stroke="${T.water.d}" stroke-width="1.4"/><circle cx="5" cy="-15" r="4" fill="${W}" fill-opacity=".85" stroke="${T.water.d}" stroke-width="1.4"/><circle cx="-1" cy="-24" r="2.6" fill="${W}" fill-opacity=".85" stroke="${T.water.d}" stroke-width="1.2"/><circle cx="-8.5" cy="-10" r="1.4" fill="${W}"/>`,
+    algae: () => P('M-10,0 C-15,-8 -6,-12 -11,-20 C-7,-24 -3,-18 -6,-12 C-3,-7 -5,-3 -6,0Z', '#5E9E5A') + P('M-2,0 C-6,-10 3,-14 -1,-25 C4,-28 7,-20 3,-14 C6,-8 3,-3 2,0Z', '#3F8A4E') + P('M6,0 C4,-6 12,-9 9,-16 C13,-18 15,-12 12,-8 C14,-4 11,-1 10,0Z', '#77B36A'),
+  };
+
+  // ---------- Ojos, bocas y expresiones ----------
+  function eyesSVG(style, expr, ex, y, t) {
+    const one = (x, side) => {
+      if (expr === 'feliz') return `<path d="M${x-4.5},${y+1.5} Q${x},${y-4.5} ${x+4.5},${y+1.5}" stroke="${INK}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+      if (expr === 'dormido') return `<path d="M${x-4.5},${y-.5} Q${x},${y+3.5} ${x+4.5},${y-.5}" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+      if (expr === 'sorpresa') return `<g class="blink"><circle cx="${x}" cy="${y}" r="6.6" fill="${W}"/><g class="pup"><circle cx="${x}" cy="${y}" r="2" fill="${INK}"/></g></g>`;
+      let e;
+      if (style === 'A') e = `<g class="pup"><ellipse cx="${x}" cy="${y}" rx="3.7" ry="5.4" fill="${INK}"/><circle cx="${x-1.1}" cy="${y-2.1}" r="1.35" fill="${W}"/></g>`;
+      else if (style === 'B') e = `<g class="pup"><circle cx="${x}" cy="${y}" r="2.9" fill="${INK}"/></g>`;
+      else if (style === 'C') e = `<g class="pup"><ellipse cx="${x}" cy="${y}" rx="5" ry="6.6" fill="${INK}"/><ellipse cx="${x}" cy="${y+2}" rx="3.2" ry="3.6" fill="${t.d}"/><circle cx="${x-1.6}" cy="${y-2.6}" r="1.9" fill="${W}"/><circle cx="${x+1.8}" cy="${y+2.6}" r=".9" fill="${W}"/></g>`;
+      else e = `<circle cx="${x}" cy="${y}" r="6.4" fill="${W}"/><g class="pup"><circle cx="${x}" cy="${y+.4}" r="3.4" fill="${INK}"/><circle cx="${x-1.1}" cy="${y-.8}" r="1.1" fill="${W}"/></g>`;
+      let extra = '';
+      if (expr === 'triste') extra = `<path d="M${x - side*5},${y-9} L${x + side*3},${y-11.5}" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>` + (side > 0 ? `<path d="M${x+3},${y+6} C${x+5},${y+9} ${x+5.5},${y+11} ${x+3.5},${y+12} C${x+1.5},${y+12} ${x+1.2},${y+10} ${x+3},${y+6}Z" fill="${T.water.l}" stroke="${T.water.d}" stroke-width=".8"/>` : '');
+      if (expr === 'enojado') extra = `<path d="M${x - side*5.5},${y-11} L${x + side*3.5},${y-7.5}" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/>`;
+      return `<g class="blink">${e}</g>${extra}`;
+    };
+    return one(-ex, -1) + one(ex, 1);
+  }
+  function mouthSVG(expr, y, square) {
+    if (expr === 'sorpresa') return `<ellipse cx="0" cy="${y+1}" rx="2.6" ry="3.3" fill="${MOUTH}"/>`;
+    if (square && expr !== 'dormido' && expr !== 'triste') return `<rect x="-4.5" y="${y-2.5}" width="9" height="7" rx="1.5" fill="${MOUTH}" stroke="${W}" stroke-width="1.6" paint-order="stroke"/>`;
+    if (expr === 'feliz') return `<path d="M-5,${y-1} Q0,${y+7} 5,${y-1}Z" fill="${MOUTH}"/>`;
+    if (expr === 'triste') return `<path d="M-3.6,${y+2.2} Q0,${y-1.6} 3.6,${y+2.2}" stroke="${INK}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+    if (expr === 'enojado') return `<path d="M-3.6,${y+1} L-1.2,${y-.6} L1.2,${y+1} L3.6,${y-.6}" stroke="${INK}" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+    if (expr === 'dormido') return `<circle cx="0" cy="${y+1}" r="1.6" fill="${MOUTH}"/>`;
+    return `<path d="M-3.4,${y} Q0,${y+3.2} 3.4,${y}" stroke="${INK}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+  }
+
+  // ---------- El generador ----------
+  let uid = 0;
+  function kanjuu(spec, o = {}) {
+    const t = T[spec.t], g = spec.g, mat = o.mat || S.mat, style = o.eyes || S.eyes, expr = o.expr || spec.expr || 'neutral';
+    const id = 'k' + (++uid);
+    const hf = mat === 'B' ? [1, 1.05, 1.13, 1.2, 1.27][g-1] : 1, wf = mat === 'B' ? [1, 1, .97, .94, .92][g-1] : 1;
+    const s = [.64, .74, .84, .93, 1][g-1];
+    const w = t.bw * wf, h = t.bh * hf, d = bodyPath(spec.t, w, h);
+    const ey = -h * (t.ey + (mat === 'B' ? (g-1) * .02 : 0)), ex = Math.min(w * t.ex, 17), kh = -h * t.kh;
+    const topX = spec.t === 'wood' ? w * .18 : 0;
+
+    // Motivos: el propio + los de sus componentes directos, sin repetir y hasta 3
+    const sigs = [{ m: spec.sig, n: spec.n || 1, own: true }];
+    for (const p of (spec.from || [])) { const ps = K[p]?.sig || p; if (ps && ps !== 'none' && !sigs.some(x => x.m === ps)) sigs.push({ m: ps, n: 1 }); }
+    const used = sigs.filter(x => x.m && x.m !== 'none').slice(0, 3);
+    const square = used.some(x => x.m === 'mouth');
+    const hasWheels = used.some(x => x.m === 'wheels'), hasLegs = used.some(x => x.m === 'legs');
+    const pos = {
+      head: [topX, -h + 2, 0, 1], headL: [-w * .55, -h * .84, -24, .74], headR: [w * .55, -h * .84, 24, .74],
+      hand: [w + 4, -h * .22, 8, .92], handL: [-w - 4, -h * .22, -8, .92],
+    };
+    let motifs = '', free = ['head', 'headL', 'headR'];
+    for (const x of used) {
+      const pref = SLOT[x.m] || 'head';
+      if (pref === 'face' || pref === 'base') continue;
+      const sc = x.own ? 1 : .78;
+      if (pref === 'pair') { motifs += `<g transform="translate(${pos.handL[0]} ${pos.handL[1]}) rotate(-12) scale(${sc*.9})">${M[x.m]()}</g><g transform="translate(${pos.hand[0]} ${pos.hand[1]}) rotate(12) scale(${sc*.9})">${M[x.m]()}</g>`; continue; }
+      let slot = pref;
+      if (pref === 'head' && !free.includes('head')) slot = free[0];
+      if (pref === 'headR' && !free.includes('headR')) slot = free.includes('headL') ? 'headL' : 'head';
+      if (pref === 'head' || pref === 'headL' || pref === 'headR') free = free.filter(f => f !== slot);
+      if (!x.own && slot === 'head' && free.length) { slot = free[0]; free = free.filter(f => f !== slot); }
+      if (!pos[slot]) slot = 'handL';
+      const [px, py, r, k] = pos[slot];
+      motifs += `<g transform="translate(${px.toFixed(1)} ${py.toFixed(1)}) rotate(${r}) scale(${(k * sc).toFixed(2)})">${M[x.m](x.n)}</g>`;
+    }
+
+    // Hojas apiladas = grado
+    let layers = '';
+    for (let i = g - 1; i >= 1; i--) layers += `<path d="${d}" transform="translate(${(-i*3.4).toFixed(1)} ${(-i*2.6).toFixed(1)}) scale(${(1 + i*.035).toFixed(3)})" fill="${i % 2 ? t.l : t.f}" stroke="${W}" stroke-width="5" stroke-linejoin="round" paint-order="stroke"/>`;
+    // Halo de kirigami (grado 5, opción B)
+    let halo = '';
+    if (g >= 5 && mat === 'B') { const R = h * .62; let pe = '';
+      for (let i = 0; i < 12; i++) pe += `<path d="M0,${-R} C6,${-R+6} 6,${-R+16} 0,${-R+22} C-6,${-R+16} -6,${-R+6} 0,${-R}Z" transform="rotate(${i*30})" fill="${i % 2 ? t.l : t.f}" stroke="${W}" stroke-width="2.4" paint-order="stroke"/>`;
+      halo = `<g transform="translate(0 ${(-h*.55).toFixed(1)})"><g class="halo">${pe}<circle r="${(R*.5).toFixed(1)}" fill="none" stroke="${t.l}" stroke-width="2" stroke-dasharray="3 4"/></g></g>`; }
+    // Patas, ruedas y brazos
+    let feet = '', arms = '';
+    if (hasWheels) feet = [-1, 1].map(sd => `<g transform="translate(${(sd*w*.5).toFixed(1)} -3)"><circle r="9" fill="${INK}" stroke="${W}" stroke-width="3" paint-order="stroke"/><circle r="3.4" fill="${t.l}"/><path d="M0,-6.5 V6.5 M-6.5,0 H6.5" stroke="${t.l}" stroke-width="1.4"/></g>`).join('');
+    else if (hasLegs || (mat === 'B' && g >= 2)) feet = [-1, 1].map(sd => `<ellipse cx="${(sd*w*.4).toFixed(1)}" cy="${hasLegs && g < 2 ? 1 : 0}" rx="${(Math.max(w*.18, 7)).toFixed(1)}" ry="5.6" fill="${t.d}" stroke="${W}" stroke-width="3" paint-order="stroke"/>`).join('');
+    if (mat === 'B' && g >= 3) arms = [-1, 1].map(sd => `<g transform="translate(${(sd*w*.9).toFixed(1)} ${(-h*.33).toFixed(1)}) scale(${sd} 1)"><g class="${sd > 0 ? 'arm-r' : 'arm-l'}"><path d="M0,0 C6,-4 14,-3 17,3 C11,7 4,6 0,0Z" fill="${t.d}" stroke="${W}" stroke-width="3" stroke-linejoin="round" paint-order="stroke"/></g></g>`).join('');
+    // Cuerda sagrada (grado 4+, opción B)
+    let rope = '';
+    if (g >= 4 && mat === 'B') { const ry = -h * .5, rx = w * .86;
+      rope = `<path d="M${-rx},${ry} Q0,${ry+9} ${rx},${ry}" stroke="${W}" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M${-rx},${ry} Q0,${ry+9} ${rx},${ry}" stroke="#D9B66C" stroke-width="5.5" fill="none" stroke-linecap="round"/><path d="M${-rx},${ry} Q0,${ry+9} ${rx},${ry}" stroke="#A47C35" stroke-width="5.5" fill="none" stroke-dasharray="1.6 4.2"/>`
+        + [-1, 1].map(sd => { const x = sd * w * .34, y = ry + 5.5; return `<path d="M${x-2.5},${y} h5 l-2,4 h4 l-2,4 h4 l-2.5,5 h-5 l2,-4 h-4 l2,-4 h-4Z" fill="${W}" stroke="#C9CED4" stroke-width=".7"/>`; }).join(''); }
+    // Destello del metal
+    const shine = spec.t === 'metal' ? `<rect class="shine" x="-6" y="${(-h-10).toFixed(1)}" width="10" height="${(h+20).toFixed(1)}" fill="${W}" opacity=".45"/>` : '';
+    const sleeping = expr === 'dormido';
+
+    const body = `
+      <path d="${d}" fill="${t.f}" stroke="${W}" stroke-width="5.5" stroke-linejoin="round" paint-order="stroke"/>
+      ${spec.t === 'metal' && !used.some(x => (SLOT[x.m] || 'head') === 'head') ? `<path d="M-4,${-h-6} h8 l2,4 l-2,4 h-8 l-2,-4Z" fill="${t.d}" stroke="${W}" stroke-width="2.6" paint-order="stroke"/>` : ''}
+      <g clip-path="url(#${id}c)">
+        <ellipse cx="0" cy="${kh.toFixed(1)}" rx="${(w*.46).toFixed(1)}" ry="${(Math.min(w*.4, h*.2)).toFixed(1)}" fill="${t.l}" opacity=".95"/>
+        ${shine}
+        <rect x="0" y="${(-h-12).toFixed(1)}" width="${(w+20).toFixed(1)}" height="${(h+24).toFixed(1)}" fill="${INK}" opacity=".11"/>
+        <path d="M0,${(-h).toFixed(1)} V0" stroke="${W}" stroke-width="1" opacity=".5"/>
+        <rect x="${(-w-10).toFixed(1)}" y="${(-h-12).toFixed(1)}" width="${(2*w+20).toFixed(1)}" height="${(h+24).toFixed(1)}" fill="url(#kgrain)" opacity=".09" style="mix-blend-mode:multiply"/>
+      </g>
+      <text x="0" y="${kh.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-family="'Yuji Syuku', 'Hiragino Mincho ProN', serif" font-size="${(Math.min(w*.62, h*.3)).toFixed(1)}" fill="${INK}" transform="rotate(-4 0 ${kh.toFixed(1)})">${spec.k}</text>
+      <ellipse cx="${(-ex*1.42).toFixed(1)}" cy="${(ey+7).toFixed(1)}" rx="4.2" ry="2.5" fill="${PINK}" opacity=".6"/><ellipse cx="${(ex*1.42).toFixed(1)}" cy="${(ey+7).toFixed(1)}" rx="4.2" ry="2.5" fill="${PINK}" opacity=".6"/>
+      ${eyesSVG(style, expr, +ex.toFixed(1), +ey.toFixed(1), t)}
+      ${mouthSVG(expr, +(ey + 8.5).toFixed(1), square)}
+      <g transform="translate(${(w*.56).toFixed(1)} ${(-h*.13).toFixed(1)}) rotate(-8)"><rect x="-6.5" y="-6.5" width="13" height="13" rx="2.2" fill="${RED}" stroke="${W}" stroke-width="1.8" paint-order="stroke"/><text x="0" y=".5" text-anchor="middle" dominant-baseline="central" font-family="'Yuji Syuku', serif" font-size="9.5" fill="${W}">${t.k}</text></g>`;
+
+    const vb = o.tight ? '-74 -178 148 186' : '-90 -196 180 206';
+    return `<svg class="kj" viewBox="${vb}" role="img" aria-label="${spec.k} · ${spec.m || ''} · ${t.n} · grado ${g}" data-spec='${JSON.stringify({ ...spec, expr })}' data-o='${JSON.stringify({ expr: o.expr || '', mat: o.mat || '', eyes: o.eyes || '' })}'>
+      <defs><clipPath id="${id}c"><path d="${d}"/></clipPath></defs>
+      <g transform="scale(${s})"><g class="whole">${halo}<g class="idle idle-${spec.t}">${layers}${feet}${body}${rope}${arms}${motifs}</g></g></g>
+    </svg>`;
+  }
+  const spec = k => ({ k, ...K[k] });
+  const fig = (k, cap, o = {}) => `<figure>${kanjuu(spec(k), o)}${cap ? `<figcaption>${cap}</figcaption>` : ''}</figure>`;
+
+  // ---------- Pintar la página ----------
+  function render() {
+    uid = 0;
+    document.getElementById('hero').innerHTML = ['口', '品', '喿', '澡', '藻'].map(k => fig(k, `<b>Grado ${K[k].g}</b>${k} ${K[k].m}`)).join('');
+    document.getElementById('anatFig').innerHTML = kanjuu(spec('時'), { tight: true });
+    document.getElementById('els').innerHTML = ORDER.map(tk => { const t = T[tk];
+      return `<div class="card el"><div class="fig">${kanjuu({ k: t.k, t: tk, g: 1, sig: 'none', m: t.n }, { tight: true })}</div>
+        <div class="head"><span class="k">${t.k}</span><h3>${t.n}</h3></div>
+        <div class="sw"><i style="background:${t.l}"></i><i style="background:${t.f}"></i><i style="background:${t.d}"></i></div>
+        <dl><div><dt>Forma</dt><dd>${t.forma}</dd></div><div><dt>Papel</dt><dd>${t.papel}</dd></div><div><dt>Quieto</dt><dd>${t.mov}</dd></div></dl></div>`; }).join('');
+    const MAP = { wood: [['木', 'madera'], ['生', 'vida'], ['糸', 'hilo']], fire: [['火', 'fuego'], ['日', 'sol'], ['心', 'corazón']], earth: [['土', 'tierra'], ['人', 'gente'], ['一', 'vacío']],
+      metal: [['金', 'metal'], ['力', 'fuerza'], ['口', 'voz']], water: [['水', 'agua'], ['月', 'luna'], ['子', 'cielo'], ['目', 'visión'], ['示', 'espíritu']] };
+    document.getElementById('map').innerHTML = ORDER.map(tk => `<div class="row"><span class="dot" style="background:${T[tk].f}"></span><b style="font-family:var(--display)">${T[tk].n}</b>${MAP[tk].map(([k, n]) => `<span class="pill"><b>${k}</b>${n}</span>`).join('')}</div>`).join('');
+    const ladder = mat => [1, 2, 3, 4, 5].map(g => `<figure>${kanjuu({ k: '木', t: 'wood', g, sig: 'leaf', m: 'árbol' }, { mat })}<figcaption>Grado ${g}</figcaption></figure>`).join('');
+    document.getElementById('ladB').innerHTML = ladder('B');
+    document.getElementById('ladA').innerHTML = ladder('A');
+    const CAT = [
+      ['Objeto', 'El kanji nombra algo que se puede tocar. El motivo es esa cosa, dibujada simple, en la cabeza o como parte del cuerpo.', ['日', '車', '月']],
+      ['Concepto', 'El kanji es una idea. Se usa un símbolo que se entienda en cualquier país: una señal de alto, el ○ japonés de "correcto", una nube de pensamiento.', ['止', '正', '思']],
+      ['Acción', 'El kanji es un verbo. Lo dice la pose y la expresión, con un objeto de apoyo: dormido, mirando por un catalejo, esperando con un reloj de arena.', ['休', '見', '待']],
+    ];
+    document.getElementById('cats').innerHTML = CAT.map(([n, d, ks]) => `<div class="card cat"><h3>${n}</h3><p class="small mute">${d}</p><div class="ex">${ks.map(k => fig(k, `<b>${k}</b>${K[k].m}`, { tight: true })).join('')}</div></div>`).join('');
+    document.getElementById('slotFig').innerHTML = kanjuu(spec('正'));
+    const eq = (parts, res) => parts.map(p => `<figure>${kanjuu(spec(p), { tight: true })}<figcaption><b>${p}</b>${K[p].m}</figcaption></figure>`).join('<span class="op">+</span>') + `<span class="op">=</span><figure class="big">${kanjuu(spec(res), { tight: true })}<figcaption><b>${res}</b>${K[res].m}</figcaption></figure>`;
+    document.getElementById('eq1').innerHTML = eq(['日', '月'], '明');
+    document.getElementById('eq2').innerHTML = eq(['日', '寺'], '時');
+    document.getElementById('eq3').innerHTML = eq(['人', '木'], '休');
+    const EYES = [['D', 'Papel', 'Disco blanco con pupila de tinta que se mueve.'], ['A', 'Gota de tinta', 'Óvalo negro con un brillo.'], ['B', 'Punto sumi', 'Un punto de tinta, el más simple.'], ['C', 'Brillo', 'Grandes y brillantes, más anime.']];
+    document.getElementById('eyes').innerHTML = EYES.map(([v, n, d]) => `<button type="button" class="card eyeopt" data-v="${v}" aria-pressed="${S.eyes === v}"><div class="fig">${kanjuu(spec('水'), { eyes: v, tight: true })}</div><h3>${n}</h3><p>${d}</p></button>`).join('');
+    document.getElementById('exprs').innerHTML = ['neutral', 'feliz', 'triste', 'sorpresa', 'dormido', 'enojado'].map(e => `<figure>${kanjuu(spec('心'), { expr: e, tight: true })}<figcaption>${e[0].toUpperCase() + e.slice(1)}</figcaption></figure>`).join('');
+    const MOVES = [
+      ['火', 'Quieto, según elemento', 'Cada elemento tiene su propio ciclo: se mece, parpadea, respira, brilla o flota.'],
+      ['月', 'Parpadeo', 'Cada criatura parpadea a su ritmo. Los ojos siguen tu dedo o el mouse.'],
+      ['土', 'Tocar', 'Se aplasta y rebota como cartón, y saluda con el brazo desde el grado 3.'],
+      ['明', 'Feliz', 'Salta dos veces al acertar o al recibir mimos.'],
+      ['休', 'Dormido', 'Ojos cerrados y zz flotando: la acción del kanji y también su estado de noche.'],
+      ['澡', 'Subir de grado', 'La hoja gira como una carta y vuelve con una hoja más. Pruébalo en el taller.'],
+    ];
+    document.getElementById('moves').innerHTML = MOVES.map(([k, n, d]) => `<div class="card mv"><div>${kanjuu(spec(k), { tight: true })}</div><div><h3>${n}</h3><p>${d}</p></div></div>`).join('');
+    document.getElementById('tiny').innerHTML = Object.keys(K).map(k => `<figure>${kanjuu(spec(k), { tight: true })}<figcaption>${k}</figcaption></figure>`).join('');
+    renderLab();
+    document.querySelectorAll('#optEyes button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S.eyes));
+    document.querySelectorAll('#optMat button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S.mat));
+    staggerBlink();
+  }
+
+  // ---------- Taller ----------
+  const L = { k: '時', t: 'fire', g: 3, sig: 'clock', p1: '日', expr: 'neutral' };
+  function labSpec() { return { k: L.k, t: L.t, g: L.g, sig: L.sig, from: L.p1 ? [L.p1] : [], m: K[L.k]?.m || '' }; }
+  function renderLab() {
+    document.getElementById('labFig').innerHTML = kanjuu(labSpec(), { expr: L.expr });
+    document.getElementById('gVal').textContent = L.g; document.getElementById('rgG').value = L.g;
+    document.getElementById('selK').value = L.k; document.getElementById('selSig').value = L.sig; document.getElementById('selP1').value = L.p1;
+    document.querySelectorAll('#chType button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === L.t));
+    document.querySelectorAll('#chExpr button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === L.expr));
+    const sp = { k: L.k, tipo: L.t, grado: L.g, motivo: L.sig, hereda: L.p1 ? [L.p1] : [], expresion: L.expr === 'neutral' ? null : L.expr };
+    document.getElementById('spec').textContent = JSON.stringify(sp, null, 2);
+    staggerBlink();
+  }
+  function setupLab() {
+    document.getElementById('selK').innerHTML = Object.keys(K).map(k => `<option value="${k}">${k} · ${K[k].m} · grado ${K[k].g}</option>`).join('');
+    document.getElementById('selSig').innerHTML = Object.entries(SIGS).map(([v, n]) => `<option value="${v}">${n}</option>`).join('');
+    document.getElementById('selP1').innerHTML = `<option value="">Nada</option>` + Object.keys(K).filter(k => K[k].g === 1 || k === '寺' || k === '品').map(k => `<option value="${k}">${k} · ${K[k].m}</option>`).join('');
+    document.getElementById('chType').innerHTML = ORDER.map(tk => `<button type="button" data-v="${tk}"><span class="k">${T[tk].k}</span>${T[tk].n}</button>`).join('');
+    document.getElementById('chExpr').innerHTML = ['neutral', 'feliz', 'triste', 'sorpresa', 'dormido', 'enojado'].map(e => `<button type="button" data-v="${e}">${e[0].toUpperCase() + e.slice(1)}</button>`).join('');
+    document.getElementById('selK').onchange = e => { const k = e.target.value, s = K[k]; Object.assign(L, { k, t: s.t, g: s.g, sig: s.sig, p1: (s.from || [])[0] || '', expr: s.expr || 'neutral' }); renderLab(); };
+    document.getElementById('selSig').onchange = e => { L.sig = e.target.value; renderLab(); };
+    document.getElementById('selP1').onchange = e => { L.p1 = e.target.value; renderLab(); };
+    document.getElementById('rgG').oninput = e => { L.g = +e.target.value; renderLab(); };
+    document.getElementById('chType').onclick = e => { const b = e.target.closest('button'); if (b) { L.t = b.dataset.v; renderLab(); } };
+    document.getElementById('chExpr').onclick = e => { const b = e.target.closest('button'); if (b) { L.expr = b.dataset.v; renderLab(); } };
+    document.getElementById('bTap').onclick = () => poke(document.querySelector('#labFig svg'), 'tap');
+    document.getElementById('bHop').onclick = () => { L.expr = 'feliz'; renderLab(); poke(document.querySelector('#labFig svg'), 'hop'); };
+    document.getElementById('bEvo').onclick = () => {
+      const fl = document.getElementById('flipper'); const next = L.g >= 5 ? 1 : L.g + 1;
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) { L.g = next; renderLab(); return; }
+      fl.classList.add('flip'); setTimeout(() => { L.g = next; renderLab(); fl.classList.remove('flip'); setTimeout(() => poke(document.querySelector('#labFig svg'), 'hop'), 320); }, 320);
+    };
+  }
+
+  // ---------- Interacción ----------
+  function poke(svg, cls) { if (!svg) return; svg.classList.remove('tap', 'hop'); void svg.getBoundingClientRect(); svg.classList.add(cls); setTimeout(() => svg.classList.remove(cls), cls === 'hop' ? 1500 : 600); }
+  document.addEventListener('click', e => { const s = e.target.closest('svg.kj'); if (s && !e.target.closest('.eyeopt')) poke(s, 'tap'); });
+  function staggerBlink() { document.querySelectorAll('svg.kj').forEach((s, i) => { const dl = -((i * 1.37) % 5.2).toFixed(2) + 's'; s.querySelectorAll('.blink').forEach(b => b.style.animationDelay = dl); }); }
+  let mx = null, my = null, raf = 0;
+  addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; if (!raf) raf = requestAnimationFrame(look); }, { passive: true });
+  function look() { raf = 0; const H = innerHeight;
+    document.querySelectorAll('svg.kj').forEach(s => { const r = s.getBoundingClientRect(); if (r.bottom < 0 || r.top > H) return;
+      const cx = r.left + r.width / 2, cy = r.top + r.height * .55, dx = mx - cx, dy = my - cy, m = Math.max(1, Math.hypot(dx, dy));
+      const k = Math.min(1, m / 160); s.style.setProperty('--px', (dx / m * k).toFixed(2)); s.style.setProperty('--py', (dy / m * k).toFixed(2)); }); }
+
+  document.getElementById('optEyes').onclick = e => { const b = e.target.closest('button'); if (b) { S.eyes = b.dataset.v; save(); render(); } };
+  document.getElementById('optMat').onclick = e => { const b = e.target.closest('button'); if (b) { S.mat = b.dataset.v; save(); render(); } };
+  document.getElementById('eyes').onclick = e => { const b = e.target.closest('.eyeopt'); if (b) { S.eyes = b.dataset.v; save(); render(); } };
+
+  setupLab(); render();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => document.querySelectorAll('svg.kj text').forEach(t => t.setAttribute('x', t.getAttribute('x'))));
+})();
+</script>
+</body></html>
