@@ -1,21 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="KANJŪ">
-<defs><filter id="k2noise" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="5"/><feColorMatrix type="saturate" values="0"/></filter><pattern id="k2grain" patternUnits="userSpaceOnUse" width="96" height="96"><rect width="96" height="96" filter="url(#k2noise)"/></pattern><clipPath id="clipc24"><rect width="1024" height="1024" rx="230"/></clipPath><radialGradient id="glowc24" cx="50%" cy="38%" r="65%"><stop offset="0" stop-color="#F2825A"/><stop offset="1" stop-color="#C83A25"/></radialGradient><pattern id="dotsc24" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="3.2" fill="#FFFFFF" fill-opacity=".14"/></pattern><filter id="diec24" x="-20%" y="-30%" width="140%" height="160%"><feMorphology in="SourceAlpha" operator="dilate" radius="18" result="d"/><feFlood flood-color="#FFFDF8"/><feComposite in2="d" operator="in" result="w"/><feOffset in="d" dy="14" result="so"/><feFlood flood-color="#1E1A24" flood-opacity=".3"/><feComposite in2="so" operator="in" result="sh"/><feMerge><feMergeNode in="sh"/><feMergeNode in="w"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-<g clip-path="url(#clipc24)"><rect width="1024" height="1024" fill="url(#glowc24)"/><rect width="1024" height="1024" fill="url(#dotsc24)"/>
-<g transform="translate(512 545) scale(0.9) translate(-512 -545)"><g filter="url(#diec24)"><svg x="-138" y="-34" width="1300" height="1300" viewBox="-84 -158 168 168" overflow="visible">
-    <defs><clipPath id="k22ci24"><path d="M-24,-111 C-6,-114 10,-113 25,-109 C32,-107 35,-102 36,-95 C39,-77 42,-59 42,-47 C42,-40 37,-35 30,-35 C10,-33 -12,-34 -32,-36 C-39,-37 -43,-42 -42,-49 C-40,-67 -36,-87 -33,-101 C-32,-107 -29,-110 -24,-111Z"/></clipPath></defs>
-    <g transform="scale(1.113)"><g class="k2-whole"><g transform="rotate(0 0 -40)"><g class="k2-idle k2-idle-earth">
-      <path d="M18,-104 C20,-116 22,-126 22,-134 C28,-128 33,-118 35,-104 C30,-101 23,-101 18,-104Z" fill="#EF6B4C" stroke="#FFFDF8" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke" /><path d="M31,-103 C31,-115 28,-126 22,-134 C28,-128 33,-118 35,-104 C34,-103 32,-103 31,-103Z" fill="#B5301C"/><path class="k2-ln" d="M-22,-110 L-28,-121 M-8,-112 V-125 M6,-110 L12,-121" fill="none" stroke="#FFFDF8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path class="k2-ln" d="M-22,-110 L-28,-121 M-8,-112 V-125 M6,-110 L12,-121" fill="none" stroke="#94612E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M-24,-111 C-6,-114 10,-113 25,-109 C32,-107 35,-102 36,-95 C39,-77 42,-59 42,-47 C42,-40 37,-35 30,-35 C10,-33 -12,-34 -32,-36 C-39,-37 -43,-42 -42,-49 C-40,-67 -36,-87 -33,-101 C-32,-107 -29,-110 -24,-111Z" transform="translate(-6.8 -5.2)" fill="#D8A562" stroke="#FFFDF8" stroke-width="5" stroke-linejoin="round" paint-order="stroke"/><path d="M-24,-111 C-6,-114 10,-113 25,-109 C32,-107 35,-102 36,-95 C39,-77 42,-59 42,-47 C42,-40 37,-35 30,-35 C10,-33 -12,-34 -32,-36 C-39,-37 -43,-42 -42,-49 C-40,-67 -36,-87 -33,-101 C-32,-107 -29,-110 -24,-111Z" transform="translate(-3.4 -2.6)" fill="#F2DAB2" stroke="#FFFDF8" stroke-width="5" stroke-linejoin="round" paint-order="stroke"/>
-      <path d="M-24,-111 C-6,-114 10,-113 25,-109 C32,-107 35,-102 36,-95 C39,-77 42,-59 42,-47 C42,-40 37,-35 30,-35 C10,-33 -12,-34 -32,-36 C-39,-37 -43,-42 -42,-49 C-40,-67 -36,-87 -33,-101 C-32,-107 -29,-110 -24,-111Z" fill="#D8A562" stroke="#FFFDF8" stroke-width="5.5" stroke-linejoin="round" paint-order="stroke"/>
-      <g clip-path="url(#k22ci24)">
-        
-        
-        <rect x="0" y="-195" width="120" height="205" fill="#1E1A24" opacity=".11"/>
-        <path class="k2-ln" d="M0,-195 V10" stroke="#FFFDF8" stroke-width="1" opacity=".5" fill="none"/>
-        <rect x="-120" y="-195" width="240" height="205" fill="url(#k2grain)" opacity=".09" style="mix-blend-mode:multiply"/>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1024 1024" width="1024" height="1024"><defs>
+      <filter id="grano" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="7"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .3 -.12"/>
+      </filter>
+      <clipPath id="boca"><path d="M380 570 Q512 592 644 570 Q626 824 512 830 Q398 824 380 570Z"/></clipPath>
+      <g id="rasgos">
+        <rect x="512" width="512" height="1024" fill="#1E1A24" opacity=".11"/>
+        <rect width="1024" height="1024" filter="url(#grano)"/>
+        <path d="M512 0 V1024" stroke="#FFFDF8" stroke-width="5" opacity=".5"/>
+        <path d="M0 528 C330 514 690 520 1024 538" stroke="#FFFDF8" stroke-width="8" opacity=".85" fill="none"/>
+        <g transform="translate(512 505) scale(1.25) translate(-512 -505)">
+        <circle cx="512" cy="345" r="165" fill="#FFFDF8" stroke="#1E1A24" stroke-opacity=".28" stroke-width="6"/>
+        <rect x="477" y="276" width="70" height="122" rx="35" fill="#1E1A24"/>
+        <circle cx="497" cy="306" r="15" fill="#FFFDF8"/>
+        <path d="M380 570 Q512 592 644 570 Q626 824 512 830 Q398 824 380 570Z" fill="#7A2E3A" stroke="#FFFDF8" stroke-width="12" stroke-linejoin="round" paint-order="stroke"/>
+        <g clip-path="url(#boca)"><ellipse cx="530" cy="826" rx="118" ry="84" fill="#D8452F"/></g>
+        <path d="M418 583 L446 646 L474 587Z M550 587 L578 646 L606 583Z" fill="#FFFDF8"/>
+        </g>
       </g>
-      <path class="k2-ln" d="M-38,-72 C-12,-75 14,-73 39,-70" stroke="#FFFDF8" stroke-width="1.3" opacity=".8" fill="none"/><path d="M-13,-66 Q0,-63 13,-66 Q12,-50 0,-49 Q-12,-50 -13,-66Z" fill="#7A2E3A" stroke="#FFFDF8" stroke-width="2.2" stroke-linejoin="round" paint-order="stroke"/><clipPath id="jmci24"><path d="M-13,-66 Q0,-63 13,-66 Q12,-50 0,-49 Q-12,-50 -13,-66Z"/></clipPath><g clip-path="url(#jmci24)"><ellipse cx="2" cy="-49" rx="9.5" ry="7.5" fill="#D8452F"/></g><path d="M-9.6,-65.4 L-7,-60.400000000000006 L-4.4,-65.4Z" fill="#FFFDF8"/><path d="M4.4,-65.4 L7,-60.400000000000006 L9.6,-65.4Z" fill="#FFFDF8"/>
       
-      <!--f--><g transform="translate(1 -89)"><g class="k2-blink"><g transform="scale(2.35 2.35)"><circle r="6.2" fill="#FFFDF8" stroke="rgba(30,26,36,.28)" stroke-width=".7"/></g><g class="k2-pup"><g transform="scale(2.35 2.35)"><rect x="-1.9" y="-3.2" width="3.8" height="6.4" rx="1.9" fill="#1E1A24"/><circle cx="-0.7" cy="-1.6" r=".75" fill="#FFFDF8"/></g></g></g><g transform="scale(2.35 2.35)"></g></g><!--/f-->
-      
-    </g></g></g>
-  </svg></g></g></g></svg>
+      <symbol id="caraFuego" viewBox="0 0 1024 1024">
+        <rect width="1024" height="1024" fill="#F2825A"/>
+        <use href="#rasgos"/>
+      </symbol>
+    <clipPath id="redondo"><rect width="1024" height="1024" rx="230"/></clipPath></defs><g clip-path="url(#redondo)"><use href="#caraFuego"/></g></svg>
