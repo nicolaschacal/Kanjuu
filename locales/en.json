@@ -15,8 +15,8 @@
  "hud.quests": "Quests",
  "hud.questsAria": "Today's quests",
  "hud.questsReady": {
-  "one": "{n} to claim",
-  "other": "{n} to claim"
+  "one": "{n} reward to claim",
+  "other": "{n} rewards to claim"
  },
  "hud.questsDone": "{done}/{total} today",
  "nav.trainer": "Trainer",
@@ -31,7 +31,7 @@
  "trainer.me": "Profile",
  "dex.atlas": "Atlas",
  "dex.fam": "Families",
- "dex.ach": "Achievements",
+ "dex.ach": "Awards",
  "wx.noGeo": "This device doesn't share its location",
  "wx.enableGeo": "Turn on location to see the weather",
  "wx.fail": "Couldn't load the weather",

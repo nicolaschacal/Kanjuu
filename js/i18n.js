@@ -4,10 +4,11 @@
 // Español neutro con tú es la base; 'es-rp' (Río de la Plata, voseo) solo trae las claves que cambian.
 import { S, save } from './state.js';
 
-// Nombre de cada idioma en su propio idioma, código para Intl y de qué idioma hereda
+// Nombre de cada idioma en su propio idioma, código para Intl y de qué idioma hereda.
+// Río de la Plata usa 'es' en Intl para que horas y números se vean igual que en neutro.
 export const LANGS = [
   { id: 'es', name: 'Español', intl: 'es', base: null },
-  { id: 'es-rp', name: 'Español (Río de la Plata)', intl: 'es-AR', base: 'es' },
+  { id: 'es-rp', name: 'Español (Río de la Plata)', intl: 'es', base: 'es' },
   { id: 'en', name: 'English', intl: 'en', base: 'es' },
 ];
 const info = id => LANGS.find(l => l.id === id);

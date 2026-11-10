@@ -161,7 +161,7 @@ export function hud() {
   save();
 }
 // ---------- Hora y clima (Open-Meteo, sin clave). La ubicación sólo se pide al tocar el reloj. ----------
-const clock = () => new Date().toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' });
+const clock = () => new Date().toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
 // Momento del día: es lo que se lee primero (como en Rebyters); la hora y el clima van chicos debajo
 const phase = (h = Math.floor(hourNow())) => h >= 6 && h < 12 ? { l: t('hud.phase.morning'), i: 'dawn' } : h >= 12 && h < 19 ? { l: t('hud.phase.afternoon'), i: 'sun' } : h >= 19 && h < 23 ? { l: t('hud.phase.night'), i: 'night' } : { l: t('hud.phase.lateNight'), i: 'night' };
 let wxNow = null;
