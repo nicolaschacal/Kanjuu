@@ -21,6 +21,7 @@ import { viewDex, openQuests } from './atlas.js';
 import { viewShop, openLogin } from './shop.js';
 import { acadCtx } from './dojo.js';
 import { openAccount, authWall } from './account.js';
+import { t, setLang, langName, locale, detect, LANGS } from './i18n.js';
 
 export const $ = (s, r = document) => r.querySelector(s);
 export const app = $('#app');
@@ -71,27 +72,28 @@ export const ui = { tab: 'home', sub: 'kan', dsub: 'atlas' };
 // ---------- Shell ----------
 // El mapa siempre queda debajo. Cada sección es una hoja con pestañas que sube sobre el mapa;
 // mientras hay una hoja o un modal abierto, desaparecen el HUD y la barra inferior.
-export const NAV = [['trainer', 'user', 'Entrenador'], ['lab', 'fusion', 'Fusión'], ['arena', 'swords', 'Arena'], ['exp', 'compass', 'Viajes'], ['dex', 'book', 'Atlas']];
-const TITLES = { lab: 'Fusión', arena: 'Arena', exp: 'Viajes', dex: 'Atlas', shop: 'Tienda' };
-export const TRAINER_TABS = [['bag', 'bag', 'Mochila'], ['kan', 'paw', 'KANJŪ'], ['me', 'user', 'Usuario']];
-export const DEX_TABS = [['atlas', 'book', 'Atlas'], ['fam', 'fusion', 'Familias'], ['ach', 'star', 'Logros']];
+// El tercer valor es la clave del texto en locales/*.json
+export const NAV = [['trainer', 'user', 'nav.trainer'], ['lab', 'fusion', 'nav.lab'], ['arena', 'swords', 'nav.arena'], ['exp', 'compass', 'nav.exp'], ['dex', 'book', 'nav.dex']];
+const TITLES = { lab: 'nav.lab', arena: 'nav.arena', exp: 'nav.exp', dex: 'nav.dex', shop: 'sheet.shop' };
+export const TRAINER_TABS = [['bag', 'bag', 'trainer.bag'], ['kan', 'paw', 'trainer.kan'], ['me', 'user', 'trainer.me']];
+export const DEX_TABS = [['atlas', 'book', 'dex.atlas'], ['fam', 'fusion', 'dex.fam'], ['ach', 'star', 'dex.ach']];
 export function shell() {
   app.innerHTML = `
   <header class="hud">
-    <button class="hud-clock" id="clock" aria-label="Momento del día y clima"><span class="clk-ic" id="clkI">${ic(phase().i)}</span><span class="clk-t"><b id="clkP">${phase().l}</b><small><span id="clkT">${clock()}</span><span id="wx" hidden> · <span id="wxT"></span></span></small></span></button>
+    <button class="hud-clock" id="clock" data-i18n-aria="hud.clock" aria-label="${t('hud.clock')}"><span class="clk-ic" id="clkI">${ic(phase().i)}</span><span class="clk-t"><b id="clkP">${phase().l}</b><small><span id="clkT">${clock()}</span><span id="wx" hidden> · <span id="wxT"></span></span></small></span></button>
     <div class="hud-r">
       <div class="hud-row">
-        <button class="wallet-p" id="shopBtn" aria-label="Tinta y tienda"><span class="wc">${ic('ink', 'ink')}<b id="ink">${S.ink}</b></span><span class="wc">${ic('ticket', 'tix')}<b id="tix">${S.tickets}</b></span><i class="ink-dot" id="inkDot" hidden></i></button>
-        <button class="gear-b" id="gearBtn" aria-label="Configuración">${ic('gear')}</button>
+        <button class="wallet-p" id="shopBtn" data-i18n-aria="hud.wallet" aria-label="${t('hud.wallet')}"><span class="wc">${ic('ink', 'ink')}<b id="ink">${S.ink}</b></span><span class="wc">${ic('ticket', 'tix')}<b id="tix">${S.tickets}</b></span><i class="ink-dot" id="inkDot" hidden></i></button>
+        <button class="gear-b" id="gearBtn" data-i18n-aria="menu.title" aria-label="${t('menu.title')}">${ic('gear')}</button>
       </div>
-      <button class="quest-card" id="questBtn" aria-label="Misiones de hoy"><span class="qc-ic">${ic('list')}</span><span class="qc-t"><b>Misiones</b><small id="questTxt"></small></span><b class="qc-n" id="questN"></b></button>
+      <button class="quest-card" id="questBtn" data-i18n-aria="hud.questsAria" aria-label="${t('hud.questsAria')}"><span class="qc-ic">${ic('list')}</span><span class="qc-t"><b data-i18n="hud.quests">${t('hud.quests')}</b><small id="questTxt"></small></span><b class="qc-n" id="questN"></b></button>
     </div>
   </header>
   <main id="view"></main>
   <div id="panel"></div>
-  <nav class="tabs">${NAV.map(([id, k, l]) => `<button data-tab="${id}" class="${id === 'arena' ? 'center' : ''}"><i>${ic(k)}</i><span>${l}</span></button>`).join('')}</nav>
+  <nav class="tabs">${NAV.map(([id, k, l]) => `<button data-tab="${id}" class="${id === 'arena' ? 'center' : ''}"><i>${ic(k)}</i><span data-i18n="${l}">${t(l)}</span></button>`).join('')}</nav>
   <div id="layer"></div>`;
-  homeOn = false;
+  homeOn = false; document.documentElement.lang = locale();
   app.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { ui.tab = b.dataset.tab; buzz(5); go(); });
   $('#questBtn').onclick = openQuests;
   $('#shopBtn').onclick = e => totalPending() ? harvest(placed(), $('#ink')) : (ui.tab = 'shop', buzz(5), go());
@@ -112,31 +114,31 @@ export function go() {
 }
 export const closePanel = () => { ui.tab = 'home'; go(); };
 function renderPanel() {
-  const p = $('#panel'), t = ui.tab;
-  if (t === 'home') {
+  const p = $('#panel'), tab = ui.tab;
+  if (tab === 'home') {
     if (p.classList.contains('open')) { p.classList.add('out'); setTimeout(() => { if (ui.tab === 'home') { p.className = ''; p.innerHTML = ''; } }, 230); }
     return;
   }
-  const fresh = !p.classList.contains('open') || p.classList.contains('out') || p.dataset.t !== t;
+  const fresh = !p.classList.contains('open') || p.classList.contains('out') || p.dataset.t !== tab;
   const old = $('#pnBody', p), top = fresh ? 0 : old?.scrollTop || 0;
-  const tabs = t === 'trainer' ? [TRAINER_TABS, 'sub'] : t === 'dex' ? [DEX_TABS, 'dsub'] : null;
+  const tabs = tab === 'trainer' ? [TRAINER_TABS, 'sub'] : tab === 'dex' ? [DEX_TABS, 'dsub'] : null;
   const head = tabs
-    ? `<div class="pn-tabs">${tabs[0].map(([id, k, l]) => `<button class="${(ui[tabs[1]] || tabs[0][0][0]) === id ? 'on' : ''}" data-sub="${id}">${ic(k)}<span>${l}</span></button>`).join('')}</div>`
-    : `<b class="pn-title">${TITLES[t]}</b>`;
-  p.className = 'open' + (fresh && p.dataset.t !== t && !p.classList.contains('open') ? ' in' : '');
-  p.dataset.t = t;
-  p.innerHTML = `<div class="pn-card"><div class="pn-head">${head}<button class="pn-x" id="pnX" aria-label="Cerrar">${ic('x')}</button></div><div class="pn-body view v-${t}${t === 'trainer' ? ' sub-' + ui.sub : ''}" id="pnBody"></div></div>`;
+    ? `<div class="pn-tabs">${tabs[0].map(([id, k, l]) => `<button class="${(ui[tabs[1]] || tabs[0][0][0]) === id ? 'on' : ''}" data-sub="${id}">${ic(k)}<span>${t(l)}</span></button>`).join('')}</div>`
+    : `<b class="pn-title">${t(TITLES[tab])}</b>`;
+  p.className = 'open' + (fresh && p.dataset.t !== tab && !p.classList.contains('open') ? ' in' : '');
+  p.dataset.t = tab;
+  p.innerHTML = `<div class="pn-card"><div class="pn-head">${head}<button class="pn-x" id="pnX" aria-label="${t('sheet.close')}">${ic('x')}</button></div><div class="pn-body view v-${tab}${tab === 'trainer' ? ' sub-' + ui.sub : ''}" id="pnBody"></div></div>`;
   p.onclick = e => { if (e.target === p) closePanel(); };
   $('#pnX', p).onclick = closePanel;
   p.querySelectorAll('[data-sub]').forEach(b => b.onclick = () => { ui[tabs[1]] = b.dataset.sub; buzz(5); go(); });
   const body = $('#pnBody', p);
-  ({ lab: viewLab, exp: viewExp, arena: viewArena, shop: viewShop, dex: viewDex, trainer: viewTrainer })[t](body);
+  ({ lab: viewLab, exp: viewExp, arena: viewArena, shop: viewShop, dex: viewDex, trainer: viewTrainer })[tab](body);
   body.scrollTop = top;
 }
 export function hud() {
   $('#ink').textContent = S.ink;
   const ct = $('#clkT'); if (ct) {
-    const ph = phase(), rn = raining(), lbl = ph.l; ct.textContent = rn ? clock() + ' · lluvia' : clock();
+    const ph = phase(), rn = raining(), lbl = ph.l; ct.textContent = rn ? clock() + ' · ' + t('hud.rain') : clock();
     const k = rn ? 'rain' : wxNow && WX(wxNow.c) !== 'sun' ? WX(wxNow.c) : ph.i;
     if ($('#clkP').textContent !== lbl) $('#clkP').textContent = lbl;
     const ci = $('#clkI'); if (ci.dataset.k !== k) { ci.dataset.k = k; ci.innerHTML = ic(k); }
@@ -149,7 +151,8 @@ export function hud() {
   $('#questBtn').classList.toggle('hot', !!ready);
   const tix = $('#tix'); if (tix) tix.textContent = S.tickets;
   const done = MISSIONS.filter(m => (S.daily.p[m.id] || 0) >= m.goal).length;
-  const qt = $('#questTxt'); if (qt) qt.textContent = ready ? `${ready} para cobrar` : `${done}/${MISSIONS.length} hoy`;
+  const qt = $('#questTxt'); if (qt) qt.textContent = ready ? t('hud.questsReady', { n: ready }) : t('hud.questsDone', { done, total: MISSIONS.length });
+  if (wxNow) wxLabel();
   const expDone = S.creatures.some(c => c.away && Date.now() >= c.away.end);
   app.querySelector('[data-tab=exp]')?.classList.toggle('dot', expDone);
   const ar = S.arena; app.querySelector('[data-tab=arena]')?.classList.toggle('dot', !!ar && (ar.chests.some((c, i) => i === 0 && c.pts >= ({ wood: 6, silver: 12, gold: 24 })[c.t]) || ROAD.some(r => ar.best >= r.at && !ar.road.includes(r.at))));
@@ -158,49 +161,64 @@ export function hud() {
   save();
 }
 // ---------- Hora y clima (Open-Meteo, sin clave). La ubicación sólo se pide al tocar el reloj. ----------
-const clock = () => new Date().toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
+const clock = () => new Date().toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' });
 // Momento del día: es lo que se lee primero (como en Rebyters); la hora y el clima van chicos debajo
-const phase = (h = Math.floor(hourNow())) => h >= 6 && h < 12 ? { l: 'Mañana', i: 'dawn' } : h >= 12 && h < 19 ? { l: 'Tarde', i: 'sun' } : h >= 19 && h < 23 ? { l: 'Noche', i: 'night' } : { l: 'Madrugada', i: 'night' };
-const WXN = { sun: 'Despejado', cloud: 'Nublado', fog: 'Niebla', rain: 'Lluvia', snow: 'Nieve', storm: 'Tormenta' };
+const phase = (h = Math.floor(hourNow())) => h >= 6 && h < 12 ? { l: t('hud.phase.morning'), i: 'dawn' } : h >= 12 && h < 19 ? { l: t('hud.phase.afternoon'), i: 'sun' } : h >= 19 && h < 23 ? { l: t('hud.phase.night'), i: 'night' } : { l: t('hud.phase.lateNight'), i: 'night' };
 let wxNow = null;
+// Temperatura y clima en el idioma actual (también se llama al cambiar de idioma)
+function wxLabel() { const el = $('#wxT'); if (!el || !wxNow) return; const k = raining() ? 'rain' : WX(wxNow.c); const txt = `${Math.round(wxNow.t)}° ${t('hud.wx.' + k)}`; if (el.textContent !== txt) el.textContent = txt; }
 const WX = c => c <= 1 ? 'sun' : c <= 3 ? 'cloud' : c <= 48 ? 'fog' : c <= 67 || (c >= 80 && c <= 82) ? 'rain' : c <= 86 ? 'snow' : 'storm';
 const GEO = 'kanjuu.geo', WXC = 'kanjuu.wx';
 export async function weather(ask) {
   const show = w => {
     const el = $('#wx'); if (!el) return; wxNow = w; el.hidden = false;
     const k = raining() ? 'rain' : WX(w.c) === 'sun' ? phase().i : WX(w.c); $('#clkI').innerHTML = ic(k); $('#clkI').dataset.k = k;
-    $('#wxT').textContent = `${Math.round(w.t)}° ${WXN[k]}`;
+    wxLabel();
   };
   try { const w = JSON.parse(localStorage.getItem(WXC)); if (w) { show(w); if (Date.now() - w.at < 18e5 && !ask) return; } } catch {}
   let pos; try { pos = JSON.parse(localStorage.getItem(GEO)); } catch {}
   if (!pos) {
-    if (!navigator.geolocation) return ask && toast('Este dispositivo no comparte su ubicación');
+    if (!navigator.geolocation) return ask && toast(t('wx.noGeo'));
     if (!ask) { const p = await navigator.permissions?.query({ name: 'geolocation' }).catch(() => null); if (p?.state !== 'granted') return; }
     pos = await new Promise(res => navigator.geolocation.getCurrentPosition(p => res({ lat: +p.coords.latitude.toFixed(2), lon: +p.coords.longitude.toFixed(2) }), () => res(null), { timeout: 10000, maximumAge: 36e5 }));
-    if (!pos) return ask && toast('Activá la ubicación para ver el clima');
+    if (!pos) return ask && toast(t('wx.enableGeo'));
     try { localStorage.setItem(GEO, JSON.stringify(pos)); } catch {}
   }
   try {
     const r = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.lat}&longitude=${pos.lon}&current=temperature_2m,weather_code,is_day`)).json();
     const w = { t: r.current.temperature_2m, c: r.current.weather_code, day: !!r.current.is_day, at: Date.now() };
     localStorage.setItem(WXC, JSON.stringify(w)); show(w);
-  } catch { if (ask) toast('No se pudo cargar el clima'); }
+  } catch { if (ask) toast(t('wx.fail')); }
 }
-// Configuración: cuenta, IA, ayuda de lectura y clima
+// Configuración: cuenta, IA, idioma, ayuda de lectura y clima
 export function openMenu() {
-  const m = modal(`<h3>${ic('gear')} Configuración</h3>
+  const row = (id, icon, k, sub) => `<button class="row-k" id="${id}"><span class="row-ic">${ic(icon)}</span><span class="row-t"><b>${t(k)}</b><small>${sub}</small></span>${ic('right', 'chev')}</button>`;
+  const sw = (id, icon, k, on) => `<label class="row-k"><span class="row-ic">${ic(icon)}</span><span class="row-t"><b>${t(k)}</b><small>${t(k + 'Sub')}</small></span><input type="checkbox" class="sw" id="${id}" ${on ? 'checked' : ''}></label>`;
+  const m = modal(`<h3>${ic('gear')} ${t('menu.title')}</h3>
     <div class="menu-list">
-      <button class="row-k" id="mAcct"><span class="row-ic">${ic('user')}</span><span class="row-t"><b>Cuenta</b><small>${cloud.user ? esc(cloud.user.email) : 'Guardado en la nube y seguridad'}</small></span>${ic('right', 'chev')}</button>
-      <button class="row-k" id="mAI"><span class="row-ic">${ic('sparkles')}</span><span class="row-t"><b>IA propia</b><small>Tu clave para cuentos y explicaciones</small></span>${ic('right', 'chev')}</button>
-      <label class="row-k"><span class="row-ic">${ic('kana')}</span><span class="row-t"><b>Ayuda de lectura</b><small>Furigana sobre los kanji de la interfaz</small></span><input type="checkbox" class="sw" id="mFuri" ${helpOn() ? 'checked' : ''}></label>
-      <label class="row-k"><span class="row-ic">${ic('leaf')}</span><span class="row-t"><b>Papel con grano</b><small>Textura de papel en el santuario (apagado: papel liso)</small></span><input type="checkbox" class="sw" id="mGrain" ${grainOn() ? 'checked' : ''}></label>
-      <button class="row-k" id="mWx"><span class="row-ic">${ic('sun')}</span><span class="row-t"><b>Clima</b><small>Usa tu ubicación aproximada para el clima del HUD</small></span>${ic('right', 'chev')}</button>
+      ${row('mAcct', 'user', 'menu.account', cloud.user ? esc(cloud.user.email) : t('menu.accountSub'))}
+      ${row('mLang', 'globe', 'menu.lang', esc(S.lang && S.lang !== 'auto' ? langName() : `${t('lang.auto')} · ${langName()}`))}
+      ${row('mAI', 'sparkles', 'menu.ai', t('menu.aiSub'))}
+      ${sw('mFuri', 'kana', 'menu.furi', helpOn())}
+      ${sw('mGrain', 'leaf', 'menu.grain', grainOn())}
+      ${row('mWx', 'sun', 'menu.wx', t('menu.wxSub'))}
     </div>`);
   $('#mAcct', m).onclick = () => { m.close(); openAccount(); };
+  $('#mLang', m).onclick = () => { m.close(); openLang(); };
   $('#mAI', m).onclick = () => { m.close(); openAISettings(modal, toast, go); };
   $('#mFuri', m).onchange = e => { setHelp(e.target.checked); go(); };
   $('#mGrain', m).onchange = e => setGrain(e.target.checked);
   $('#mWx', m).onclick = () => { m.close(); try { localStorage.removeItem(GEO); } catch {} weather(true); };
+}
+// Elegir idioma: automático (según el dispositivo) o uno fijo. Cambia al instante, sin recargar.
+function openLang() {
+  const cur = S.lang && S.lang !== 'auto' ? S.lang : 'auto';
+  const opt = (id, name, sub = '') => `<button class="row-k${cur === id ? ' on' : ''}" data-l="${id}" aria-pressed="${cur === id}"><span class="row-t"><b>${esc(name)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</span>${cur === id ? ic('check', 'chev') : ''}</button>`;
+  const m = modal(`<h3>${ic('globe')} ${t('lang.title')}</h3>
+    <div class="menu-list">${opt('auto', t('lang.auto'), t('lang.autoSub', { name: langName(detect()) }))}${LANGS.map(l => opt(l.id, l.name)).join('')}</div>`);
+  m.querySelectorAll('[data-l]').forEach(b => b.onclick = () => {
+    buzz(5); setLang(b.dataset.l); m.close(); go(); toast(t('lang.changed', { name: esc(langName()) })); openMenu();
+  });
 }
 const ICONS = { '店': 'bag', '旅': 'compass', '錬': 'fusion', '闘': 'swords', '図': 'book' };
 // Encabezado común de pantalla: sello con kanji · título · una línea · dato a la derecha

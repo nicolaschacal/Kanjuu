@@ -15,6 +15,7 @@ function fresh() {
 export function norm(s) {
   s.gate ??= []; s.pieces ??= {}; s.srs ??= {}; s.ach ??= []; s.items ??= {};
   s.weekly ??= { week: weekKey(), p: {}, claimed: [] };
+  s.lang ??= 'auto'; // idioma: 'auto' sigue al dispositivo (js/i18n.js)
   Object.keys(s.dex || {}).forEach(k => s.dex[k].owned && (s.srs[k] ??= { box: 0, due: 0, ok: 0, miss: 0 }));
   return s;
 }

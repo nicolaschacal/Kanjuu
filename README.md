@@ -35,6 +35,7 @@ js/academy.js    Academia (camino, lecciones, lecturas)   js/course.js  contenid
 js/world.js      grilla, producción, objetos, altar        js/state.js   guardado y SRS
 js/games.js      minijuegos                                js/strokes.js trazos KanjiVG (CC BY-SA 3.0)
 js/tutorial.js   primera sesión guiada                     js/ai.js      IA propia (desde el dispositivo)
+js/i18n.js       idiomas: t('clave'), locales/*.json      tools/check_i18n.mjs  chequeo de claves
 api/             auth (límite de intentos, recuperación, borrar cuenta) y guardado
 tools/           simulación de economía                    docs/ECONOMIA.md
 ```
