@@ -1,6 +1,5 @@
 // Chequeo de idiomas: node tools/check_i18n.mjs
 // - es.json (español neutro) es la base: en.json debe tener todas sus claves y ninguna de más
-// - es-rp.json (Río de la Plata) solo trae las claves que cambian: no puede tener claves que no estén en es
 // - las variables {n}, {name}… y las formas de plural deben coincidir con la base
 // - toda clave usada en el código como t('…') o data-i18n="…" debe existir en es
 import { readFileSync, readdirSync } from 'node:fs';
@@ -18,7 +17,6 @@ function compare(name, d, full) {
   if (full) for (const k of Object.keys(es)) if (!(k in d)) errs.push(`${name}: falta la clave "${k}"`);
 }
 compare('en', load('en'), true);
-compare('es-rp', load('es-rp'), false);
 for (const k of Object.keys(es)) if (typeof es[k] === 'object' && !('other' in es[k])) errs.push(`es: "${k}" no tiene la forma "other"`);
 // Claves usadas en el código (solo literales; las claves armadas con variables se listan en DYN)
 const DYN = ['hud.wx.sun', 'hud.wx.cloud', 'hud.wx.fog', 'hud.wx.rain', 'hud.wx.snow', 'hud.wx.storm', 'menu.furiSub', 'menu.grainSub'];
@@ -36,4 +34,4 @@ for (const k of used) if (!(k in es)) errs.push(`código: la clave "${k}" no est
 const unused = Object.keys(es).filter(k => !used.has(k));
 if (unused.length) console.log(`Aviso: ${unused.length} clave(s) sin uso: ${unused.join(', ')}`);
 if (errs.length) { console.error(errs.join('\n')); console.error(`\n${errs.length} problema(s).`); process.exit(1); }
-console.log(`Idiomas OK: ${Object.keys(es).length} claves en es, en completo, es-rp con ${Object.keys(load('es-rp')).length} cambio(s).`);
+console.log(`Idiomas OK: ${Object.keys(es).length} claves en es, en completo.`);

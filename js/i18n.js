@@ -1,14 +1,12 @@
 // KANJŪ · i18n.js — textos de la interfaz en varios idiomas
 // t('clave', { n, ... }) busca en el idioma actual y cae al español neutro si falta.
 // Una entrada puede ser un texto o un objeto de plurales ({ one, other, ... }) elegido con Intl.PluralRules según vars.n.
-// Español neutro con tú es la base; 'es-rp' (Río de la Plata, voseo) solo trae las claves que cambian.
+// Idiomas: español neutro con tú (base) e inglés. Sin variantes regionales por ahora.
 import { S, save } from './state.js';
 
 // Nombre de cada idioma en su propio idioma, código para Intl y de qué idioma hereda.
-// Río de la Plata usa 'es' en Intl para que horas y números se vean igual que en neutro.
 export const LANGS = [
   { id: 'es', name: 'Español', intl: 'es', base: null },
-  { id: 'es-rp', name: 'Español (Río de la Plata)', intl: 'es', base: 'es' },
   { id: 'en', name: 'English', intl: 'en', base: 'es' },
 ];
 const info = id => LANGS.find(l => l.id === id);
@@ -17,11 +15,11 @@ await Promise.all(LANGS.map(async l => {
   try { D[l.id] = await (await fetch(new URL(`../locales/${l.id}.json`, import.meta.url))).json(); } catch { D[l.id] = {}; }
 }));
 
-// Idioma del dispositivo: Uruguay y Argentina → Río de la Plata; otro español → neutro; inglés → inglés
+// Idioma del dispositivo: cualquier español → español; inglés → inglés; otro → español
 export function detect(list = navigator.languages?.length ? navigator.languages : [navigator.language || 'es']) {
   for (const raw of list) {
-    const [l, r = ''] = String(raw).split(/[-_]/), reg = r.toUpperCase();
-    if (l === 'es') return reg === 'UY' || reg === 'AR' ? 'es-rp' : 'es';
+    const [l] = String(raw).split(/[-_]/);
+    if (l === 'es') return 'es';
     if (l === 'en') return 'en';
   }
   return 'es';
