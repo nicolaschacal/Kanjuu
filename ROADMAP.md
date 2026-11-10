@@ -36,6 +36,7 @@ El trabajo se organiza en sprints semanales que ejecuta el equipo de agentes sin
 - ✅ Familias 族 con premio al completarlas
 - 🔜 **Atlas y colección explican lo que muestran:** dónde se vio cada kanji en gris y cómo conseguirlo, leyenda de estados, etiqueta de la variante dorada y, cuando algo no entra en la isla, el tamaño que falta y qué pieza mover (S1-08)
 - 🔜 Al dominar una arena se obtienen sus objetos para el santuario
+- 🔜 **Estados y clima (sprint 2):** contento, tranquilo, de mal humor, mojado, resguardado, secándose, inspirado y dormido; la lluvia moja a los KANJŪ sin techo (casi no producen tinta) y los objetos con techo los resguardan. Ver docs/ESTADOS.md
 - 🔜 Rasgos de personalidad (tímido, juguetón…) que cambian animaciones y preferencias
 - 🔜 Hábitats por familia con bonificación al convivir criaturas afines
 - ⬜ Eventos de santuario: visitantes raros que aparecen si cumplís condiciones

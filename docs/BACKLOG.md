@@ -61,8 +61,42 @@ Pedido por Nicolás el 9 de noviembre de 2026: hoy el jugador no entiende por qu
 
 ---
 
+## Sprint 2 · 17 al 23 de noviembre de 2026 · "Estados y clima"
+Pedido por Nicolás el 9 de noviembre de 2026. Especificación completa en **docs/ESTADOS.md**.
+
+### S2-01 · Propuesta: cómo se ven los estados y la lluvia *(diseño)*
+- Maqueta con los ocho estados (contento, tranquilo, de mal humor, mojado, resguardado, secándose, inspirado, dormido) aplicados a criaturas reales del estilo aprobado
+- Íconos de estado para la ficha y para la isla, gotas y papel oscurecido al mojarse, vapor al secarse
+- Animación de ir al techo y volver, área cubierta en celeste en el modo editor, pronóstico en el reloj
+
+**Aceptación:** maqueta navegable en el teléfono; Nicolás la aprueba o la rechaza.
+
+### S2-02 · Lógica de estados, techos y lluvia
+- Estados según la tabla de docs/ESTADOS.md y su efecto en la tinta (mojado ×0,2, resguardado +10%, etc.)
+- Techos con área y plazas (Refugio, casa, templo, pagoda, casa de té, árboles grandes, puente); los KANJŪ de agua no se mojan
+- Efecto de los chaparrones durante la ausencia, calculado con `rainAt`; el resumen de regreso lo cuenta
+- Pronóstico "Lluvia en N min" en el reloj
+- Guardado compatible: partidas viejas cargan con estado contento
+- Escenario de lluvia en `tools/sim_economia.py` con los objetivos de balance de docs/ESTADOS.md
+
+**Aceptación:** con `?lluvia=1`, los KANJŪ sin techo quedan mojados y producen ×0,2; los que están bajo un Refugio quedan resguardados; la simulación cumple los objetivos.
+
+### S2-03 · Estados en la isla y en la ficha *(solo después de aprobar S2-01)*
+- Implementar lo aprobado en S2-01: íconos, expresiones, gotas y vapor, caminar al techo y volver
+- Ficha con el estado, qué le pasa y cómo arreglarlo
+- Modo editor: área cubierta y plazas al elegir un objeto con techo
+
+**Aceptación:** igual a la maqueta aprobada; sin errores de consola en 390 × 844.
+
+### S2-04 · Misión "Primer chaparrón"
+- En la primera lluvia del jugador, una misión guiada regala un Refugio y muestra cómo resguardar a sus KANJŪ
+
+**Aceptación:** un jugador nuevo con `?lluvia=1` recibe la misión una sola vez y termina con al menos un KANJŪ resguardado.
+
+---
+
 ## Próximos sprints (tentativo; se confirma en cada planificación)
-- **Sprint 2:** traducir el resto de la interfaz; cada unidad termina desbloqueando un kanji; ejercicio de armar frases tocando tarjetas; implementar el mapa de unidades si se aprobó
-- **Sprint 3:** datos de kanji y Academia en inglés; IA en el idioma del jugador; volver a simular la economía con 101 kanji y la Arena
-- **Sprint 4:** telemetría de economía y validación de partida en el servidor; recompensa de regreso
-- **Sprint 5:** desbloqueo progresivo de sistemas; temporada Otoño de momiji 紅葉 con pase gratuito
+- **Sprint 3:** traducir el resto de la interfaz; cada unidad termina desbloqueando un kanji; ejercicio de armar frases tocando tarjetas; implementar el mapa de unidades si se aprobó
+- **Sprint 4:** datos de kanji y Academia en inglés; IA en el idioma del jugador; volver a simular la economía con 101 kanji y la Arena
+- **Sprint 5:** telemetría de economía y validación de partida en el servidor; recompensa de regreso
+- **Sprint 6:** desbloqueo progresivo de sistemas; temporada Otoño de momiji 紅葉 con pase gratuito
