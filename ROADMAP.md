@@ -34,7 +34,7 @@ El trabajo se organiza en sprints semanales que ejecuta el equipo de agentes sin
 - ✅ **Arena 闘 3v3:** desafíos de kanji, tipos 五行, copas, camino de copas, cofres que se abren estudiando, reloj por turno y bonus 必殺
 - ✅ **6 arenas de papel** con mismo tamaño (5×10) y misma cámara: Hanami en Kioto, bambú de Arashiyama, Fushimi Inari, Sapporo nevado, castillo de Osaka, monte Fuji
 - ✅ Familias 族 con premio al completarlas
-- 🔜 **Atlas y colección explican lo que muestran:** dónde se vio cada kanji en gris y cómo conseguirlo, leyenda de estados y etiqueta de la variante dorada (S1-08)
+- 🔜 **Atlas y colección explican lo que muestran:** dónde se vio cada kanji en gris y cómo conseguirlo, leyenda de estados, etiqueta de la variante dorada y, cuando algo no entra en la isla, el tamaño que falta y qué pieza mover (S1-08)
 - 🔜 Al dominar una arena se obtienen sus objetos para el santuario
 - 🔜 Rasgos de personalidad (tímido, juguetón…) que cambian animaciones y preferencias
 - 🔜 Hábitats por familia con bonificación al convivir criaturas afines

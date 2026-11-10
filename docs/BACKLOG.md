@@ -49,14 +49,15 @@ El estado de cada tarea vive en GitHub: rama `sprint-NN/ID-…` y su pull reques
 
 **Aceptación:** las pruebas se ven en una página de la vista previa al lado de las criaturas actuales.
 
-### S1-08 · Atlas y colección explican lo que muestran
+### S1-08 · Atlas, colección e isla explican lo que muestran
 Pedido por Nicolás el 9 de noviembre de 2026: hoy el jugador no entiende por qué un kanji aparece en gris en el Atlas ni por qué tiene una criatura de otro color.
 - **Kanji vistos y no conseguidos:** el juego guarda dónde se vio cada kanji (`S.dex[k].from`: región del viaje, puerta del santuario, componente de una criatura). La ficha gris del Atlas lo dice: "Visto en: Valle de fuego · mandá un viaje ahí para encontrarlo". Para partidas viejas sin ese dato, se deduce de las regiones donde vive el kanji.
 - **Leyenda del Atlas:** una línea arriba de la grilla que explica los tres estados (lo tienes · lo viste · sin descubrir).
 - **Variante dorada:** etiqueta "Dorado" visible en la tarjeta de Mis KANJŪ, el Atlas y la ficha, y en la ficha una línea que explica qué es: "Variante dorada: rara, produce +50% de tinta".
+- **Sin lugar en la isla (pedido el 9 de noviembre de 2026):** hoy dice "No hay lugar libre" aunque queden casillas sueltas, y el jugador cree que es un error. El mensaje dice el tamaño que falta ("El cerezo necesita 2×2 libres; tenés 15 casillas sueltas") y la isla marca qué objeto o KANJŪ conviene mover para abrir ese hueco (el que libera un espacio del tamaño pedido moviendo una sola pieza), con la opción de ampliar la isla.
 - Textos con `t()` en los tres idiomas si S1-01 ya está mergeada; si no, en español neutro y se migran después.
 
-**Aceptación:** tocar un kanji gris en el Atlas dice dónde se vio y cómo conseguirlo; las criaturas doradas llevan su etiqueta en las tres pantallas; una partida vieja carga sin errores y sus kanji vistos muestran una región.
+**Aceptación:** con una isla sin ningún 2×2 libre, intentar poner el cerezo explica el tamaño que falta y resalta la pieza a mover; tocar un kanji gris en el Atlas dice dónde se vio y cómo conseguirlo; las criaturas doradas llevan su etiqueta en las tres pantallas; una partida vieja carga sin errores y sus kanji vistos muestran una región.
 
 ---
 
