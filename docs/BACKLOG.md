@@ -6,15 +6,18 @@ El estado de cada tarea vive en GitHub: rama `sprint-NN/ID-…` y su pull reques
 
 ## Sprint 1 · 10 al 16 de noviembre de 2026 · "Base de idiomas y Academia"
 
-### S1-01 · Infraestructura de idiomas (español + inglés)
+### S1-01 · Infraestructura de idiomas (español + inglés) *(hecha)*
 - `js/i18n.js` con `t('clave', vars)`, plurales con `Intl.PluralRules`
-- `locales/es.json` (español neutro con tú), `locales/es-rp.json` (variante Río de la Plata con voseo, solo las claves que cambian; el resto cae a `es`) y `locales/en.json`
-- Los textos actuales con voseo se mueven a `es-rp` y se reescriben con tú en `es`
-- Idioma automático según el dispositivo (Uruguay y Argentina → Río de la Plata); selector en Configuración; se guarda junto con la partida
-- Traducir la **interfaz de primer nivel**: HUD, barra inferior, Configuración y los títulos de cada hoja. El resto se migra en tareas siguientes
+- `locales/es.json` (español neutro con tú) y `locales/en.json`
+- Idioma automático según el dispositivo (cualquier español → español; inglés → inglés; otro → español); selector en Configuración; se guarda con la partida
+- Interfaz de primer nivel traducida: HUD, barra inferior, Configuración y los títulos y pestañas de cada hoja
+- Sin variante Río de la Plata: decidido por Nicolás el 10 de noviembre de 2026 para no sobrecargar la app
 - Script `tools/check_i18n.mjs` que detecta claves faltantes entre idiomas
+- Queda para las etapas siguientes: textos de las hojas, nombres y descripciones de criaturas, y toda la Academia (ver Sprints 3 y 4)
 
-**Aceptación:** cambiar el idioma en Configuración cambia esos textos sin recargar ni perder la partida; el script pasa sin errores; en "Español (Río de la Plata)" todo se ve igual que antes y en español neutro los mismos textos aparecen con tú.
+**Aceptación:** cambiar el idioma en Configuración cambia esos textos sin recargar ni perder la partida; el script pasa sin errores; en español los textos aparecen con tú.
+
+---
 
 ### S1-02 · Analítica de la Academia
 - Eventos: lección iniciada, terminada, abandonada (con pantalla en la que se dejó), error por tipo de ejercicio, tiempo por lección
@@ -96,7 +99,10 @@ Pedido por Nicolás el 9 de noviembre de 2026. Especificación completa en **doc
 ---
 
 ## Próximos sprints (tentativo; se confirma en cada planificación)
-- **Sprint 3:** traducir el resto de la interfaz; cada unidad termina desbloqueando un kanji; ejercicio de armar frases tocando tarjetas; implementar el mapa de unidades si se aprobó
-- **Sprint 4:** datos de kanji y Academia en inglés; IA en el idioma del jugador; volver a simular la economía con 101 kanji y la Arena
-- **Sprint 5:** telemetría de economía y validación de partida en el servidor; recompensa de regreso
-- **Sprint 6:** desbloqueo progresivo de sistemas; temporada Otoño de momiji 紅葉 con pase gratuito
+Decidido por Nicolás el 10 de noviembre de 2026: la parte educativa (Academia, lecciones, ejercicios, cursos) se traduce y se rediseña en su propio sprint, porque también va a cambiar. El resto de los idiomas va antes.
+- **Sprint 3 · Idiomas, etapa 2:** textos del menú interno (cada hoja, tienda, altar, Arena, Fusión, Viajes, mensajes y avisos), nombres y descripciones de los 101 KANJŪ y de sus piezas, en español e inglés. Sin Academia
+- **Sprint 4 · Academia en dos idiomas:** traducción y ajustes de lecciones, ejercicios, cursos, Dojo y lecturas; la IA (cuentos y explicaciones) recibe el idioma del jugador
+- **Sprint 5 · Academia, contenido nuevo:** cada unidad termina desbloqueando un kanji; ejercicio de armar frases tocando tarjetas; mapa de unidades si se aprobó (S1-05)
+- **Sprint 6:** volver a simular la economía con 101 kanji y la Arena
+- **Sprint 7:** telemetría de economía y validación de partida en el servidor; recompensa de regreso
+- **Sprint 8:** desbloqueo progresivo de sistemas; temporada Otoño de momiji 紅葉 con pase gratuito
