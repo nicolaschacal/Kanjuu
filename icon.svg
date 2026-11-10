@@ -1,26 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1024 1024" width="1024" height="1024"><defs>
-      <filter id="grano" x="0" y="0" width="100%" height="100%">
-        <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="7"/>
-        <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .3 -.12"/>
-      </filter>
-      <clipPath id="boca"><path d="M380 570 Q512 592 644 570 Q626 824 512 830 Q398 824 380 570Z"/></clipPath>
-      <g id="rasgos">
-        <rect x="512" width="512" height="1024" fill="#1E1A24" opacity=".11"/>
-        <rect width="1024" height="1024" filter="url(#grano)"/>
-        <path d="M512 0 V1024" stroke="#FFFDF8" stroke-width="5" opacity=".5"/>
-        <path d="M0 528 C330 514 690 520 1024 538" stroke="#FFFDF8" stroke-width="8" opacity=".85" fill="none"/>
-        <g transform="translate(512 505) scale(1.25) translate(-512 -505)">
-        <circle cx="512" cy="345" r="165" fill="#FFFDF8" stroke="#1E1A24" stroke-opacity=".28" stroke-width="6"/>
-        <rect x="477" y="276" width="70" height="122" rx="35" fill="#1E1A24"/>
-        <circle cx="497" cy="306" r="15" fill="#FFFDF8"/>
-        <path d="M380 570 Q512 592 644 570 Q626 824 512 830 Q398 824 380 570Z" fill="#7A2E3A" stroke="#FFFDF8" stroke-width="12" stroke-linejoin="round" paint-order="stroke"/>
-        <g clip-path="url(#boca)"><ellipse cx="530" cy="826" rx="118" ry="84" fill="#D8452F"/></g>
-        <path d="M418 583 L446 646 L474 587Z M550 587 L578 646 L606 583Z" fill="#FFFDF8"/>
-        </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><defs><filter id="k2noise" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="5"/><feColorMatrix type="saturate" values="0"/></filter><pattern id="k2grain" patternUnits="userSpaceOnUse" width="96" height="96"><rect width="96" height="96" filter="url(#k2noise)"/></pattern><symbol id="caraFuego" viewBox="0 0 1024 1024">
+<defs><radialGradient id="luzg" cx="68%" cy="32%" r="80%"><stop offset="0" stop-color="#FF8A5C"/><stop offset=".55" stop-color="#D8452F"/><stop offset="1" stop-color="#9E2A1A"/></radialGradient>
+<filter id="sombrag" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="18"/><feOffset dx="10" dy="22"/><feComponentTransfer><feFuncA type="linear" slope=".35"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<rect width="1024" height="1024" fill="url(#luzg)"/><path d="M700 330 L2100 330 L2082 553Z" fill="#FFFFFF" opacity=".09"/><path d="M700 330 L1995 862 L1894 1062Z" fill="#FFFFFF" opacity=".09"/><path d="M700 330 L1695 1315 L1526 1461Z" fill="#FFFFFF" opacity=".09"/><path d="M700 330 L1246 1619 L1034 1690Z" fill="#FFFFFF" opacity=".09"/><path d="M700 330 L715 1730 L492 1714Z" fill="#FFFFFF" opacity=".09"/><path d="M700 330 L182 1631 L-19 1531Z" fill="#FFFFFF" opacity=".09"/><path d="M700 330 L-274 1336 L-422 1168Z" fill="#FFFFFF" opacity=".09"/><path d="M700 330 L-583 890 L-656 679Z" fill="#FFFFFF" opacity=".09"/><path d="M700 330 L-700 360 L-687 137Z" fill="#FFFFFF" opacity=".09"/><path d="M700 330 L-606 -174 L-509 -376Z" fill="#FFFFFF" opacity=".09"/><path d="M700 330 L-316 -633 L-150 -782Z" fill="#FFFFFF" opacity=".09"/><path d="M700 330 L126 -947 L337 -1022Z" fill="#FFFFFF" opacity=".09"/><path d="M700 330 L655 -1069 L878 -1059Z" fill="#FFFFFF" opacity=".09"/><path d="M700 330 L1190 -981 L1393 -887Z" fill="#FFFFFF" opacity=".09"/><path d="M700 330 L1652 -697 L1803 -532Z" fill="#FFFFFF" opacity=".09"/><path d="M700 330 L1971 -258 L2048 -48Z" fill="#FFFFFF" opacity=".09"/>
+<g filter="url(#sombrag)"><svg x="-175" y="50" width="1150" height="1150" viewBox="-84 -158 168 168" overflow="visible">
+    <defs><clipPath id="k24cg"><path d="M-24,-111 C-6,-114 10,-113 25,-109 C32,-107 35,-102 36,-95 C39,-77 42,-59 42,-47 C42,-40 37,-35 30,-35 C10,-33 -12,-34 -32,-36 C-39,-37 -43,-42 -42,-49 C-40,-67 -36,-87 -33,-101 C-32,-107 -29,-110 -24,-111Z M-5,-38 L-15,0 C-18,2 -23,0 -22,-4 L-17,-40Z M17,-40 L26,-6 C27,-2 22,0 19,-2 L5,-38Z"/></clipPath></defs>
+    <g transform="scale(1.113)"><g class="k2-whole"><g transform="rotate(8 0 -40)"><g class="k2-idle k2-idle-fire">
+      <g transform="translate(-35 -63) scale(-1 1) rotate(28)"><path d="M-8,-9 L34,-6.5 L35,8 L-8,8Z" fill="#F2825A" stroke="#FFFDF8" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke" /></g><g transform="translate(35 -63) scale(1 1) rotate(-58)"><path d="M-8,-9 L34,-6.5 L35,8 L-8,8Z" fill="#F2825A" stroke="#FFFDF8" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke" /></g><path d="M18,-104 C20,-116 22,-126 22,-134 C28,-128 33,-118 35,-104 C30,-101 23,-101 18,-104Z" fill="#EF6B4C" stroke="#FFFDF8" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke" /><path d="M31,-103 C31,-115 28,-126 22,-134 C28,-128 33,-118 35,-104 C34,-103 32,-103 31,-103Z" fill="#B5301C"/><path class="k2-ln" d="M-22,-110 L-28,-121 M-8,-112 V-125 M6,-110 L12,-121" fill="none" stroke="#FFFDF8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path class="k2-ln" d="M-22,-110 L-28,-121 M-8,-112 V-125 M6,-110 L12,-121" fill="none" stroke="#C2432A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M-24,-111 C-6,-114 10,-113 25,-109 C32,-107 35,-102 36,-95 C39,-77 42,-59 42,-47 C42,-40 37,-35 30,-35 C10,-33 -12,-34 -32,-36 C-39,-37 -43,-42 -42,-49 C-40,-67 -36,-87 -33,-101 C-32,-107 -29,-110 -24,-111Z" transform="translate(-6.8 -5.2)" fill="#F2825A" stroke="#FFFDF8" stroke-width="5" stroke-linejoin="round" paint-order="stroke"/><path d="M-24,-111 C-6,-114 10,-113 25,-109 C32,-107 35,-102 36,-95 C39,-77 42,-59 42,-47 C42,-40 37,-35 30,-35 C10,-33 -12,-34 -32,-36 C-39,-37 -43,-42 -42,-49 C-40,-67 -36,-87 -33,-101 C-32,-107 -29,-110 -24,-111Z" transform="translate(-3.4 -2.6)" fill="#FFD5C2" stroke="#FFFDF8" stroke-width="5" stroke-linejoin="round" paint-order="stroke"/>
+      <path d="M-24,-111 C-6,-114 10,-113 25,-109 C32,-107 35,-102 36,-95 C39,-77 42,-59 42,-47 C42,-40 37,-35 30,-35 C10,-33 -12,-34 -32,-36 C-39,-37 -43,-42 -42,-49 C-40,-67 -36,-87 -33,-101 C-32,-107 -29,-110 -24,-111Z M-5,-38 L-15,0 C-18,2 -23,0 -22,-4 L-17,-40Z M17,-40 L26,-6 C27,-2 22,0 19,-2 L5,-38Z" fill="#F2825A" stroke="#FFFDF8" stroke-width="5.5" stroke-linejoin="round" paint-order="stroke"/>
+      <g clip-path="url(#k24cg)">
+        
+        
+        <rect x="0" y="-195" width="120" height="205" fill="#1E1A24" opacity=".11"/>
+        <path class="k2-ln" d="M0,-195 V10" stroke="#FFFDF8" stroke-width="1" opacity=".5" fill="none"/>
+        <rect x="-120" y="-195" width="240" height="205" fill="url(#k2grain)" opacity=".09" style="mix-blend-mode:multiply"/>
       </g>
+      <path class="k2-ln" d="M-38,-72 C-12,-75 14,-73 39,-70" stroke="#FFFDF8" stroke-width="1.3" opacity=".8" fill="none"/><path d="M-13,-66 Q0,-63 13,-66 Q12,-50 0,-49 Q-12,-50 -13,-66Z" fill="#7A2E3A" stroke="#FFFDF8" stroke-width="2.2" stroke-linejoin="round" paint-order="stroke"/><clipPath id="jmcg"><path d="M-13,-66 Q0,-63 13,-66 Q12,-50 0,-49 Q-12,-50 -13,-66Z"/></clipPath><g clip-path="url(#jmcg)"><ellipse cx="2" cy="-49" rx="9.5" ry="7.5" fill="#D8452F"/></g><path d="M-9.6,-65.4 L-7,-60.400000000000006 L-4.4,-65.4Z" fill="#FFFDF8"/><path d="M4.4,-65.4 L7,-60.400000000000006 L9.6,-65.4Z" fill="#FFFDF8"/>
       
-      <symbol id="caraFuego" viewBox="0 0 1024 1024">
-        <rect width="1024" height="1024" fill="#F2825A"/>
-        <use href="#rasgos"/>
-      </symbol>
-    <clipPath id="redondo"><rect width="1024" height="1024" rx="230"/></clipPath></defs><g clip-path="url(#redondo)"><use href="#caraFuego"/></g></svg>
+      <!--f--><g transform="translate(1 -89)"><g class="k2-blink"><g transform="scale(2.35 2.35)"><circle r="6.2" fill="#FFFDF8" stroke="rgba(30,26,36,.28)" stroke-width=".7"/></g><g class="k2-pup"><g transform="scale(2.35 2.35)"><rect x="-1.9" y="-3.2" width="3.8" height="6.4" rx="1.9" fill="#1E1A24"/><circle cx="-0.7" cy="-1.6" r=".75" fill="#FFFDF8"/></g></g></g><g transform="scale(2.35 2.35)"></g></g><!--/f-->
+      
+    </g></g></g>
+  </svg></g>
+</symbol><clipPath id="r"><rect width="1024" height="1024" rx="230"/></clipPath></defs><g clip-path="url(#r)"><use href="#caraFuego"/></g></svg>
