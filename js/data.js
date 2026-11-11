@@ -34,6 +34,13 @@ export const KANJI = {
   '毛': { m: 'pelo', on: ['モウ'], kun: ['け'], el: 'life', mn: 'Un mechón de pelo que se curva hacia arriba.' },
   '豆': { m: 'poroto · frijol', on: ['トウ', 'ズ'], kun: ['まめ'], el: 'life', mn: 'Un recipiente alto lleno de porotos.' },
   '斤': { m: 'hacha', on: ['キン'], kun: [], el: 'metal', mn: 'Un hacha colgada, lista para cortar.' },
+  // MAQUETA Zoo (propuesta, no es contenido final): animales para probar el hábitat
+  '犬': { m: 'perro', on: ['ケン'], kun: ['いぬ'], el: 'earth', zoo: 1, mn: 'Un perro grande con una oreja levantada.' },
+  '牛': { m: 'vaca', on: ['ギュウ'], kun: ['うし'], el: 'earth', zoo: 1, mn: 'La cabeza de una vaca con sus cuernos.' },
+  '馬': { m: 'caballo', on: ['バ'], kun: ['うま'], el: 'fire', zoo: 1, mn: 'Crin al viento y cuatro patas que galopan.' },
+  '鳥': { m: 'ave', on: ['チョウ'], kun: ['とり'], el: 'sky', zoo: 1, mn: 'Un pájaro con su ojo, sus plumas y sus patas.' },
+  '魚': { m: 'pez', on: ['ギョ'], kun: ['さかな'], el: 'water', zoo: 1, mn: 'Cabeza, escamas y la cola abierta en abanico.' },
+  '猫': { m: 'gato', on: ['ビョウ'], kun: ['ねこ'], el: 'moon', zoo: 1, mn: 'Un animal que duerme entre los brotes.' },
   // — Primera composición —
   '林': { m: 'arboleda', on: ['リン'], kun: ['はやし'], recipes: [['木', '木']], form: 'izquierda-derecha', mn: 'Dos árboles juntos ya son una arboleda.' },
   '休': { m: 'descansar', on: ['キュウ'], kun: ['やす(む)'], recipes: [['人', '木']], form: 'izquierda-derecha', note: '人 aparece como 亻', mn: 'Una persona apoyada en un árbol: descansa.' },

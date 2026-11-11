@@ -75,15 +75,16 @@ export const OBJS = {
   teahouse: { k: '茶', name: 'Casa de té', w: 1, h: 1, cost: 180, rank: 4, kind: 'decor', col: '#D9C9A8', desc: 'Pequeña, con ventana redonda' },
   temple: { k: '寺', name: 'Templo', w: 2, h: 2, cost: 520, rank: 7, kind: 'decor', col: '#3E4A52', desc: 'Salón principal con frontón curvo' },
   castle: { k: '城', name: 'Castillo', w: 3, h: 3, cost: 1500, rank: 10, kind: 'decor', col: '#4E8C82', desc: 'Torre de cinco pisos estilo Osaka' },
+  zoo: { k: '園', name: 'Zoo', w: 2, h: 2, cost: 600, rank: 4, kind: 'decor', col: '#B79A5E', desc: 'Hogar de tus KANJŪ animales: no ocupan casillas de la isla' },
 };
 // Recorte de papel que dibuja cada objeto en el santuario (paper.js). flat: va acostado en el suelo
-const ART = { suzuri: 'suzuri', lantern: 'farol', pine: 'pino', pond: 'estanque', shrine: 'templo', bell: 'campana', torii: 'torii', brazier: 'brasero', stone: 'losa', rock: 'roca', shrub: 'arbusto', flowers: 'flores', fence: 'cerca', banner: 'nobori', bamboo: 'bambu', tree: 'arbol', altar: 'incienso', house: 'minka', sakura: 'cerezo', pagoda: 'pagoda', chochin: 'chochin', ema: 'ema', komainu: 'komainu', refugio: 'refugio', bridge: 'puente', sacred: 'sagrada', teahouse: 'casate', temple: 'templo', castle: 'castillo' };
+const ART = { suzuri: 'suzuri', lantern: 'farol', pine: 'pino', pond: 'estanque', shrine: 'templo', bell: 'campana', torii: 'torii', brazier: 'brasero', stone: 'losa', rock: 'roca', shrub: 'arbusto', flowers: 'flores', fence: 'cerca', banner: 'nobori', bamboo: 'bambu', tree: 'arbol', altar: 'incienso', house: 'minka', sakura: 'cerezo', pagoda: 'pagoda', chochin: 'chochin', ema: 'ema', komainu: 'komainu', refugio: 'refugio', bridge: 'puente', sacred: 'sagrada', teahouse: 'casate', temple: 'templo', castle: 'castillo', zoo: 'zoo' };
 Object.entries(ART).forEach(([t, a]) => OBJS[t].art = a);
 OBJS.pond.flat = OBJS.stone.flat = true; OBJS.pond.water = true; OBJS.rock.water = true;
 OBJS.stone.hide = true;
 // Categorías de la Tienda y la Mochila (lo que no está en ninguna es Decoración)
 export const CATS = { deco: 'Decoración', nat: 'Naturaleza', luz: 'Luces', edif: 'Edificios' };
-Object.entries({ nat: 'pine pond rock shrub flowers bamboo tree sakura sacred', luz: 'lantern brazier chochin altar', edif: 'shrine bell torii house pagoda refugio bridge teahouse temple castle' })
+Object.entries({ nat: 'pine pond rock shrub flowers bamboo tree sakura sacred', luz: 'lantern brazier chochin altar', edif: 'shrine bell torii house pagoda refugio bridge teahouse temple castle zoo' })
   .forEach(([c, l]) => l.split(' ').forEach(t => OBJS[t].cat = c));
 Object.values(OBJS).forEach(d => d.cat ??= 'deco');
 // Efecto en dos líneas para la ficha de compra

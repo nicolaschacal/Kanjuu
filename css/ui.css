@@ -780,3 +780,27 @@ h4.gh .grade{font-size:13px;padding:3px 9px 3px 3px}h4.gh .grade i{width:20px;he
 .bonus em{font-style:normal;font-weight:800;margin-left:6px;background:var(--gold);border-radius:7px;padding:0 6px}
 .bonus.ready{background:#E8452C;color:#fff;animation:glow .8s infinite}.bonus.ready span.on{color:#fff}
 .duel:not(.d3) .tturn{width:60%}
+
+/* MAQUETA Zoo 動物園 (propuesta) */
+.zoo-get{margin-left:auto;display:flex;align-items:center;gap:4px;background:var(--line);color:var(--gold);border-radius:99px;padding:8px 12px;font-weight:900;font-size:14px;box-shadow:var(--sh-d)}
+.zoo-dex-h{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;margin:6px 2px 6px}.zoo-dex-h span{font-weight:900}
+.zoo-dex{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px;margin-bottom:10px}
+.zoo-dex i{aspect-ratio:1;border-radius:8px;background:var(--paper3);border:2px solid var(--line);display:grid;place-items:center;overflow:hidden;font-style:normal}
+.zoo-dex i svg{width:96%;height:96%}
+.zoo-dex i.q{background:transparent;border-style:dashed;border-color:#1A122066;color:#1A122099;font-weight:900;font-size:12px}
+.zoo-stage{position:relative;aspect-ratio:720/570;background:center/100% 100% no-repeat;margin:0 -4px}
+.zoo-p{position:absolute;pointer-events:none}
+.zoo-mon{position:absolute;transform:translate(-50%,-100%);padding:0}.zoo-mon svg{display:block;width:100%;height:auto;overflow:visible}
+.zoo-mon em{position:absolute;right:-18%;top:6%;font-style:normal;font-weight:900;font-size:15px;color:#fff;text-shadow:0 2px 0 var(--line)}
+.zoo-free{position:absolute;transform:translate(-50%,-100%);width:21%;padding:9px 0;border:2.5px dashed #FFFDF6;border-radius:50%;text-align:center;font-size:10px;font-weight:900;color:#FFFDF6;text-shadow:0 1px 0 #1A122088;background:#1A122014}
+.zoo-tray{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px}
+.zoo-tray button{flex:none;width:64px;height:68px;border-radius:14px;background:var(--paper3);border:var(--b);box-shadow:var(--sh);padding:4px 2px 0;display:grid;place-items:end center}
+.zoo-tray button svg{width:56px;height:56px}
+.zoo-res{position:relative;text-align:center;padding:8px 6px 4px}
+.zoo-res h3{justify-content:center;margin:6px 0 6px}.zoo-res p{line-height:1.5;margin-bottom:8px}.zoo-res .jp{font-family:var(--f-jp);font-weight:900}
+.zoo-big{width:132px;margin:4px auto 0}.zoo-big svg{display:block;width:100%;height:auto;overflow:visible}
+.zoo-seal{position:absolute;right:10px;top:4px;width:74px;height:74px;border-radius:50%;border:3px solid var(--red);color:var(--red);display:grid;place-items:center;font-family:var(--f-jp);font-weight:900;font-size:21px;transform:rotate(-14deg)}
+.zoo-bar{height:12px;border:var(--b);border-radius:99px;background:var(--paper3);overflow:hidden;margin:0 2px 10px}.zoo-bar i{display:block;height:100%;background:var(--green)}
+.zoo-res.no .zoo-big{animation:zooNo .5s}
+@keyframes zooNo{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@media (prefers-reduced-motion:reduce){.zoo-res.no .zoo-big{animation:none}}

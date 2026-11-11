@@ -329,6 +329,59 @@ Object.assign(DRAW, {
 });
 Object.assign(SIZE, { suzuri:[200,130], brasero:[180,186], cerca:[220,134], arbol:[220,290], estanque:[400,200], losa:[230,170] });
 
+/* --- MAQUETA Zoo 動物園: granero con techo de paja, corral y alguien que se asoma --- */
+Object.assign(DRAW, {
+  zoo: x => {
+    x.fillStyle = '#9A9388'; x.fillRect(36, 352, 368, 24); x.fillStyle = '#B2AB9E'; x.fillRect(44, 352, 352, 6);
+    // paredes con vigas
+    x.fillStyle = '#EFE7D6'; x.fillRect(70, 206, 300, 148);
+    x.fillStyle = '#5A3E2B'; x.fillRect(70, 206, 300, 10); for (const px of [70, 130, 310, 360]) x.fillRect(px, 206, 10, 148); x.fillRect(70, 270, 70, 8); x.fillRect(300, 270, 70, 8);
+    // portón abierto y alguien que se asoma
+    x.fillStyle = '#5A3E2B'; x.fillRect(158, 226, 124, 128);
+    x.fillStyle = '#2B2320'; x.beginPath(); x.moveTo(168, 354); x.lineTo(168, 262); x.quadraticCurveTo(220, 214, 272, 262); x.lineTo(272, 354); x.fill();
+    ell(x, 220, 330, 46, 40, 0, '#D39A62'); poly(x, [182,306, 188,262, 210,296], '#D39A62'); poly(x, [258,306, 252,262, 230,296], '#D39A62');
+    ell(x, 220, 344, 30, 18, 0, '#E9C79C'); face(x, 220, 318, 17);
+    // hojas del portón abiertas
+    poly(x, [158,226, 158,354, 128,364, 128,236], '#7A5236'); poly(x, [282,226, 282,354, 312,364, 312,236], '#7A5236');
+    x.fillStyle = '#5A3E2B'; x.fillRect(132, 290, 24, 6); x.fillRect(284, 290, 24, 6);
+    // ventana con un pájaro
+    x.fillStyle = '#5A3E2B'; x.fillRect(82, 222, 50, 44); x.fillStyle = '#A9D3E2'; x.fillRect(88, 228, 38, 32);
+    circ(x, 107, 250, 14, '#7FD6F2'); poly(x, [118,248, 130,252, 118,256], '#F2B544'); circ(x, 111, 245, 4, '#2A221D');
+    // techo de paja (como la minka) con cumbrera
+    poly(x, [20,224, 124,52, 316,52, 420,224], '#B79A5E');
+    x.save(); x.beginPath(); x.moveTo(20,224); x.lineTo(124,52); x.lineTo(316,52); x.lineTo(420,224); x.closePath(); x.clip();
+    x.fillStyle = 'rgba(90,62,43,.22)'; for (let i = 0; i < 15; i++) x.fillRect(32 + i*27, 56, 6, 172); x.restore();
+    x.fillStyle = '#7A6340'; x.fillRect(114, 42, 212, 16); x.fillStyle = '#5A3E2B'; x.fillRect(150, 26, 10, 22); x.fillRect(280, 26, 10, 22);
+    // cartel rojo 動物園
+    x.fillStyle = '#5A3E2B'; x.fillRect(150, 112, 140, 60); x.fillStyle = '#C8412E'; x.fillRect(156, 118, 128, 48);
+    x.fillStyle = '#F4EFE4'; x.font = '38px "Yuji Syuku", serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('動物園', 220, 144);
+    // corral bajo adelante, con la entrada libre
+    x.fillStyle = '#7A4E32'; for (const px of [24, 64, 104, 316, 356, 396]) { x.fillRect(px, 318, 12, 62); poly(x, [px,318, px + 6,308, px + 12,318], '#7A4E32'); }
+    x.fillStyle = '#8A5A34'; x.fillRect(18, 334, 104, 9); x.fillRect(18, 358, 104, 9); x.fillRect(312, 334, 104, 9); x.fillRect(312, 358, 104, 9);
+    // plazas ocupadas: tablilla colgada del alero
+    x.fillStyle = '#5A3E2B'; x.fillRect(352, 190, 4, 22); x.fillRect(396, 190, 4, 22);
+    x.fillStyle = '#F4EFE4'; x.fillRect(340, 208, 72, 40); x.fillStyle = '#2A221D'; x.font = '800 28px "M PLUS Rounded 1c", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('4/6', 376, 229);
+    // fardo de paja
+    ell(x, 364, 372, 36, 18, 0, '#D9B44A'); x.fillStyle = '#B8902E'; x.fillRect(344, 360, 4, 24); x.fillRect(380, 360, 4, 24);
+  },
+  // Interior en corte: pared del fondo, viga, ventana, piso de paja y un rincón de agua
+  zooFondo: x => {
+    x.fillStyle = '#C08A58'; x.fillRect(0, 30, 720, 540);
+    x.fillStyle = 'rgba(90,62,43,.28)'; for (let i = 0; i < 16; i++) x.fillRect(i*46, 30, 4, 540);
+    x.fillStyle = '#5A3E2B'; x.fillRect(0, 30, 720, 16); x.fillRect(0, 200, 720, 12); x.fillRect(0, 30, 16, 540); x.fillRect(704, 30, 16, 540);
+    poly(x, [0,40, 360,0, 720,40, 720,52, 0,52], '#B79A5E');
+    x.fillStyle = '#5A3E2B'; x.fillRect(470, 84, 150, 104); x.fillStyle = '#A9D3E2'; x.fillRect(480, 94, 130, 84); x.fillStyle = '#5A3E2B'; x.fillRect(542, 94, 6, 84);
+    circ(x, 580, 120, 14, '#FFF7E3');
+    x.fillStyle = '#7A4E32'; x.fillRect(60, 150, 220, 14);
+    x.fillStyle = '#DCC07F'; x.fillRect(16, 400, 688, 170);
+    x.fillStyle = 'rgba(122,82,54,.18)'; for (let i = 0; i < 60; i++) x.fillRect((i * 97) % 680 + 16, 412 + (i * 37) % 150, 22, 3);
+    ell(x, 600, 520, 140, 52, 0, '#8E8778'); ell(x, 600, 516, 124, 42, 0, '#3F8FCB'); ell(x, 580, 506, 64, 16, 0, '#6FB3DE');
+  },
+  fardo: x => { x.fillStyle = '#E2C35A'; x.fillRect(6, 20, 148, 70); x.fillStyle = '#C9A23A'; x.fillRect(36, 20, 8, 70); x.fillRect(116, 20, 8, 70); x.fillStyle = 'rgba(122,82,54,.2)'; for (let i = 0; i < 9; i++) x.fillRect(10 + i*16, 26, 3, 58); },
+  nido: x => { ell(x, 70, 40, 66, 26, 0, '#9A6B3E'); ell(x, 70, 30, 52, 14, 0, '#6E4A35'); for (let i = 0; i < 8; i++) { x.fillStyle = '#B98A55'; x.fillRect(12 + i*15, 44, 14, 3); } },
+});
+Object.assign(SIZE, { zoo:[440,400], zooFondo:[720,570], fardo:[160,100], nido:[140,70] });
+
 /* ---------- Texturas y miniaturas ---------- */
 const CNV = {}, TEXO = {}, URLS = {};
 function bake(id) { const s = SIZE[id], c = mk(s[0], s[1]); DRAW[id](c.getContext('2d')); return paperize(c, RAD[id]); }
@@ -392,4 +445,4 @@ export function artTex(id) {
 export const artThumb = id => URLS[id] || (URLS[id] = art(id).toDataURL());
 export const artAspect = id => { const c = art(id); return c.height / c.width; };
 // Las piezas que usan el pincel japonés se vuelven a hornear cuando la fuente termina de cargar
-document.fonts?.load('40px "Yuji Syuku"').then(() => { ['nobori'].forEach(id => { if (TEXO[id]) { CNV[id] = bake(id); TEXO[id].image = CNV[id]; TEXO[id].needsUpdate = true; delete URLS[id]; } }); }).catch(() => {});
+document.fonts?.load('40px "Yuji Syuku"').then(() => { ['nobori', 'zoo'].forEach(id => { if (TEXO[id]) { CNV[id] = bake(id); TEXO[id].image = CNV[id]; TEXO[id].needsUpdate = true; delete URLS[id]; } }); }).catch(() => {});

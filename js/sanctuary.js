@@ -296,6 +296,7 @@ function tap3d(id) {
   if (!it) { if (focusId) { focusId = null; setFocus(null); go(); } return; }
   buzz(8);
   if (build) { if (it.away) return toast(`${it.k} está de viaje`); if (sel === id) sel = null; else pick(id); return go(); }
+  if (it.t === 'zoo') return import('./zoo.js').then(m => m.openZoo(it));
   if (it.t) return toast(`${OBJS[it.t].k} ${OBJS[it.t].name} Nv${it.lv} · ${OBJS[it.t].desc}`);
   if (it.away) return toast(`${it.k} está de viaje`);
   if (it.egg) {
