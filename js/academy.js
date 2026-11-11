@@ -130,7 +130,7 @@ export function runLesson(L, root, custom) {
     };
     let cur, answer, check;
     const where = () => ({ step, ex: cur?.t || null, done, total });
-    const err = () => { if (ev) track('ex_error', { ...ev, ex: cur.t, step }); };
+    const err = () => { if (ev) { track('ex_error', { ...ev, ex: cur.t, step }); openLesson({ ...ev, ms: Date.now() - t0, mistakes, ...where(), seen: Date.now() }); } };
     const setReady = ok => btn.disabled = !ok;
     function next() {
       bar.style.width = Math.min(100, done / total * 100) + '%';

@@ -13,13 +13,14 @@ const file = arg('--archivo'), days = +arg('--dias', 30);
 async function rows() {
   if (file) {
     // Acepta filas de la tabla o eventos tal como los manda el juego ({ n, lesson, … })
-    return JSON.parse(readFileSync(file, 'utf8')).map(r => ({
+    const seen = new Set(); // un mismo evento puede haberse enviado dos veces
+    return JSON.parse(readFileSync(file, 'utf8')).filter(r => { const id = r.eid ?? r.id; return !id || !seen.has(id) && seen.add(id); }).map(r => ({
       name: r.name ?? r.n, lesson: r.lesson, unit: r.unit, ex: r.ex, step: r.step, ms: r.ms, acct: r.acct ?? 'local',
       data: r.data ?? r,
     }));
   }
   if (!process.env.DATABASE_URL) {
-    console.error('Falta DATABASE_URL (o usá --archivo eventos.json)');
+    console.error('Falta DATABASE_URL (o usa --archivo eventos.json)');
     process.exit(1);
   }
   const { neon } = await import('@neondatabase/serverless');
