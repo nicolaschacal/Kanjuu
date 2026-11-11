@@ -7,6 +7,7 @@ import { LESSONS, romaji, helpOn } from './help.js';
 import { speak } from './games.js';
 import { aiOn, genStory, explain, openAISettings } from './ai.js';
 import { emit } from './tutorial.js';
+import { track, flush, openLesson } from './analytics.js';
 
 const shuffle = a => a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(v => v[1]);
 const pick = a => a[Math.random() * a.length | 0];
@@ -113,23 +114,35 @@ export function runLesson(L, root, custom) {
   else queue = [{ t: 'note', html: `<h3>${LESSONS[L.tip].t}</h3>${LESSONS[L.tip].body}` }];
   const total = queue.filter(e => !['intro', 'vintro', 'note', 'read'].includes(e.t)).length || 1;
   let done = 0, mistakes = 0, combo = 0, best = 0, retries = 0; const missed = new Set();
+  // Analítica (S1-02): solo las lecciones del curso, no los repasos ni los cuentos de IA
+  const ev = L.id ? { lesson: L.id, unit: L.unit?.id, lt: L.type } : null, t0 = Date.now();
+  let step = 0;
+  if (ev) track('lesson_start', { ...ev, again: !!crowns(L.id) });
   return new Promise(resolve => {
     const w = document.createElement('div'); w.className = 'lp';
     w.innerHTML = `<div class="lp-head"><button class="x">✕</button><div class="lp-bar"><i></i></div><span class="combo"></span></div><div class="lp-body"></div><div class="lp-foot"><div class="fb"></div><button class="btn ok wide go" disabled>Comprobar</button></div>`;
     root.append(w);
     const body = $('.lp-body', w), foot = $('.lp-foot', w), btn = $('.go', w), fb = $('.fb', w), bar = $('.lp-bar i', w), cb = $('.combo', w);
-    $('.x', w).onclick = () => { if (confirm('¿Salir? Vas a perder el progreso de esta lección.')) { w.remove(); resolve(null); } };
+    $('.x', w).onclick = () => {
+      if (!confirm('¿Salir? Vas a perder el progreso de esta lección.')) return;
+      if (ev) { openLesson(null); track('lesson_quit', { ...ev, how: 'x', ms: Date.now() - t0, mistakes, ...where() }); flush(); }
+      w.remove(); resolve(null);
+    };
     let cur, answer, check;
+    const where = () => ({ step, ex: cur?.t || null, done, total });
+    const err = () => { if (ev) track('ex_error', { ...ev, ex: cur.t, step }); };
     const setReady = ok => btn.disabled = !ok;
     function next() {
       bar.style.width = Math.min(100, done / total * 100) + '%';
       foot.className = 'lp-foot'; fb.innerHTML = ''; btn.textContent = 'Comprobar'; setReady(false);
       cur = queue.shift();
       if (!cur) return finish();
-      answer = null; check = null;
+      answer = null; check = null; step++;
+      if (ev) openLesson({ ...ev, ms: Date.now() - t0, mistakes, ...where(), seen: Date.now() });
       render(cur);
     }
     function finish() {
+      if (ev) { openLesson(null); track('lesson_end', { ...ev, ms: Date.now() - t0, mistakes, total, perfect: !mistakes, best }); flush(); }
       w.remove();
       resolve({ mistakes, best, total, perfect: !mistakes, missed });
     }
@@ -193,7 +206,7 @@ export function runLesson(L, root, custom) {
         if (e.pairs.some(p => p[0] === l.textContent && p[1] === r.textContent)) {
           [l, r].forEach(x => { x.disabled = true; x.classList.add('ok'); x.classList.remove('sel'); }); navigator.vibrate?.(8);
           if (!--left) { done++; combo += errs ? 0 : 1; best = Math.max(best, combo); mistakes += errs; showCombo(); setTimeout(next, 450); }
-        } else { errs++; [l, r].forEach(x => { x.classList.add('bad'); setTimeout(() => x.classList.remove('bad', 'sel'), 400); }); navigator.vibrate?.(40); }
+        } else { errs++; err(); [l, r].forEach(x => { x.classList.add('bad'); setTimeout(() => x.classList.remove('bad', 'sel'), 400); }); navigator.vibrate?.(40); }
         a = null;
       });
     }
@@ -205,7 +218,7 @@ export function runLesson(L, root, custom) {
       if (info.includes(cur.t)) return next();
       if (ok) { done++; combo++; best = Math.max(best, combo); foot.className = 'lp-foot good'; fb.innerHTML = `<b>${pick(['¡Excelente!', '¡Bien!', '¡Correcto!', '¡Perfecto!'])}</b>`; navigator.vibrate?.(10); }
       else {
-        mistakes++; combo = 0; foot.className = 'lp-foot bad'; if (cur.key) missed.add(cur.key);
+        mistakes++; combo = 0; err(); foot.className = 'lp-foot bad'; if (cur.key) missed.add(cur.key);
         fb.innerHTML = `<b>Respuesta correcta:</b><span class="jp">${cur.correct}</span>${cur.t === 'k2r' || cur.t === 'r2k' || cur.t === 'listen' ? `<small>${cur.c} = ${romaji(cur.c)}</small>` : ''}${aiOn() ? '<button class="why">？ ¿Por qué?</button>' : ''}`;
         const why = fb.querySelector('.why'), given = answer || '(armado)', qtext = body.querySelector('.lp-q')?.textContent + ' ' + (cur.jp || cur.c || cur.s || cur.q || '');
         if (why) why.onclick = async () => { why.disabled = true; why.textContent = 'Pensando…'; try { why.outerHTML = `<p class="ai-exp">✦ ${(await explain(qtext, given, cur.correct)).replace(/</g, '&lt;')}</p>`; } catch (e) { why.textContent = e.message; } };

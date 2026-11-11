@@ -5,3 +5,5 @@ self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Prom
 self.addEventListener('fetch', e => e.request.method === 'GET' && !e.request.url.includes('/api/') && e.respondWith(fetch(e.request, { cache: 'no-cache' }).then(r => { const cp = r.clone(); caches.open(C).then(c => c.put(e.request, cp)); return r; }).catch(() => caches.match(e.request))));
 // Idiomas (S1-01): se suman aparte para no chocar con otros cambios de la lista
 FILES.push('js/i18n.js', 'locales/es.json', 'locales/en.json');
+// Analítica de la Academia (S1-02)
+FILES.push('js/analytics.js');

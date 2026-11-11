@@ -28,3 +28,5 @@ export function userId(req) {
   return Number(uid);
 }
 export const send = (res, code, obj) => res.status(code).json(obj);
+// Id anónimo para la analítica: hash de la cuenta (o del dispositivo), nunca el id real
+export const anonId = s => crypto.createHmac('sha256', SECRET || 'kanjuu').update(`anon:${s}`).digest('hex').slice(0, 20);
