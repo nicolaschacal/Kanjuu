@@ -37,6 +37,26 @@ Criterio: 訓 (kun'yomi) si el kanji se usa mucho solo o con okurigana (子 こ,
 | 毛 | pelo | 訓 け | 音 モウ |
 | 豆 | poroto · frijol | 訓 まめ | 音 トウ · 音 ズ |
 | 斤 | hacha | 音 キン | — |
+| 大 | grande | 訓 おお(きい) | 音 ダイ · 音 タイ |
+| 白 | blanco | 訓 しろ | 音 ハク · 音 ビャク · 訓 しろ(い) |
+| 文 | escritura · frase | 音 ブン | 音 モン · 訓 ふみ |
+| 犬 | perro | 訓 いぬ | 音 ケン |
+| 牛 | vaca | 訓 うし | 音 ギュウ |
+| 馬 | caballo | 訓 うま | 音 バ |
+| 鳥 | ave | 訓 とり | 音 チョウ |
+| 魚 | pez | 訓 さかな | 音 ギョ · 訓 うお |
+| 虫 | insecto | 訓 むし | 音 チュウ |
+| 貝 | concha · marisco | 訓 かい | — |
+| 羊 | oveja | 訓 ひつじ | 音 ヨウ |
+| 象 | elefante · fenómeno | 音 ゾウ | 音 ショウ |
+| 羽 | pluma · ala | 訓 はね | 音 ウ · 訓 は |
+| 肉 | carne | 音 ニク | — |
+| 米 | arroz | 訓 こめ | 音 ベイ · 音 マイ |
+| 食 | comer · comida | 訓 た(べる) | 音 ショク · 音 ジキ · 訓 く(う) |
+| 卵 | huevo | 訓 たまご | 音 ラン |
+| 氷 | hielo | 訓 こおり | 音 ヒョウ |
+| 革 | cuero | 訓 かわ | 音 カク |
+| 竹 | bambú | 訓 たけ | 音 チク |
 | 林 | arboleda | 訓 はやし | 音 リン |
 | 休 | descansar | 訓 やす(む) | 音 キュウ |
 | 本 | origen · libro | 音 ホン | 訓 もと |
@@ -79,6 +99,33 @@ Criterio: 訓 (kun'yomi) si el kanji se usa mucho solo o con okurigana (子 こ,
 | 旬 | temporada | 音 シュン | 音 ジュン |
 | 杉 | cedro japonés | 訓 すぎ | — |
 | 登 | subir | 訓 のぼ(る) | 音 トウ · 音 ト |
+| 苗 | brote · plantín | 訓 なえ | 音 ビョウ |
+| 鳴 | cantar (un animal) | 訓 な(く) | 音 メイ · 訓 な(る) |
+| 豚 | cerdo | 訓 ぶた | 音 トン |
+| 物 | cosa · objeto | 訓 もの | 音 ブツ · 音 モツ |
+| 特 | especial | 音 トク | — |
+| 牧 | pastorear | 音 ボク | 訓 まき |
+| 駅 | estación | 音 エキ | — |
+| 買 | comprar | 訓 か(う) | 音 バイ |
+| 員 | miembro · empleado | 音 イン | — |
+| 集 | reunir | 訓 あつ(める) | 音 シュウ · 訓 あつ(まる) |
+| 習 | aprender | 訓 なら(う) | 音 シュウ |
+| 美 | belleza | 訓 うつく(しい) | 音 ビ |
+| 着 | vestirse · llegar | 訓 き(る) | 音 チャク · 訓 つ(く) |
+| 器 | recipiente · utensilio | 音 キ | 訓 うつわ |
+| 蚊 | mosquito | 訓 か | — |
+| 獣 | bestia | 音 ジュウ | 訓 けもの |
+| 茶 | té | 音 チャ | 音 サ |
+| 反 | contra · al revés | 音 ハン | 訓 そ(る) |
+| 飲 | beber | 訓 の(む) | 音 イン |
+| 料 | tarifa · materiales | 音 リョウ | — |
+| 菜 | verdura | 音 サイ | 訓 な |
+| 果 | fruto · resultado | 音 カ | 訓 は(たす) |
+| 服 | ropa | 音 フク | — |
+| 化 | transformar | 音 カ | 音 ケ · 訓 ば(ける) |
+| 冒 | arriesgarse | 音 ボウ | 訓 おか(す) |
+| 代 | reemplazar · época | 音 ダイ | 音 タイ · 訓 か(わる) · 訓 よ |
+| 早 | temprano · rápido | 訓 はや(い) | 音 ソウ · 音 サッ |
 | 森 | bosque | 訓 もり | 音 シン |
 | 体 | cuerpo | 音 タイ | 音 テイ · 訓 からだ |
 | 焚 | quemar | 訓 た(く) | 音 フン |
@@ -99,6 +146,13 @@ Criterio: 訓 (kun'yomi) si el kanji se usa mucho solo o con okurigana (子 こ,
 | 禁 | prohibir | 音 キン | — |
 | 意 | intención · mente | 音 イ | — |
 | 薪 | leña | 訓 たきぎ | 音 シン |
+| 猫 | gato | 訓 ねこ | 音 ビョウ |
+| 飯 | arroz cocido · comida | 音 ハン | 訓 めし |
+| 花 | flor | 訓 はな | 音 カ |
+| 靴 | zapato | 訓 くつ | — |
+| 帽 | gorro · sombrero | 音 ボウ | — |
+| 袋 | bolsa | 訓 ふくろ | 音 タイ |
+| 草 | hierba · pasto | 訓 くさ | 音 ソウ |
 | 操 | manejar | 音 ソウ | 訓 あやつ(る) · 訓 みさお |
 | 燥 | secar | 音 ソウ | — |
 | 繰 | devanar · enrollar | 訓 く(る) | 音 ソウ |

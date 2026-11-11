@@ -611,6 +611,18 @@ const D = {
     + J(20, -96, `<g transform="rotate(-24)">${frond('#5E9E5A', t.l)}</g>`, 0) + J(24, -50, `<g transform="rotate(10)">${frond(t.d, t.l)}</g>`, 1) + J(-22, -70, `<g transform="scale(-1 1) rotate(-6)">${frond(t.d, t.l)}</g>`, 1.5) + J(-24, -30, `<g transform="scale(-1 1) rotate(20) scale(.8)">${frond('#5E9E5A', t.l)}</g>`, 2.2)
     + `<g class="k2-float">${bubble(-40, -140, 6, T.water)}${bubble(-50, -156, 4, T.water)}</g><g class="k2-float b">${bubble(40, -136, 5, T.water)}${bubble(46, -20, 4, T.water)}</g>`,
   faces: [F(-4, -112, 9, 'harai', { es: .95 })], kanji: [2, -54, 18] }) },
+
+// ===== Mascota oficial 漢獣 (S1-09) — misma figura que el ícono de la app aprobado: cuerpo 田, chispas ⺍, cuerno de 犬, un solo ojo y boca 口 =====
+'獣': { t: 'fire', g: 2, m: 'bestia', r: '⺍+田+口+犬', idea: 'la mascota: un bloque de papel con un solo ojo, boca grande y un cuerno', h: 118, draw: t => ({
+  body: 'M-40,-96 C-30,-100 26,-102 38,-96 C46,-92 46,-84 46,-74 L46,-22 C46,-12 40,-6 30,-6 L-30,-6 C-40,-6 -46,-12 -46,-22 L-46,-80 C-46,-88 -46,-94 -40,-96Z',
+  back: P('M30,-94 C34,-108 40,-118 48,-124 C48,-112 46,-100 42,-90Z', t.d, 3)
+    + [-26, -6, 14].map((x, i) => `<g transform="translate(${x} -99) rotate(${-14 + i * 10})">${P('M-3,0 L-2,-13 C-2,-17 3,-17 3,-13 L3,0Z', W, 2.4)}</g>`).join('')
+    + P('M-30,-6 L-34,10 C-35,13 -26,14 -24,10 L-18,-6Z', t.f, 3) + P('M18,-6 L24,10 C26,14 35,13 34,10 L30,-6Z', t.f, 3),
+  mid: `<path class="k2-ln" d="M-46,-50 C-16,-52 16,-51 46,-48 M0,-98 V-6" stroke="${W}" stroke-width="2.4" opacity=".75" fill="none"/>`,
+  front: J(42, -60, P('M-4,4 C6,-4 14,-18 18,-32 C20,-40 30,-40 29,-31 C27,-16 18,-2 6,10Z', t.f, 3), 0, 'k2-swing2')
+    + P('M-46,-46 C-56,-42 -62,-34 -62,-26 C-56,-28 -50,-32 -46,-36Z', t.f, 3)
+    + `<path d="M-10.5,-62.6 L-7.6,-55 L-4.7,-62.2Z M4.7,-62.2 L7.6,-55 L10.5,-62.6Z" fill="${W}"/>`,
+  faces: [F(0, -74, 0, 'ten', { es: 3, mouth: 'open' })], kanji: [27, -19, 14] }) },
 };
 
 // ---------- El kit en el juego ----------
