@@ -62,6 +62,15 @@ Pedido por Nicolás el 9 de noviembre de 2026: hoy el jugador no entiende por qu
 
 **Aceptación:** con una isla sin ningún 2×2 libre, intentar poner el cerezo explica el tamaño que falta y resalta la pieza a mover; tocar un kanji gris en el Atlas dice dónde se vio y cómo conseguirlo; las criaturas doradas llevan su etiqueta en las tres pantallas; una partida vieja carga sin errores y sus kanji vistos muestran una región.
 
+### S1-09 · Kanji para los hábitats y mascota 獣
+Pedido por Nicolás el 11 de noviembre de 2026 (fase 1 de docs/HABITATS.md).
+- 54 kanji nuevos de animales, comida, ropa y plantas, de preferencia N5–N4, con recetas verificadas en KanjiVG, lecturas, trazos y concepto
+- Regiones de viaje para conseguir los fundamentales nuevos
+- Mascota 獣 jugable (⺍ + 田 + 口 + 犬) con el arte del ícono aprobado
+- Plan de la fase 2 en docs/HABITATS.md
+
+**Aceptación:** una partida vieja carga sin errores en 390 × 844; 獣 se fusiona en el laboratorio; ninguna receta repetida ni formada solo por piezas; NIVELES.md y LECTURAS.md al día.
+
 ---
 
 ## Sprint 2 · 17 al 23 de noviembre de 2026 · "Estados y clima"

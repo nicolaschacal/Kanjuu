@@ -37,7 +37,6 @@ Nivel KANJŪ = composition_depth + 1 (máximo 5).
 | 罒 | あみがしら (amigashira) | red | 買 |
 | 隹 | ふるとり (furutori) | pájaro de cola corta | 集 |
 | 卩 | ふしづくり (fushizukuri) | sello · persona arrodillada | 服 |
-| 又 | また (mata) | mano · otra vez | 反 服 |
 | 欠 | あくび (akubi) | bostezo · boca abierta | 飲 |
 | 斗 | とます (tomasu) | cucharón | 料 |
 | 采 | さい (sai) | recoger | 菜 |
@@ -45,13 +44,13 @@ Nivel KANJŪ = composition_depth + 1 (máximo 5).
 | 巾 | はばへん (habahen) | paño | 帽 |
 | 弋 | しきがまえ (shikigamae) | estaca | 代 袋 |
 
-## Nivel 1 · Componentes fundamentales (51)
+## Nivel 1 · Componentes fundamentales (52)
 
-一 木 人 日 月 火 田 力 女 子 口 十 目 生 心 皿 水 艸 手 糸 示 衣 立 車 止 土 寸 皮 毛 豆 斤 大 白 文 犬 牛 馬 鳥 魚 虫 貝 羊 象 羽 肉 米 食 卵 氷 革 竹
+一 木 人 日 月 火 田 力 女 子 口 十 目 生 心 皿 水 艸 手 糸 示 衣 立 車 止 土 寸 皮 毛 豆 斤 大 白 文 犬 牛 馬 鳥 魚 虫 貝 羊 象 羽 肉 米 食 卵 氷 革 又 竹
 
 Los pictogramas (象形文字) son nivel 1 aunque KanjiVG los dibuje con partes: 犬 (大 con un punto), 貝 (目 y 八), 魚, 氷 (水 con un punto). Esas partes no forman su significado, así que no se fusionan.
 
-## Nivel 2 · Primera composición (68)
+## Nivel 2 · Primera composición (67)
 
 | Kanji | Significado | Receta | Profundidad |
 |---|---|---|---|
@@ -97,7 +96,7 @@ Los pictogramas (象形文字) son nivel 1 aunque KanjiVG los dibuje con partes:
 | 旬 | temporada | 勹 + 日 | 1 |
 | 杉 | cedro japonés | 木 + 彡 | 1 |
 | 登 | subir | 癶 + 豆 | 1 |
-| 苗 | brote · plantín | 艸 + 田 (艸 aparece como 艹) | 1 |
+| 苗 | brote | 艸 + 田 (艸 aparece como 艹) | 1 |
 | 鳴 | cantar (un animal) | 口 + 鳥 | 1 |
 | 豚 | cerdo | 肉 + 豕 (肉 aparece como 月) | 1 |
 | 物 | cosa · objeto | 牛 + 勿 (牛 aparece como 牜) | 1 |
@@ -109,11 +108,10 @@ Los pictogramas (象形文字) son nivel 1 aunque KanjiVG los dibuje con partes:
 | 習 | aprender | 羽 + 白 | 1 |
 | 美 | belleza | 羊 + 大 (羊 aparece como ⺷) | 1 |
 | 着 | vestirse · llegar | 羊 + 目 (羊 estira un trazo largo que envuelve a 目) | 1 |
-| 器 | recipiente · utensilio | 口 + 口 + 犬 + 口 + 口 (cinco piezas: cuatro 口 alrededor de 犬) | 1 |
 | 蚊 | mosquito | 虫 + 文 | 1 |
 | 獣 | bestia | ⺍ + 田 + 口 + 犬 (cuatro piezas: ⺍, 田 y 口 a la izquierda, 犬 a la derecha · la mascota oficial 漢獣, de papel rojo Fuego) | 1 |
 | 茶 | té | 艸 + 人 + 木 (tres piezas: 艸 (como 艹) arriba, 人 y 木 abajo) | 1 |
-| 反 | contra · al revés | 厂 + 又 (sus dos partes son piezas) | 1 |
+| 反 | contra · al revés | 厂 + 又 | 1 |
 | 飲 | beber | 食 + 欠 (食 aparece como 飠) | 1 |
 | 料 | tarifa · materiales | 米 + 斗 | 1 |
 | 菜 | verdura | 艸 + 采 (艸 aparece como 艹) | 1 |

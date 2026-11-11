@@ -56,6 +56,7 @@ Criterio: 訓 (kun'yomi) si el kanji se usa mucho solo o con okurigana (子 こ,
 | 卵 | huevo | 訓 たまご | 音 ラン |
 | 氷 | hielo | 訓 こおり | 音 ヒョウ |
 | 革 | cuero | 訓 かわ | 音 カク |
+| 又 | mano · otra vez | 訓 また | — |
 | 竹 | bambú | 訓 たけ | 音 チク |
 | 林 | arboleda | 訓 はやし | 音 リン |
 | 休 | descansar | 訓 やす(む) | 音 キュウ |
@@ -99,7 +100,7 @@ Criterio: 訓 (kun'yomi) si el kanji se usa mucho solo o con okurigana (子 こ,
 | 旬 | temporada | 音 シュン | 音 ジュン |
 | 杉 | cedro japonés | 訓 すぎ | — |
 | 登 | subir | 訓 のぼ(る) | 音 トウ · 音 ト |
-| 苗 | brote · plantín | 訓 なえ | 音 ビョウ |
+| 苗 | brote | 訓 なえ | 音 ビョウ |
 | 鳴 | cantar (un animal) | 訓 な(く) | 音 メイ · 訓 な(る) |
 | 豚 | cerdo | 訓 ぶた | 音 トン |
 | 物 | cosa · objeto | 訓 もの | 音 ブツ · 音 モツ |
@@ -112,8 +113,7 @@ Criterio: 訓 (kun'yomi) si el kanji se usa mucho solo o con okurigana (子 こ,
 | 習 | aprender | 訓 なら(う) | 音 シュウ |
 | 美 | belleza | 訓 うつく(しい) | 音 ビ |
 | 着 | vestirse · llegar | 訓 き(る) | 音 チャク · 訓 つ(く) |
-| 器 | recipiente · utensilio | 音 キ | 訓 うつわ |
-| 蚊 | mosquito | 訓 か | — |
+| 蚊 | mosquito | 訓 か | 音 ブン |
 | 獣 | bestia | 音 ジュウ | 訓 けもの |
 | 茶 | té | 音 チャ | 音 サ |
 | 反 | contra · al revés | 音 ハン | 訓 そ(る) |
@@ -149,7 +149,7 @@ Criterio: 訓 (kun'yomi) si el kanji se usa mucho solo o con okurigana (子 こ,
 | 猫 | gato | 訓 ねこ | 音 ビョウ |
 | 飯 | arroz cocido · comida | 音 ハン | 訓 めし |
 | 花 | flor | 訓 はな | 音 カ |
-| 靴 | zapato | 訓 くつ | — |
+| 靴 | zapato | 訓 くつ | 音 カ |
 | 帽 | gorro · sombrero | 音 ボウ | — |
 | 袋 | bolsa | 訓 ふくろ | 音 タイ |
 | 草 | hierba · pasto | 訓 くさ | 音 ソウ |
