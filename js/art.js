@@ -523,6 +523,94 @@ const D = {
   faces: [F(0, -52, 15, 'tome')], kanji: [0, -30, 16] }) },
 
 // ===== Grado 5 =====
+  // ===== Restaurados (roster original) =====
+'喿': { t: 'metal', g: 3, m: 'piar de pájaros', r: '品+木', idea: 'pajaritos que pían en las ramas', h: 138, draw: t => ({
+  body: 'M0,-96 C22,-96 32,-76 32,-50 L38,0 L-38,0 L-32,-50 C-32,-76 -22,-96 0,-96Z',
+  front: J(-14, -90, Ln('M0,0 C-10,-12 -22,-16 -34,-16', WOOD, 4.5) + boxBird(-36, -16, 1, t, -1), 0) + J(14, -90, Ln('M0,0 C10,-14 22,-20 36,-22', WOOD, 4.5) + boxBird(38, -22, 1, t), 1.2) + J(0, -96, Ln('M0,0 V-20', WOOD, 4.5) + boxBird(0, -20, 1, t), 2.1)
+    + J(-33, -46, P('M0,0 C-8,2 -16,8 -18,18 C-10,16 -2,10 2,4Z', t.d, 3), .3) + J(33, -46, P('M0,0 C8,2 16,8 18,18 C10,16 2,10 -2,4Z', t.d, 3), 1.6),
+  faces: [F(0, -64, 14, 'maru', { mouth: 'open' })], kanji: [0, -28, 21], shine: true }) },
+'澡': { t: 'water', g: 4, m: 'lavar', r: '水+喿', idea: 'una ola que se lava en la tina', h: 134, draw: t => ({
+  body: 'M-38,0 C-44,-30 -42,-74 -20,-96 C-8,-108 10,-114 22,-106 C34,-98 38,-86 28,-80 C22,-88 10,-88 8,-80 C26,-72 42,-50 42,-24 C42,-8 38,-2 36,0Z',
+  front: P('M-45,-30 h90 l-6,30 h-78Z', WOODL, 3) + `<path class="k2-ln" d="M-44,-22 h88 M-41,-8 h82" stroke="${WOOD}" stroke-width="3" fill="none"/>` + boxBird(-18, -100, .9, T.metal, -1)
+    + `<g class="k2-float">${bubble(-52, -74, 6, t)}${bubble(-60, -54, 4, t)}</g><g class="k2-float b">${bubble(54, -98, 5, t)}${bubble(60, -78, 3.5, t)}</g>`
+    + J(-39, -52, P('M0,0 C-10,-4 -16,-12 -16,-22 C-8,-20 0,-12 3,-4Z', t.d, 3), 0, 'k2-swing2') + J(39, -52, P('M0,0 C10,-4 16,-12 16,-22 C8,-20 0,-12 -3,-4Z', t.d, 3), .7, 'k2-swing2'),
+  faces: [F(0, -66, 15, 'ten', { expr: 'feliz' })], kanji: [0, -45, 19] }) },
+'焚': { t: 'wood', g: 3, m: 'quemar', r: '林+火', idea: 'una fogata de leños encendidos', h: 116, draw: t => ({
+  body: 'M-46,0 L-14,-62 L14,-62 L46,0Z',
+  fill: '#B48A5E',
+  back: P('M0,-112 C10,-96 30,-86 32,-66 C34,-56 24,-50 0,-50 C-24,-50 -34,-56 -32,-66 C-30,-80 -18,-84 -12,-96 C-8,-88 -4,-88 -2,-94 C-4,-102 -2,-108 0,-112Z', T.fire.f) + P('M0,-84 C6,-76 16,-70 16,-60 C16,-54 8,-52 0,-52 C-8,-52 -16,-54 -16,-60 C-16,-68 -6,-72 0,-84Z', GLOW, 2.4),
+  mid: `<path class="k2-ln" d="M-30,-30 L30,-30 M-22,-46 L22,-46" stroke="${WOOD}" stroke-width="2" fill="none"/>`,
+  front: `<g class="k2-float"><g transform="translate(-44 -70) scale(.7)">${flame(T.fire.f, T.fire.l)}</g></g><g class="k2-float b"><g transform="translate(46 -80) scale(.6)">${flame(T.fire.f, T.fire.l)}</g></g>`,
+  faces: [F(0, -32, 11, 'harai', { es: .9 })], kanji: [0, -10, 14] }) },
+'杏': { t: 'wood', g: 2, m: 'albaricoque', r: '木+口', idea: 'un albaricoque con su hoja', h: 94, draw: t => ({
+  body: 'M0,-70 C-6,-74 -20,-76 -32,-66 C-44,-54 -42,-24 -26,-10 C-14,0 14,0 26,-10 C42,-24 44,-54 32,-66 C20,-76 6,-74 0,-70Z',
+  fill: '#E9A65A',
+  back: Ln('M0,-70 C1,-78 2,-84 4,-88', WOOD, 3.4) + J(4, -86, `<g transform="rotate(-10) scale(.7)">${leafR(t.f, t.l)}</g>`, .2),
+  mid: Ln('M10,-68 C16,-50 18,-30 12,-10', '#C9813A', 2.2, 0),
+  faces: [F(-6, -42, 13, 'ten')], kanji: [-6, -19, 15] }) },
+'朋': { t: 'water', g: 2, m: 'compañero', r: '月+月', idea: 'dos lunas que se toman de la mano', h: 92, draw: t => ({
+  body: 'M-6,-86 A42,42 0 1,0 -6,-6 A62,62 0 0,1 -6,-86Z M6,-86 A42,42 0 1,1 6,-6 A62,62 0 0,0 6,-86Z',
+  front: P(ell(0, -46, 9, 7), t.d, 2.6) + `<g class="k2-float">${star(0, -98, .6)}</g>`,
+  faces: [F(-36, -56, 8, 'ten', { es: .8 }), F(36, -56, 8, 'ten', { es: .8 })], kanji: [-36, -30, 14] }) },
+'享': { t: 'metal', g: 2, m: 'recibir · disfrutar', r: '亠+口+子', idea: 'recibe un plato de dulces y lo disfruta', h: 108, draw: t => ({
+  body: circ(0, -40, 34),
+  front: J(-28, -54, `<g transform="rotate(-70)">${P('M0,0 C8,2 16,8 18,18 C10,16 2,10 -2,4Z', t.d, 3)}</g>`, 0) + J(28, -54, `<g transform="scale(-1 1) rotate(-70)">${P('M0,0 C8,2 16,8 18,18 C10,16 2,10 -2,4Z', t.d, 3)}</g>`, .5)
+    + `<g class="k2-float">${P('M-18,-84 H18 C16,-74 8,-70 0,-70 C-8,-70 -16,-74 -18,-84Z', WOODL, 2.6)}${P(circ(-6, -90, 6), W, 2)}${P(circ(6, -91, 6), PINK, 2)}${P(circ(0, -98, 6), '#A3D07C', 2)}</g>`,
+  faces: [F(0, -44, 14, 'ten', { expr: 'feliz' })], kanji: [0, -20, 16], shine: true }) },
+'襟': { t: 'wood', g: 4, m: 'cuello (de ropa)', r: '衣+禁', idea: 'el cuello cruzado de un kimono', h: 94, draw: t => ({
+  body: 'M-46,0 L-44,-70 C-40,-84 -24,-90 -14,-90 L0,-74 L14,-90 C24,-90 40,-84 44,-70 L46,0Z',
+  front: P('M-14,-90 L10,-58 L20,-62 L2,-90Z', W, 2.6) + P('M14,-90 L-8,-54 L-18,-60 L0,-86Z', T.wood.l, 2.6) + P(rrect(-44, -30, 88, 8, 2), t.d, 2.2),
+  faces: [F(0, -42, 14, 'tome', { es: .9 })], kanji: [0, -12, 15] }) },
+'藻': { t: 'wood', g: 5, m: 'alga', r: '艸+澡', idea: 'un alga alta que ondula entre burbujas', h: 166, draw: t => ({
+  body: 'M-8,0 C-26,-20 -32,-50 -20,-80 C-10,-104 -18,-130 -4,-158 C10,-134 22,-110 18,-86 C14,-62 28,-38 24,-16 C22,-6 12,0 -8,0Z',
+  front: P(ell(-2, -2, 28, 6), '#9A9388', 2.4)
+    + J(20, -96, `<g transform="rotate(-24)">${frond('#5E9E5A', t.l)}</g>`, 0) + J(24, -50, `<g transform="rotate(10)">${frond(t.d, t.l)}</g>`, 1) + J(-22, -70, `<g transform="scale(-1 1) rotate(-6)">${frond(t.d, t.l)}</g>`, 1.5) + J(-24, -30, `<g transform="scale(-1 1) rotate(20) scale(.8)">${frond('#5E9E5A', t.l)}</g>`, 2.2)
+    + `<g class="k2-float">${bubble(-40, -140, 6, T.water)}${bubble(-50, -156, 4, T.water)}</g><g class="k2-float b">${bubble(40, -136, 5, T.water)}${bubble(46, -20, 4, T.water)}</g>`,
+  faces: [F(-4, -112, 9, 'harai', { es: .95 })], kanji: [2, -54, 18] }) },
+'薪': { t: 'wood', g: 3, m: 'leña', r: '艸+新', idea: 'un atado de leña recién cortada', h: 100, draw: t => ({
+  body: `${rrect(-38, -80, 20, 80, 9)} ${rrect(-19, -86, 20, 86, 9)} ${rrect(0, -82, 20, 82, 9)} ${rrect(19, -78, 20, 78, 9)}`,
+  fill: '#B48A5E',
+  mid: [[-28, -80], [-9, -86], [10, -82], [29, -78]].map(([x, y]) => `<path d="${ell(x, y + 4, 8, 4)}" fill="#F2DAB2"/>`).join('') + `<path class="k2-ln" d="M-38,-30 H39" stroke="${SHU}" stroke-width="3" fill="none"/>`,
+  back: J(-4, -88, P('M0,0 C-4,-10 -10,-16 -16,-20 C-8,-18 -2,-12 2,-2Z', t.f, 2.4) + P('M0,0 C2,-12 6,-18 10,-22 C10,-14 8,-8 4,0Z', t.d, 2.4), 0),
+  faces: [F(0, -60, 14, 'ten')], kanji: [0, -14, 15] }) },
+'燥': { t: 'fire', g: 4, m: 'secar', r: '火+喿', idea: 'su calor seca la ropa tendida', h: 126, draw: t => ({
+  body: 'M0,0 C-30,0 -46,-16 -46,-40 C-46,-62 -28,-70 -20,-88 C-16,-96 -8,-100 0,-104 C8,-100 16,-96 20,-88 C28,-70 46,-62 46,-40 C46,-16 30,0 0,0Z',
+  back: Ln('M-58,-112 C-30,-104 30,-104 58,-112', WOOD, 2, 2),
+  front: J(-26, -106, P('M-12,0 H12 V22 L6,26 L0,22 L-6,26 L-12,22Z', W, 2.2) + `<path class="k2-ln" d="M-12,6 H12" stroke="${T.water.f}" stroke-width="2" fill="none"/>`, 0) + J(28, -106, P('M-10,0 H10 V18 H-10Z', T.water.l, 2.2), 1)
+    + `<g class="k2-float">${Ln('M-26,-70 c-4,-6 4,-10 0,-16 M30,-74 c-4,-6 4,-10 0,-16', '#B9B2C4', 1.8, 1.6)}</g>` + feet([-18, 18], t, 9),
+  faces: [F(0, -46, 15, 'harai')], kanji: [0, -20, 18] }) },
+'繰': { t: 'wood', g: 4, m: 'devanar · enrollar', r: '糸+喿', idea: 'un carrete que enrolla su hilo', h: 92, draw: t => ({
+  body: 'M-38,-84 H38 V-72 H28 V-16 H38 V-4 H-38 V-16 H-28 V-72 H-38Z',
+  fill: '#B48A5E',
+  mid: `<path d="M-28,-72 H28 V-16 H-28Z" fill="${t.f}"/><path class="k2-ln" d="${Array.from({ length: 7 }, (_, i) => `M-28,${-68 + i * 8} L28,${-64 + i * 8}`).join(' ')}" stroke="${t.d}" stroke-width="1.6" fill="none" opacity=".7"/>`,
+  front: J(38, -40, Ln('M0,0 C12,4 18,-6 26,-2 C32,2 30,12 24,12', t.d, 2.4, 2), 0) + J(-38, -44, P(rrect(-14, -2, 14, 4, 2), WOOD, 2) + P(circ(-16, 0, 4), GOLD, 1.6), .5, 'k2-swing2'),
+  faces: [F(0, -52, 11, 'ten')], kanji: [0, -28, 15] }) },
+'操': { t: 'metal', g: 4, m: 'manejar', r: '手+喿', idea: 'mueve con hilos un pajarito de papel', h: 118, draw: t => ({
+  body: circ(-6, -40, 32),
+  front: J(-6, -74, P(rrect(-24, -40, 48, 6, 3), WOOD, 2.4) + P(rrect(-3, -52, 6, 30, 3), WOOD, 2.4) + `<path class="k2-ln" d="M-22,-34 L30,10 M22,-34 L44,6 M0,-22 L38,2" stroke="#8C8A96" stroke-width="1" fill="none"/>` + boxBird(40, 18, 1, t), 0)
+    + J(-34, -54, `<g transform="rotate(-80)">${P('M0,0 C8,2 16,8 18,18 C10,16 2,10 -2,4Z', t.d, 3)}</g>`, 0) + J(22, -56, `<g transform="scale(-1 1) rotate(-80)">${P('M0,0 C8,2 16,8 18,18 C10,16 2,10 -2,4Z', t.d, 3)}</g>`, .4),
+  faces: [F(-6, -44, 12, 'hane')], kanji: [-6, -20, 15], shine: true }) },
+'盟': { t: 'fire', g: 3, m: 'alianza', r: '明+皿', idea: 'sol y luna se dan la mano sobre el plato', h: 104, draw: t => ({
+  body: `${circ(0, -62, 30)} M-50,-26 C-46,-10 -30,-4 -16,-4 L-16,0 L16,0 L16,-4 C30,-4 46,-10 50,-26Z`,
+  back: rays(0, -62, [[-150, .8], [-120, .9], [-90, .8], [-60, .9]], t),
+  mid: `<path d="M0,-92 A30,30 0 0,1 0,-32Z" fill="${T.water.f}"/><path d="${ell(0, -26, 50, 5)}" fill="${T.earth.l}" stroke="${W}" stroke-width="2" paint-order="stroke"/>`,
+  front: P(ell(0, -36, 10, 6), t.d, 2.6),
+  faces: [F(0, -66, 13, 'tome')], kanji: [0, -14, 12] }) },
+'晶': { t: 'fire', g: 2, m: 'cristal', r: '日+日+日', idea: 'un racimo de cristales que brillan', h: 112, draw: t => ({
+  body: 'M-18,-4 L-18,-86 L0,-108 L18,-86 L18,-4Z M-46,-4 L-56,-52 L-46,-70 L-28,-60 L-20,-14Z M46,-4 L56,-50 L46,-68 L28,-58 L20,-14Z',
+  mid: `<path class="k2-ln" d="M0,-108 V-80 M-18,-86 L0,-80 L18,-86 M-46,-70 L-40,-46 M46,-68 L40,-44" stroke="${W}" stroke-width="1.8" fill="none" opacity=".7"/>`,
+  front: P(ell(0, -4, 52, 7), '#9A9388', 2.6) + `<g class="k2-float">${star(-56, -86, .7)}</g><g class="k2-float b">${star(58, -90, .6)}</g>`,
+  faces: [F(0, -64, 9, 'maru', { es: .8 })], kanji: [0, -32, 15] }) },
+'旬': { t: 'fire', g: 2, m: 'temporada', r: '勹+日', idea: 'un sol envuelto por las cuatro estaciones', h: 94, draw: t => ({
+  body: circ(0, -44, 32),
+  back: Ln('M-30,-68 C-50,-50 -48,-18 -24,-6', t.d, 6, 3),
+  front: `<g class="k2-float">${P(flower5(-46, -76, 7), PINK, 2)}${P(circ(46, -76, 7), GOLD, 2)}</g><g class="k2-float b">${P('M48,-30 l4,-8 l4,8 l8,-2 l-6,6 l6,6 l-8,-2 l-4,8 l-4,-8 l-8,2 l6,-6 l-6,-6Z', SHU, 2)}${Ln('M-52,-36 V-16 M-61,-31 L-43,-21 M-61,-21 L-43,-31', '#9FC6E6', 2, 2)}</g>` + feet([-14, 14], t, 8, -1),
+  faces: [F(0, -50, 13, 'ten')], kanji: [0, -26, 16] }) },
+'杉': { t: 'wood', g: 2, m: 'cedro japonés', r: '木+彡', idea: 'un cedro alto con capas de agujas', h: 124, draw: t => ({
+  body: 'M0,-122 C6,-108 14,-98 12,-92 C22,-82 26,-72 22,-66 C34,-54 38,-42 34,-36 C44,-24 46,-12 40,-8 L-40,-8 C-46,-12 -44,-24 -34,-36 C-38,-42 -34,-54 -22,-66 C-26,-72 -22,-82 -12,-92 C-14,-98 -6,-108 0,-122Z',
+  back: P(rrect(-6, -10, 12, 10, 3), WOOD, 2.4),
+  mid: `<path class="k2-ln" d="M-14,-92 C-6,-88 6,-88 14,-92 M-24,-66 C-10,-60 10,-60 24,-66 M-36,-36 C-14,-30 14,-30 36,-36" stroke="${t.d}" stroke-width="2" fill="none"/>`,
+  faces: [F(0, -50, 11, 'tome')], kanji: [0, -22, 15] }) },
 };
 
 // ---------- Roster v2 (noviembre de 2026): 192 criaturas nuevas ----------

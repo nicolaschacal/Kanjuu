@@ -38,8 +38,12 @@ export const UNITS = [
     { id: 'p8', type: 'piece', piece: '疒', name: '疒 enfermedad' },
     { id: 'p9', type: 'piece', piece: '彳', name: '彳 paso' },
     { id: 'p10', type: 'piece', piece: '尸', name: '尸 cuerpo' },
+    { id: 'p11', type: 'piece', piece: '厂', name: '厂 acantilado' },
     { id: 'p12', type: 'piece', piece: '冂', name: '冂 marco' },
     { id: 'p13', type: 'piece', piece: '勹', name: '勹 envolver' },
+    { id: 'p14', type: 'piece', piece: '彡', name: '彡 pelo' },
+    { id: 'p15', type: 'piece', piece: '癶', name: '癶 pasos' },
+    { id: 'p16', type: 'piece', piece: '廴', name: '廴 camino largo' },
   ] },
   { id: 'u1', name: 'Hiragana I', color: '#ff8a3d', reward: { tickets: 2 }, lessons: [
     { id: 'h1', type: 'kana', name: 'Vocales', chars: 'あいうえお', words: kanaWords.a },
@@ -124,12 +128,12 @@ export const STORIES = [
     ['森{もり} は 林{はやし} より おおきい です。', 'El bosque es más grande que la arboleda.'],
     ['よる、 月{つき} が 明{あか}るかった です。', 'De noche, la luna estaba brillante.'],
   ], qs: [['¿Cuándo fue al bosque?', 'A la mañana', ['De noche', 'Ayer']], ['¿Qué es más grande?', 'El bosque', ['La arboleda', 'El árbol']], ['¿Cómo estaba la luna?', 'Brillante', ['Oscura', 'Roja']]] },
-  { kanji: ['火', '大', '人', '口'], lines: [
+  { kanji: ['火', '炎', '人', '口'], lines: [
     ['よる、 火{ひ} を つけました。', 'De noche, encendí un fuego.'],
-    ['火{ひ} は 大{おお}きく なりました。', 'El fuego se hizo grande.'],
+    ['火{ひ} は 炎{ほのお} に なりました。', 'El fuego se convirtió en una llamarada.'],
     ['人{ひと} が 口{くち} を あけて みました。', 'La gente miró con la boca abierta.'],
     ['「きれい です ね」', '"¡Qué lindo!"'],
-  ], qs: [['¿Qué pasó con el fuego?', 'Se hizo grande', ['Se apagó', 'Se hizo humo']], ['¿Cómo miró la gente?', 'Con la boca abierta', ['Con miedo', 'Durmiendo']]] },
+  ], qs: [['¿En qué se convirtió el fuego?', 'En una llamarada', ['En agua', 'En humo']], ['¿Cómo miró la gente?', 'Con la boca abierta', ['Con miedo', 'Durmiendo']]] },
   { kanji: ['男', '人', '田', '力', '女', '子', '好'], lines: [
     ['男{おとこ} の 人{ひと} は 田{た} で はたらきます。', 'El hombre trabaja en el arrozal.'],
     ['力{ちから} が あります。', 'Tiene fuerza.'],
@@ -142,10 +146,10 @@ export const STORIES = [
     ['目{め} を とじて、 ねがいごと を しました。', 'Cerré los ojos y pedí un deseo.'],
     ['明日{あした} も いい 日{ひ} です。', 'Mañana también será un buen día.'],
   ], qs: [['¿Qué miró anoche?', 'Las estrellas', ['El mar', 'Un libro']], ['¿Qué hizo al cerrar los ojos?', 'Pidió un deseo', ['Se durmió', 'Comió']]] },
-  { kanji: ['古', '本', '十', '木', '大'], lines: [
+  { kanji: ['古', '本', '十', '木', '枯'], lines: [
     ['古{ふる}い 本{ほん} が あります。', 'Hay un libro viejo.'],
     ['十{じゅっ} ページ よみました。', 'Leí diez páginas.'],
     ['本{ほん} の なか に 木{き} の え が あります。', 'Dentro del libro hay un dibujo de un árbol.'],
-    ['古{ふる}い 木{き} は 大{おお}きい です。', 'El árbol viejo es grande.'],
-  ], qs: [['¿Cuántas páginas leyó?', 'Diez', ['Una', 'Cien']], ['¿Cómo es el árbol viejo?', 'Grande', ['Pequeño', 'Nuevo']]] },
+    ['古{ふる}い 木{き} は 枯{か}れて います。', 'El árbol viejo está marchito.'],
+  ], qs: [['¿Cuántas páginas leyó?', 'Diez', ['Una', 'Cien']], ['¿Cómo está el árbol viejo?', 'Marchito', ['Florecido', 'Grande']]] },
 ];

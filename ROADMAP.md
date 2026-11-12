@@ -81,14 +81,14 @@ El juego sale en **español e inglés**; portugués queda para después del lanz
 
 ## 3. Diseño de criaturas — FASE 2
 - ✅ **Estilo aprobado (9 de noviembre de 2026):** una forma propia por kanji que muestra solo lo que significa (dos significados → se ven los dos); ojos de papel con pupila de píldora y cinco temperamentos; tinta y bermellón en la cara; broche dorado en las piezas; marcas de grado; el elemento se lee por el color. Referencia: docs/arte/estilo.html
-- ✅ **Los 253 kanji del roster v2 diseñados e integrados al juego** (js/art.js): santuario 3D, Atlas, fichas, Entrenador, Arena, Fusión y Viajes
+- ✅ **Los 293 kanji del roster v2 integrados al juego** (los 101 originales con su arte aprobado; los 192 nuevos en rediseño) (js/art.js): santuario 3D, Atlas, fichas, Entrenador, Arena, Fusión y Viajes
 - 🔜 Las 16 piezas 部品 con el mismo estilo
 - 🔜 Secuencia de evolución animada (la lámina gira y vuelve con la forma nueva)
 - ⬜ Cada kanji nuevo que entre al juego se diseña con el método de la biblia antes de publicarse
 - ⬜ Música ambiental y efectos por acción (tocar, evolucionar, fusionar)
 
 ## 4. Contenido
-- ✅ 253 kanji de uso diario en 4 niveles KANJŪ (roster v2) (recetas verificadas con KanjiVG, ver docs/NIVELES.md)
+- ✅ 293 kanji (los 101 originales + 192 de uso diario) en 5 niveles KANJŪ (roster v2) (recetas verificadas con KanjiVG, ver docs/NIVELES.md)
 - ✅ 16 piezas 部品 como accesorios
 - 🔜 Pipeline de datos desde KANJIDIC2 / KanjiVG con revisión humana de recetas
 - 🔜 N5 completo y más piezas
@@ -112,7 +112,7 @@ El juego sale en **español e inglés**; portugués queda para después del lanz
 ### Tareas
 1. 🔜 **Telemetría de economía:** cada evento de tinta/boletos/piezas con fuente y sumidero; panel de saldo medio por día de juego
 2. 🔜 **Validación de partida en servidor** (anti-trampas): el servidor recalcula producción idle, premios y compras; requisito para cualquier monetización
-3. 🔜 **Re-simular con 253 kanji y la Arena** (hoy la simulación no incluye cofres ni copas)
+3. 🔜 **Re-simular con 293 kanji y la Arena** (hoy la simulación no incluye cofres ni copas)
 4. 🔜 **Sumideros de largo plazo** para que la tinta no se acumule sin sentido: decoración por niveles, variantes de suelo del editor, mejoras de objetos más caras en Nv4–5, coste de renacimiento que devuelve legado
 5. 🔜 **Precios de la Tienda que rotan a diario** (3 ofertas en tinta) para dar un motivo de visita sin castigar
 6. ⬜ **Objetivos de balance** a validar con datos: primera evolución en el día 1, primera fusión en el día 2, 50% del Atlas en la semana 3, Atlas completo en 2–3 meses para jugador normal
