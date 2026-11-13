@@ -93,13 +93,15 @@ S.cur ??= { sec: '0.1', rounds: {}, gold: {}, got: {}, skipped: {}, eggs: {} };
 - Partidas existentes: se ubican por lo que ya saben (kana con `S.kana`, palabras con `S.lex`). Ante la duda, un peldaño abajo. Nada se borra.
 - La evaluación de aciertos y la entrega de recompensas quedan del lado del cliente por ahora, como el resto del juego. Validarlas en el servidor va con el Sprint 7 (validación de partida).
 
-## 5. Recompensas
+## 5. Recompensas: el kanji pintado con tinta
 
-- **Un KANJŪ por sección o ninguno**, y solo al completar la quinta ronda.
-- Se entrega si `rewardWord` llegó a caja 2 o más en `S.lex`. Si no, la criatura aparece como silueta en el diario y una ronda de repaso extra la desbloquea.
-- Si el jugador ya la tiene: tinta en su lugar.
-- **Huevos (E0):** palabras con kanji aprendidas antes de ver el kanji (お茶 → huevo de 茶). Eclosiona la primera vez que el jugador reconoce el kanji.
-- Palabras sin kanji (コーヒー, ありがとう): nunca dan criatura; dan tinta o un sello del diario.
+Acordado con Nicolás el 13 de noviembre de 2026 (propuesta A-02, `docs/propuestas/A-02-entrenar.html`).
+- **Un KANJŪ por sección o ninguno.** Cada entrenamiento que cuenta pinta una parte de los trazos reales (KanjiVG) del kanji escondido de la sección: con 5 entrenamientos queda completo.
+- Al completar la sección, el kanji queda **pintado y dormido**, y **cobra vida** en cuanto `rewardWord` llega a la caja 2 de `S.lex` (en la etapa 0, los «huevos», a la caja 3). Si ya estaba dominada, despierta en ese mismo momento; si no, al terminar cualquier entrenamiento posterior en que se cumpla.
+- Si el jugador ya tenía esa criatura: +30 墨 en su lugar. Si no hay lugar en el santuario, espera en la puerta.
+- Las secciones salteadas por la nivelación no pintan nada.
+- Palabras sin kanji (コーヒー, ありがとう): nunca dan criatura.
+- Estado en `S.cur.got[sección]`: `asleep` · `alive` · `ink` · `gate`.
 
 **Vías para obtener KANJŪ** (el entrenamiento es una más): huevo inicial · entrenamiento (sección completa) · exploración y viajes · Arena · laboratorio (evolución y fusión) · boleto de invocación.
 

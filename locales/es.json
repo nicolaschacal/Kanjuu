@@ -219,5 +219,12 @@
  "round.again": "Otro entrenamiento",
  "round.continue": "Seguir",
  "round.practice": "Jugar solo con el kanji {k}",
- "round.practiceTitle": "Jugar con {k}"
+ "round.practiceTitle": "Jugar con {k}",
+ "round.strokes": "El kanji escondido: {n} de {total} trazos",
+ "round.asleep": "El kanji quedó pintado pero dormido: despierta cuando domines {w}. ¡Sigue entrenando!",
+ "round.born": "¡{k} cobró vida!",
+ "round.bornSub": "Lo pintaste entrenando «{title}» y despertó porque ya sabes {w}.",
+ "round.inkInstead": "Ya tenías a {k}: su tinta se convirtió en +{ink} 墨.",
+ "round.atGate": "No había lugar en el santuario: te espera en la puerta.",
+ "round.great": "¡Genial!"
 }

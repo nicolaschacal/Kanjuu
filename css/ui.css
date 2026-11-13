@@ -884,3 +884,29 @@ ruby.wk rt{font-family:var(--f-ui);font-size:.42em;font-weight:700;opacity:.75}
 .game.round .rd-dots{margin-left:auto;margin-right:8px;font-family:var(--f-title);font-weight:800;font-size:13px;color:var(--muted)}
 .rd-intro{display:grid;justify-items:center;gap:10px;text-align:center;padding:12px 0}
 .rd-intro .rd-art{width:120px;height:120px}.rd-intro .rd-art svg{width:100%;height:100%}
+/* Premio pintado con tinta (A-04): trazos reales de KanjiVG; el kanji cobra vida al completarse */
+.rd-prize{display:grid;justify-items:center;gap:6px;margin:10px 0 4px}
+.rd-prize small{color:var(--muted);font-size:12.5px;text-align:center;max-width:30ch}
+.rd-ink-box{position:relative;display:block;width:96px;height:96px;border:var(--b);border-radius:14px;background:#FFFDF6 radial-gradient(#E9DCC0 1px,transparent 1px);background-size:12px 12px}
+.rd-ink{display:block;width:100%;height:100%}
+.rd-ink path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.rd-ink .g path{stroke:#1A122014;stroke-width:5}
+.rd-ink .d path,.rd-ink .n path{stroke:var(--line);stroke-width:6}
+.rd-ink .n path{stroke-dasharray:200;stroke-dashoffset:200;animation:rd-draw .8s ease-out forwards}
+.rd-inkk{display:grid;place-items:center;height:100%;font-family:var(--brush);font-size:56px}
+@keyframes rd-draw{to{stroke-dashoffset:0}}
+.rd-born{display:grid;justify-items:center;text-align:center;padding:6px 0}
+.rd-stage{position:relative;width:180px;height:180px;margin:8px 0}
+.rd-stage .rd-ink-box{position:absolute;inset:0;width:auto;height:auto}
+.rd-drip{position:absolute;left:50%;top:50%;width:10px;height:10px;border-radius:50%;background:var(--line);transform:translate(-50%,-50%);opacity:0}
+.rd-baby{position:absolute;inset:0;opacity:0;transform:scale(.4)}.rd-baby svg{width:100%;height:100%}
+.rd-born h3,.rd-born>p,.rd-born>.btn{opacity:0}
+.rd-born.play .rd-stage .rd-ink-box{animation:rd-sink .6s 1.3s ease-in forwards}
+.rd-born.play .rd-drip{animation:rd-dripa .8s 1.8s ease-out forwards}
+.rd-born.play .rd-baby{animation:rd-pop .7s 2.2s cubic-bezier(.3,1.6,.5,1) forwards}
+.rd-born.play h3,.rd-born.play>p,.rd-born.play>.btn{animation:rd-fade .4s 2.8s forwards}
+@keyframes rd-sink{to{transform:scale(.2) rotate(-12deg);opacity:0}}
+@keyframes rd-dripa{0%{opacity:1}100%{opacity:0;width:240px;height:240px;background:#F2B54455}}
+@keyframes rd-pop{to{opacity:1;transform:scale(1)}}
+@keyframes rd-fade{to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.rd-ink .n path{animation:none;stroke-dashoffset:0}.rd-born.play *{animation:none!important}.rd-stage .rd-ink-box{display:none}.rd-baby,.rd-born h3,.rd-born>p,.rd-born>.btn{opacity:1;transform:none}}

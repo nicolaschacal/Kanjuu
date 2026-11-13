@@ -10,6 +10,8 @@ import { wordExercise } from './wordgames.js';
 import { WORD, tr, jaTokens, jaHTML, jaPlain, wordHTML, gradeWord, meet, lexDue } from './lex.js';
 import { SECTIONS, sectionById, phraseById, nextSection } from './curriculum.js';
 import { creatureSVG } from './creature.js';
+import { STROKES } from './strokes.js';
+import { arrive } from './world.js';
 
 export const ROUNDS = 5;   // rondas para completar una sección
 export const PASS = .8;    // la ronda cuenta con el 80 % o más
@@ -64,8 +66,45 @@ export function endRound(secId, right, total) {
     c.done[secId] = Date.now(); completed = true;
     next = nextSection(secId);
     if (next && c.sec === secId) c.sec = next.id;
+    // El premio queda pintado; despierta ahora o más adelante, cuando se domine su palabra (checkPrizes)
+    if (sectionById(secId).reward && !c.skipped[secId]) c.got[secId] ??= 'asleep';
   }
-  return { counted, rounds: c.rounds[secId] || 0, completed, next };
+  return { counted, rounds: c.rounds[secId] || 0, completed, next, prizes: checkPrizes() };
+}
+
+// ---------- Premio de sección: un kanji que se pinta con tinta (docs/CURRICULO.md §5) ----------
+// Cada entrenamiento que cuenta pinta una parte de sus trazos reales (KanjiVG). Con la sección completa, el kanji
+// queda pintado y «dormido» hasta que su palabra llega a la caja WAKE (en la etapa 0, los huevos piden más).
+export const WAKE = { e0: 3, other: 2 };
+export const PRIZE_INK = 30; // si el jugador ya tenía esa criatura
+export const strokesOf = k => STROKES[k]?.length || 5;
+export const paintedOf = (secId, rounds = roundsOf(secId)) => {
+  const s = sectionById(secId); if (!s?.reward) return 0;
+  return Math.round(strokesOf(s.reward) * Math.min(rounds, ROUNDS) / ROUNDS);
+};
+export const prizeState = secId => cur().got[secId] || null; // null · 'asleep' · 'alive' · 'ink' · 'gate'
+export const wakeBox = s => s.stage === 'e0' ? WAKE.e0 : WAKE.other;
+// Despierta los premios dormidos cuya palabra ya está dominada. Devuelve [{ sec, k, as: 'alive'|'gate'|'ink' }].
+export function checkPrizes() {
+  const c = cur(), out = [];
+  for (const [id, st] of Object.entries(c.got)) {
+    if (st !== 'asleep') continue;
+    const s = sectionById(id); if (!s?.reward) continue;
+    if ((S.lex[s.rewardWord]?.box || 0) < wakeBox(s)) continue;
+    let as;
+    if (S.dex[s.reward]?.owned) { S.ink += PRIZE_INK; as = 'ink'; }
+    else as = arrive(s.reward).where === 'gate' ? 'gate' : 'alive';
+    c.got[id] = as; out.push({ sec: id, k: s.reward, as });
+  }
+  return out;
+}
+
+// Kanji pintado: `done` trazos en tinta, los `fresh` siguientes se dibujan ahora, el resto como guía tenue
+export function inkSVG(k, done, fresh = 0) {
+  const st = STROKES[k]; if (!st) return `<span class="rd-inkk">${done ? k : '？'}</span>`;
+  return `<svg class="rd-ink" viewBox="0 0 109 109" role="img" aria-label="${done >= st.length ? k : '？'}"><g class="g">${st.map(d => `<path d="${d}"/>`).join('')}</g>
+    <g class="d">${st.slice(0, done).map(d => `<path d="${d}"/>`).join('')}</g>
+    <g class="n">${st.slice(done, done + fresh).map((d, i) => `<path d="${d}" style="animation-delay:${.4 + i * .6}s"/>`).join('')}</g></svg>`;
 }
 
 // ---------- Ejercicios propios de la ronda ----------
