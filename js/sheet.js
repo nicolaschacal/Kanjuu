@@ -17,7 +17,9 @@ import { PIECES, isPiece, TYPES, typeOf, gradeTag, SRS_HOURS } from './data.js';
 import { useTagHTML, anchorsHTML, bindAnchors } from './diary.js';
 import { t } from './i18n.js';
 import { tr } from './lex.js';
-import { curSection, roundsOf, runRound, endRound, ROUNDS } from './round.js';
+import { curSection, roundsOf, runRound, endRound, ROUNDS, inkSVG, paintedOf, strokesOf, prizeState, wakeBox, PRIZE_INK } from './round.js';
+import { sectionById } from './curriculum.js';
+import { WORD } from './lex.js';
 
 // ---------- Hoja de criatura ----------
 export function openCreature(id) {
@@ -99,11 +101,15 @@ export function evoCard(c, t) {
 // Entrenar: abre directo la lección de la sección actual (docs/CURRICULO.md). Los juegos del kanji quedan
 // dentro de la lección (2 ejercicios) y como práctica libre desde el resultado (openPractice).
 export async function openTraining(c, parent) {
-  const sec = curSection();
+  const sec = curSection(), before = paintedOf(sec.id);
   parent.close();
   const res = await runRound(c, $('#layer'));
   if (!res) return go();
   const r = endRound(sec.id, res.right, res.total);
+  const painted = paintedOf(sec.id), total = sec.reward ? strokesOf(sec.reward) : 0;
+  const asleep = r.completed && prizeState(sec.id) === 'asleep';
+  const prizeHTML = sec.reward ? `<div class="rd-prize"><span class="rd-ink-box">${inkSVG(sec.reward, before, painted - before)}</span>
+    <small>${asleep ? t('round.asleep', { w: WORD[sec.rewardWord]?.kana || '' }) : t('round.strokes', { n: painted, total })}</small></div>` : '';
   // Misma economía que los juegos de entrenamiento: EXP según aciertos, tinta y rango
   const exp = (6 + res.right * 2) * (c.mood > .6 ? 1.2 : 1) * expBonus(c);
   gather(c); if (r.counted) c.insp = Date.now() + 36e5;
@@ -114,7 +120,7 @@ export async function openTraining(c, parent) {
     : r.counted ? t('round.counted', { n: r.rounds, total: ROUNDS }) : t('round.notCounted');
   const out = modal(`<div class="result"><div class="res-art">${creatureSVG(c.k, { mood: r.counted ? 1 : .5 })}</div>
     <p><b>${res.right}/${res.total}</b> · +${Math.round(exp * (1 + c.gen * .25))} EXP · +${ink} 墨${ups ? ` · <b class="g">${t('round.levelUp', { lv: c.lv })}</b>` : ''}</p>
-    <p class="${r.counted ? 'g' : 'muted'}">${msg}</p>
+    <p class="${r.counted ? 'g' : 'muted'}">${msg}</p>${prizeHTML}
     ${evolutionsOf(c.k).some(x => c.lv >= evoLevel(x) && c.lv - ups < evoLevel(x)) ? '<p class="g">✦ ¡Nueva evolución disponible!</p>' : ''}
     <div class="row"><button class="btn ghost" id="again">${t('round.again')}</button><button class="btn ok" id="done">${t('round.continue')}</button></div>
     <button class="link" id="practice">${t('round.practice', { k: c.k })}</button></div>`);
@@ -122,6 +128,23 @@ export async function openTraining(c, parent) {
   $('#practice', out).onclick = () => { out.close(); openPractice(c, { close() {} }); };
   $('#done', out).onclick = () => { out.close(); go(); openCreature(c.id); if (rk.length) rankUp(rk); };
   hud();
+  // Premios que despertaron (de esta sección o de una anterior que estaba dormida)
+  for (const p of r.prizes) await prizeBorn(p);
+}
+
+// El kanji pintado cobra vida: se hunde en una gota de tinta y nace la criatura (propuesta A-02, pantalla 7)
+function prizeBorn({ sec, k, as }) {
+  const s = sectionById(sec), n = strokesOf(k);
+  return new Promise(done => {
+    const m = modal(`<div class="rd-born"><p class="eyebrow">${tr(s.title)}</p>
+      <div class="rd-stage"><span class="rd-ink-box">${inkSVG(k, Math.max(0, n - 1), 1)}</span><span class="rd-drip"></span><span class="rd-baby">${creatureSVG(k)}</span></div>
+      <h3>${t('round.born', { k })}</h3>
+      <p class="muted">${as === 'ink' ? t('round.inkInstead', { k, ink: PRIZE_INK }) : as === 'gate' ? t('round.atGate') : t('round.bornSub', { title: tr(s.title), w: WORD[s.rewardWord]?.kana || '' })}</p>
+      <button class="btn ok wide">${t('round.great')}</button></div>`, 'rd-born-m');
+    requestAnimationFrame(() => m.querySelector('.rd-born').classList.add('play'));
+    buzz(20);
+    m.querySelector('.btn').onclick = () => { m.close(); go(); hud(); done(); };
+  });
 }
 
 // Práctica libre con los juegos del kanji de la criatura (suma EXP, no avanza la sección)
