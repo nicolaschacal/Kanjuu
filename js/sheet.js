@@ -13,7 +13,7 @@ import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCos
 import { $, buzz, esc, home, ui, go, hud, toast, modal, floatText } from './main.js';
 import { rankUp } from './sanctuary.js';
 import { STROKES } from './strokes.js';
-import { PIECES, isPiece, TYPES, typeOf, gradeTag } from './data.js';
+import { PIECES, isPiece, TYPES, typeOf, gradeTag, SRS_HOURS } from './data.js';
 import { useTagHTML, anchorsHTML, bindAnchors } from './diary.js';
 
 // ---------- Hoja de criatura ----------
@@ -26,7 +26,7 @@ export function openCreature(id) {
     <div class="cr-top" style="--el:${fill}">
       <button class="cr-art" id="pet">${creatureSVG(c.k, { mood: c.mood, gold: c.gold })}${c.acc ? `<span class="acc-hat big">${c.acc}</span>` : ''}</button>
       <div class="cr-name"><span class="big-k">${c.k}</span><div><b>${K.m}</b>${gradeTag(c.k)}${useTagHTML(c.k)}<small><b class="tbadge" style="--t:${TYPES[typeOf(c.k)].col}">${TYPES[typeOf(c.k)].k} ${TYPES[typeOf(c.k)].name}</b> fuerte contra ${TYPES[TYPES[typeOf(c.k)].beats].k} · ${ELEMENTS[element(c.k)][2]}${c.gen ? ` · Gen ${c.gen}` : ''}</small></div></div>
-      <div class="reads"><button class="say" id="say" aria-label="Escuchar">${ic('sound')}</button>${reads(c.k).map((r, i) => `<span class="${i ? 'r2' : 'r1'}" ${i ? `title="Se pide desde maestría 3"` : ''}><b>${K.kun.includes(r) ? '訓' : '音'}</b>${okuHTML(rr(r))}${i && mastery(c.k) < 3 ? ` ${ic('lock')}` : ''}</span>`).join('') || '<span>—</span>'}<span class="mast" title="Maestría">熟 ${'★'.repeat(mastery(c.k))}${'☆'.repeat(Math.max(0, 6 - mastery(c.k)))}</span></div>
+      <div class="reads"><button class="say" id="say" aria-label="Escuchar">${ic('sound')}</button>${reads(c.k).map((r, i) => `<span class="${i ? 'r2' : 'r1'}" ${i ? `title="Se pide desde maestría 3"` : ''}><b>${K.kun.includes(r) ? '訓' : '音'}</b>${okuHTML(rr(r))}${i && mastery(c.k) < 3 ? ` ${ic('lock')}` : ''}</span>`).join('') || '<span>—</span>'}<span class="mast" title="Maestría">熟 ${'★'.repeat(mastery(c.k))}${'☆'.repeat(Math.max(0, SRS_HOURS.length - 1 - mastery(c.k)))}</span></div>
     </div>
     <div class="bars">
       <div class="bar"><label>Nv ${c.lv}<small>/${MAX_LV}</small>${c.lv >= MAX_LV ? ' MAX' : ''}</label><div><i style="width:${c.exp / expNeed(c.lv) * 100}%"></i></div></div>

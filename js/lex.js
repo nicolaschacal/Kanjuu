@@ -93,14 +93,24 @@ export const canDo = sit => { const n = sitWords(sit).length; return n > 0 && si
 const KANJI_RX = /[㐀-鿿々]/;
 // La palabra va en kana hasta que el jugador tiene todos los kanji de su forma escrita
 export const showsKanji = w => !!w.kanji && [...w.kanji].filter(c => KANJI_RX.test(c) && c !== '々').every(c => S.dex[c]?.owned);
-export const wordHTML = w => showsKanji(w) ? `<ruby class="wk">${w.kanji}${helpOn() ? `<rt>${w.kana}</rt>` : ''}</ruby>` : kanaHTML(w.kana);
-// Texto japonés segmentado con espacios: cada ficha es una palabra del diario o una partícula
+// form: la ficha tal como aparece en la frase (un verbo puede venir en ました o ません); por defecto, la forma del diario
+export function wordHTML(w, form = w.kana) {
+  if (!showsKanji(w)) return kanaHTML(form);
+  // Verbos: la terminación conjugada se pega a la raíz con kanji (食べます → 食べました)
+  const kj = w.kind === 'v' && form !== w.kana ? w.kanji.slice(0, -2) + form.slice(w.kana.length - 2) : w.kanji;
+  return `<ruby class="wk">${kj}${helpOn() ? `<rt>${form}</rt>` : ''}</ruby>`;
+}
+// Formas con que una palabra puede aparecer en una frase: los verbos (en ます) también en ました · ません · ませんでした
+const VERB_ENDS = ['ます', 'ました', 'ません', 'ませんでした'];
+const formsOf = w => w.kind === 'v' ? VERB_ENDS.map(e => w.kana.slice(0, -2) + e) : [w.kana];
+// Texto japonés segmentado con espacios: cada ficha es una palabra del diario o una partícula.
+// Cada ficha se resuelve solo contra los ids de su frase (さん y に tienen dos lecturas posibles).
 export function jaTokens(ja, ids) {
   const ws = ids.map(id => WORD[id]).filter(Boolean);
-  return ja.split(/\s+/).filter(Boolean).map(tok => ({ tok, w: ws.find(w => w.kana === tok || w.kanji === tok) || null }));
+  return ja.split(/\s+/).filter(Boolean).map(tok => ({ tok, w: ws.find(w => formsOf(w).includes(tok)) || null }));
 }
 export function jaHTML(ja, ids, hot) {
-  return jaTokens(ja, ids).map(({ tok, w }) => `<span class="ptok${w && w.id === hot ? ' hot' : ''}">${w ? wordHTML(w) : kanaHTML(tok, { particle: true })}</span>`).join('');
+  return jaTokens(ja, ids).map(({ tok, w }) => `<span class="ptok${w && w.id === hot ? ' hot' : ''}">${w ? wordHTML(w, tok) : kanaHTML(tok, { particle: true })}</span>`).join('');
 }
 export const jaPlain = ja => ja.replace(/\s+/g, '');
 

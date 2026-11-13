@@ -66,7 +66,7 @@ export function wordExercise(id, body, done) {
   } else {
     const toks = jaTokens(phrase.ja, phrase.ids);
     answer = toks.map(x => x.tok);
-    tiles = shuffle(toks).map(x => ({ v: x.tok, html: x.w ? wordHTML(x.w) : kanaHTML(x.tok, { particle: true }) }));
+    tiles = shuffle(toks).map(x => ({ v: x.tok, html: x.w ? wordHTML(x.w, x.tok) : kanaHTML(x.tok, { particle: true }) }));
     prompt = `<p class="hint">${t('dojo.order')}</p><div class="qm sm">«${tr(phrase)}»</div>`;
   }
   body.innerHTML = `${prompt}<div class="asm-row" aria-live="polite"></div>

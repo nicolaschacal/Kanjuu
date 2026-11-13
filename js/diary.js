@@ -15,7 +15,7 @@ import { $, ui, go, hud, toast, modal, buzz } from './main.js';
 import { acadCtx } from './dojo.js';
 
 const TABS = [['words', 'pen', 'diary.words'], ['phrases', 'list', 'diary.phrases'], ['reads', 'book', 'diary.reads'], ['kana', 'kana', 'diary.kana'], ['cando', 'check', 'diary.cando']];
-const KIND = { noun: 'diary.kind.noun', verb: 'diary.kind.verb', adj: 'diary.kind.adj', expr: 'diary.kind.expr' };
+const KIND = { n: 'diary.kind.noun', v: 'diary.kind.verb', adj: 'diary.kind.adj', expr: 'diary.kind.expr', num: 'diary.kind.num', q: 'diary.kind.q' };
 const kindOf = w => KIND[w.kind] ? t(KIND[w.kind]) : '';
 const dots = n => '●'.repeat(Math.min(ENC_MAX, n)) + '○'.repeat(Math.max(0, ENC_MAX - n));
 const BOXES = SRS_HOURS.length - 1;
@@ -142,7 +142,7 @@ function litSet() {
 const litKana = () => [...litSet()].filter(c => /^[ぁ-ゖァ-ヺ]$/.test(c) && !'ゃゅょっャュョッ'.includes(c) && romaji(c));
 function kanaTab() {
   const lit = litSet();
-  const grid = rows => `<div class="dy-kana">${rows.map(row => `<div>${[...row].map(c => c === '　' ? '<span class="gap"></span>'
+  const grid = rows => `<div class="dy-kana">${rows.map(row => `<div>${[...row].map(c => c === '　' ? '<span class="dy-gap"></span>'
     : `<span class="${lit.has(c) ? 'on' : ''} ${romajiOff(c) ? 'ok' : ''}">${c}<i>${lit.has(c) && !romajiOff(c) && helpOn() ? romaji(c) : ''}</i></span>`).join('')}</div>`).join('')}</div>`;
   const count = rows => [...rows.join('')].filter(c => c !== '　' && lit.has(c)).length, total = GOJUON.join('').replace(/　/g, '').length;
   const kata = GOJUON.map(toKata);

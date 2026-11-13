@@ -38,7 +38,7 @@ export function viewLab(v) {
     <h4>Tus KANJŪ <small>tocá para ponerlos en el altar</small></h4>
     <div class="roster">${avail.map(c => `<button class="chip-mon ${labSel.includes(c.id) ? 'on' : ''}" data-id="${c.id}">${creatureSVG(c.k)}<small>${c.k} Lv${c.lv}</small></button>`).join('') || '<p class="muted">No hay criaturas disponibles.</p>'}</div>
     <h4>部品 Piezas <small>accesorios que también se fusionan</small></h4>
-    <div class="roster">${Object.keys(PIECES).filter(p => S.pieces[p] > 0).map(p => `<button class="chip-mon pc ${labSel.includes('p:' + p) ? 'on' : ''}" data-p="${p}"><span>${p}</span><small>${PIECES[p].m} ×${S.pieces[p]}</small></button>`).join('') || '<p class="muted">No tenés piezas. Conseguilas en la Tienda, en viajes o en la Academia.</p>'}</div>
+    <div class="roster">${Object.keys(PIECES).filter(p => S.pieces[p] > 0).map(p => `<button class="chip-mon pc ${labSel.includes('p:' + p) ? 'on' : ''}" data-p="${p}"><span>${p}</span><small>${PIECES[p].m} ×${S.pieces[p]}</small></button>`).join('') || '<p class="muted">No tenés piezas. Conseguilas en la Tienda o en viajes.</p>'}</div>
     <h4>合 Libro de composiciones</h4>
     <div class="recipes ${labAll ? 'all' : ''}">${Object.keys(KANJI).filter(t => KANJI[t].recipes).sort((a, b) => (!!S.dex[b]?.seen - !!S.dex[a]?.seen)).map(t => {
       const dx = S.dex[t], show = dx?.seen;

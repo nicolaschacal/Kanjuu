@@ -31,7 +31,7 @@ export function viewDex(v) {
     ${[...new Set(all.map(kLevel))].map(L => `<h4 class="gh">${gradeTag(all.find(k => kLevel(k) === L))}<small>${GRADES[L - 1].d} · ${all.filter(k => kLevel(k) === L && S.dex[k]?.owned).length}/${all.filter(k => kLevel(k) === L).length}</small></h4>
     <div class="dex-grid">${all.filter(k => kLevel(k) === L).map(k => {
       const d = S.dex[k];
-      return `<button class="dex-c ${d?.owned ? 'own' : d?.seen ? 'seen' : 'lock'}" data-k="${k}">${d?.owned ? creatureSVG(k) : d?.seen ? `<span class="sil">${k}</span>` : `<span class="lk">${ic('lock')}</span>`}<small>${d?.owned || d?.seen ? k : ''}</small>${d?.owned ? `<i class="mdots">${'●'.repeat(Math.min(6, mastery(k)))}</i>` : ''}</button>`;
+      return `<button class="dex-c ${d?.owned ? 'own' : d?.seen ? 'seen' : 'lock'}" data-k="${k}">${d?.owned ? creatureSVG(k) : d?.seen ? `<span class="sil">${k}</span>` : `<span class="lk">${ic('lock')}</span>`}<small>${d?.owned || d?.seen ? k : ''}</small>${d?.owned ? `<i class="mdots">${'●'.repeat(Math.min(SRS_HOURS.length - 1, mastery(k)))}</i>` : ''}</button>`;
     }).join('')}</div>`).join('')}
     ${S.log.length ? `<h4>輪 Linaje</h4><p class="muted">${S.log.map(l => `${l.k} (Gen ${l.gen})`).join(' · ')}</p>` : ''}
     <button class="link" id="wipe">Reiniciar partida</button>`;
