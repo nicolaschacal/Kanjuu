@@ -381,5 +381,20 @@
  "fx.chosenW": "You picked «{m}»: that's {w}.",
  "fx.chosenK": "You picked «{m}»: that's {k}.",
  "fx.chosenR": "You picked {m}: that's how {k} is read.",
- "fx.kanjiIs": "{k} means «{m}» and is read {r}."
+ "fx.kanjiIs": "{k} means «{m}» and is read {r}.",
+ "start.tag": "The living world of kanji",
+ "start.loading": "Preparing the sanctuary…",
+ "start.opening": "Opening your sanctuary…",
+ "start.create": "Create account",
+ "start.have": "I already have an account",
+ "start.enter": "Sign in",
+ "start.cloud": "Your account keeps your sanctuary and progress in the cloud.",
+ "start.email": "Email",
+ "start.pass": "Password",
+ "start.passNew": "Password (8 or more)",
+ "start.back": "Back",
+ "start.forgot": "Forgot your password?",
+ "start.offline": "You're offline. Connect to the internet to create your account or sign in.",
+ "start.welcomeNew": "Account created! Welcome to the sanctuary",
+ "start.welcomeBack": "Good to see you again!"
 }

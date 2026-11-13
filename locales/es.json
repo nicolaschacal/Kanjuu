@@ -381,5 +381,20 @@
  "fx.chosenW": "Elegiste «{m}»: esa es {w}.",
  "fx.chosenK": "Elegiste «{m}»: ese es {k}.",
  "fx.chosenR": "Elegiste {m}: esa es la lectura de {k}.",
- "fx.kanjiIs": "{k} significa «{m}» y se lee {r}."
+ "fx.kanjiIs": "{k} significa «{m}» y se lee {r}.",
+ "start.tag": "El mundo vivo de los kanji",
+ "start.loading": "Preparando el santuario…",
+ "start.opening": "Abriendo tu santuario…",
+ "start.create": "Crear cuenta",
+ "start.have": "Ya tengo cuenta",
+ "start.enter": "Entrar",
+ "start.cloud": "Tu cuenta guarda tu santuario y tu progreso en la nube.",
+ "start.email": "Email",
+ "start.pass": "Contraseña",
+ "start.passNew": "Contraseña (mínimo 8)",
+ "start.back": "Volver",
+ "start.forgot": "¿Olvidaste tu contraseña?",
+ "start.offline": "Sin conexión. Conéctate a internet para crear tu cuenta o entrar.",
+ "start.welcomeNew": "¡Cuenta creada! Bienvenido al santuario",
+ "start.welcomeBack": "¡Qué bueno verte de nuevo!"
 }
