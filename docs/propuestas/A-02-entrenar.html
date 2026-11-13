@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Propuesta A-02 · Entrenar con tu KANJŪ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Yuji+Syuku&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/style.css">
+<link rel="stylesheet" href="../../css/ui.css">
+<link rel="stylesheet" href="../../css/art.css">
+<style>
+/* Propuesta A-02: entrenar en el santuario con tu KANJŪ. Solo maqueta: no toca el juego. Prefijo en-. */
+html, body { height: auto; background: #0E0C1C }
+body { padding: 0 0 40px; user-select: auto; -webkit-user-select: auto }
+.pp { max-width: 480px; margin: 0 auto; padding: 14px 12px 0; color: var(--paper) }
+.pp h1 { font-size: 19px; margin: 0 0 2px; color: var(--paper) }
+.pp p { font-size: 13px; color: var(--muted-d); line-height: 1.45 }
+.pp-nav { display: flex; gap: 6px; overflow-x: auto; padding: 12px 0; scrollbar-width: none }
+.pp-nav button { flex: none; border: 2px solid #F6EBD040; color: var(--paper); border-radius: 99px; padding: 6px 12px; font-size: 12.5px; font-weight: 700 }
+.pp-nav button.on { background: var(--paper); color: var(--line); border-color: var(--paper) }
+.phone { position: relative; max-width: 480px; margin: 0 auto; min-height: 800px; background: var(--bg); overflow: hidden; border-radius: 22px }
+.notes { max-width: 480px; margin: 14px auto 0; padding: 14px 16px; background: #1E1A38; border-radius: 16px; color: var(--paper) }
+.notes h2 { font-size: 14px; margin: 0 0 6px; color: var(--gold) }
+.notes li { font-size: 13px; line-height: 1.45; color: #E9DCC0; margin: 0 0 5px 16px }
+.kr { ruby-position: under } .kr rt { font-size: .42em; font-weight: 700; opacity: .65; font-family: var(--f-ui) }
+.jp { font-family: var(--f-jp); font-weight: 700 }
+.btn .ic { display: inline-block; vertical-align: -5px; margin-right: 6px }
+.art svg, .a svg { width: 100%; height: 100% }
+
+/* kanji pintado con tinta (trazos reales de KanjiVG) */
+.ink { display: block }
+.ink path { fill: none; stroke-linecap: round; stroke-linejoin: round }
+.ink .ghost path { stroke: #1A122014; stroke-width: 5 }
+.ink .done path { stroke: #1A1220; stroke-width: 6 }
+.ink .new path { stroke: #1A1220; stroke-width: 6; stroke-dasharray: 200; stroke-dashoffset: 200; animation: en-draw .9s ease-out forwards }
+@keyframes en-draw { to { stroke-dashoffset: 0 } }
+.ink-box { position: relative; border: var(--b); border-radius: 14px; background: #FFFDF6 radial-gradient(#E9DCC0 1px, transparent 1px); background-size: 12px 12px; box-shadow: var(--sh) }
+.ink-box::before, .ink-box::after { content: ''; position: absolute; inset: 50% 8px auto; border-top: 1.5px dashed #1A122018 }
+.ink-box::after { inset: 8px auto 8px 50%; border-top: 0; border-left: 1.5px dashed #1A122018 }
+
+/* 1 · ficha */
+.en-sheet { min-height: 800px; display: flex; flex-direction: column; justify-content: flex-end; background: linear-gradient(#FFB38A, #CFE6B0 60%) }
+.en-sheet .sheet { position: relative; background: var(--paper); border: var(--b); border-bottom: 0; border-radius: 24px 24px 0 0; padding: 0 16px 22px; color: var(--line) }
+.en-sheet .cr-top { margin: 0 -16px; padding: 22px 16px 18px; border-radius: 22px 22px 0 0; color: var(--paper); text-align: center; background: radial-gradient(90% 70% at 50% 30%, color-mix(in srgb, #F2B544 30%, #2A2148) 0%, #16132A 72%) }
+.en-sheet .cr-top .art { width: 120px; height: 120px; margin: 0 auto }
+.en-sheet .cr-top b { font-family: var(--f-title); font-size: 20px }
+.en-sheet .cr-top small { display: block; color: var(--muted-d) }
+.en-acts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px }
+.en-acts button { border: var(--b); border-radius: 14px; background: var(--paper3); box-shadow: var(--sh); padding: 10px 0 8px; font-weight: 800; font-size: 13px; display: grid; justify-items: center; gap: 2px }
+.en-acts button i { font-style: normal; font-family: var(--f-jp); font-weight: 900; font-size: 20px }
+.en-acts button.main { background: var(--red); color: #FFF6E3 }
+.en-book { display: flex; gap: 12px; align-items: center; margin-top: 12px; padding: 10px 12px; border: var(--b); border-radius: 16px; background: var(--paper3); box-shadow: var(--sh); text-align: left; width: 100% }
+.en-book .ink-box { width: 64px; height: 64px; flex: none; box-shadow: none; border-width: 2px }
+.en-book b { display: block; font-family: var(--f-title); font-size: 15px }
+.en-book small { color: var(--muted); font-size: 12.5px }
+
+/* lección */
+.en-run { position: relative; min-height: 800px; display: flex; flex-direction: column; color: var(--line); background: var(--paper) }
+.en-scene { position: relative; height: 300px; overflow: hidden; border-bottom: var(--b) }
+.en-scene > svg { position: absolute; inset: 0; width: 100%; height: 100% }
+.en-x { position: absolute; left: 10px; top: 12px; z-index: 3; width: 36px; height: 36px; border-radius: 12px; background: #FFF6E3D0; border: 2px solid var(--line); display: grid; place-items: center }
+.en-drops { position: absolute; left: 56px; right: 12px; top: 22px; z-index: 3; display: grid; grid-template-columns: repeat(11, 1fr); gap: 4px }
+.en-drops i { height: 8px; border-radius: 4px; background: #1A122022 }
+.en-drops i.on { background: var(--line) } .en-drops i.k { background: #C98A0B }
+.en-me { position: absolute; left: 16px; bottom: 16px; width: 110px; height: 110px }
+.en-npc { position: absolute; right: 16px; bottom: 22px; width: 110px; height: 110px }
+.en-bubble { position: absolute; z-index: 2; background: var(--paper3); border: var(--b); border-radius: 18px; padding: 10px 12px; box-shadow: var(--sh) }
+.en-bubble .jp { font-size: 19px; line-height: 1.5 }
+.en-bubble small { display: block; color: var(--muted); font-size: 12px }
+.en-bubble .who { font-size: 11px; font-weight: 800; color: var(--red); letter-spacing: .06em }
+.en-bubble.r { right: 22px; left: 110px; top: 54px; border-bottom-right-radius: 4px }
+.en-bubble.l { left: 22px; right: 70px; top: 54px; border-bottom-left-radius: 4px }
+.en-low { padding: 14px 16px 18px; flex: 1; display: flex; flex-direction: column }
+.en-low > p { font-size: 13px; color: var(--muted); margin: 0 0 10px }
+.en-replies { display: grid; gap: 10px }
+.en-reply { text-align: left; display: flex; gap: 10px; align-items: center; background: var(--paper3); border: var(--b); box-shadow: var(--sh); border-radius: 18px; padding: 12px 14px; font-size: 20px }
+.en-reply .ic { width: 18px; height: 18px; opacity: .5 }
+.en-reply.ok { background: #DDF2D6; border-color: #2F7A25 }
+.en-reply.no { animation: en-no .35s }
+@keyframes en-no { 30% { transform: translateX(-6px) } 60% { transform: translateX(6px) } }
+.en-react { margin-top: 12px; font-size: 14px; min-height: 22px }
+.en-react b { color: #2F7A25 }
+.en-goal { display: flex; gap: 12px; align-items: center; padding: 12px; border: var(--b); border-radius: 16px; background: var(--paper3); box-shadow: var(--sh); margin-bottom: 12px }
+.en-goal .ink-box { width: 72px; height: 72px; flex: none; box-shadow: none; border-width: 2px }
+.en-goal b { font-family: var(--f-title); display: block }
+.en-goal small { color: var(--muted); font-size: 12.5px }
+
+/* postal */
+.en-card { position: absolute; left: 18px; right: 18px; top: 54px; bottom: 22px; z-index: 2; background: #FFFDF6; border: var(--b); border-radius: 10px; box-shadow: var(--sh); padding: 12px; transform: rotate(-1.5deg) }
+.en-card .stamp { position: absolute; right: 10px; top: 10px; width: 50px; height: 60px; border: 2px dashed #B8321F; display: grid; place-items: center }
+.en-card .stamp .a { width: 44px; height: 44px }
+.en-card .to { font-size: 12px; color: var(--muted) }
+.en-card .line { margin-top: 22px; min-height: 52px; border-bottom: 2px solid #1A122030; display: flex; flex-wrap: wrap; gap: 6px; align-items: flex-end; padding-bottom: 6px }
+.en-tile { background: var(--paper3); border: var(--b); box-shadow: var(--sh); border-radius: 10px; padding: 6px 10px; font-size: 19px }
+.en-tile.part { background: #EFE3FF }
+.en-tile.used { visibility: hidden }
+.en-bank { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center }
+
+/* poder */
+.en-power { position: absolute; inset: 0; display: grid; place-items: center }
+.en-glow { position: absolute; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(#FFE9A8, transparent 65%); opacity: .25; transition: opacity .6s, transform .6s }
+.en-glow.on { opacity: 1; transform: scale(1.4) }
+.en-power .big { position: relative; width: 140px; height: 140px }
+.en-sign { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); background: #FFFDF6; border: var(--b); border-radius: 10px; padding: 4px 14px; font-size: 30px; box-shadow: var(--sh) }
+.en-low .ic { display: inline-block; vertical-align: -4px; width: 18px; height: 18px }
+
+/* fin */
+.en-end { padding: 22px 16px; color: var(--paper); text-align: center; min-height: 800px; background: radial-gradient(80% 50% at 50% 30%, #3A2E66 0%, #16132A 70%) }
+.en-end h2 { font-size: 24px; margin: 6px 0 2px }
+.en-end > p { color: var(--muted-d); font-size: 13.5px }
+.en-end .ink-box { width: 170px; height: 170px; margin: 14px auto 6px }
+.en-end .count { font-size: 13px; color: var(--paper) }
+.en-learn { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0 }
+.en-learn div { background: #FFFDF6; color: var(--line); border: var(--b); border-radius: 10px; padding: 10px 4px 8px; box-shadow: var(--sh-d) }
+.en-learn b { font-family: var(--f-jp); font-size: 22px; display: block }
+.en-learn small { font-size: 11px; color: var(--muted) }
+.en-mini { display: flex; justify-content: center; gap: 14px; font-size: 13px; color: var(--muted-d); margin-top: 12px } .en-mini b { color: var(--paper) }
+
+/* cobra vida */
+.en-born { position: relative; min-height: 800px; display: grid; align-content: center; justify-items: center; text-align: center; padding: 20px 18px; color: var(--paper); background: radial-gradient(70% 50% at 50% 42%, #3A2E66 0%, #16132A 70%) }
+.en-born .stage { position: relative; width: 220px; height: 220px }
+.en-born .stage .ink-box { position: absolute; inset: 0 }
+.en-born .baby { position: absolute; inset: 0; opacity: 0; transform: scale(.4) }
+.en-born .drip { position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; border-radius: 50%; background: #1A1220; transform: translate(-50%, -50%); opacity: 0 }
+.en-born h2, .en-born .after { opacity: 0 }
+.play .stage .ink-box { animation: en-sink .7s 1.6s ease-in forwards }
+.play .drip { animation: en-drip .8s 2.1s ease-out forwards }
+.play .baby { animation: en-pop .7s 2.6s cubic-bezier(.3, 1.6, .5, 1) forwards }
+.play h2, .play .after { animation: en-fade .5s 3.3s forwards }
+@keyframes en-sink { to { transform: scale(.2) rotate(-12deg); opacity: 0 } }
+@keyframes en-drip { 0% { opacity: 1; width: 10px; height: 10px } 100% { opacity: 0; width: 260px; height: 260px; background: #F2B54455 } }
+@keyframes en-pop { to { opacity: 1; transform: scale(1) } }
+@keyframes en-fade { to { opacity: 1 } }
+.en-born .card { margin-top: 12px; background: var(--paper); color: var(--line); border: var(--b); border-radius: 16px; padding: 12px 14px; text-align: left; box-shadow: var(--sh-d); width: 100% }
+.en-born .acts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: 12px }
+
+/* cuaderno */
+.en-bookv { min-height: 800px; padding: 18px 14px 24px; background: var(--paper); color: var(--line) }
+.en-bookv h2 { font-size: 24px; margin: 0 }
+.en-bookv > p { font-size: 13px; color: var(--muted); margin: 2px 0 12px }
+.en-pages { display: grid; grid-template-columns: 1fr 1fr; gap: 10px }
+.en-page { border: var(--b); border-radius: 14px; background: #FFFDF6; box-shadow: var(--sh); padding: 10px; text-align: left }
+.en-page .ink-box { width: 100%; aspect-ratio: 1; box-shadow: none; border-width: 2px; display: grid; place-items: center }
+.en-page .ink-box .a { width: 80%; height: 80% }
+.en-page b { display: block; font-family: var(--f-title); font-size: 13.5px; margin-top: 6px }
+.en-page small { font-size: 11.5px; color: var(--muted) }
+.en-page.cur { border-width: 3px; border-color: var(--red) }
+.en-page.next { opacity: .5 }
+.en-page.next .ink-box { font-family: var(--f-title); font-size: 26px; color: #8A6E4B }
+.en-page .seal { float: right; font-family: var(--brush); color: #A47410; font-size: 18px }
+@media (prefers-reduced-motion: reduce) {
+  .ink .new path { animation: none; stroke-dashoffset: 0 }
+  .play .stage .ink-box, .play .drip, .play .baby, .play h2, .play .after { animation: none !important }
+  .en-born .stage .ink-box { display: none } .en-born .baby { opacity: 1; transform: none } .en-born h2, .en-born .after { opacity: 1 }
+}
+</style>
+</head>
+<body>
+<div class="pp">
+  <h1>Propuesta A-02 · Entrenar con tu KANJŪ</h1>
+  <p>Lo acordado el 13 de noviembre: <b>tocas el KANJŪ → Entrenar → entras a la lección</b>, sin salir del santuario (las expediciones son otra cosa y no cambian). Tu KANJŪ te habla y entrena contigo; los ejercicios son pequeñas situaciones; el premio de la sección se va <b>pintando con tinta</b> trazo a trazo (trazos reales de KanjiVG) y al quinto entrenamiento cobra vida.</p>
+  <nav class="pp-nav" id="nav"></nav>
+</div>
+<div class="phone" id="phone"></div>
+<div class="notes" id="notes"></div>
+
+<script type="module">
+import { creatureSVG } from '../../js/creature.js';
+import { ic } from '../../js/icons.js';
+import { STROKES } from '../../js/strokes.js';
+
+const KNOWN = new Set('あいうえおかきくけこ'.split(''));
+const ROM = { あ:'a',い:'i',う:'u',え:'e',お:'o',か:'ka',き:'ki',く:'ku',け:'ke',こ:'ko',さ:'sa',し:'shi',す:'su',せ:'se',そ:'so',た:'ta',ち:'chi',つ:'tsu',て:'te',と:'to',な:'na',に:'ni',ぬ:'nu',ね:'ne',の:'no',は:'ha',ひ:'hi',ふ:'fu',へ:'he',ほ:'ho',ま:'ma',み:'mi',む:'mu',め:'me',も:'mo',が:'ga',で:'de',れ:'re',だ:'da',ろ:'ro',よ:'yo' };
+const PART = { は: 'wa', へ: 'e' };
+const kana = (s, part) => [...s].map(c => KNOWN.has(c) || !ROM[c] ? c : `<ruby class="kr">${c}<rt>${part && s.length === 1 && PART[c] || ROM[c]}</rt></ruby>`).join('');
+const kanaText = s => s.split(' ').map(w => kana(w, true)).join(' ');
+const art = (k, o) => creatureSVG(k, o);
+const $ = s => document.querySelector(s);
+
+// El premio pintado: los primeros `done` trazos en tinta, los siguientes `fresh` se dibujan ahora, el resto como guía tenue
+const PRIZE = '弟', N = STROKES[PRIZE].length; // 7 trazos
+const painted = round => Math.round(N * round / 5);
+function inkSVG(k, done, fresh = 0) {
+  const s = STROKES[k];
+  return `<svg class="ink" viewBox="0 0 109 109" aria-label="${k}"><g class="ghost">${s.map(d => `<path d="${d}"/>`).join('')}</g>
+    <g class="done">${s.slice(0, done).map(d => `<path d="${d}"/>`).join('')}</g>
+    <g class="new">${s.slice(done, done + fresh).map((d, i) => `<path d="${d}" style="animation-delay:${.6 + i * .7}s"/>`).join('')}</g></svg>`;
+}
+
+// Fondo: el santuario de entrenamiento (pared de papel, tatami, sol). Variante de noche para el poder de 日.
+function room(night = false, h = 300) {
+  return `<svg viewBox="0 0 390 ${h}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <rect width="390" height="${h}" fill="${night ? '#2A2148' : '#F7E6C4'}"/>
+    <g stroke="${night ? '#3A2E66' : '#E3CFA4'}" stroke-width="3">${[0, 1, 2, 3, 4].map(i => `<line x1="${i * 98}" y1="0" x2="${i * 98}" y2="${h * .68}"/>`).join('')}<line x1="0" y1="${h * .34}" x2="390" y2="${h * .34}"/></g>
+    <circle cx="${night ? 300 : 300}" cy="${h * .2}" r="24" fill="${night ? '#E9DCC0' : '#F2B544'}" opacity="${night ? .5 : .55}"/>
+    <rect y="${h * .68}" width="390" height="${h * .32}" fill="${night ? '#3A3352' : '#D8C48E'}"/>
+    <g stroke="${night ? '#2A2148' : '#BFA86E'}" stroke-width="2.5">${[0, 1, 2, 3].map(i => `<line x1="${i * 130}" y1="${h * .68}" x2="${i * 130 + 40}" y2="${h}"/>`).join('')}</g>
+    <rect y="${h * .68 - 4}" width="390" height="6" fill="${night ? '#1A1220' : '#7A4B32'}"/>
+  </svg>`;
+}
+const drops = (pos, kAt = [3, 7]) => `<button class="en-x" aria-label="Salir">${ic('x')}</button><div class="en-drops">${Array.from({ length: 11 }, (_, i) => `<i class="${i < pos ? (kAt.includes(i) ? 'k' : 'on') : ''}"></i>`).join('')}</div>`;
+
+const SCREENS = [
+  ['sheet', '1 · Ficha', sheet, [
+    'En la ficha de cada KANJŪ, «Entrenar» es el botón principal. Debajo, una tarjeta chica dice en qué sección está el jugador y muestra el premio a medio pintar.',
+    'Tocar Entrenar entra directo a la lección. No hay un menú de juegos de por medio.',
+    'Las expediciones siguen siendo «Viaje», aparte: el KANJŪ sale del santuario y vuelve con cosas.']],
+  ['intro', '2 · Empieza', intro, [
+    'Tu KANJŪ abre la lección con una frase propia y muestra qué hay en juego: el kanji escondido, pintado hasta donde llegaste.',
+    'Las gotas de tinta de arriba son los 11 pasos de la lección; las doradas son los ejercicios del kanji de tu KANJŪ.']],
+  ['talk', '3 · Una situación', talk, [
+    'Los ejercicios de elegir son situaciones: alguien de la familia de tu KANJŪ te pregunta algo en japonés y eliges qué contestar.',
+    'La traducción va debajo, en pequeño. El romaji desaparece kana por kana a medida que el jugador los domina.',
+    'Si te equivocas, nadie te marca en rojo: te lo vuelven a preguntar más tarde.']],
+  ['card', '4 · Postal', card, [
+    'Armar frases = escribir una postal a la familia de tu KANJŪ. Las partículas tienen otro color; sobran fichas.',
+    'La postal queda en el diario.']],
+  ['power', '5 · Su poder', power, [
+    'Los 2 ejercicios del kanji de tu criatura son su poder: si lees bien 日曜日, 日 hace salir el sol en el salón.',
+    'Son los juegos que ya existen (lecturas, palabra, trazo, escuchar), presentados como algo que hace tu KANJŪ.']],
+  ['end', '6 · Fin', end, [
+    'Al terminar, el kanji escondido gana trazos nuevos, que se dibujan en vivo. Con 5 entrenamientos queda completo.',
+    'Debajo, las palabras de hoy; los números (EXP, tinta) en una línea chica.']],
+  ['born', '7 · Cobra vida', born, [
+    'Con el último trazo, el kanji se hunde en una gota de tinta y de ahí nace la criatura (弟). Unos 4 segundos, se puede saltar.',
+    'Si la palabra (おとうと) todavía no está dominada, el kanji queda pintado pero dormido, y un entrenamiento más lo despierta.',
+    'Con «reducir movimiento» se muestra el resultado sin animación.']],
+  ['book', '8 · Cuaderno', book, [
+    'El camino de la etapa es un cuaderno: una página por sección con su kanji pintado. Las terminadas muestran la criatura que nació; la actual, el kanji a medio pintar; las que vienen, en blanco.',
+    'Se abre desde la tarjeta chica de la ficha. Las doradas llevan un sello 金.']],
+];
+
+function nav(cur) {
+  $('#nav').innerHTML = SCREENS.map(([id, l]) => `<button data-s="${id}" class="${id === cur ? 'on' : ''}">${l}</button>`).join('');
+  $('#nav').querySelectorAll('button').forEach(b => b.onclick = () => show(b.dataset.s));
+}
+function show(id) {
+  const [, label, fn, notes] = SCREENS.find(s => s[0] === id);
+  nav(id); fn($('#phone'));
+  $('#notes').innerHTML = `<h2>Notas · ${label}</h2><ul>${notes.map(n => `<li>${n}</li>`).join('')}</ul>`;
+}
+
+// ---------- 1 · ficha ----------
+function sheet(v) {
+  v.innerHTML = `<div class="en-sheet"><div class="sheet"><div class="cr-top"><div class="art">${art('日')}</div><b>日 · sol · día</b><small>Nv 7 · produce 4,2 墨/h</small></div>
+    <div class="en-acts"><button class="main" id="go"><i>練</i>Entrenar</button><button><i>旅</i>Viaje</button><button><i>化</i>Evolución</button></div>
+    <button class="en-book" id="bk"><span class="ink-box">${inkSVG(PRIZE, painted(3))}</span><span><b>Mi familia · 3 de 5</b><small>Hay un kanji escondido a medio pintar. Etapa 1 · ver cuaderno</small></span></button>
+    <p class="muted" style="margin-top:12px">… resto de la ficha (lecturas, historia, evoluciones) igual que hoy.</p></div></div>`;
+  $('#go').onclick = () => show('intro'); $('#bk').onclick = () => show('book');
+}
+
+// ---------- 2 · empieza ----------
+function intro(v) {
+  v.innerHTML = `<div class="en-run"><div class="en-scene">${room()}${drops(0)}
+      <div class="en-bubble l"><span class="who">日</span><div style="font-size:15px;font-weight:700">Tengo hermanos KANJŪ por todo el mundo. ¿Y tu familia? ¡Hoy aprendemos a presentarla!</div></div>
+      <div class="en-me art" style="left:50%;transform:translateX(-50%)">${art('日')}</div></div>
+    <div class="en-low"><div class="en-goal"><span class="ink-box">${inkSVG(PRIZE, painted(3))}</span><div><b>Mi familia · entrenamiento 4 de 5</b><small>Cada entrenamiento pinta más trazos de un kanji escondido. ¿Qué será?</small></div></div>
+      <button class="btn ok wide" id="go" style="margin-top:auto">¡Vamos!</button></div></div>`;
+  $('#go').onclick = () => show('talk');
+}
+
+// ---------- 3 · situación ----------
+function talk(v) {
+  const R = [['おとうと です', 1], ['あに です', 0], ['いもうと です', 0]];
+  v.innerHTML = `<div class="en-run"><div class="en-scene">${room()}${drops(4)}
+      <div class="en-bubble r"><span class="who">姉 · LA HERMANA DE 日</span><div class="jp">${kanaText('あの こ は だれ です か')}</div><small>¿Quién es ese pequeñito?</small></div>
+      <div class="en-me art">${art('日')}</div><div class="en-npc art">${art('姉')}</div></div>
+    <div class="en-low"><p>Ayuda a 日 a contestarle. Pista: es su hermano menor.</p>
+      <div class="en-replies">${R.map(([w, ok]) => `<button class="en-reply jp" data-ok="${ok}">${ic('right')}${kanaText(w)}</button>`).join('')}</div>
+      <div class="en-react" id="react"></div></div></div>`;
+  v.querySelectorAll('.en-reply').forEach(b => b.onclick = () => {
+    if (b.dataset.ok === '1') {
+      b.classList.add('ok');
+      $('#react').innerHTML = `<b>姉:</b> <span class="jp">${kanaText('そう です か')}</span> <small>(¡Ah, ya veo!)</small> · <span class="jp">おとうと · 弟</span> = hermano menor`;
+      setTimeout(() => show('card'), 1600);
+    } else { b.classList.remove('no'); void b.offsetWidth; b.classList.add('no'); $('#react').innerHTML = '<b style="color:var(--muted)">姉:</b> ¿Eh? … <small>(te lo vuelve a preguntar más tarde)</small>'; }
+  });
+}
+
+// ---------- 4 · postal ----------
+function card(v) {
+  const RIGHT = 'あに も おとうと も がくせい です';
+  const bank = [['おとうと'], ['は', 1], ['がくせい'], ['も', 1], ['あに'], ['です', 1], ['が', 1], ['も', 1]];
+  v.innerHTML = `<div class="en-run"><div class="en-scene">${room()}${drops(5)}
+      <div class="en-card"><div class="stamp"><span class="a">${art('日')}</span></div><span class="to">Para: la familia de 日</span>
+        <p style="font-size:13px;margin-top:6px;max-width:72%">«Mi hermano mayor y mi hermano menor son estudiantes.»</p>
+        <div class="line" id="line"></div></div></div>
+    <div class="en-low"><p>Escribe la postal con las fichas.</p><div class="en-bank">${bank.map(([w, p], i) => `<button class="en-tile jp ${p ? 'part' : ''}" data-i="${i}">${kana(w, true)}</button>`).join('')}</div>
+      <div class="en-react" id="react"></div><button class="btn ok wide" id="send" disabled style="margin-top:auto">${ic('pen')} Enviar postal</button></div></div>`;
+  const picked = [];
+  const render = () => {
+    $('#line').innerHTML = picked.map((i, j) => `<button class="en-tile jp ${bank[i][1] ? 'part' : ''}" data-j="${j}">${kana(bank[i][0], true)}</button>`).join('');
+    $('#line').querySelectorAll('[data-j]').forEach(b => b.onclick = () => { picked.splice(+b.dataset.j, 1); render(); });
+    v.querySelectorAll('.en-bank .en-tile').forEach(b => b.classList.toggle('used', picked.includes(+b.dataset.i)));
+    $('#send').disabled = picked.length < 3;
+  };
+  v.querySelectorAll('.en-bank .en-tile').forEach(b => b.onclick = () => { if (!picked.includes(+b.dataset.i)) { picked.push(+b.dataset.i); render(); } });
+  $('#send').onclick = () => {
+    const ok = picked.map(i => bank[i][0]).join(' ') === RIGHT;
+    $('#react').innerHTML = ok ? '<b>¡Postal enviada!</b> Queda guardada en el diario.' : '<span style="color:var(--muted)">日 la lee y se rasca la cabeza… Pista: «A も B も» = «tanto A como B».</span>';
+    if (ok) setTimeout(() => show('power'), 1400);
+  };
+  render();
+}
+
+// ---------- 5 · poder ----------
+function power(v) {
+  v.innerHTML = `<div class="en-run"><div class="en-scene" id="sc">${room(true)}${drops(7)}
+      <div class="en-power"><div class="en-glow" id="glow"></div><div class="big art">${art('日')}</div></div>
+      <div class="en-sign jp"><u>日</u>曜日</div></div>
+    <div class="en-low"><p><b style="color:#A47410">${ic('star')} El poder de 日.</b> Se apagaron las luces del salón. Lee el cartel para que 日 brille: ¿cómo se lee 日 en 日曜日?</p>
+      <div class="en-replies" style="grid-template-columns:1fr 1fr">${['にち', 'ひ', 'つき', 'か'].map(w => `<button class="en-reply jp" style="justify-content:center" data-v="${w}">${kana(w)}</button>`).join('')}</div>
+      <div class="en-react" id="react"></div></div></div>`;
+  v.querySelectorAll('.en-reply').forEach(b => b.onclick = () => {
+    if (b.dataset.v === 'にち') {
+      b.classList.add('ok'); $('#glow').classList.add('on');
+      $('#sc').querySelector('svg').outerHTML = room(false);
+      $('#react').innerHTML = '<b>¡Se hizo la luz!</b> En 日曜日, 日 se lee <span class="jp">にち</span>; solo, como «sol», <span class="jp">ひ</span>.';
+      setTimeout(() => show('end'), 1800);
+    } else { b.classList.remove('no'); void b.offsetWidth; b.classList.add('no'); $('#react').innerHTML = '<span style="color:var(--muted)">日 parpadea, pero no pasa nada… Suena como el comienzo de にちようび.</span>'; }
+  });
+}
+
+// ---------- 6 · fin ----------
+function end(v) {
+  const W = [['弟', 'おとうと'], ['妹', 'いもうと'], ['兄', 'あに'], ['姉', 'あね'], ['家族', 'かぞく'], ['はがき', 'postal']];
+  v.innerHTML = `<div class="en-end"><p class="eyebrow" style="color:var(--gold)">Mi familia · entrenamiento 4 de 5</p><h2>¡Bien entrenado!</h2><p>El kanji escondido ganó trazos nuevos.</p>
+    <div class="ink-box">${inkSVG(PRIZE, painted(3), painted(4) - painted(3))}</div>
+    <p class="count">${painted(4)} de ${N} trazos · falta un entrenamiento</p>
+    <div class="en-learn">${W.map(([k, s]) => `<div><b>${k}</b><small>${s}</small></div>`).join('')}</div>
+    <button class="btn ok wide" id="go">Último entrenamiento</button>
+    <p class="en-mini"><span><b>+24</b> EXP de 日</span><span><b>+12</b> 墨</span><span><b>10/11</b> bien</span></p></div>`;
+  $('#go').onclick = () => show('born');
+}
+
+// ---------- 7 · cobra vida ----------
+function born(v) {
+  v.innerHTML = `<div class="en-born" id="st"><p class="eyebrow" style="color:var(--gold)">Mi familia · completa</p>
+    <div class="stage"><span class="ink-box">${inkSVG(PRIZE, painted(4), N - painted(4))}</span><span class="drip"></span><span class="baby art">${art(PRIZE)}</span></div>
+    <h2>¡弟 cobró vida!</h2>
+    <div class="after" style="width:100%"><div class="card"><b>弟 · hermano menor</b><br><small class="jp">おとうと · テイ · ダイ</small>
+      <p style="font-size:13px;margin-top:6px">Lo pintaste entrenando <b>Mi familia</b> con 日, y despertó porque ya sabes <span class="jp">おとうと</span>.</p></div>
+      <div class="acts"><button class="btn ghost">Ver en el diario</button><button class="btn ok">Llevarlo al santuario</button></div>
+      <button class="btn ghost" id="again" style="margin-top:12px;opacity:.8">${ic('refresh')} Repetir</button></div></div>`;
+  requestAnimationFrame(() => $('#st').classList.add('play'));
+  $('#again').onclick = () => born(v);
+}
+
+// ---------- 8 · cuaderno ----------
+function book(v) {
+  const P = [['1.5', 'Comer y beber', '食', 'done'], ['1.6', 'Los días', null, 'gold'], ['1.7', 'Ir y volver', '車', 'done'], ['1.8', 'Lo que me gusta', '好', 'done'], ['1.9', 'Mi familia', null, 'cur'], ['1.10', '¿Dónde está?', null, 'next']];
+  v.innerHTML = `<div class="en-bookv"><p class="eyebrow">Etapa 1 · Primeros pasos</p><h2>Cuaderno de entrenamiento</h2><p>Una página por sección. Lo que pintas, cobra vida.</p>
+    <div class="en-pages">${P.map(([id, t, k, st]) => `<div class="en-page ${st}">${st === 'gold' ? '<span class="seal">金</span>' : ''}
+      <div class="ink-box">${st === 'cur' ? inkSVG(PRIZE, painted(3)) : st === 'next' ? '？' : k ? `<span class="a">${art(k)}</span>` : `<span class="jp" style="font-size:34px">月火水</span>`}</div>
+      <b>${id} · ${t}</b><small>${st === 'cur' ? '3 de 5 · a medio pintar' : st === 'next' ? 'Página en blanco' : st === 'gold' ? 'Sin criatura · página dorada' : 'Completa'}</small></div>`).join('')}</div></div>`;
+}
+
+show(new URLSearchParams(location.search).get('p') || 'sheet');
+</script>
+</body>
+</html>
