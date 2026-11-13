@@ -12,6 +12,9 @@ import { openDojo, allDue, acadCtx } from './dojo.js';
 import { openAcademy, DAILY_GOAL } from './academy.js';
 import { openQuests } from './atlas.js';
 import * as cloud from './cloud.js';
+import { t } from './i18n.js';
+import { openDiary } from './diary.js';
+import { foundIds } from './lex.js';
 
 const noop = { close() {} };
 export function viewTrainer(v) {
@@ -79,13 +82,13 @@ function meTab(v) {
     </div>
     <div class="menu-list">
       <button class="row-k" id="uRev"><span class="row-ic ${due ? 'hot' : ''}">${ic('refresh')}</span><span class="row-t"><b>Repaso del día</b><small>${due ? `${due} para repasar hoy` : 'Todo al día · volvé mañana'}</small></span>${due ? `<b class="row-n">${due}</b>` : ic('right', 'chev')}</button>
-      <button class="row-k" id="uAcad"><span class="row-ic">${ic('cap')}</span><span class="row-t"><b>Academia</b><small>Meta diaria ${Math.min(ax, DAILY_GOAL)}/${DAILY_GOAL} XP</small></span>${ic('right', 'chev')}</button>
+      <button class="row-k" id="uDiary"><span class="row-ic">${ic('pen')}</span><span class="row-t"><b>${t('diary.title')}</b><small>${t('diary.rowSub', { n: foundIds().length })}</small></span>${ic('right', 'chev')}</button>
       <button class="row-k" id="uQuest"><span class="row-ic">${ic('list')}</span><span class="row-t"><b>Misiones</b><small>Diarias y semanales</small></span>${ic('right', 'chev')}</button>
       <button class="row-k" id="uShop"><span class="row-ic">${ic('bag')}</span><span class="row-t"><b>Tienda</b><small>Invocar, decorar, edificios y piezas · ${totalRate()} 墨/h</small></span>${ic('right', 'chev')}</button>
       <button class="row-k" id="uCfg"><span class="row-ic">${ic('gear')}</span><span class="row-t"><b>Configuración</b><small>Cuenta, IA y ayuda de lectura</small></span>${ic('right', 'chev')}</button>
     </div></div>`;
   $('#uRev', v).onclick = openDojo;
-  $('#uAcad', v).onclick = () => openAcademy(acadCtx());
+  $('#uDiary', v).onclick = () => openDiary();
   $('#uQuest', v).onclick = openQuests;
   $('#uShop', v).onclick = () => { ui.tab = 'shop'; go(); };
   $('#uCfg', v).onclick = openMenu;

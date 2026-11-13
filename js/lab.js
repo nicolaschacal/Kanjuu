@@ -73,6 +73,6 @@ export function viewLab(v) {
     if (!confirm(`Las criaturas${selP.length ? ' y piezas' : ''} elegidas se unirán para formar ${match}. ¿Fusionar?`)) return;
     const pref = sel.find(c => c.pos)?.pos, from = [...sel.map(c => c.k), ...selP], nc = fuse(sel.map(c => c.id), match, selP); labSel = [];
     nc.prodAt = Date.now(); if (settle(nc, pref) === 'store') setTimeout(() => toast(`${match} está en el almacén: no había lugar`), 2600);
-    evolveFX(nc, match, from);
+    evolveFX(nc, match, from); emit('fuse');
   };
 }

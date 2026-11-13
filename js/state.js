@@ -16,6 +16,10 @@ export function norm(s) {
   s.gate ??= []; s.pieces ??= {}; s.srs ??= {}; s.ach ??= []; s.items ??= {};
   s.weekly ??= { week: weekKey(), p: {}, claimed: [] };
   s.lang ??= 'auto'; // idioma: 'auto' sigue al dispositivo (js/i18n.js)
+  // Aprendizaje (docs/APRENDIZAJE.md): palabras halladas, frases vistas, lecturas leídas, aciertos por kana, nivelación y camino
+  s.lex ??= {}; s.phr ??= {}; s.read ??= {}; s.kana ??= {};
+  s.level ??= s.creatures?.length ? 0 : null; // null = todavía no se preguntó "¿Qué sabes ya?"
+  s.path ??= { claimed: [] }; s.path.claimed ??= [];
   Object.keys(s.dex || {}).forEach(k => s.dex[k].owned && (s.srs[k] ??= { box: 0, due: 0, ok: 0, miss: 0 }));
   return s;
 }
@@ -35,6 +39,8 @@ export function rollDaily() {
 }
 // Estudiar abre cofres de la Arena: cada acierto suma puntos al primer cofre de la fila
 const STUDY = { review: 1, train: 2, acad: 3 };
+// Nivelación: quien dijo que ya reconoce kanji sube a esta caja con una sola comprobación acertada
+export const SKIP_BOX = 3;
 export function bump(key, n = 1) {
   rollDaily(); S.daily.p[key] = (S.daily.p[key] || 0) + n; S.weekly.p[key] = (S.weekly.p[key] || 0) + n;
   const ch = S.arena?.chests?.[0]; if (ch && STUDY[key]) ch.pts += n * STUDY[key];
@@ -45,7 +51,7 @@ export function bump(key, n = 1) {
 export function srsAdd(k) { S.srs[k] ??= { box: 0, due: Date.now(), ok: 0, miss: 0 }; }
 export function grade(k, ok) {
   srsAdd(k); const r = S.srs[k];
-  if (ok) { r.ok++; r.box = Math.min(SRS_HOURS.length - 1, r.box + 1); }
+  if (ok) { r.box = S.level === 2 && !r.ok && !r.miss && r.box < SKIP_BOX ? SKIP_BOX : Math.min(SRS_HOURS.length - 1, r.box + 1); r.ok++; }
   else { r.miss++; r.box = Math.max(0, r.box - 2); }
   r.due = Date.now() + SRS_HOURS[r.box] * 36e5;
 }

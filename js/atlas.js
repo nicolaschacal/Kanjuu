@@ -13,12 +13,17 @@ import { startTutorial, emit } from './tutorial.js';
 import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld } from './world.js';
 import { $, buzz, MISSIONS, WEEKLY, ACHIEVEMENTS, owned, hud, toast, modal, floatText, ui } from './main.js';
 import { scrHead } from './main.js';
+import { SRS_HOURS } from './data.js';
+import { t } from './i18n.js';
+import { viewDiary, useTagHTML, anchorsHTML, bindAnchors } from './diary.js';
+import { pathHTML, claimChapter } from './path.js';
 
 // ---------- Códice ----------
 // Atlas: hoja con tres pestañas (Atlas · Familias · Logros), como el Entrenador
 export function viewDex(v) {
   const all = Object.keys(KANJI).sort((a, b) => depth(a) - depth(b));
   const tab = ui.dsub || 'atlas';
+  if (tab === 'diary') return viewDiary(v); // Diario de descubrimientos (js/diary.js)
   let body = '';
   if (tab === 'atlas') body = `<p class="eyebrow">Tu colección</p><h2 class="pn-h">Atlas</h2>
     <p class="pn-lead">${owned()} de ${all.length} kanji descubiertos · tocá uno para ver su historia</p>
@@ -46,12 +51,14 @@ export function viewDex(v) {
   v.querySelectorAll('.dex-c').forEach(b => b.onclick = () => {
     const k = b.dataset.k, d = S.dex[k]; if (!d?.seen) return toast('Aún no descubierto');
     const K = KANJI[k];
-    modal(`<div class="dex-detail">${d.owned ? creatureSVG(k) : `<span class="sil big">${k}</span>`}
+    const dm = modal(`<div class="dex-detail">${d.owned ? creatureSVG(k) : `<span class="sil big">${k}</span>`}
       ${storyHTML(k)}<button class="btn ghost" id="say2">${ic('sound')} Escuchar</button>
-      <p>${gradeTag(k)}</p><p class="muted">${GRADES[kLevel(k) - 1].d} · composition_depth ${depth(k)}</p>
+      <p>${gradeTag(k)} ${useTagHTML(k)}</p><p class="muted">${GRADES[kLevel(k) - 1].d} · composition_depth ${depth(k)}</p>
       ${K.recipes ? `<p>${K.recipes.map(r => r.join(' + ') + ' = ' + k).join('<br>')}</p>` : '<p class="muted">Componente fundamental</p>'}
       ${evolutionsOf(k).length ? `<p class="muted">Forma parte de: ${evolutionsOf(k).map(t => S.dex[t]?.seen ? t : '？').join(' ')}</p>` : ''}
-      ${S.srs[k] ? `<p class="muted">Maestría ${mastery(k)}/6 · aciertos ${S.srs[k].ok} · fallos ${S.srs[k].miss}</p>` : ''}</div>`).querySelector('#say2').onclick = () => speak(reads(k)[0] || '');
+      ${S.srs[k] ? `<p class="muted">Maestría ${mastery(k)}/${SRS_HOURS.length - 1} · aciertos ${S.srs[k].ok} · fallos ${S.srs[k].miss}</p>` : ''}
+      ${anchorsHTML(k)}</div>`);
+    dm.querySelector('#say2').onclick = () => speak(reads(k)[0] || ''); bindAnchors(dm);
   });
   v.querySelectorAll('.fam.claim').forEach(b => b.onclick = () => {
     const f = FAMILIES.find(x => x.root === b.dataset.fam); S.fams = [...(S.fams || []), f.root]; S.ink += famReward(f); S.tickets++;
@@ -66,10 +73,10 @@ export const famReady = () => FAMILIES.some(f => f.members.every(k => S.dex[k]?.
 // ---------- Misiones y mejoras ----------
 export function openQuests() {
   rollDaily();
-  const m = modal(`<h3>任 Misiones de hoy</h3><p class="muted">Se renuevan cada día. Perder un día no te quita nada.</p>
+  const m = modal(`${pathHTML(ic)}<h3>任 Misiones de hoy</h3><p class="muted">Se renuevan cada día. Perder un día no te quita nada.</p>
     ${MISSIONS.map(q => {
       const p = Math.min(q.goal, S.daily.p[q.id] || 0), got = S.daily.claimed.includes(q.id);
-      return `<div class="quest-row ${got ? 'got' : ''}"><div><b>${q.label}</b><div class="tbar"><i style="width:${p / q.goal * 100}%"></i></div><small>${p}/${q.goal}</small></div>
+      return `<div class="quest-row ${got ? 'got' : ''}"><div><b>${q.key ? t(q.key) : q.label}</b><div class="tbar"><i style="width:${p / q.goal * 100}%"></i></div><small>${p}/${q.goal}</small></div>
       <button class="btn ${p >= q.goal && !got ? 'ok' : 'ghost'}" data-q="${q.id}" ${p >= q.goal && !got ? '' : 'disabled'}>${got ? '✓' : `+${q.ink}墨`}</button></div>`;
     }).join('')}
     <h4>週 Desafíos de la semana</h4>
@@ -78,6 +85,9 @@ export function openQuests() {
       return `<div class="quest-row ${got ? 'got' : ''}"><div><b>${q.label}</b><div class="tbar"><i style="width:${p / q.goal * 100}%"></i></div><small>${p}/${q.goal}</small></div>
       <button class="btn ${p >= q.goal && !got ? 'ok' : 'ghost'}" data-w="${q.id}" ${p >= q.goal && !got ? '' : 'disabled'}>${got ? '✓' : `+${q.ink}墨`}</button></div>`;
     }).join('')}`);
+  // Camino del santuario: cobrar el capítulo abre el siguiente
+  const pc = m.querySelector('#pathClaim');
+  if (pc) pc.onclick = () => { const c = claimChapter(); if (!c) return; buzz([20, 60, 20]); toast(t('path.claimed', { title: t(c.title), ink: c.ink })); m.close(); hud(); openQuests(); };
   m.querySelectorAll('[data-w]').forEach(b => b.onclick = () => {
     const q = WEEKLY.find(x => x.id === b.dataset.w); S.weekly.claimed.push(q.id); S.ink += q.ink;
     buzz(15); m.close(); hud(); openQuests(); });

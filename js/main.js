@@ -22,6 +22,9 @@ import { viewShop, openLogin } from './shop.js';
 import { acadCtx } from './dojo.js';
 import { openAccount, authWall } from './account.js';
 import { t, setLang, langName, locale, detect, LANGS } from './i18n.js';
+import { pathReady } from './path.js';
+import { kanaSkip, ALL_KANA } from './help.js';
+import { LEX } from './lex.js';
 
 export const $ = (s, r = document) => r.querySelector(s);
 export const app = $('#app');
@@ -35,7 +38,7 @@ export const MISSIONS = [
   { id: 'train', label: 'Completá entrenamientos', goal: 3, ink: 12 },
   { id: 'exp', label: 'Enviá una expedición', goal: 1, ink: 8 },
   { id: 'review', label: 'Repasá kanji en el Dojo', goal: 8, ink: 15 },
-  { id: 'acad', label: 'Completá 2 lecciones de la Academia', goal: 2, ink: 15 },
+  { id: 'words', key: 'quest.words', goal: 5, ink: 15 }, // hallazgos, reencuentros y aciertos de palabras en el Dojo
   { id: 'duel', label: 'Ganá 2 duelos en la Arena', goal: 2, ink: 20 },
 ];
 export const WEEKLY = [
@@ -76,7 +79,7 @@ export const ui = { tab: 'home', sub: 'kan', dsub: 'atlas' };
 export const NAV = [['trainer', 'user', 'nav.trainer'], ['lab', 'fusion', 'nav.lab'], ['arena', 'swords', 'nav.arena'], ['exp', 'compass', 'nav.exp'], ['dex', 'book', 'nav.dex']];
 const TITLES = { lab: 'nav.lab', arena: 'nav.arena', exp: 'nav.exp', dex: 'nav.dex', shop: 'sheet.shop' };
 export const TRAINER_TABS = [['bag', 'bag', 'trainer.bag'], ['kan', 'paw', 'trainer.kan'], ['me', 'user', 'trainer.me']];
-export const DEX_TABS = [['atlas', 'book', 'dex.atlas'], ['fam', 'fusion', 'dex.fam'], ['ach', 'star', 'dex.ach']];
+export const DEX_TABS = [['atlas', 'book', 'dex.atlas'], ['diary', 'pen', 'dex.diary'], ['fam', 'fusion', 'dex.fam'], ['ach', 'star', 'dex.ach']];
 export function shell() {
   app.innerHTML = `
   <header class="hud">
@@ -146,7 +149,7 @@ export function hud() {
   const dot = $('#inkDot'), pend = totalPending(); if (dot) { dot.hidden = !pend; $('#shopBtn').classList.toggle('claim', !!pend); }
   rollDaily();
   const ready = MISSIONS.filter(m => (S.daily.p[m.id] || 0) >= m.goal && !S.daily.claimed.includes(m.id)).length
-    + WEEKLY.filter(m => (S.weekly.p[m.id] || 0) >= m.goal && !S.weekly.claimed.includes(m.id)).length;
+    + WEEKLY.filter(m => (S.weekly.p[m.id] || 0) >= m.goal && !S.weekly.claimed.includes(m.id)).length + (pathReady() ? 1 : 0);
   $('#questN').textContent = ready || '';
   $('#questBtn').classList.toggle('hot', !!ready);
   const tix = $('#tix'); if (tix) tix.textContent = S.tickets;
@@ -199,6 +202,7 @@ export function openMenu() {
       ${row('mAcct', 'user', 'menu.account', cloud.user ? esc(cloud.user.email) : t('menu.accountSub'))}
       ${row('mLang', 'globe', 'menu.lang', esc(S.lang && S.lang !== 'auto' ? langName() : `${t('lang.auto')} · ${langName()}`))}
       ${row('mAI', 'sparkles', 'menu.ai', t('menu.aiSub'))}
+      ${row('mLevel', 'cap', 'menu.level', t(LEVELS[S.level || 0][0]))}
       ${sw('mFuri', 'kana', 'menu.furi', helpOn())}
       ${sw('mGrain', 'leaf', 'menu.grain', grainOn())}
       ${row('mWx', 'sun', 'menu.wx', t('menu.wxSub'))}
@@ -206,6 +210,7 @@ export function openMenu() {
   $('#mAcct', m).onclick = () => { m.close(); openAccount(); };
   $('#mLang', m).onclick = () => { m.close(); openLang(); };
   $('#mAI', m).onclick = () => { m.close(); openAISettings(modal, toast, go); };
+  $('#mLevel', m).onclick = () => { m.close(); openLevel(openMenu); };
   $('#mFuri', m).onchange = e => { setHelp(e.target.checked); go(); };
   $('#mGrain', m).onchange = e => setGrain(e.target.checked);
   $('#mWx', m).onclick = () => { m.close(); try { localStorage.removeItem(GEO); } catch {} weather(true); };
@@ -219,6 +224,24 @@ function openLang() {
   m.querySelectorAll('[data-l]').forEach(b => b.onclick = () => {
     buzz(5); setLang(b.dataset.l); m.close(); go(); toast(t('lang.changed', { name: esc(langName()) })); openMenu();
   });
+}
+// Nivelación: "¿Qué sabes ya?" (docs/APRENDIZAJE.md §6). Autodeclarar primero; ante la duda, un peldaño abajo.
+// 0 empiezo de cero · 1 leo hiragana y katakana · 2 además reconozco algunos kanji
+const LEVELS = [['level.zero', 'level.zeroSub', 'leaf'], ['level.kana', 'level.kanaSub', 'kana'], ['level.kanji', 'level.kanjiSub', 'book']];
+export function setLevel(n) {
+  const was = S.level; S.level = n;
+  // Comprobación diferida: los kana quedan como sabidos (romaji apagado) y, si uno falla en el repaso, su romaji vuelve
+  if (n >= 1) kanaSkip([ALL_KANA, ...LEX.map(w => w.kana)]);
+  else if (was >= 1) S.kana = {}; // bajar a "de cero" vuelve a mostrar el romaji de todos los kana
+  save();
+}
+export function openLevel(after) {
+  const cur = S.level;
+  const m = modal(`<div class="onb lvl"><h2>${t('level.title')}</h2><p class="muted">${t('level.lead')}</p>
+    <div class="menu-list">${LEVELS.map(([k, sub, icon], i) => `<button class="row-k${cur === i ? ' on' : ''}" data-lv="${i}"><span class="row-ic">${ic(icon)}</span><span class="row-t"><b>${t(k)}</b><small>${t(sub)}</small></span>${cur === i ? ic('check', 'chev') : ''}</button>`).join('')}</div>
+    <p class="muted">${t('level.note')}</p></div>`, 'onbm');
+  if (cur == null) m.onclick = null; // la primera vez hay que elegir (se puede cambiar después en Configuración)
+  m.querySelectorAll('[data-lv]').forEach(b => b.onclick = () => { buzz(5); setLevel(+b.dataset.lv); m.close(); go(); after?.(); });
 }
 const ICONS = { '店': 'bag', '旅': 'compass', '錬': 'fusion', '闘': 'swords', '図': 'book' };
 // Encabezado común de pantalla: sello con kanji · título · una línea · dato a la derecha
@@ -256,7 +279,8 @@ export function onboarding() {
       const c = arrive(b.dataset.k).c; c.mood = 1; m.close(); go();
       const w = modal(`<div class="result"><h3>¡Nació tu primer KANJŪ!</h3>${creatureSVG(c.k, { mood: 1 })}${storyHTML(c.k)}
         <p class="muted">Cada kanji tiene una historia para recordarlo. Tocá a ${c.k} en el santuario para mimarlo y entrenarlo.</p><button class="btn ok wide">¡Vamos!</button></div>`);
-      speak(reads(c.k)[0]); $('.btn', w).onclick = () => w.close();
+      speak(reads(c.k)[0]); const done = () => { w.close(); if (S.level == null) openLevel(); };
+      $('.btn', w).onclick = done; w.onclick = e => { if (e.target === w) done(); };
     }, 700);
   });
 }

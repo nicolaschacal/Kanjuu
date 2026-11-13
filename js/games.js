@@ -3,6 +3,7 @@ import { ic } from './icons.js';
 import { STROKES } from './strokes.js';
 import { S } from './state.js';
 import { rr, romaji, helpOn } from './help.js';
+import { wordExercise } from './wordgames.js';
 
 const shuffle = a => a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(v => v[1]);
 const pick = a => a[Math.floor(Math.random() * a.length)];
@@ -189,9 +190,10 @@ function listen(k, know, body, end) {
 }
 
 // --- Dojo de repaso: recuperación activa + repetición espaciada + intercalado ---
+// list mezcla kanji ('木') y palabras del diario ({ w: id }); onGrade(clave, acierto, esPalabra)
 export function review(list, root, onGrade) {
   return new Promise(done => {
-    const queue = list.map(k => ({ k, retry: false })), res = { right: 0, wrong: 0, total: list.length };
+    const queue = list.map(k => typeof k === 'string' ? { k, retry: false } : { w: k.w, retry: false }), res = { right: 0, wrong: 0, total: list.length };
     const wrap = h(`<div class="game"><div class="game-head"><span class="chip">修 Dojo</span><div class="prog"><i></i></div><button class="x">✕</button></div><div class="game-body"></div></div>`);
     root.append(wrap);
     const body = wrap.querySelector('.game-body'), bar = wrap.querySelector('.prog i');
@@ -201,6 +203,11 @@ export function review(list, root, onGrade) {
     function next() {
       bar.style.width = (res.right + res.wrong) / Math.max(1, res.total) * 100 + '%';
       const item = queue.shift(); if (!item) return finish();
+      // Palabras: ejercicios escalonados por caja (js/wordgames.js)
+      if (item.w) return wordExercise(item.w, body, ok => {
+        if (!item.retry) { ok ? res.right++ : res.wrong++; onGrade(item.w, ok, true); if (!ok) queue.push({ w: item.w, retry: true }); }
+        next();
+      });
       const { k } = item, box = S.srs[k]?.box || 0, K = KANJI[k];
       const types = box < 2 ? ['k2m', 'k2m', 'listen'] : box < 4 ? ['m2k', 'listen', 'k2r'] : ['k2r', 'm2k', 'parts'];
       let type = pick(types); if (type === 'parts' && !K.recipes) type = 'k2r';
