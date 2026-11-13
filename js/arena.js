@@ -119,9 +119,12 @@ function rivalTeam() {
 }
 
 // ---------- Duelo ----------
-export function startDuel() {
-  const a = A(), mine = myTeam().map(c => ({ c, ...stats(c), max: stats(c).hp })), foes = rivalTeam().map(c => ({ c, ...stats(c), max: stats(c).hp }));
-  const rival = RIVALS[Math.random() * RIVALS.length | 0];
+// opts (para el examen dorado del entrenamiento, docs/CURRICULO.md §6; sin opts es el duelo de siempre):
+// mine/foes = equipos · rival = nombre · ask = desafío (k, root) → { ok, fast, useSpecial } · end = (win) → html del cierre
+export function startDuel(opts = {}) {
+  const ex = !!opts.end;
+  const a = A(), mine = (opts.mine || myTeam()).map(c => ({ c, ...stats(c), max: stats(c).hp })), foes = (opts.foes || rivalTeam()).map(c => ({ c, ...stats(c), max: stats(c).hp }));
+  const rival = opts.rival || RIVALS[Math.random() * RIVALS.length | 0];
   let combo = 0, special = 0, over = false, busy = false, pick = 0;
   // Reloj del turno: si no atacás a tiempo, el rival ataca igual
   const TURN = 12000; let turnEnd = 0, turnTO = 0;
@@ -146,11 +149,11 @@ export function startDuel() {
   function render(msg = '') {
     if (has3d) return render3d(msg);
     const ef = target();
-    w.innerHTML = `<div class="duel-head"><span>${rival} · 杯${Math.max(0, a.cups + Math.round(Math.random() * 60 - 30))}</span><button class="x">✕</button></div>
+    w.innerHTML = `<div class="duel-head"><span>${rival}${ex ? '' : ` · 杯${Math.max(0, a.cups + Math.round(Math.random() * 60 - 30))}`}</span><button class="x">✕</button></div>
       <div class="side foes">${foes.map((f, j) => unit(f, true, f === ef)).join('')}</div>
       <div class="duel-mid"><p>${msg || 'Elegí un rival y quién ataca'}</p>${meters()}</div>
       <div class="side mine">${mine.map(f => unit(f, false)).join('')}</div>`;
-    w.querySelector('.x').onclick = () => { if (confirm('¿Rendirte? Perdés copas.')) finish(false); };
+    w.querySelector('.x').onclick = () => { if (confirm(ex ? '¿Salir del examen? Puedes volver a intentarlo cuando quieras.' : '¿Rendirte? Perdés copas.')) finish(false); };
     w.querySelectorAll('[data-atk]').forEach(b => b.onclick = () => !busy && attack(mine[+b.dataset.atk]));
     w.querySelectorAll('[data-tgt]').forEach(b => b.onclick = () => aim(+b.dataset.tgt));
     runBar();
@@ -158,7 +161,7 @@ export function startDuel() {
   // Arena 3D: la escena muestra a las criaturas; arriba de cada una, su nombre y vida
   function render3d(msg) {
     const ef = target(), ui = w.querySelector('.duel-ui'), stage = w.querySelector('.duel-stage'), ov = stage.querySelector('.stage-ov');
-    ui.innerHTML = `<div class="duel-head"><span class="rv"><i>敵</i>${rival}<small>杯${Math.max(0, a.cups + 12)}</small></span><button class="x" aria-label="Rendirse">✕</button></div>
+    ui.innerHTML = `<div class="duel-head"><span class="rv"><i>敵</i>${rival}${ex ? '' : `<small>杯${Math.max(0, a.cups + 12)}</small>`}</span><button class="x" aria-label="Rendirse">✕</button></div>
       <div class="duel-mid"><p>${msg || 'Elegí un rival y tocá a tu KANJŪ para atacar'}</p>${meters()}</div>`;
     const lab = (f, enemy, j) => {
       const t = TYPES[typeOf(f.c.k)], mult = !enemy && ef ? typeMult(typeOf(f.c.k), typeOf(ef.c.k)) : 1;
@@ -168,8 +171,8 @@ export function startDuel() {
     };
     ov.innerHTML = foes.map((f, j) => lab(f, true, j)).join('') + mine.map((f, j) => lab(f, false, j)).join('');
     const it = (f, side, j) => ({ id: side + j, side, slot: j, svg: creatureSVG(f.c.k, { mood: f.hp / f.max > .3 ? 1 : .2, gold: f.c.gold }), down: f.hp <= 0, target: side === 'e' && f === ef });
-    mountArena(stage, { scene: arenaIdx(a.cups), items: [...foes.map((f, j) => it(f, 'e', j)), ...mine.map((f, j) => it(f, 'm', j))], onTap: id => { if (id[0] === 'e') return aim(+id[1]); if (!busy && mine[+id[1]].hp > 0) attack(mine[+id[1]]); } });
-    ui.querySelector('.x').onclick = () => { if (confirm('¿Rendirte? Perdés copas.')) finish(false); };
+    mountArena(stage, { scene: opts.scene ?? arenaIdx(a.cups), items: [...foes.map((f, j) => it(f, 'e', j)), ...mine.map((f, j) => it(f, 'm', j))], onTap: id => { if (id[0] === 'e') return aim(+id[1]); if (!busy && mine[+id[1]].hp > 0) attack(mine[+id[1]]); } });
+    ui.querySelector('.x').onclick = () => { if (confirm(ex ? '¿Salir del examen? Puedes volver a intentarlo cuando quieras.' : '¿Rendirte? Perdés copas.')) finish(false); };
     ov.querySelectorAll('[data-atk]').forEach(b => b.onclick = () => !busy && attack(mine[+b.dataset.atk]));
     ov.querySelectorAll('[data-tgt]').forEach(b => b.onclick = () => aim(+b.dataset.tgt));
     runBar();
@@ -189,7 +192,7 @@ export function startDuel() {
   async function attack(me) {
     const foe = target(); if (!foe || me.hp <= 0 || busy) return;
     busy = true; stopTurn();
-    const res = await challenge(me.c.k, w);
+    const res = await (opts.ask || challenge)(me.c.k, w);
     const mult = typeMult(typeOf(me.c.k), typeOf(foe.c.k));
     let dmg = me.atk * mult * (res.ok ? (res.fast ? 1.3 : 1) : .3);
     let note = res.ok ? (res.fast ? '¡Crítico!' : '¡Bien!') : 'Falló el desafío…';
@@ -223,6 +226,13 @@ export function startDuel() {
   }
   function finish(win) {
     if (over) return; over = true; stopTurn();
+    if (ex) { // examen: sin copas ni cofres; el cierre lo arma quien abrió el duelo
+      const card = opts.end(win);
+      if (has3d) { w.querySelector('.stage-ov').innerHTML = ''; w.querySelector('.duel-ui').innerHTML = card; arenaCheer(win ? 'm' : 'e'); }
+      else w.innerHTML = card;
+      w.querySelector('.btn').onclick = () => { w.remove(); hud(); go(); };
+      return;
+    }
     a.played++;
     const ar0 = arenaIdx(a.cups), floor = arenaOf(a.cups).min;
     const delta = win ? 26 + Math.round(Math.random() * 8) : -Math.min(18 + Math.round(Math.random() * 6), a.cups - floor);

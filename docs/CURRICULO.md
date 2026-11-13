@@ -107,10 +107,11 @@ Acordado con Nicolás el 13 de noviembre de 2026 (propuesta A-02, `docs/propuest
 
 ## 6. Combate de examen (dorado)
 
-- Opcional, se puede reintentar. 3 contra 3: la criatura que entrenó la sección más 2 que elige el jugador, contra los 3 rivales de la sección (`rival`).
-- 15 preguntas de la sección, sin romaji ni furigana. Acierto = ataque; racha de 3 = ataque especial de su elemento; error = ataca el rival. Gana con 13 de 15.
-- Usa el motor de la Arena (cerrada: no se rediseña; se reutiliza).
-- Dorar da tinta extra, marco dorado en la sección y en la página del diario, y espacia más el repaso de esos ítems.
+Decidido con Nicolás el 13 de noviembre de 2026: **sigue la misma lógica de la Arena** (`js/arena.js`, `startDuel` con opciones; el duelo normal no cambia).
+- Opcional, para secciones completas (no salteadas), y se puede reintentar sin perder nada. Se abre desde el cuaderno o desde el resultado al completar la sección.
+- 3 contra 3: la criatura que entrenó la sección más 2 que elige el jugador, contra las 3 sombras de la sección (`rival`), al nivel promedio del equipo.
+- Cada ataque es una pregunta de las palabras de la sección (qué significa, en kana y sin romaji), con el reloj, los tipos 五行, el combo y el 必殺 de la Arena. Se gana derrotando a las 3 sombras.
+- No se juegan copas ni cofres. Dorar da el sello 金 en el cuaderno y +40 墨 la primera vez.
 
 ## 7. Capa de IA (plan pago o clave propia)
 

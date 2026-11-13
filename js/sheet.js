@@ -21,6 +21,7 @@ import { curSection, roundsOf, runRound, endRound, passTest, ROUNDS, inkSVG, pai
 import { sectionById } from './curriculum.js';
 import { WORD, wordHTML } from './lex.js';
 import { bookCardHTML, openBook } from './book.js';
+import { openExam } from './exam.js';
 
 // ---------- Hoja de criatura ----------
 export function openCreature(id) {
@@ -57,7 +58,7 @@ export function openCreature(id) {
     ${K.recipes ? `<p class="muted">Composición: ${K.recipes.map(r => r.join(' + ')).join('  ·  ')}${K.note ? ` — ${K.note}` : ''}</p>` : ''}
     <p class="hist">${c.hist.join(' → ')}</p>`, 'cr');
 
-  $('#bookCard', m) && ($('#bookCard', m).onclick = () => { buzz(5); openBook(modal); });
+  $('#bookCard', m) && ($('#bookCard', m).onclick = () => { buzz(5); openBook(modal, c); });
   $('#pet', m).onclick = e => {
     c.mood = Math.min(1, c.mood + .12); c.bond++; bump('pet'); giveExp(c, 1); emit('pet');
     floatText(e.currentTarget, '♥', 'heart'); buzz(6);
@@ -128,7 +129,9 @@ export async function openTraining(c, parent) {
     ${res.words?.length ? `<p class="rd-today-h">${t('round.today')}</p><div class="rd-today">${res.words.filter(id => WORD[id]).slice(0, 6).map(id => `<span><b class="jp">${wordHTML(WORD[id])}</b><small>${tr(WORD[id])}</small></span>`).join('')}</div>` : ''}
     ${evolutionsOf(c.k).some(x => c.lv >= evoLevel(x) && c.lv - ups < evoLevel(x)) ? '<p class="g">✦ ¡Nueva evolución disponible!</p>' : ''}
     <div class="row"><button class="btn ghost" id="again">${t('round.again')}</button><button class="btn ok" id="done">${t('round.continue')}</button></div>
+    ${r.completed && !S.cur.skipped[sec.id] ? `<button class="btn gold wide" id="exam">金 ${t('exam.offer')}</button>` : ''}
     <button class="link" id="practice">${t('round.practice', { k: c.k })}</button></div>`);
+  $('#exam', out) && ($('#exam', out).onclick = () => { out.close(); openExam(c, sec.id, modal); });
   $('#again', out).onclick = () => { out.close(); openTraining(c, { close() {} }); };
   $('#practice', out).onclick = () => { out.close(); openPractice(c, { close() {} }); };
   $('#done', out).onclick = () => { out.close(); go(); openCreature(c.id); if (rk.length) rankUp(rk); };
