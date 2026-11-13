@@ -124,7 +124,32 @@ export const EXTRA = [
   { id: 'c_omouoishii', ja: 'ラーメン は おいしい と おもいます', ids: ['raamen', 'oishii', 'omoimasu'], pat: null, es: 'Creo que el ramen está rico.', en: 'I think ramen is tasty.' },
   { id: 'c_shitte', ja: 'せんせい の なまえ を しって います', ids: ['sensei', 'namae', 'shirimasu', 'imasu'], pat: null, es: 'Sé el nombre del profesor.', en: 'I know the teacher’s name.' },
   { id: 'c_kangae', ja: 'まいにち にほんご で かんがえます', ids: ['mainichi', 'nihongo', 'kangaemasu'], pat: null, es: 'Todos los días pienso en japonés.', en: 'Every day I think in Japanese.' },
-  { id: 'c_kuru', ja: 'ともだち は くる と おもいます', ids: ['tomodachi', 'kimasu', 'omoimasu'], pat: null, es: 'Creo que mi amigo viene.', en: 'I think my friend is coming.' },
+  { id: 'c_kuru', ja: 'ともだち は くる と おもいます', ids: ['tomodachi', 'kimasu', 'omoimasu'], pat: null, es: 'Creo que mi amigo viene.', en: 'I think my friend is coming.' },  { id: 'c_taberu', ja: 'ラーメン が たべたい です', ids: ['raamen', 'tabemasu'], pat: null, es: 'Quiero comer ramen.', en: 'I want to eat ramen.' },
+  { id: 'c_ikitai', ja: 'にほん へ いきたい です', ids: ['nihon', 'ikimasu'], pat: null, es: 'Quiero ir a Japón.', en: 'I want to go to Japan.' },
+  { id: 'c_hoshii', ja: 'あたらしい くつ が ほしい です', ids: ['atarashii', 'kutsu', 'hoshii'], pat: null, es: 'Quiero zapatos nuevos.', en: 'I want new shoes.' },
+  { id: 'c_nanihoshii', ja: 'なに が ほしい です か', ids: ['nani', 'hoshii'], pat: null, es: '¿Qué quieres?', en: 'What do you want?' },
+  { id: 'c_mono', ja: 'いい もの が ほしい です', ids: ['ii', 'mono', 'hoshii'], pat: null, es: 'Quiero algo bueno.', en: 'I want something good.' },
+  { id: 'c_kara', ja: 'えき から がっこう まで あるきます', ids: ['eki', 'gakkou', 'arukimasu'], pat: null, es: 'Camino de la estación a la escuela.', en: 'I walk from the station to school.' },
+  { id: 'c_noru', ja: 'でんしゃ に のります', ids: ['densha', 'norimasu'], pat: null, es: 'Me subo al tren.', en: 'I get on the train.' },
+  { id: 'c_jikan', ja: 'いち じかん かかります', ids: ['ichi', 'jikan', 'kakarimasu'], pat: null, es: 'Lleva una hora.', en: 'It takes an hour.' },
+  { id: 'c_chika', ja: 'ちかてつ で いきます', ids: ['chikatetsu', 'ikimasu'], pat: 'de', es: 'Voy en metro.', en: 'I go by subway.' },
+  { id: 'c_denshanan', ja: 'でんしゃ は なん じ に きます か', ids: ['densha', 'nan', 'ji', 'kimasu'], pat: 'ka', es: '¿A qué hora viene el tren?', en: 'What time does the train come?' },
+  { id: 'c_tekara', ja: 'しごと を して から かえります', ids: ['shigoto', 'shimasu', 'kaerimasu'], pat: null, es: 'Vuelvo después de trabajar.', en: 'I go home after work.' },
+  { id: 'c_nagara', ja: 'おんがく を ききながら べんきょう します', ids: ['ongaku', 'kikimasu', 'benkyou', 'shimasu'], pat: null, es: 'Estudio mientras escucho música.', en: 'I study while listening to music.' },
+  { id: 'c_gakkou', ja: 'がっこう で にほんご を べんきょう します', ids: ['gakkou', 'nihongo', 'benkyou', 'shimasu'], pat: 'de', es: 'Estudio japonés en la escuela.', en: 'I study Japanese at school.' },
+  { id: 'c_shigoto', ja: 'せんせい の しごと は たのしい です', ids: ['sensei', 'shigoto', 'tanoshii'], pat: null, es: 'El trabajo de profesor es divertido.', en: "A teacher's job is fun." },
+  { id: 'c_ageru', ja: 'ともだち に プレゼント を あげます', ids: ['tomodachi', 'purezento', 'agemasu'], pat: null, es: 'Le doy un regalo a mi amigo.', en: 'I give my friend a present.' },
+  { id: 'c_morau', ja: 'はは に てがみ を もらいました', ids: ['haha', 'tegami', 'moraimasu'], pat: null, es: 'Recibí una carta de mi madre.', en: 'I got a letter from my mother.' },
+  { id: 'c_kureru', ja: 'あに が ほん を くれました', ids: ['ani', 'hon', 'kuremasu'], pat: null, es: 'Mi hermano mayor me dio un libro.', en: 'My older brother gave me a book.' },
+  { id: 'c_okuru', ja: 'にほん へ てがみ を おくります', ids: ['nihon', 'tegami', 'okurimasu'], pat: null, es: 'Envío una carta a Japón.', en: 'I send a letter to Japan.' },
+  { id: 'c_kaesu', ja: 'ほん を かえします', ids: ['hon', 'kaeshimasu'], pat: null, es: 'Devuelvo el libro.', en: 'I return the book.' },
+  { id: 'c_toki', ja: 'こども の とき いぬ が すき でした', ids: ['kodomo', 'toki', 'inu', 'suki'], pat: null, es: 'De niño me gustaban los perros.', en: 'When I was a child, I liked dogs.' },
+  { id: 'c_tara', ja: 'あめ が ふったら いえ に います', ids: ['ame', 'furimasu', 'ie', 'imasu'], pat: null, es: 'Si llueve, me quedo en casa.', en: 'If it rains, I will stay home.' },
+  { id: 'c_karariyu', ja: 'あめ です から いきません', ids: ['ame', 'ikimasu'], pat: null, es: 'Como llueve, no voy.', en: 'Since it is raining, I will not go.' },
+  { id: 'c_riyuu', ja: 'りゆう を いって ください', ids: ['riyuu', 'iimasu', 'kudasai'], pat: null, es: 'Dime el motivo, por favor.', en: 'Please tell me the reason.' },
+  { id: 'c_hanami', ja: 'はる に はなみ を します', ids: ['haru', 'hanami', 'shimasu'], pat: null, es: 'En primavera vamos a ver los cerezos.', en: 'In spring we go cherry-blossom viewing.' },
+  { id: 'c_matsuri', ja: 'なつ の まつり は たのしい です', ids: ['natsu', 'matsuri', 'tanoshii'], pat: 'adj', es: 'El festival de verano es divertido.', en: 'The summer festival is fun.' },
+  { id: 'c_shougatsu', ja: 'おしょうがつ に かぞく と ごはん を たべます', ids: ['oshougatsu', 'kazoku', 'gohan', 'tabemasu'], pat: null, es: 'En Año Nuevo como con mi familia.', en: 'At New Year I eat with my family.' },
 ];
 
 const T = (es, en) => ({ es, en });
@@ -304,7 +329,36 @@ export const SECTIONS = [
     intro: T('Entre amigos se habla más corto. ¿Te enseño?', 'Among friends we speak more casually. Shall I show you?'),
     words: ['omoimasu', 'shirimasu', 'kangaemasu', 'kimasu', 'ame', 'oishii', 'ashita', 'nihongo'],
     phrases: ['c_omouame', 'c_omouoishii', 'c_shitte', 'c_kangae', 'c_kuru'], pats: [],
-    kanji: ['思', '知', '考'], reward: '思', rewardWord: 'omoimasu', rival: ['知', '心', '言'] },
+    kanji: ['思', '知', '考'], reward: '思', rewardWord: 'omoimasu', rival: ['知', '心', '言'] },  { id: '3.7', stage: 'e3', title: T('Lo que quiero', 'What I want'), cando: T('Puedo decir lo que quiero hacer y tener', 'I can say what I want to do and to have'),
+    intro: T('Si pudiera pedir un deseo… ¿Qué quieres tú?', 'If I could make a wish… What do you want?'),
+    words: ['hoshii', 'mono', 'kokoro', 'tabemasu', 'ikimasu', 'kutsu', 'nani', 'atarashii'],
+    phrases: ['c_taberu', 'c_ikitai', 'c_hoshii', 'c_nanihoshii', 'c_mono'], pats: [],
+    kanji: ['心', '物', '欲'], reward: null, rival: ['心', '物', '好'] },
+  { id: '3.8', stage: 'e3', title: T('Viajar en tren', 'Traveling by train'), cando: T('Puedo decir de dónde a dónde voy y cuánto tardo', 'I can say where I go from and to, and how long it takes'),
+    intro: T('¡Nunca subí a un tren! ¿Me explicas cómo se viaja?', 'I have never been on a train! Will you explain how to travel?'),
+    words: ['densha', 'eki', 'norimasu', 'kakarimasu', 'jikan', 'chikatetsu', 'gakkou', 'arukimasu'],
+    phrases: ['c_kara', 'c_noru', 'c_jikan', 'c_chika', 'c_denshanan'], pats: [],
+    kanji: ['電', '乗', '地', '鉄'], reward: '電', rewardWord: 'densha', rival: ['車', '地', '道'] },
+  { id: '3.9', stage: 'e3', title: T('Escuela y trabajo', 'School and work'), cando: T('Puedo contar mi día de estudio o de trabajo', 'I can describe my day at school or work'),
+    intro: T('Entrenar también es un trabajo, ¿sabes? ¿Y el tuyo cómo es?', 'Training is a job too, you know? What is yours like?'),
+    words: ['gakkou', 'kaisha', 'shigoto', 'sensei', 'gakusei', 'hatarakimasu', 'benkyou', 'tanoshii'],
+    phrases: ['p_kaisha', 'c_tekara', 'c_nagara', 'c_gakkou', 'c_shigoto'], pats: [],
+    kanji: ['学', '校', '仕', '事', '生'], reward: '学', rewardWord: 'gakkou', rival: ['校', '仕', '生'] },
+  { id: '3.10', stage: 'e3', title: T('Dar y recibir', 'Giving and receiving'), cando: T('Puedo hablar de regalos y de lo que me dieron', 'I can talk about presents and what I was given'),
+    intro: T('¡Me llegó una carta! ¿Quién me la habrá mandado?', 'I got a letter! Who could have sent it?'),
+    words: ['agemasu', 'moraimasu', 'kuremasu', 'purezento', 'tegami', 'okurimasu', 'kaeshimasu', 'dare'],
+    phrases: ['c_ageru', 'c_morau', 'c_kureru', 'c_okuru', 'c_kaesu'], pats: [],
+    kanji: ['送', '返', '紙'], reward: '紙', rewardWord: 'tegami', rival: ['手', '本', '文'] },
+  { id: '3.11', stage: 'e3', title: T('Cuando y si…', 'When and if…'), cando: T('Puedo decir cuándo, qué pasaría si… y por qué', 'I can say when, what would happen if… and why'),
+    intro: T('Si llueve, no hay entrenamiento afuera… ¿Qué hacemos entonces?', 'If it rains, there is no outdoor training… What do we do then?'),
+    words: ['toki', 'riyuu', 'kodomo', 'furimasu', 'iimasu', 'jikan', 'ame', 'ie'],
+    phrases: ['c_toki', 'c_tara', 'c_karariyu', 'c_riyuu'], pats: [],
+    kanji: ['時', '間', '由'], reward: null, rival: ['時', '間', '分'] },
+  { id: '3.12', stage: 'e3', title: T('Fiestas de Japón', 'Festivals in Japan'), cando: T('Puedo hablar de las fiestas de Japón', 'I can talk about festivals in Japan'),
+    intro: T('¡Llegó la temporada de fiestas! Te cuento cómo se celebran.', 'Festival season is here! Let me tell you how they are celebrated.'),
+    words: ['hana', 'matsuri', 'oshougatsu', 'hanami', 'tanoshii', 'kirei', 'haru', 'natsu'],
+    phrases: ['c_hanami', 'c_matsuri', 'c_shougatsu', 'c_kirei'], pats: [],
+    kanji: ['花', '祭', '正'], reward: '花', rewardWord: 'hana', rival: ['正', '春', '夏'] },
 ];
 
 // Situaciones con diálogo (propuesta A-02, pantalla 3): un KANJŪ vecino o de la familia dice algo y el jugador
@@ -380,7 +434,18 @@ export const TALKS = {
   '3.5': { who: '山', ja: 'しゅうまつ なに を しました か', ids: ['shuumatsu', 'nani', 'shimasu'], es: '¿Qué hiciste el fin de semana?', en: 'What did you do on the weekend?', hint: T('Caminaste por la montaña y miraste el mar.', 'You walked in the mountains and looked at the sea.'),
     opts: [O('やま を あるいたり うみ を みたり しました', ['yama', 'arukimasu', 'umi', 'mimasu', 'shimasu']), O('やま を あるきます', ['yama', 'arukimasu']), O('うみ が すき です', ['umi', 'suki'])] },
   '3.6': { who: '友', ja: 'あした は あめ だ と おもいます か', ids: ['ashita', 'ame', 'omoimasu'], es: '¿Crees que mañana llueve?', en: 'Do you think it will rain tomorrow?', hint: T('Sí, eso crees.', 'Yes, you think so.'),
-    opts: [O('はい あめ だ と おもいます', ['hai', 'ame', 'omoimasu']), O('いいえ あめ が すき です', ['iie', 'ame', 'suki']), O('あめ を みた こと が あります', ['ame', 'mimasu', 'koto', 'arimasu'])] },
+    opts: [O('はい あめ だ と おもいます', ['hai', 'ame', 'omoimasu']), O('いいえ あめ が すき です', ['iie', 'ame', 'suki']), O('あめ を みた こと が あります', ['ame', 'mimasu', 'koto', 'arimasu'])] },  '3.7': { who: '心', ja: 'なに が ほしい です か', ids: ['nani', 'hoshii'], es: '¿Qué quieres?', en: 'What do you want?', hint: T('Zapatos nuevos.', 'New shoes.'),
+    opts: [O('あたらしい くつ が ほしい です', ['atarashii', 'kutsu', 'hoshii']), O('あたらしい くつ を かいました', ['atarashii', 'kutsu', 'kaimasu']), O('くつ は たかい です', ['kutsu', 'takai'])] },
+  '3.8': { who: '駅', ja: 'えき から がっこう まで なん じかん かかります か', ids: ['eki', 'gakkou', 'nan', 'jikan', 'kakarimasu'], es: '¿Cuántas horas se tarda de la estación a la escuela?', en: 'How many hours does it take from the station to school?', hint: T('Una hora.', 'One hour.'),
+    opts: [O('いち じかん かかります', ['ichi', 'jikan', 'kakarimasu']), O('いち じ に のります', ['ichi', 'ji', 'norimasu']), O('でんしゃ で いきます', ['densha', 'ikimasu'])] },
+  '3.9': { who: '先', ja: 'しごと を して から なに を します か', ids: ['shigoto', 'shimasu', 'nani'], es: '¿Qué haces después de trabajar?', en: 'What do you do after work?', hint: T('Vuelves a casa.', 'You go home.'),
+    opts: [O('いえ に かえります', ['ie', 'kaerimasu']), O('しごと を しました', ['shigoto', 'shimasu']), O('かいしゃ が すき です', ['kaisha', 'suki'])] },
+  '3.10': { who: '母', ja: 'だれ に てがみ を もらいました か', ids: ['dare', 'tegami', 'moraimasu'], es: '¿De quién recibiste la carta?', en: 'Who did you get the letter from?', hint: T('De tu madre.', 'From your mother.'),
+    opts: [O('はは に もらいました', ['haha', 'moraimasu']), O('はは に あげます', ['haha', 'agemasu']), O('てがみ を かきました', ['tegami', 'kakimasu'])] },
+  '3.11': { who: '天', ja: 'あめ が ふったら なに を します か', ids: ['ame', 'furimasu', 'nani', 'shimasu'], es: 'Si llueve, ¿qué haces?', en: 'If it rains, what will you do?', hint: T('Te quedas en casa.', 'You stay home.'),
+    opts: [O('いえ に います', ['ie', 'imasu']), O('あめ が すき でした', ['ame', 'suki']), O('うみ へ いきました', ['umi', 'ikimasu'])] },
+  '3.12': { who: '花', ja: 'はなみ を した こと が あります か', ids: ['hanami', 'shimasu', 'koto', 'arimasu'], es: '¿Alguna vez fuiste a ver los cerezos?', en: 'Have you ever gone cherry-blossom viewing?', hint: T('Sí.', 'Yes.'),
+    opts: [O('はい あります', ['hai', 'arimasu']), O('いいえ はな です', ['iie', 'hana']), O('まつり へ いきましょう', ['matsuri', 'ikimasu'])] },
 };
 
 export const sectionById = id => SECTIONS.find(s => s.id === id);
@@ -479,5 +544,10 @@ export function checkCurriculum() {
     });
     if (new Set(d.opts.map(o => o.ja)).size !== d.opts.length) errs.push(`${where}: respuestas repetidas`);
   }
+  // Cobertura: el 70 % de las palabras aparece en alguna frase de viaje, frase del currículo o diálogo
+  const inUse = new Set([...PHRASES, ...EXTRA].flatMap(p => p.ids));
+  Object.values(TALKS).forEach(d => [d, ...d.opts].forEach(x => x.ids.forEach(id => inUse.add(id))));
+  const cover = LEX.filter(w => inUse.has(w.id)).length / LEX.length;
+  if (cover < .7) errs.push(`Solo el ${Math.round(cover * 100)} % de las palabras aparece en alguna frase o diálogo (mínimo 70 %)`);
   return errs;
 }

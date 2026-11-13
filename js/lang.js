@@ -53,6 +53,9 @@ export const LEX = [
   { id: 'ichiban', kana: 'いちばん', kanji: '一番', es: 'el más · número uno', en: "the most · number one", sit: 'forest', kind: 'expr' },
   { id: 'ooi', kana: 'おおい', kanji: '多い', es: 'mucho · muchos', en: "many · a lot", sit: 'forest', kind: 'adj' },
   { id: 'sukunai', kana: 'すくない', kanji: '少ない', es: 'poco · pocos', en: "few · little", sit: 'forest', kind: 'adj' },
+  // Etapa 3 del currículo (parte 2)
+  { id: 'toki', kana: 'とき', kanji: '時', es: 'cuando · momento', en: "when · time", sit: 'forest', kind: 'n' },
+  { id: 'riyuu', kana: 'りゆう', kanji: '理由', es: 'razón · motivo', en: "reason", sit: 'forest', kind: 'n' },
 
   // ── hill · Presentarse y la hora ──
   { id: 'watashi', kana: 'わたし', kanji: '私', es: 'yo', en: 'I', sit: 'hill', kind: 'n' },
@@ -184,6 +187,15 @@ export const LEX = [
   { id: 'omoimasu', kana: 'おもいます', kanji: '思います', te: 'おもって', tek: '思って', dict: 'おもう', dictk: '思う', es: 'pensar · creer', en: "to think", sit: 'post', kind: 'v' },
   { id: 'shirimasu', kana: 'しります', kanji: '知ります', te: 'しって', tek: '知って', dict: 'しる', dictk: '知る', es: 'saber · conocer (しって います)', en: "to know (しって います)", sit: 'post', kind: 'v' },
   { id: 'kangaemasu', kana: 'かんがえます', kanji: '考えます', te: 'かんがえて', tek: '考えて', dict: 'かんがえる', dictk: '考える', es: 'pensar · reflexionar', en: "to think · consider", sit: 'post', kind: 'v' },
+  // Etapa 3 del currículo (parte 2)
+  { id: 'hoshii', kana: 'ほしい', kanji: '欲しい', es: 'querer (tener algo)', en: "to want (something)", sit: 'post', kind: 'adj' },
+  { id: 'mono', kana: 'もの', kanji: '物', es: 'cosa · objeto', en: "thing", sit: 'post', kind: 'n' },
+  { id: 'purezento', kana: 'プレゼント', kanji: null, es: 'regalo', en: "present", sit: 'post', kind: 'n' },
+  { id: 'agemasu', kana: 'あげます', kanji: null, te: 'あげて', dict: 'あげる', es: 'dar (a otro)', en: "to give", sit: 'post', kind: 'v' },
+  { id: 'moraimasu', kana: 'もらいます', kanji: null, te: 'もらって', dict: 'もらう', es: 'recibir', en: "to receive", sit: 'post', kind: 'v' },
+  { id: 'kuremasu', kana: 'くれます', kanji: null, te: 'くれて', dict: 'くれる', es: 'dar (a mí)', en: "to give (to me)", sit: 'post', kind: 'v' },
+  { id: 'okurimasu', kana: 'おくります', kanji: '送ります', te: 'おくって', tek: '送って', dict: 'おくる', dictk: '送る', es: 'enviar', en: "to send", sit: 'post', kind: 'v' },
+  { id: 'kaeshimasu', kana: 'かえします', kanji: '返します', te: 'かえして', tek: '返して', dict: 'かえす', dictk: '返す', es: 'devolver', en: "to return (something)", sit: 'post', kind: 'v' },
 
   // ── ruins · Objetos y estudio ──
   { id: 'hon', kana: 'ほん', kanji: '本', es: 'libro', en: 'book', sit: 'ruins', kind: 'n' },
@@ -243,6 +255,8 @@ export const LEX = [
   { id: 'byouki', kana: 'びょうき', kanji: '病気', es: 'enfermedad · enfermo', en: "illness · sick", sit: 'ranch', kind: 'n' },
   { id: 'kusuri', kana: 'くすり', kanji: '薬', es: 'remedio', en: "medicine", sit: 'ranch', kind: 'n' },
   { id: 'itai', kana: 'いたい', kanji: '痛い', es: 'duele · doloroso', en: "painful · it hurts", sit: 'ranch', kind: 'adj' },
+  // Etapa 3 del currículo (parte 2)
+  { id: 'kokoro', kana: 'こころ', kanji: '心', es: 'corazón · mente', en: "heart · mind", sit: 'ranch', kind: 'n' },
 
   // ── lake · Clima y direcciones ──
   { id: 'tenki', kana: 'てんき', kanji: '天気', es: 'tiempo · clima', en: 'weather', sit: 'lake', kind: 'n' },
@@ -273,6 +287,11 @@ export const LEX = [
   { id: 'aki', kana: 'あき', kanji: '秋', es: 'otoño', en: "autumn", sit: 'lake', kind: 'n' },
   { id: 'massugu', kana: 'まっすぐ', kanji: null, es: 'derecho (sin doblar)', en: "straight ahead", sit: 'lake', kind: 'expr' },
   { id: 'magarimasu', kana: 'まがります', kanji: '曲がります', te: 'まがって', tek: '曲がって', dict: 'まがる', dictk: '曲がる', es: 'doblar (en una esquina)', en: "to turn", sit: 'lake', kind: 'v' },
+  // Etapa 3 del currículo (parte 2)
+  { id: 'norimasu', kana: 'のります', kanji: '乗ります', te: 'のって', tek: '乗って', dict: 'のる', dictk: '乗る', es: 'subir (a un vehículo)', en: "to ride · get on", sit: 'lake', kind: 'v' },
+  { id: 'kakarimasu', kana: 'かかります', kanji: null, te: 'かかって', dict: 'かかる', es: 'tardar · llevar (tiempo)', en: "to take (time)", sit: 'lake', kind: 'v' },
+  { id: 'jikan', kana: 'じかん', kanji: '時間', es: 'hora (duración) · tiempo', en: "hour (duration) · time", sit: 'lake', kind: 'n' },
+  { id: 'chikatetsu', kana: 'ちかてつ', kanji: '地下鉄', es: 'metro · subte', en: "subway", sit: 'lake', kind: 'n' },
 
   // ── shrine · Rutina diaria ──
   { id: 'asa', kana: 'あさ', kanji: '朝', es: 'mañana (parte del día)', en: 'morning', sit: 'shrine', kind: 'n' },
@@ -306,6 +325,11 @@ export const LEX = [
   { id: 'eiga', kana: 'えいが', kanji: '映画', es: 'película', en: "movie", sit: 'shrine', kind: 'n' },
   { id: 'yasumimasu', kana: 'やすみます', kanji: '休みます', te: 'やすんで', tek: '休んで', dict: 'やすむ', dictk: '休む', es: 'descansar', en: "to rest", sit: 'shrine', kind: 'v' },
   { id: 'ikemasen', kana: 'いけません', kanji: null, es: 'no se debe · no está bien', en: "must not · not allowed", sit: 'shrine', kind: 'expr' },
+  // Etapa 3 del currículo (parte 2)
+  { id: 'matsuri', kana: 'まつり', kanji: '祭り', es: 'festival', en: "festival", sit: 'shrine', kind: 'n' },
+  { id: 'oshougatsu', kana: 'おしょうがつ', kanji: 'お正月', es: 'Año Nuevo', en: "New Year", sit: 'shrine', kind: 'n' },
+  { id: 'hanami', kana: 'はなみ', kanji: '花見', es: 'mirar los cerezos en flor', en: "cherry-blossom viewing", sit: 'shrine', kind: 'n' },
+  { id: 'tanoshii', kana: 'たのしい', kanji: '楽しい', es: 'divertido', en: "fun", sit: 'shrine', kind: 'adj' },
 ];
 
 // Patrones gramaticales, en el orden de E1.
@@ -326,7 +350,7 @@ export const PATTERNS = [
 ];
 
 // Fichas que no son palabras de LEX: partículas, cópula y terminaciones de cortesía.
-export const PARTICLES = ['は', 'が', 'を', 'に', 'で', 'へ', 'も', 'の', 'と', 'か', 'ね', 'です', 'でした', 'でしょう', 'だ', 'より', 'ございます', 'お'];
+export const PARTICLES = ['は', 'が', 'を', 'に', 'で', 'へ', 'も', 'の', 'と', 'か', 'ね', 'です', 'でした', 'でしょう', 'だ', 'より', 'から', 'まで', 'ございます', 'お'];
 
 // Frases. `ja` segmentada, `ids` = palabras de LEX que usa, `pat` = id de PATTERNS o null (frase hecha).
 export const PHRASES = [
@@ -566,20 +590,20 @@ export const useOf = k => USE[k] || 'daily';
 // Formas de un verbo que pueden aparecer como ficha (docs/CURRICULO.md): las corteses sobre la raíz de ます
 // (〜ます · ました · ません · ませんでした · ましょう · たい), la forma て (campo te), las que salen de ella
 // (〜た · 〜たり) y la de diccionario (campo dict). Una sola definición para lang.js, lex.js y curriculum.js.
-const VERB_ENDS = ['ます', 'ました', 'ません', 'ませんでした', 'ましょう', 'たい'];
+const VERB_ENDS = ['ます', 'ました', 'ません', 'ませんでした', 'ましょう', 'たい', 'ながら'];
 export const taOf = te => te && te.replace(/て$/, 'た').replace(/で$/, 'だ');
 export function verbForms(w) {
   if (w.kind !== 'v') return [w.kana];
   const stem = w.kana.slice(0, -2), ta = taOf(w.te);
-  return [...VERB_ENDS.map(e => stem + e), ...(w.te ? [w.te, ta, ta + 'り'] : []), ...(w.dict ? [w.dict] : [])];
+  return [...VERB_ENDS.map(e => stem + e), ...(w.te ? [w.te, ta, ta + 'り', ta + 'ら'] : []), ...(w.dict ? [w.dict] : [])];
 }
 // La misma forma escrita con kanji (para mostrarla cuando el jugador ya los tiene)
 export function verbKanji(w, form) {
   if (!w.kanji || w.kind !== 'v' || form === w.kana) return w.kanji;
   if (form === w.dict) return w.dictk || w.kanji;
-  if (w.te && [w.te, taOf(w.te), taOf(w.te) + 'り'].includes(form)) {
+  if (w.te && form.startsWith(taOf(w.te).slice(0, -1)) && [w.te, taOf(w.te), taOf(w.te) + 'り', taOf(w.te) + 'ら'].includes(form)) {
     const k = w.tek || w.kanji;
-    return form === w.te ? k : form === taOf(w.te) ? taOf(k) : taOf(k) + 'り';
+    return form === w.te ? k : taOf(k) + form.slice(taOf(w.te).length);
   }
   return w.kanji.slice(0, -2) + form.slice(w.kana.length - 2);
 }
@@ -604,7 +628,7 @@ export function checkLang() {
   for (const s of SITUATIONS) {
     const n = LEX.filter(w => w.sit === s.id).length;
     if (!n) errs.push(`Situación ${s.id}: sin palabras`);
-    else if (n < 15 || n > 30) errs.push(`Situación ${s.id}: ${n} palabras (se esperan 15–30; el currículo de docs/CURRICULO.md suma palabras a las situaciones)`);
+    else if (n < 15 || n > 40) errs.push(`Situación ${s.id}: ${n} palabras (se esperan 15–40; el currículo de docs/CURRICULO.md suma palabras a las situaciones)`);
     const np = PHRASES.filter(p => p.sit === s.id).length;
     if (np < 5 || np > 8) errs.push(`Situación ${s.id}: ${np} frases (se esperan 5–8)`);
     for (const f of ['title', 'cando']) if (!s[f]?.es || !s[f]?.en) errs.push(`Situación ${s.id}: falta ${f}`);
@@ -649,8 +673,8 @@ export function checkLang() {
   }
   for (const pt of PATTERNS) if (!seenPat.has(pt.id)) errs.push(`Patrón ${pt.id}: ninguna frase lo usa`);
   const cover = inPhrase.size / LEX.length;
-  // 60 %: las palabras que suma el currículo (docs/CURRICULO.md) se practican con sus propias frases (EXTRA en js/curriculum.js)
-  if (cover < .6) errs.push(`Solo el ${Math.round(cover * 100)} % de las palabras aparece en alguna frase (mínimo 60 %)`);
+  // 50 %: las palabras que suma el currículo se practican con sus propias frases; la cobertura total (70 %) la exige checkCurriculum()
+  if (cover < .5) errs.push(`Solo el ${Math.round(cover * 100)} % de las palabras aparece en alguna frase de viaje (mínimo 50 %)`);
 
   let prevLevel = -1;
   for (const r of READINGS) {
