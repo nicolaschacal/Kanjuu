@@ -617,6 +617,8 @@ const D = {
 
 
 
+
+
 // ---------- KANJŪ nuevos (noviembre de 2026) ----------
 // Mismas reglas que los 101 originales (docs/arte/biblia.html): un significado, una forma; cada compuesto hereda un rasgo
 // visible de cada componente directo (máximo dos); grado 1 chibi sin brazos, grado 2 patitas o brazos cortos, grado 3
@@ -1436,6 +1438,148 @@ N('院', 'la casa de 完 sobre las escaleras de 阝: una institución', 132, t =
   faces: b.faces.map(f => ({ ...f, y: f.y - 22 })), kanji: [b.kanji[0], b.kanji[1] - 22, b.kanji[2]] }; });
 N('働', 'el forzudo de 動 con las piernas de 人 y su casco de obra: trabaja', 132, t => { const b = base('動', t); return { ...b,
   front: b.front + P('M-30,-106 C-30,-130 30,-130 30,-106 L38,-102 L-38,-102Z', GOLD, 2.8) + P(rrect(-4, -128, 8, 20, 3), GOLDT.d, 2) }; });
+
+
+// ===== Corrección (13 de noviembre): "solo lo que significa". Ninguna criatura suma un animal ni un objeto
+// ajeno a su kanji (docs/arte/biblia.html). Estos diseños reemplazan a los anteriores. =====
+
+// Números: la forma de sus trazos, con volumen, como 一 y 十
+N('五', 'un cuerpo de cinco lados, con un punto en cada esquina para contar hasta cinco', 92, t => ({ body: 'M0,-86 C4,-86 40,-62 42,-58 C44,-54 32,-12 30,-10 C28,-6 -28,-6 -30,-10 C-32,-12 -44,-54 -42,-58 C-40,-62 -4,-86 0,-86Z',
+  back: legs([-14, 14], t),
+  mid: pips([[0, -78], [34, -56], [24, -16], [-24, -16], [-34, -56]], t.d, 4.6),
+  faces: [F(0, -52, 13, 'ten')], kanji: [0, -28, 14] }));
+N('七', 'una bolita cruzada por una banda, con la cola en gancho: así se dobla el siete', 92, t => ({ body: circ(0, -40, 32),
+  back: P('M20,-14 C34,-8 40,4 54,0 C62,-2 62,-14 54,-16 C50,-10 44,-10 38,-16 C32,-22 28,-26 22,-28Z', t.d, 2.6) + legs([-12, 12], t),
+  front: P(rrect(-50, -60, 100, 11, 5.5), t.d, 2.6),
+  faces: [F(0, -40, 13, 'ten')], kanji: [0, -18, 13] }));
+N('九', 'una bolita con la cola larga y doblada que casi da la vuelta: nueve', 96, t => ({ body: circ(-6, -40, 32),
+  back: Ln('M20,-26 C38,-18 50,-30 50,-50 C50,-66 38,-74 30,-66 C24,-60 30,-52 36,-56', t.d, 7, 3) + P('M-22,-66 C-28,-80 -32,-90 -40,-96 C-30,-94 -22,-86 -14,-72Z', t.d, 2.4) + legs([-18, 6], t),
+  faces: [F(-6, -42, 13, 'tome')], kanji: [-6, -20, 13] }));
+N('四', 'un cuarto de cuatro paredes con dos piernitas adentro', 88, t => ({ body: rrect(-46, -78, 92, 70, 12),
+  back: legs([-26, 26], t),
+  mid: `<path d="${rrect(-30, -40, 60, 26, 6)}" fill="${t.d}" opacity=".55"/>` + strip(-6, -36, -14, -16, t.l, 8) + strip(6, -36, 14, -16, t.l, 8),
+  faces: [F(0, -60, 14, 'ten')], kanji: [30, -24, 11] }));
+N('万', 'ancho, ancho, con un tablón larguísimo encima: diez mil, un montón', 76, t => ({ body: ell(0, -30, 50, 26),
+  back: legs([-28, -10, 10, 28], t, 0, 10),
+  front: P(rrect(-60, -66, 120, 12, 6), t.d, 2.6),
+  mid: pips([[-38, -34], [38, -34], [-30, -16], [30, -16]], t.l, 3),
+  faces: [F(0, -34, 14, 'ten')], kanji: [0, -14, 12] }));
+
+// Tiempo y estaciones
+N('年', 'una gavilla de cosecha atada con su cordón: pasó un año', 104, t => ({ body: 'M-10,-100 C-30,-96 -40,-76 -36,-56 C-34,-46 -22,-40 -18,-36 L-22,-4 H22 L18,-36 C22,-40 34,-46 36,-56 C40,-76 30,-96 10,-100 C4,-102 -4,-102 -10,-100Z', fill: GOLD,
+  back: legs([-12, 12], t),
+  mid: `<path class="k2-ln" d="M-24,-88 C-20,-70 -16,-58 -12,-40 M-8,-96 V-40 M8,-96 V-40 M24,-88 C20,-70 16,-58 12,-40" stroke="${GOLDT.d}" stroke-width="1.6" opacity=".45" fill="none"/>` + P('M-20,-42 C-10,-36 10,-36 20,-42 L20,-34 C10,-28 -10,-28 -20,-34Z', SHU, 2),
+  faces: [F(0, -70, 12, 'ten')], kanji: [0, -16, 11] }));
+N('午', 'un reloj de sol con la sombra justo hacia abajo: es mediodía', 98, t => ({ body: circ(0, -46, 38),
+  back: legs([-14, 14], t) + `<g class="k2-float">${sunP(0, -100, 10)}</g>`,
+  mid: [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(a => `<path d="M0,-34 V-30" stroke="${t.d}" stroke-width="2.4" transform="translate(0 -46) rotate(${a})"/>`).join('') + P('M-3,-84 L3,-84 L2,-46 L-2,-46Z', t.d, 1.6),
+  faces: [F(0, -48, 14, 'tome')], kanji: [0, -24, 13] }));
+N('冬', 'con nieve en la cabeza, tiritando sobre el hielo: invierno', 94, t => ({ body: 'M-38,-14 C-42,-44 -30,-70 0,-70 C30,-70 42,-44 38,-14 Q36,-6 28,-6 H-28 Q-36,-6 -38,-14Z',
+  back: legs([-14, 14], t),
+  mid: P('M-36,-46 C-34,-66 -18,-74 0,-74 C18,-74 34,-66 36,-46 C30,-40 26,-50 20,-44 C14,-38 10,-48 4,-42 C-2,-36 -8,-46 -14,-40 C-20,-36 -26,-46 -36,-46Z', W, 2.4),
+  front: P(rrect(-46, -6, 92, 8, 4), t.l, 2.4) + `<g class="k2-float">${Ln('M-54,-60 l6,6 M-48,-60 l-6,6 M-51,-62 v10 M54,-40 l6,6 M60,-40 l-6,6 M57,-42 v10', t.d, 1.8, 1.6)}</g>`,
+  faces: [F(0, -38, 13, 'tome', { expr: 'triste', fix: true })], kanji: [0, -18, 11] }));
+N('南', 'tibio como el sur: le brotan plantas de la cabeza y despide calor', 106, t => ({ body: 'M-38,-14 C-42,-44 -30,-74 0,-74 C30,-74 42,-44 38,-14 Q36,-6 28,-6 H-28 Q-36,-6 -38,-14Z',
+  back: legs([-14, 14], t) + tuft(-14, -72, .5, .2) + tuft(14, -72, .5, .7),
+  front: `<g class="k2-float">${Ln('M-50,-50 c-4,-6 4,-10 0,-16 M52,-42 c-4,-6 4,-10 0,-16', T.fire.f, 2.4, 2)}</g>`,
+  faces: [F(0, -46, 13, 'harai', { expr: 'feliz', fix: true })], kanji: [0, -22, 14] }));
+
+// Personas
+N('長', 'de pelo larguísimo que flamea al viento: largo, y el más viejo, el jefe', 108, t => ({ body: 'M-28,-14 C-32,-50 -24,-84 0,-84 C24,-84 32,-50 28,-14 Q26,-6 18,-6 H-18 Q-26,-6 -28,-14Z',
+  back: P('M-20,-80 C-40,-84 -58,-70 -70,-48 C-62,-50 -56,-46 -54,-40 C-46,-52 -36,-58 -26,-60Z M-24,-64 C-48,-60 -62,-40 -66,-16 C-58,-22 -50,-20 -46,-14 C-44,-30 -36,-44 -26,-48Z', t.d, 2.6) + legs([-10, 10], t),
+  mid: P('M-24,-74 C-14,-90 14,-90 24,-74 C14,-80 -14,-80 -24,-74Z', t.d, 2),
+  faces: [F(0, -56, 11, 'tome', { brow: true })], kanji: [0, -28, 14] }));
+N('北', 'dos espalda con espalda, aguantando el frío del norte', 88, t => ({ body: `${circ(-20, -36, 26)} ${circ(20, -36, 26)}`,
+  back: legs([-30, -10, 10, 30], t, 0, 10),
+  mid: `<path d="M0,-60 V-12" stroke="${t.d}" stroke-width="2.4" opacity=".5"/>`,
+  front: `<g class="k2-float">${Ln('M-60,-72 l6,6 M-54,-72 l-6,6 M-57,-74 v10 M58,-80 l6,6 M64,-80 l-6,6 M61,-82 v10', t.d, 1.8, 1.6)}</g>`,
+  faces: [F(-22, -42, 8, 'tome', { es: .85 }), F(22, -42, 8, 'tome', { es: .85, fix: true })], kanji: [-20, -20, 12] }));
+N('家', 'una casa con la familia asomada a la ventana', 106, t => ({ body: 'M-40,-60 L0,-96 L40,-60 V-12 Q40,-6 34,-6 H-34 Q-40,-6 -40,-12Z',
+  back: legs([-18, 18], t),
+  mid: `<path d="${rrect(-26, -44, 52, 22, 5)}" fill="${t.d}" opacity=".7"/>` + [[-14, -33, 6], [0, -32, 5], [14, -33, 6]].map(([x, y, r]) => P(circ(x, y, r), t.l, 1.6) + `<circle cx="${x - 2}" cy="${y - 1}" r="1" fill="${INK}"/><circle cx="${x + 2}" cy="${y - 1}" r="1" fill="${INK}"/>`).join(''),
+  faces: [F(0, -64, 12, 'ten')], kanji: [26, -16, 10] }));
+N('弟', 'el hermanito, con el arco de juguete que se ve en su kanji', 92, t => ({ body: `${circ(0, -40, 30)}`,
+  back: Ln('M-30,-74 C-50,-56 -50,-24 -30,-6', WOOD, 3.4, 2.4) + Ln('M-30,-74 L-30,-6', W, 1.4, 0) + legs([-12, 12], t),
+  faces: [F(0, -46, 12, 'hane')], kanji: [0, -22, 13] }));
+N('先', 'va por delante de todos, inclinado hacia adelante', 98, t => ({ body: 'M-36,-32 C-36,-60 -14,-78 10,-76 C28,-74 42,-60 52,-42 C42,-38 38,-28 36,-22 C30,-10 18,-6 0,-6 C-24,-6 -36,-16 -36,-32Z',
+  back: strip(4, -12, 18, 2, t.d, 10) + strip(-14, -12, -4, 2, t.d, 10),
+  front: spd(-48, -42, t.d),
+  faces: [F(4, -48, 12, 'harai')], kanji: [0, -24, 14] }));
+N('私', 'mi propia espiga de arroz, que me abrazo: yo', 102, t => ({ body: 'M0,-84 C22,-84 32,-58 32,-40 C32,-18 18,-6 0,-6 C-18,-6 -32,-18 -32,-40 C-32,-58 -22,-84 0,-84Z',
+  back: legs([-12, 12], t) + J(0, -82, Ln('M0,0 C-2,-8 2,-14 6,-20', T.wood.d, 2.6, 2) + [0, 1, 2].map(i => P(ell(6 + i * 2, -22 - i * 7, 4, 6), GOLD, 1.8)).join(''), .3),
+  faces: [F(0, -56, 11, 'ten', { expr: 'feliz', fix: true })], kanji: [0, -26, 14] }));
+N('欠', 'bosteza con la boca bien abierta: le falta un pedacito', 82, t => ({ body: 'M34.2,-55.1 A36,36 0 1,1 11.1,-78.2 A18,18 0 0,0 34.2,-55.1Z',
+  back: legs([-14, 14], t),
+  faces: [F(-4, -50, 13, 'tome', { mouth: 'open' })], kanji: [-4, -22, 14] }));
+
+// Posición y dirección
+N('上', 'parado encima de la línea, señalando hacia arriba', 104, t => ({ body: circ(0, -60, 28),
+  back: Ln('M0,-88 V-104', t.d, 3.2, 2.4) + P('M-8,-100 L0,-112 L8,-100Z', t.d, 2.2) + legs([-10, 10], t, -26, 8),
+  front: P(rrect(-50, -28, 100, 10, 5), t.d, 2.6),
+  faces: [F(0, -62, 12, 'maru')], kanji: [0, -44, 12] }));
+N('下', 'colgado por debajo de la línea, señalando hacia abajo', 104, t => ({ body: circ(0, -46, 28),
+  back: Ln('M0,-74 V-92', t.d, 2.6, 2) + Ln('M0,-18 V-6', t.d, 3.2, 2.4) + P('M-8,-10 L0,2 L8,-10Z', t.d, 2.2),
+  front: P(rrect(-50, -100, 100, 10, 5), t.d, 2.6),
+  faces: [F(0, -50, 12, 'ten', { expr: 'feliz', fix: true })], kanji: [0, -30, 12] }));
+N('方', 'con su flecha en la cabeza que gira y señala hacia dónde ir', 104, t => ({ body: 'M-36,-14 C-40,-44 -30,-72 0,-72 C30,-72 40,-44 36,-14 Q34,-6 26,-6 H-26 Q-34,-6 -36,-14Z',
+  back: legs([-14, 14], t),
+  front: J(0, -72, `<g class="k2-swing">${Ln('M0,0 V-16', t.d, 2.6, 2)}${P('M-22,-20 L14,-20 L14,-26 L26,-16 L14,-6 L14,-12 L-22,-12Z', SHU, 2.2)}</g>`, 0, ''),
+  faces: [F(0, -46, 13, 'ten')], kanji: [0, -22, 14] }));
+N('入', 'una entrada en punta, abierta: pasa', 98, t => ({ body: 'M-46,-6 L-6,-92 Q0,-100 6,-92 L46,-6Z',
+  back: legs([-24, 24], t),
+  mid: `<path d="M-12,-6 C-12,-26 12,-26 12,-6Z" fill="${t.d}" opacity=".7"/>`,
+  front: arrowP(0, -10, 0, GOLD, .55),
+  faces: [F(0, -50, 11, 'ten')], kanji: [0, -30, 13] }));
+N('用', 'un marco firme, siempre a mano para lo que haga falta', 94, t => ({ body: 'M-36,-74 Q-36,-80 -30,-80 H30 Q36,-80 36,-74 V-12 Q36,-6 30,-6 H-30 Q-36,-6 -36,-12Z',
+  back: legs([-14, 14], t),
+  mid: `<path class="k2-ln" d="M-36,-56 H36 M-36,-32 H36 M0,-80 V-6" stroke="${t.d}" stroke-width="2.4" opacity=".45" fill="none"/>`,
+  faces: [F(0, -64, 13, 'ten')], kanji: [-18, -19, 11] }));
+N('色', 'su papel está hecho de muchos colores', 90, t => ({ body: 'M-38,-14 C-42,-44 -30,-74 0,-74 C30,-74 42,-44 38,-14 Q36,-6 28,-6 H-28 Q-36,-6 -38,-14Z',
+  back: legs([-14, 14], t),
+  mid: `<path d="M-38,-62 C-24,-80 -4,-78 2,-70 C-6,-56 -26,-46 -40,-44Z" fill="${T.fire.f}" opacity=".85"/><path d="M38,-60 C26,-80 8,-78 2,-70 C10,-58 28,-52 40,-46Z" fill="${GOLD}" opacity=".85"/><path d="M-40,-20 C-30,-30 -14,-28 -8,-18 C-12,-10 -24,-6 -34,-8Z" fill="${T.wood.f}" opacity=".85"/><path d="M40,-22 C30,-32 14,-28 8,-18 C12,-10 24,-6 34,-8Z" fill="${T.water.f}" opacity=".85"/>`,
+  faces: [F(0, -46, 13, 'hane')], kanji: [0, -22, 14] }));
+
+// Compuestos que llevaban ideas ajenas
+N('中', 'la caja de 口 atravesada de punta a punta por el palo de 丨', 116, t => { const b = base('口', t); return { ...b,
+  back: Ln('M0,-108 V8', WOOD, 4, 2.6) + (b.back || '') + legs([-20, 20], t), front: '' }; });
+N('占', 'la caja de 口 pregunta y la vara de 卜 le responde', 104, t => { const b = base('口', t); return { ...b,
+  back: (b.back || '') + legs([-20, 20], t) + Ln('M-6,-72 V-106 M-6,-92 L10,-98', WOOD, 3.4, 2.4) }; });
+N('者', 'el sol de 日 con la barba blanca de 耂: alguien con oficio', 100, t => { const b = base('日', t); return { ...b,
+  back: b.back + legs([-14, 14], t),
+  mid: beard(0, -42, .55), kanji: [0, -17, 12],
+  faces: [F(0, -54, 15, 'tome', { mouth: false })] }; });
+N('姉', 'la mujer de 女 frente al toldo a rayas de 市: ya va sola al mercado', 116, t => { const b = base('女', t); return { ...b,
+  back: P('M-50,-90 L-44,-112 H44 L50,-90 Q44,-84 38,-90 Q32,-84 26,-90 Q20,-84 14,-90 Q8,-84 2,-90 Q-4,-84 -10,-90 Q-16,-84 -22,-90 Q-28,-84 -34,-90 Q-40,-84 -50,-90Z', SHU, 2.6) + `<path d="M-30,-110 L-32,-92 M-10,-110 L-10,-90 M10,-110 L10,-90 M30,-110 L32,-92" stroke="${W}" stroke-width="5" opacity=".85"/>` + b.back }; });
+N('夜', 'la medialuna de 夕 duerme bajo el techito de 亠: es de noche', 100, t => { const b = base('夕', t); return { ...b,
+  back: b.back,
+  front: lid(-20, -82, 34, t.d) + zz(-62, -60) + `<g class="k2-float">${star(36, -40, .45)}</g>`,
+  faces: [F(-20, -46, 10, 'tome', { expr: 'dormido', fix: true })] }; });
+N('交', 'el papá de 父 con su sombrero de 亠, cruzando las piernas', 100, t => { const b = base('父', t); return { ...b,
+  back: strip(-12, -14, 10, 4, t.d, 10) + strip(12, -14, -10, 4, t.d, 10),
+  front: lid(0, -74, 46, GOLD) }; });
+N('洗', 'la gota de 水 se lava con espuma y se inclina hacia adelante como 先', 116, t => { const b = base('水', t); return { ...b,
+  back: b.back + [[-24, -104, 10], [-8, -112, 12], [10, -106, 10]].map(([x, y, r]) => P(circ(x, y, r), W, 2.4)).join('') + legs([-14, 14], t),
+  front: b.front + spd(-52, -40, t.d) }; });
+N('来', 'el grano de 米 llega a la mesa de 一: todos vienen', 112, t => { const b = base('米', t); return { ...b,
+  body: tr(b.body, 1, 1, 0, -16), back: legs([-12, 12], t, -16, 10),
+  front: `<g transform="translate(0 -16)">${b.front}</g>` + plank(0, -6, 96, T.earth) + spd(-56, -60, t.d),
+  faces: [F(0, -72, 13, 'harai', { expr: 'feliz', fix: true })], kanji: [0, -42, 15] }; });
+N('夏', 'el ojo de 自 arrastra los pies de 夂 bajo el sol: qué calor', 110, t => { const b = base('自', t); return { ...b,
+  back: b.back.replace(legs([-12, 12], t), '') + strip(-10, -8, -22, 2, t.d, 10) + strip(10, -8, 18, 4, t.d, 10),
+  front: sweat(-46, -70) + sweat(46, -56) + `<g class="k2-float">${Ln('M-30,-112 c-4,-6 4,-10 0,-16 M30,-112 c-4,-6 4,-10 0,-16', T.fire.f, 2.4, 2)}</g>` }; });
+N('道', 'la cabeza de 首 avanza por el camino de 辶', 124, t => { const b = base('首', t); return { ...b,
+  back: b.back.replace(legs([-10, 10], t), '') + strip(-6, -4, -16, 6, t.d, 10) + strip(6, -4, 14, 8, t.d, 10),
+  front: road(4, 72) + spd(-56, -60, t.d) }; });
+N('語', 'la caja de 言 dice lo mismo de cinco maneras: un idioma', 116, t => { const b = base('言', t); return { ...b,
+  front: lid(0, -76, 26, t.d) + `<g class="k2-float">${Ln('M50,-60 C58,-66 66,-66 72,-60', T.fire.f, 4, 2.6)}${Ln('M50,-46 C58,-52 68,-52 76,-46', T.wood.f, 4, 2.6)}${Ln('M50,-32 C58,-38 66,-38 72,-32', T.water.f, 4, 2.6)}</g>`
+    + `<g class="k2-float b">${Ln('M-50,-52 C-58,-58 -66,-58 -72,-52', GOLD, 4, 2.6)}${Ln('M-50,-38 C-58,-44 -68,-44 -76,-38', SHU, 4, 2.6)}</g>` }; });
+N('読', 'la caja de 言 lee en voz alta el letrero del puesto de 売', 116, t => { const b = base('言', t); return { ...b,
+  front: lid(0, -76, 26, t.d) + arm(40, -40, -140, t.d, 16, .2) + `<g transform="translate(60 -70) rotate(-12)">${P(rrect(-14, -18, 28, 34, 3), W, 2.4)}<path d="M-8,-10 h16 M-8,-2 h16 M-8,6 h10" stroke="${T.fire.d}" stroke-width="2"/></g>` }; });
+N('町', 'la hoja de 田 doblada en cuatro junto al poste de 丁: una cuadra del pueblo', 112, t => ({ body: juB(1, -6),
+  back: legs([-20, 20], t),
+  mid: juF(1, -6),
+  front: Ln('M66,0 V-80', T.metal.d, 3.4, 2.4) + P(rrect(50, -88, 32, 9, 4), T.metal.d, 2.4),
+  faces: [F(0, -76, 14, 'ten')], kanji: [0, -36, 15] }));
 
 
 // ---------- El kit en el juego ----------
