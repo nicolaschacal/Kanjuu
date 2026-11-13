@@ -1009,7 +1009,7 @@ ruby.wk rt{font-family:var(--f-ui);font-size:.42em;font-weight:700;opacity:.75}
 .fx-h{margin:8px 0 4px;font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
 .fx-row{display:flex;flex-wrap:wrap;gap:5px;font-family:var(--f-jp)}
 .fx-t{padding:3px 8px;border:2px solid var(--line);border-radius:10px;background:#FFFDF6;font-size:17px;font-weight:700}
-.fx-row.mine .fx-t.x{border-color:var(--red);background:#E8452C1F;text-decoration:line-through;text-decoration-color:var(--red)}
+.fx-row.mine .fx-t.x{border-color:var(--red);background:#E8452C1F}
 .fx-row.need .fx-t.x{border-color:var(--green);background:#5DB84F26}
 .fx-n,.fx-ai{display:flex;gap:8px;align-items:flex-start;margin:10px 0 0;font-size:13.5px;line-height:1.45}
 .fx-n svg,.fx-ai svg{flex:none;width:18px;height:18px;margin-top:1px}
@@ -1018,6 +1018,8 @@ ruby.wk rt{font-family:var(--f-ui);font-size:.42em;font-weight:700;opacity:.75}
 .fx .wcard{margin:10px 0 0;box-shadow:none}
 .fx-acts{display:flex;gap:8px;margin-top:12px}.fx-acts .btn{flex:1}
 .fx-ai[hidden]{display:none}.fx-t,.fx-t *{color:var(--line)!important}
-.fx-t{white-space:nowrap;line-height:2.1;padding:4px 9px 0;flex:none}.fx-row{gap:6px 5px}
-.fx-t{line-height:1.5;padding:3px 9px 9px;min-width:34px;text-align:center}
 .fx-why{display:inline-flex;align-items:center;justify-content:center;gap:6px}.fx-why svg{width:16px;height:16px}
+.fx-row{gap:6px}
+.fx-t{display:inline-flex;align-items:flex-start;flex:none;white-space:nowrap;min-width:36px;justify-content:center;padding:5px 9px 4px;line-height:1.2}
+.fx-t ruby.kr{display:inline-flex;flex-direction:column;align-items:center}
+.fx-t ruby.kr rt{display:block;line-height:1.1;margin-top:1px}
