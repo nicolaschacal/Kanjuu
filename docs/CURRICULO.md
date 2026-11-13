@@ -119,7 +119,7 @@ Encima del juego base, nunca requisito:
 
 **Salvaguarda i+1:** todo texto generado pasa por un control contra `S.lex`/`S.srs` antes de mostrarse; como mucho 5 % de palabras nuevas, y solo de la sección actual o la siguiente. Si se pasa, se regenera o se usa el contenido fijo.
 
-**Necesita decisión de Nicolás:** hoy la clave propia vive en el dispositivo (`js/ai.js`, localStorage) y la app habla directo con el proveedor. El plan pide que la clave nunca viva en el navegador: guardarla cifrada en el servidor y llamar al proveedor desde `api/`. Eso necesita una variable de entorno nueva (clave de cifrado) en Vercel, que los agentes no pueden crear (CLAUDE.md, regla 6). El plan pago necesita además una clave del juego y un precio (a definir).
+**Se hace después** (decidido por Nicolás el 13 de noviembre de 2026, con la tarea A-11): hoy la clave propia vive en el dispositivo (`js/ai.js`, localStorage) y la app habla directo con el proveedor. El plan pide que la clave nunca viva en el navegador: guardarla cifrada en el servidor y llamar al proveedor desde `api/`. Eso necesita una variable de entorno nueva (clave de cifrado) en Vercel, que los agentes no pueden crear (CLAUDE.md, regla 6). El plan pago necesita además una clave del juego y un precio (a definir).
 
 ## 8. Revisión del japonés
 
@@ -210,7 +210,7 @@ Las palabras concretas de cada sección se cargan en `js/curriculum.js` etapa po
 | 4.11 | Quejarse y disculparse | 〜ので, 〜のに | (a definir, N4) | — |
 | 4.12 | Gran viaje por Japón | repaso de las etapas 1 a 4 | 京 都 県 | 京 |
 
-\* No está en el roster actual (294 kanji). De los 42 KANJŪ de recompensa, 38 ya existen. Faltan **旅, 風, 晴 y 客**: diseñarlos con la biblia de arte o cambiarlos por un kanji del roster (por ejemplo 外, 色, 天, 社). Además, 38 kanji que se enseñan en las secciones no son criatura (帰, 雪, 窓, 卵, 歌…); está bien: se enseñan dentro de palabras aunque no tengan KANJŪ.
+\* No está en el roster actual (294 kanji). De los 42 KANJŪ de recompensa, 38 ya existen. Faltan **旅, 風, 晴 y 客**: decidido por Nicolás el 13 de noviembre de 2026, entran como dibujo borrador simple y se diseñan después (tarea A-04b). Además, 38 kanji que se enseñan en las secciones no son criatura (帰, 雪, 窓, 卵, 歌…); está bien: se enseñan dentro de palabras aunque no tengan KANJŪ.
 
 ---
 

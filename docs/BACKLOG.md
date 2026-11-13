@@ -98,8 +98,8 @@ Pedido por Nicolás el 9 de noviembre de 2026. Especificación completa en **doc
 
 ---
 
-## Bloque A · Aprendizaje en el entrenamiento *(propuesto el 13 de noviembre de 2026)*
-Pedido por Nicolás el 13 de noviembre de 2026: la Academia desaparece y el japonés se aprende en la pestaña Entrenar de cada KANJŪ, por etapas y secciones. Especificación completa en **docs/CURRICULO.md**. Reemplaza a los sprints 4 y 5 tentativos (Academia en dos idiomas y contenido nuevo de la Academia).
+## Bloque A · Aprendizaje en el entrenamiento *(va primero: decidido por Nicolás el 13 de noviembre de 2026)*
+Pedido por Nicolás el 13 de noviembre de 2026: la Academia desaparece y el japonés se aprende en la pestaña Entrenar de cada KANJŪ, por etapas y secciones. Especificación completa en **docs/CURRICULO.md**. Reemplaza a los sprints 4 y 5 tentativos (Academia en dos idiomas y contenido nuevo de la Academia). Se hace **antes** del Sprint 2 (estados y clima), que se corre una vez terminado el bloque.
 
 ### A-01 · Datos del currículo, etapas 0 y 1
 - `js/curriculum.js` con las 18 secciones de E0 y E1 (docs/CURRICULO.md §9): palabras núcleo, frases, patrones, kana, kanji, recompensa, palabra de la recompensa y rivales
@@ -133,6 +133,12 @@ Pedido por Nicolás el 13 de noviembre de 2026: la Academia desaparece y el japo
 - Ubicación automática de las partidas existentes
 
 **Aceptación:** alguien que sabe kana llega a 1.1 en menos de 5 minutos; una partida vieja carga ubicada.
+
+### A-04b · KANJŪ provisorios 旅, 風, 晴 y 客
+- Agregar los cuatro kanji al roster con lecturas exactas y un dibujo borrador simple (decidido por Nicolás el 13 de noviembre de 2026: se diseñan bien más adelante)
+- Marcados como provisorios en los datos para encontrarlos cuando se haga el diseño final
+
+**Aceptación:** los cuatro existen en `KANJI`, se ven en el Atlas y pasan los chequeos de lecturas.
 
 Después: A-06 (implementar A-02), A-07 (combate de examen y dorado), A-08 a A-10 (contenido de E2 a E4) y A-11 (capa de IA), en ese orden.
 
