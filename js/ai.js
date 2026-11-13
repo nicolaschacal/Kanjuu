@@ -4,7 +4,7 @@
 import { ic } from './icons.js';
 import { S, save } from './state.js';
 import { KANJI } from './data.js';
-import { t } from './i18n.js';
+import { t, lang } from './i18n.js';
 
 export const PROVIDERS = {
   gemini: { label: 'Google Gemini', models: ['gemini-2.5-flash', 'gemini-2.5-flash-lite'], prefixes: ['AIza'], keyUrl: 'https://aistudio.google.com/apikey', free: true },
@@ -94,9 +94,10 @@ Incluye 2 o 3 preguntas.`;
   s.title = String(s.title || 'Historia').slice(0, 60);
   return s;
 }
-export async function explain(question, given, correct) {
-  const x = await ai({ system: 'Eres un profesor de japonés paciente para hispanohablantes principiantes. Explica en español, en máximo 3 oraciones cortas y simples, por qué la respuesta del alumno es incorrecta y cómo recordar la correcta. Sin markdown.',
-    user: `Ejercicio: ${String(question).slice(0, 300)}\nRespuesta del alumno: ${String(given).slice(0, 100)}\nRespuesta correcta: ${String(correct).slice(0, 100)}`, maxTokens: 300 });
+export async function explain(question, given, correct, context = '') {
+  const L = lang() === 'en' ? 'English' : 'español neutro (tú)';
+  const x = await ai({ system: `Eres un profesor de japonés paciente para principiantes. Explica en ${L}, en máximo 3 oraciones cortas y simples, por qué la respuesta del alumno es incorrecta y cómo recordar la correcta. La respuesta correcta es la que se te da: no la discutas ni propongas otra. Sin markdown.`,
+    user: `Ejercicio: ${String(question).slice(0, 300)}\nRespuesta del alumno: ${String(given).slice(0, 160)}\nRespuesta correcta: ${String(correct).slice(0, 160)}${context ? `\nPista del juego: ${String(context).replace(/<[^>]+>/g, '').slice(0, 400)}` : ''}`, maxTokens: 300 });
   return x.replace(/\*\*/g, '');
 }
 
