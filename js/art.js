@@ -1583,6 +1583,166 @@ N('町', 'la hoja de 田 doblada en cuatro junto al poste de 丁: una cuadra del
   faces: [F(0, -76, 14, 'ten')], kanji: [0, -36, 15] }));
 
 
+// ===== Corrección 2 (13 de noviembre): notas de Nicolás sobre el roster v3 =====
+// Números: cada uno muestra su cantidad (estrellas, patitas, cuentas, puntitos) dibujada con la forma de sus trazos.
+// Reglas que se aplican: si tiene patas, sin rayos ni hojas por debajo; patas y manos pegadas al cuerpo;
+// los que vuelan (日, 月, 羽) no llevan patas y dejan su sombra en el suelo.
+const shadowG = (w = 22) => `<ellipse cx="0" cy="-1" rx="${w}" ry="4" fill="${INK}" opacity=".12"/>`;
+const SUN12 = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
+const sunRays = (cy, t, bottom = true) => rays(0, cy, SUN12.filter(a => bottom || a < 150 || a > 210).map(a => [a, (a / 30) % 2 ? .84 : 1]), t);
+// El sol de 日 cuando camina: mismo cuerpo, sin los rayos de abajo para que no le ganen a las patas
+const sunLeg = t => ({ body: circ(0, -40, 34), back: sunRays(-40, t, false), front: '', faces: [F(0, -48, 15, 'maru')], kanji: [0, -24, 19] });
+// Elipse girada como trazado (para cuerpos inclinados)
+const rotEll = (cx, cy, rx, ry, deg) => { const a = deg * Math.PI / 180, c = Math.cos(a), s = Math.sin(a), k = .5523;
+  const p = (x, y) => `${(cx + x * c - y * s).toFixed(1)},${(cy + x * s + y * c).toFixed(1)}`;
+  return `M${p(rx, 0)} C${p(rx, ry * k)} ${p(rx * k, ry)} ${p(0, ry)} C${p(-rx * k, ry)} ${p(-rx, ry * k)} ${p(-rx, 0)} C${p(-rx, -ry * k)} ${p(-rx * k, -ry)} ${p(0, -ry)} C${p(rx * k, -ry)} ${p(rx, -ry * k)} ${p(rx, 0)}Z`; };
+// Puntos repartidos a lo largo de varias curvas (para las cuentas de 九)
+const along = (segs, fr) => { const pts = []; for (const [a, b, c, d] of segs) for (let i = 0; i <= 40; i++) { const u = i / 40, v = 1 - u;
+    pts.push([v * v * v * a[0] + 3 * v * v * u * b[0] + 3 * v * u * u * c[0] + u * u * u * d[0], v * v * v * a[1] + 3 * v * v * u * b[1] + 3 * v * u * u * c[1] + u * u * u * d[1]]); }
+  const L = [0]; for (let i = 1; i < pts.length; i++) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+  return fr.map(f => { const target = f * L[L.length - 1]; let i = L.findIndex(l => l >= target); return pts[Math.max(0, i)]; }); };
+const SWORD = `${P('M-8,-60 C-8,-70 0,-74 10,-72 L10,-20 H-8Z', T.metal.l, 3)}${P(ell(1, -18, 15, 4), GOLD, 2.4)}${P(rrect(-5, -16, 12, 18, 3), SHU, 2.4)}`;
+// Pluma y par de alas de 羽 (las hereda 曜)
+const FEATHER = 'M0,-7 C14,-17 38,-17 52,-7 C55,-3 53,3 48,4 C32,9 12,8 0,7Z';
+const wing = t => [[26, W], [6, t.l], [-14, t.l], [-34, t.f]].map(([r, c]) => `<g transform="rotate(${r})">${P(FEATHER, c, 2.6)}<path class="k2-ln" d="M4,0 C20,-3 34,-4 46,-1" stroke="${t.d}" stroke-width="1.4" fill="none" opacity=".6"/></g>`).join('');
+const wingPair = (x, y, s, t, gap = 14 * s) => [-1, 1].map(d => `<g transform="translate(${x + d * gap} ${y}) scale(${d * s} ${s})">${wing(t)}</g>`).join('');
+
+// --- Números ---
+// 七: el cucharón de siete estrellas (北斗七星) dibuja el siete: raya que cruza, palo que baja y gancho
+N('七', 'siete estrellas dibujan el siete: la estrella que dobla el gancho es la criatura (北斗七星)', 124, t => ({ body: circ(-12, -34, 28), fill: GOLD,
+  back: legs([-24, 0], t) + `<path d="M-62,-78 L-14,-84 L42,-92 M-18,-120 L-14,-84 L-13,-62 M15,-30 L38,-24 L66,-46" fill="none" stroke="${t.d}" stroke-width="2.4" stroke-dasharray="1 6" stroke-linecap="round" opacity=".75"/>`,
+  front: [[-62, -78, .72], [-14, -84, .8], [42, -92, .72], [-18, -120, .66], [38, -24, .7], [66, -46, .82]].map(([x, y, s]) => star(x, y, s)).join(''),
+  faces: [F(-12, -38, 11, 'maru')], kanji: [-12, -18, 12] }));
+// 八: se abre hacia abajo (末広がり) y camina con ocho patitas, cuatro de cada lado
+const HACHI = 'M0,-92 C22,-92 34,-76 38,-56 C42,-38 50,-22 58,-12 Q60,-6 54,-6 H18 Q14,-6 12,-10 L2,-32 Q0,-36 -2,-32 L-12,-10 Q-14,-6 -18,-6 H-54 Q-60,-6 -58,-12 C-50,-22 -42,-38 -38,-56 C-34,-76 -22,-92 0,-92Z';
+N('八', 'se abre hacia abajo como el ocho y camina con ocho patitas, cuatro de cada lado', 96, t => ({ body: HACHI,
+  back: stub([-49, -39, -29, -19, 19, 29, 39, 49], t.d, 0, 9, 8),
+  faces: [F(0, -66, 13, 'hane')], kanji: [0, -48, 12] }));
+// 九: nueve cuentas en el gancho del nueve y un lugar vacío: casi llega a diez
+const KYU = [[[-12, -74], [16, -82], [36, -72], [36, -52]], [[36, -52], [36, -30], [40, -12], [56, -12]], [[56, -12], [66, -12], [70, -22], [68, -36]]];
+N('九', 'nueve cuentas en el gancho del nueve y un lugar vacío: casi llega a diez', 98, t => { const pts = along(KYU, [.06, .16, .26, .36, .46, .56, .66, .76, .86, 1]);
+  return { body: rotEll(-30, -46, 22, 40, 20),
+    back: legs([-38, -20], t) + Ln('M-12,-74 C16,-82 36,-72 36,-52 C36,-30 40,-12 56,-12 C66,-12 70,-22 68,-36', t.d, 2.2, 1.8),
+    front: pts.slice(0, 9).map(([x, y], i) => P(circ(+x.toFixed(1), +y.toFixed(1), 5.6), i < 5 ? t.d : GOLD, 2.2)).join('')
+      + `<circle cx="${pts[9][0].toFixed(1)}" cy="${pts[9][1].toFixed(1)}" r="6" fill="${W}" fill-opacity=".7" stroke="${t.d}" stroke-width="2" stroke-dasharray="2.4 2.6"/>`,
+    faces: [F(-26, -58, 11, 'tome')], kanji: [-34, -30, 12] }; });
+// 万: tantos puntitos que nadie los puede contar, bajo su tablón larguísimo
+N('万', 'tantos puntitos que nadie los puede contar: diez mil, un montón, bajo su tablón larguísimo', 82, t => { let dots = '';
+  for (let r = 0; r < 8; r++) for (let c = -9; c <= 9; c++) { const x = c * 6.4 + (r % 2 ? 3.2 : 0), y = -10 - r * 6;
+    if ((x / 58) ** 2 + ((y + 6) / 50) ** 2 > .9) continue; if (Math.abs(x) < 25 && y < -24 && y > -50) continue; if (Math.abs(x) < 15 && y > -28) continue;
+    dots += `<circle cx="${x.toFixed(1)}" cy="${y}" r="1.5" fill="${t.d}" opacity=".42"/>`; }
+  return { body: 'M-62,-8 C-62,-34 -36,-58 0,-58 C36,-58 62,-34 62,-8 Q62,-4 56,-4 H-56 Q-62,-4 -62,-8Z',
+    back: legs([-36, -12, 12, 36], t, 0, 10), mid: dots,
+    front: P(rrect(-66, -74, 132, 11, 5.5), t.d, 2.6) + `<g class="k2-float">${pips([[-44, -84], [-26, -90], [-8, -86], [10, -91], [28, -85], [46, -89]], t.d, 2.4)}</g>`,
+    faces: [F(0, -36, 14, 'maru')], kanji: [0, -16, 12] }; });
+// Lo que hereda de 七 y de 八
+N('切', 'la estrella de 七 empuña la espadita de 刀 y corta la línea de estrellas: cortar', 124, t => { const b = base('七', t); return { ...b,
+  front: b.front + J(-38, -42, `<g transform="rotate(-38) scale(.72)">${SWORD}</g>`, 0, '') }; });
+N('六', 'el ocho de 八 con la tapita de 亠: guarda dos patitas y le quedan seis', 108, t => ({ body: HACHI,
+  back: stub([-44, -32, -20, 20, 32, 44], t.d, 0, 9, 8), front: lid(0, -92, 26, t.d),
+  faces: [F(0, -66, 13, 'hane')], kanji: [0, -48, 12] }));
+N('空', 'el ocho de 八 se abre bajo el techo de 宀: el cielo, grande y abierto', 112, t => { const b = base('八', t); return { ...b, front: roof(0, -96, 64) }; });
+const HL = 'M-3,-92 C-22,-92 -34,-76 -38,-56 C-42,-38 -50,-22 -58,-12 Q-60,-6 -54,-6 H-18 Q-14,-6 -12,-10 L-3,-30Z';
+N('分', 'el ocho de 八 partido en dos por la espada de 刀: cada mitad se va por su lado', 104, t => ({ body: `${tr(HL, 1, 1, -9, 0)} ${tr(HL, -1, 1, 9, 0)}`,
+  back: stub([-58, -48, -38, -28, 28, 38, 48, 58], t.d, 0, 9, 8),
+  front: `<g transform="translate(0 -104) rotate(180) scale(.6)">${SWORD}</g>`,
+  faces: [F(-30, -62, 7, 'ten', { es: .8 }), F(30, -62, 7, 'hane', { es: .8, fix: true })], kanji: [-30, -26, 11] }));
+N('前', 'la luna de 月 va al frente de la fila con las dos marcas de 八 en la cabeza y la espada de 刀 señalando adelante', 108, t => ({
+  body: tr('M14,-89.8 A46,46 0 1,0 14,-2.2 A70,70 0 0,1 14,-89.8Z', 1, 1, -8, -10),
+  back: legs([-28, -8], t) + strip(-30, -96, -40, -112, t.d, 8) + strip(-10, -96, 0, -112, t.d, 8) + spd(-60, -50, t.d),
+  front: J(4, -42, `<g transform="rotate(90) scale(.6)">${SWORD}</g>`, 0, ''),
+  faces: [F(-30, -62, 10, 'tome', { es: .95 })], kanji: [-30, -37, 15] }));
+
+// --- Sol, luna y cielo ---
+N('日', 'el sol, cuya luz hace el día: vuela por el cielo como la luna', 108, t => ({ body: circ(0, -58, 34),
+  back: shadowG(22) + sunRays(-58, t), faces: [F(0, -66, 15, 'maru')], kanji: [0, -42, 19] }));
+N('早', 'el sol de 日 sale corriendo y bracea con las manos de 十', 102, t => { const b = sunLeg(t); return { ...b,
+  back: b.back + legs([-14, 14], t),
+  front: J(-32, -44, hand(-6, 4, -110, .75, T.metal.l), 0, 'k2-swing2') + J(32, -48, hand(6, -2, 70, .75, T.metal.l), .5, 'k2-swing2') + spd(-60, -40, t.d),
+  faces: [F(0, -48, 15, 'harai')] }; });
+N('曜', 'el sol de 日 con las alas de pluma de 羽: un día que vuela', 100, t => { const b = sunLeg(t); return { ...b,
+  back: wingPair(0, -52, .82, T.water, 30) + b.back + legs([-14, 14], t) }; });
+N('者', 'el sol de 日 con la barba blanca de 耂: alguien con oficio', 100, t => { const b = sunLeg(t); return { ...b,
+  back: b.back + legs([-14, 14], t), mid: beard(0, -42, .55), kanji: [0, -17, 12], faces: [F(0, -54, 15, 'tome', { mouth: false })] }; });
+N('書', 'el sol de 日 que escribe con el pincel de 聿', 100, t => { const b = sunLeg(t); return { ...b,
+  back: b.back + legs([-14, 14], t),
+  front: P(rrect(32, -4, 36, 8, 2), W, 2.2) + `<path d="M38,-1 h12" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>` + brush(46, -6, 10, .9) + arm(30, -38, -70, t.d, 20, 0, '') }; });
+N('羽', 'un par de alas de plumas que vuela solo: ala y pluma', 104, t => ({ body: ell(0, -60, 20, 24),
+  back: shadowG(18) + wingPair(0, -62, 1, t), faces: [F(0, -64, 10, 'ten')], kanji: [0, -48, 11] }));
+
+// --- Correcciones de forma ---
+N('止', 'una señal que te frena con la mano, bien plantada sobre sus dos pies', 86, t => ({ body: oct(35, -42), back: feet([-15, 15], t, 11, -3),
+  mid: `<path class="k2-ln" d="${oct(29, -42)}" fill="none" stroke="${SHU}" stroke-width="3.6" stroke-linejoin="round"/>`,
+  front: J(35, -44, `<g transform="translate(12 -10) rotate(8)">${P('M-6,6 C-8,-2 -8,-10 -6,-14 C-4,-16 -2,-14 -2,-10 L-1,-18 C0,-21 3,-20 3,-17 L3,-10 L5,-17 C6,-20 9,-19 9,-16 L7,-8 L10,-12 C12,-14 14,-12 13,-10 L8,2 C6,6 0,8 -6,6Z', t.l, 2.6)}</g>`, 0, 'k2-swing2'),
+  faces: [F(0, -52, 13, 'tome', { brow: true })], kanji: [0, -30, 18] }));
+for (const k of ['走', '歩', '起']) { const d = D[k], o = d.draw; d.draw = t => { const r = o(t); return { ...r, back: (r.back || '').replace(feet([-15, 15], t, 11, -3), '') }; }; }
+N('年', 'un tronco cortado muestra sus anillos: cada anillo es un año (年輪), y el dorado es el de este año', 100, t => ({ body: circ(0, -46, 38), fill: '#EBC791',
+  back: legs([-16, 16], t),
+  mid: `<circle cx="0" cy="-46" r="35" fill="none" stroke="${WOOD}" stroke-width="3.4" opacity=".75"/><circle cx="1" cy="-46" r="31" fill="none" stroke="${GOLD}" stroke-width="3"/>`
+    + [[25, 2], [19, 3], [13, 3.5], [7, 4]].map(([r, dx]) => `<circle cx="${dx}" cy="-45" r="${r}" fill="none" stroke="${WOOD}" stroke-width="1.6" opacity=".32"/>`).join('') + `<circle cx="4" cy="-45" r="2" fill="${WOOD}" opacity=".5"/>`,
+  faces: [F(0, -54, 13, 'tome')], kanji: [0, -26, 14] }));
+const HANL = 'M-6,-94 C-40,-90 -52,-50 -42,-20 C-36,-10 -18,-8 -6,-10 L-10,-22 L-6,-34 L-10,-46 L-6,-58 L-10,-70 L-6,-82Z';
+N('半', 'una hoja partida justo por la mitad: cada mitad se lleva un ojo', 96, t => ({ body: `${HANL} ${tr(HANL, -1, 1)}`,
+  back: legs([-26, 26], t),
+  faces: [F(-26, -58, 0, 'ten', { es: .9 }), F(26, -58, 0, 'ten', { es: .9, mouth: false })], kanji: [-26, -30, 12] }));
+N('毎', 'da la vuelta y vuelve a empezar: siete puntitos iguales giran a su alrededor, uno por cada día', 96, t => {
+  const cx = 0, cy = -50, rx = 54, ry = 14, a = -14 * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a);
+  const p = th => [cx + rx * Math.cos(th) * ca - ry * Math.sin(th) * sa, cy + rx * Math.cos(th) * sa + ry * Math.sin(th) * ca];
+  const q = th => p(th).map(v => v.toFixed(1)).join(',');
+  const dots = Array.from({ length: 7 }, (_, i) => (i * 2 * Math.PI / 7) + .35);
+  const dot = th => P(circ(...p(th).map(v => +v.toFixed(1)), 4.4), GOLD, 1.8);
+  const tip = Math.PI * .62, [tx, ty] = p(tip), [nx, ny] = p(tip + .01), tang = Math.atan2(ny - ty, nx - tx) * 180 / Math.PI;
+  return { body: circ(0, -44, 30),
+    back: legs([-12, 12], t) + Ln(`M${q(0)} A${rx},${ry} -14 1,1 ${q(Math.PI)} A${rx},${ry} -14 1,1 ${q(0)}`, t.d, 2.6, 2.2) + dots.filter(th => Math.sin(th) < 0).map(dot).join(''),
+    front: Ln(`M${q(0)} A${rx},${ry} -14 0,1 ${q(Math.PI)}`, t.d, 2.6, 2.2) + dots.filter(th => Math.sin(th) >= 0).map(dot).join('')
+      + `<g transform="translate(${tx.toFixed(1)} ${ty.toFixed(1)}) rotate(${tang.toFixed(1)})">${P('M6,0 L-4,-6 L-4,6Z', t.d, 1.8)}</g>`,
+    faces: [F(0, -58, 12, 'ten')], kanji: [0, -22, 12] }; });
+const old海 = D['海'].draw;
+N('海', 'la gota de 水 crece hasta ser una ola que va y vuelve, como los días de 毎: el mar', 118, t => { const b = old海(t); return { ...b,
+  back: Ln('M-56,-92 A22,7 -14 1,1 -12,-92 A22,7 -14 1,1 -56,-92', T.earth.d, 2.2, 1.8) + pips([[-52, -98], [-30, -100], [-16, -86]], GOLD, 3.2) }; });
+N('後', 'sigue las huellas de quien pasó antes: va atrás y llega después', 86, t => ({ body: circ(-16, -40, 30),
+  back: strip(-26, -14, -34, 0, t.d, 10) + strip(-6, -14, 2, 0, t.d, 10)
+    + [[26, -3, -12], [40, -7, 12], [54, -3, -12], [68, -7, 12]].map(([x, y, r]) => `<ellipse cx="${x}" cy="${y}" rx="5" ry="2.8" fill="${t.d}" opacity=".5" transform="rotate(${r} ${x} ${y})"/>`).join(''),
+  faces: [F(-12, -44, 12, 'ten', { px: 1.4 })], kanji: [-16, -22, 13] }));
+N('小', 'tan chiquito que se abraza con sus dos manitos', 100, t => ({ body: circ(0, -26, 22),
+  back: legs([-8, 8], t, 0, 8) + P(ell(-21, -24, 6.5, 9.5), t.f, 2.6, 'transform="rotate(28 -21 -24)"') + P(ell(21, -24, 6.5, 9.5), t.f, 2.6, 'transform="rotate(-28 21 -24)"'),
+  front: '', faces: [F(0, -30, 10, 'maru')], kanji: [0, -13, 11] }));
+const SHEET = 'M-24,-92 H16 L32,-76 V-12 Q32,-6 26,-6 H-24 Q-30,-6 -30,-12 V-86 Q-30,-92 -24,-92Z';
+N('白', 'una hoja de papel en blanco (白紙), con su pliegue al medio y un brillo arriba', 106, t => ({ body: SHEET, fill: t.l,
+  back: legs([-12, 12], t),
+  mid: `<path class="k2-ln" d="M-30,-50 H32" stroke="${t.d}" stroke-width="1.8" fill="none" opacity=".35"/>` + P('M16,-92 V-80 Q16,-76 20,-76 H32Z', t.f, 2),
+  front: `<g class="k2-float">${star(-4, -106, .75)}</g>`,
+  faces: [F(0, -66, 13, 'ten')], kanji: [0, -28, 14] }));
+N('百', 'la hoja en blanco de 白 salta con el tablón de 一 encima: ¡cien puntos!', 118, t => { const b = base('白', t); return { ...b,
+  back: strip(-12, -10, -22, 4, t.d, 10) + strip(12, -10, 22, 4, t.d, 10), front: plank(0, -100, 70, T.earth) }; });
+N('赤', 'colorado como un recién nacido (赤ちゃん, el rojito): rojo de la cabeza a los pies', 92, t => ({ body: 'M-38,-14 C-42,-44 -30,-70 0,-70 C30,-70 42,-44 38,-14 Q36,-6 28,-6 H-28 Q-36,-6 -38,-14Z',
+  back: legs([-14, 14], t) + Ln('M0,-70 C-4,-80 6,-88 10,-80 C12,-76 8,-73 5,-76', t.d, 3, 2.4),
+  front: `<ellipse cx="-24" cy="-34" rx="7.5" ry="4.6" fill="${PINK}" opacity=".85"/><ellipse cx="24" cy="-34" rx="7.5" ry="4.6" fill="${PINK}" opacity=".85"/>`,
+  faces: [F(0, -44, 13, 'ten', { expr: 'feliz', fix: true })], kanji: [0, -22, 14] }));
+N('未', 'un capullo que todavía no se abrió: sigue dormido, esperando su momento', 104, t => ({ body: 'M0,-102 C16,-88 30,-66 28,-44 C26,-22 14,-10 0,-10 C-14,-10 -26,-22 -28,-44 C-30,-66 -16,-88 0,-102Z',
+  back: legs([-10, 10], t),
+  mid: P('M0,-102 C6,-96 10,-90 9,-84 C5,-87 -5,-87 -9,-84 C-10,-90 -6,-96 0,-102Z', PINK, 2) + `<path class="k2-ln" d="M-12,-86 C-8,-62 -6,-38 0,-12 M12,-86 C8,-62 6,-38 0,-12" stroke="${t.d}" stroke-width="1.6" fill="none" opacity=".45"/>`,
+  front: zz(24, -92),
+  faces: [F(0, -56, 12, 'tome', { expr: 'dormido', fix: true })], kanji: [0, -32, 13] }));
+N('犬', 'el cuerpo de 大 con las dos orejas en punta del 丶 (el cuerno que hereda Jū), con patitas cortas', 96, t => ({ body: circ(0, -42, 32),
+  back: horn(-14, -70, -1, t, .62) + horn(14, -70, 1, t, .62) + bigArms(t, -40, 26, 18, 5) + strip(-12, -16, -17, 0, t.f, 11) + strip(12, -16, 17, 0, t.f, 11),
+  mid: `<path d="${ell(0, -30, 13, 9)}" fill="${t.l}"/><path d="${ell(0, -34, 5, 3.6)}" fill="${INK}"/>`,
+  faces: [F(0, -52, 13, 'ten', { mouth: false })], kanji: [0, -17, 12] }));
+N('間', 'el portón de 門 entreabierto: el sol de 日 se asoma entre las dos hojas', 108, t => { const b = base('門', t); return { ...b,
+  mid: b.mid + `<path d="M-14,-90 H14 V-6 H-14Z" fill="#5B3B2C"/><path d="M-14,-90 H14 V-6 H-14Z" fill="${GLOW}" opacity=".3"/><path d="M-14,-90 V-6 M14,-90 V-6" stroke="${t.d}" stroke-width="2.4"/>`
+    + `<circle cx="0" cy="-50" r="12" fill="${GLOW}" opacity=".85"/>` + P(circ(0, -50, 7.5), T.fire.f, 2) + Ln([0, 45, 90, 135, 180, 225, 270, 315].map(a => { const r = a * Math.PI / 180; return `M${(Math.sin(r) * 9.5).toFixed(1)},${(-50 - Math.cos(r) * 9.5).toFixed(1)} L${(Math.sin(r) * 12.5).toFixed(1)},${(-50 - Math.cos(r) * 12.5).toFixed(1)}`; }).join(' '), GOLD, 1.8, 0),
+  front: b.front + `<path d="M-14,-6 L14,-6 L34,6 L-34,6Z" fill="${GLOW}" opacity=".55"/>`,
+  faces: [F(0, -70, 28, 'hane', { mouth: false })], kanji: [-28, -22, 12] }; });
+N('終', 'al ovillo de 糸 le llega el invierno de 冬: le queda tan poco hilo que lo ata con el nudo final', 84, t => ({ body: circ(-26, -30, 24),
+  back: legs([-36, -16], t),
+  mid: `<path class="k2-ln" d="M-46,-40 C-32,-48 -16,-48 -4,-38 M-49,-28 C-34,-38 -14,-38 -2,-24 M-44,-14 C-30,-22 -16,-22 -4,-12" stroke="${t.d}" stroke-width="2" fill="none" opacity=".55"/>`
+    + P('M-48,-40 C-46,-52 -38,-56 -26,-56 C-14,-56 -6,-52 -4,-40 C-8,-36 -12,-42 -16,-38 C-20,-34 -24,-40 -28,-36 C-32,-33 -36,-40 -40,-36 C-44,-34 -46,-38 -48,-40Z', W, 2.2),
+  front: Ln('M-4,-22 C8,-10 18,-4 34,-4 C44,-4 50,-6 54,-6', t.d, 3, 2.4)
+    + P('M58,-8 C50,-18 44,-14 48,-8 C44,-2 50,2 58,-8Z', t.d, 2.2) + P('M58,-8 C66,-18 72,-14 68,-8 C72,-2 66,2 58,-8Z', t.d, 2.2) + P(circ(58, -8, 3.4), t.f, 1.8)
+    + Ln('M57,-6 L52,4 M59,-6 L64,4', t.d, 2.2, 1.8),
+  faces: [F(-26, -36, 11, 'tome', { expr: 'feliz', fix: true })], kanji: [-26, -16, 11] }));
+
+
 // ---------- El kit en el juego ----------
 const GOLDT = { f: '#F2C94C', d: '#B8862A', l: '#FBE7A1' };
 const GF = [.84, .88, .92, .96, 1];
