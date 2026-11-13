@@ -910,3 +910,19 @@ ruby.wk rt{font-family:var(--f-ui);font-size:.42em;font-weight:700;opacity:.75}
 @keyframes rd-pop{to{opacity:1;transform:scale(1)}}
 @keyframes rd-fade{to{opacity:1}}
 @media (prefers-reduced-motion:reduce){.rd-ink .n path{animation:none;stroke-dashoffset:0}.rd-born.play *{animation:none!important}.rd-stage .rd-ink-box{display:none}.rd-baby,.rd-born h3,.rd-born>p,.rd-born>.btn{opacity:1;transform:none}}
+/* Cuaderno de entrenamiento (js/book.js, A-06a): tarjeta en la ficha y páginas por sección */
+.bk-card{display:flex;gap:12px;align-items:center;width:100%;margin:12px 0 4px;padding:10px 12px;border:var(--b);border-radius:16px;background:var(--paper3);box-shadow:var(--sh);text-align:left;color:var(--line)}
+.bk-card .rd-ink-box{width:64px;height:64px;flex:none;border-width:2px}
+.bk-t b{display:block;font-family:var(--f-title);font-size:15px}
+.bk-t small{color:var(--muted);font-size:12.5px;line-height:1.35}
+.bk-pages{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.bk-page{position:relative;border:var(--b);border-radius:14px;background:#FFFDF6;box-shadow:var(--sh);padding:10px;color:var(--line)}
+.bk-page .rd-ink-box{width:100%;height:auto;aspect-ratio:1;border-width:2px;display:grid;place-items:center}
+.bk-page b{display:block;font-family:var(--f-title);font-size:13.5px;margin-top:6px}
+.bk-page small{font-size:11.5px;color:var(--muted)}
+.bk-page.cur{border-width:3px;border-color:var(--red)}
+.bk-page.next{opacity:.5}
+.bk-mon{display:block;width:80%;height:80%}.bk-mon svg{width:100%;height:100%}
+.bk-seal{position:absolute;right:10px;top:8px;z-index:1;font-family:var(--brush);color:#A47410;font-size:18px}
+.rd-inkk.q{font-family:var(--f-title);font-size:30px;color:#8A6E4B}
+.rd-inkk.sm{font-size:32px}
