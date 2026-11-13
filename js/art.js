@@ -619,6 +619,7 @@ const D = {
 
 
 
+
 // ---------- KANJŪ nuevos (noviembre de 2026) ----------
 // Mismas reglas que los 101 originales (docs/arte/biblia.html): un significado, una forma; cada compuesto hereda un rasgo
 // visible de cada componente directo (máximo dos); grado 1 chibi sin brazos, grado 2 patitas o brazos cortos, grado 3
