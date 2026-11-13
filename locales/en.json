@@ -381,5 +381,6 @@
  "fx.chosenW": "You picked «{m}»: that's {w}.",
  "fx.chosenK": "You picked «{m}»: that's {k}.",
  "fx.chosenR": "You picked {m}: that's how {k} is read.",
- "fx.kanjiIs": "{k} means «{m}» and is read {r}."
+ "fx.kanjiIs": "{k} means «{m}» and is read {r}.",
+ "gs.exit": "Press back again to exit"
 }

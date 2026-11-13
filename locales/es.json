@@ -381,5 +381,6 @@
  "fx.chosenW": "Elegiste «{m}»: esa es {w}.",
  "fx.chosenK": "Elegiste «{m}»: ese es {k}.",
  "fx.chosenR": "Elegiste {m}: esa es la lectura de {k}.",
- "fx.kanjiIs": "{k} significa «{m}» y se lee {r}."
+ "fx.kanjiIs": "{k} significa «{m}» y se lee {r}.",
+ "gs.exit": "Vuelve a presionar atrás para salir"
 }
