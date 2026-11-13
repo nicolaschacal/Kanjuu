@@ -15,6 +15,7 @@ import { arrive } from './world.js';
 
 export const ROUNDS = 5;   // rondas para completar una sección
 export const PASS = .8;    // la ronda cuenta con el 80 % o más
+const pick = a => a[Math.floor(Math.random() * a.length)];
 const shuffle = (a, rnd = Math.random) => a.map(v => [rnd(), v]).sort((x, y) => x[0] - y[0]).map(v => v[1]);
 
 // ---------- Progreso (S.cur) ----------
@@ -183,49 +184,69 @@ function kanjiExercise(k, ask, body, done) {
   });
 }
 
+// Salón de entrenamiento de papel (propuesta A-02): pared shōji, tatami y sol. De noche cuando la criatura usa su poder.
+function roomSVG(h = 260) {
+  return `<svg class="rd-room" viewBox="0 0 390 ${h}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <rect width="390" height="${h}" class="wall"/>
+    <g class="ribs" stroke-width="3">${[0, 1, 2, 3, 4].map(i => `<line x1="${i * 98}" y1="0" x2="${i * 98}" y2="${h * .68}"/>`).join('')}<line x1="0" y1="${h * .34}" x2="390" y2="${h * .34}"/></g>
+    <circle class="sun" cx="300" cy="${h * .2}" r="24"/>
+    <rect y="${h * .68}" width="390" height="${h * .32}" class="mat"/>
+    <g class="mat-l" stroke-width="2.5">${[0, 1, 2, 3].map(i => `<line x1="${i * 130}" y1="${h * .68}" x2="${i * 130 + 40}" y2="${h}"/>`).join('')}</g>
+    <rect y="${h * .68 - 4}" width="390" height="6" class="sill"/></svg>`;
+}
+
 // ---------- Jugar una ronda ----------
 // Resuelve { right, total, kanjiOk } o null si el jugador sale. Un error no corta la ronda: el paso vuelve al final una vez.
 export function runRound(c, root, { test = false } = {}) {
   const s = curSection(), steps = test ? planTest(s.id) : planRound(c.k, s.id);
   return new Promise(resolve => {
     const wrap = document.createElement('div');
-    wrap.className = 'game round';
-    wrap.innerHTML = `<div class="game-head"><span class="chip">${tr(s.title)}</span><span class="rd-dots"></span><button class="x" aria-label="${t('dojo.back')}">✕</button></div><div class="game-body"></div>`;
+    wrap.className = 'game round rd-lesson';
+    const n = test ? steps.length : steps.length - 1;
+    wrap.innerHTML = `<div class="rd-scene">${roomSVG()}<button class="x rd-x" aria-label="${t('dojo.back')}">${'✕'}</button>
+      <div class="rd-drops">${Array.from({ length: n }, (_, i) => `<i class="${steps[test ? i : i + 1]?.t === 'kanji' && steps[test ? i : i + 1]?.k === c.k ? 'k' : ''}"></i>`).join('')}</div>
+      <div class="rd-bub"><span class="who">${c.k}</span><p></p></div><span class="rd-me">${creatureSVG(c.k)}</span></div>
+      <p class="rd-sec">${tr(s.title)}</p><div class="game-body rd-low"></div>`;
     root.append(wrap);
-    const body = wrap.querySelector('.game-body'), dots = wrap.querySelector('.rd-dots');
+    const body = wrap.querySelector('.game-body'), drops = [...wrap.querySelectorAll('.rd-drops i')], scene = wrap.querySelector('.rd-scene');
+    const say = txt => { const b = wrap.querySelector('.rd-bub p'); b.textContent = txt; wrap.querySelector('.rd-bub').classList.remove('pop'); void b.offsetWidth; wrap.querySelector('.rd-bub').classList.add('pop'); };
+    const react = ok => { say(pick(t(ok ? 'round.sayOk' : 'round.sayMiss').split('|'))); wrap.querySelector('.rd-me').classList.toggle('happy', ok); };
     const queue = steps.map((st, i) => ({ ...st, i })), retried = new Set();
     let right = 0, total = 0, kanjiOk = 0, pos = 0; // pos = pasos terminados (acertados, o fallados por segunda vez)
     const end = res => { wrap.classList.add('out'); setTimeout(() => wrap.remove(), 250); resolve(res); };
     wrap.querySelector('.x').onclick = () => end(null);
-    const n = test ? steps.length : steps.length - 1;
-    const paint = () => dots.textContent = `${Math.min(pos, n)}/${n}`;
+    const paint = () => drops.forEach((d, i) => { d.classList.toggle('on', i < pos); d.classList.toggle('now', i === pos); });
     const next = () => {
       const st = queue.shift(); paint();
       if (!st) return end({ right, total, kanjiOk });
       const after = ok => {
         if (!retried.has(st.i)) { total++; if (ok) right++; }
+        if (!test) react(ok);
+        scene.classList.remove('power');
         if (!ok && !retried.has(st.i) && !test) { retried.add(st.i); queue.push(st); }
         if (ok || st.again || test) pos++;
         if (!ok && !st.again) queue[queue.length - 1].again = true;
-        next();
+        test ? next() : setTimeout(next, 700); // un momento para leer la reacción de la criatura
       };
       if (st.t === 'intro') {
-        pos++;
-        body.innerHTML = `<div class="rd-intro"><span class="rd-art">${creatureSVG(c.k)}</span><p class="qm sm">${tr(s.intro)}</p></div><button class="btn ok wide">${t('round.start')}</button>
+        say(tr(s.intro));
+        body.innerHTML = `${s.reward ? `<div class="rd-goal"><span class="rd-ink-box">${inkSVG(s.reward, paintedOf(s.id))}</span><span><b>${tr(s.title)} · ${t('book.progress', { n: Math.min(ROUNDS, roundsOf(s.id) + 1), total: ROUNDS })}</b><small>${t('round.goal')}</small></span></div>` : ''}<button class="btn ok wide">${t('round.start')}</button>
           ${isDone(s.id) ? '' : `<button class="link rd-skip">${t(s.stage === 'e0' ? 'round.skipKana' : 'round.skip')}</button>`}`;
         body.querySelector('.rd-skip') && (body.querySelector('.rd-skip').onclick = () => end({ skipTest: true }));
-        return body.querySelector('.btn').onclick = next;
+        return body.querySelector('.btn').onclick = () => { pos = 0; next(); };
       }
       if (st.t === 'word') {
-        touchWord(st.id, s.id);
+        touchWord(st.id, s.id); say(t(st.review ? 'round.sayReview' : 'round.sayWord'));
         return wordExercise(st.id, body, ok => { gradeWord(st.id, ok); after(ok); });
       }
       if (st.t === 'phrase') {
-        const ph = phraseById(st.id);
+        const ph = phraseById(st.id); say(t('round.sayPhrase'));
         ph.ids.forEach(id => touchWord(id, s.id));
         // La frase suma encuentros a sus palabras; no cambia sus cajas (eso lo hacen los ejercicios de cada palabra)
         return phraseExercise(ph, body, ok => { (S.phr[ph.id] ??= { n: 0, t: Date.now() }).n++; if (ok) ph.ids.forEach(id => meet(id, 'train')); after(ok); });
       }
+      const mine = st.k === c.k;
+      if (mine) { scene.classList.add('power'); say(t('round.sayPower', { k: c.k })); } else say(t('round.sayReview'));
       return kanjiExercise(st.k, st.ask, body, ok => { grade(st.k, ok); if (ok && st.k === c.k) kanjiOk++; after(ok); });
     };
     next();

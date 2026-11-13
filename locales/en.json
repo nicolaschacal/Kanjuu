@@ -245,5 +245,12 @@
  "book.skipped": "Skipped with the test",
  "book.asleep": "Painted · wakes up when you master its word",
  "book.alive": "Came to life",
- "book.done": "Done"
+ "book.done": "Done",
+ "round.goal": "Every training paints more strokes of a hidden kanji. What could it be?",
+ "round.sayWord": "Will you help me with this word?",
+ "round.sayReview": "Do you remember this one?",
+ "round.sayPhrase": "Let's build a sentence together.",
+ "round.sayPower": "My power! Help me read it: I am {k}.",
+ "round.sayOk": "Nice!|That's it!|Great!|Well done!",
+ "round.sayMiss": "Almost! It will come back later.|No worries, we'll review it later.|Oops… next time!"
 }
