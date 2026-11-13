@@ -98,6 +98,52 @@ Pedido por Nicolás el 9 de noviembre de 2026. Especificación completa en **doc
 
 ---
 
+## Bloque A · Aprendizaje en el entrenamiento *(va primero: decidido por Nicolás el 13 de noviembre de 2026)*
+Pedido por Nicolás el 13 de noviembre de 2026: la Academia desaparece y el japonés se aprende en la pestaña Entrenar de cada KANJŪ, por etapas y secciones. Especificación completa en **docs/CURRICULO.md**. Reemplaza a los sprints 4 y 5 tentativos (Academia en dos idiomas y contenido nuevo de la Academia). Se hace **antes** del Sprint 2 (estados y clima), que se corre una vez terminado el bloque.
+
+### A-01 · Datos del currículo, etapas 0 y 1
+- `js/curriculum.js` con las 18 secciones de E0 y E1 (docs/CURRICULO.md §9): palabras núcleo, frases, patrones, kana, kanji, recompensa, palabra de la recompensa y rivales
+- Amplía `LEX` y `PHRASES` de `js/lang.js` donde haga falta, sin cambiar ids existentes y pasando `checkLang()`
+- `checkCurriculum()` y `tools/check_curriculo.mjs` con las reglas de docs/CURRICULO.md §3
+
+**Aceptación:** el script pasa sin errores; cada recompensa existe en `KANJI`; ninguna frase usa palabras de secciones posteriores.
+
+### A-02 · Propuesta: ronda, mapa de secciones y materialización *(diseño)*
+- Maqueta de la pestaña Entrenar con el mapa de secciones de la etapa, una ronda de 12 ejercicios con la criatura narrando y la escena en la que una palabra se "materializa" en un KANJŪ
+- Solo propuesta: no toca el juego
+
+**Aceptación:** maqueta navegable en el teléfono; Nicolás la aprueba o la rechaza.
+
+### A-03 · Motor de rondas
+- Ronda de 12 ejercicios (8 de la sección, 2 del kanji de la criatura con los juegos de `GAMES`, 2 de repaso) que se abre desde Entrenar
+- Corrige, actualiza `S.lex`, `S.srs` y `S.kana`, y lleva `S.cur` (rondas por sección); 80 % para que cuente
+- Interfaz provisoria con los estilos actuales hasta que se apruebe A-02
+- Guardado compatible: partidas viejas cargan y se ubican por lo que ya saben
+
+**Aceptación:** desde la ficha de cualquier KANJŪ se juega una ronda de la sección actual; al terminar la quinta, la sección queda completa y se abre la siguiente; sin errores de consola en 390 × 844.
+
+### A-04 · Recompensas de sección
+- Al completar la quinta ronda: entrega del KANJŪ si su palabra está en caja 2 o más; si no, silueta en el diario
+- Huevos de E0 y su eclosión al reconocer el kanji; tinta si ya se tenía la criatura
+
+**Aceptación:** completar 1.9 con おとうと en caja 2 entrega 弟 una sola vez; las secciones salteadas no entregan nada.
+
+### A-05 · Nivelación y ubicación
+- Prueba corta para saltar secciones (8–10 preguntas, 80 %); las salteadas quedan completas sin recompensa
+- Ubicación automática de las partidas existentes
+
+**Aceptación:** alguien que sabe kana llega a 1.1 en menos de 5 minutos; una partida vieja carga ubicada.
+
+### A-04b · KANJŪ provisorios 旅, 風, 晴 y 客
+- Agregar los cuatro kanji al roster con lecturas exactas y un dibujo borrador simple (decidido por Nicolás el 13 de noviembre de 2026: se diseñan bien más adelante)
+- Marcados como provisorios en los datos para encontrarlos cuando se haga el diseño final
+
+**Aceptación:** los cuatro existen en `KANJI`, se ven en el Atlas y pasan los chequeos de lecturas.
+
+Después: A-06 (implementar A-02), A-07 (combate de examen y dorado), A-08 a A-10 (contenido de E2 a E4) y A-11 (capa de IA), en ese orden.
+
+---
+
 ## Próximos sprints (tentativo; se confirma en cada planificación)
 Decidido por Nicolás el 10 de noviembre de 2026: la parte educativa (Academia, lecciones, ejercicios, cursos) se traduce y se rediseña en su propio sprint, porque también va a cambiar. El resto de los idiomas va antes.
 - **Sprint 3 · Idiomas, etapa 2:** textos del menú interno (cada hoja, tienda, altar, Arena, Fusión, Viajes, mensajes y avisos), nombres y descripciones de los 101 KANJŪ y de sus piezas, en español e inglés. Sin Academia
