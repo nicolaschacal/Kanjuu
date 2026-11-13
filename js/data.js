@@ -158,6 +158,10 @@ export const KANJI = {
   '山': { m: 'montaña', on: ['サン'], kun: ['やま'], el: 'earth', mn: 'Tres picos, el del medio más alto.', w: ['山', 'やま', 'montaña'] },
   '川': { m: 'río', on: ['セン'], kun: ['かわ'], el: 'water', mn: 'Tres corrientes de agua que bajan.', w: ['川', 'かわ', 'río'] },
   '雨': { m: 'lluvia', on: ['ウ'], kun: ['あめ'], el: 'water', mn: 'Gotas que caen desde una nube.', w: ['雨', 'あめ', 'lluvia'] },
+  // Provisorios (draft: true): premios del currículo (docs/CURRICULO.md §9). Dibujo borrador hasta diseñarlos con la biblia de arte.
+  '旅': { m: 'viaje', on: ['リョ'], kun: ['たび'], el: 'person', draft: true, mn: 'Una bandera que guía a un grupo de personas en camino: el viaje.', w: ['旅行', 'りょこう', 'viaje'] },
+  '風': { m: 'viento', on: ['フウ', 'フ'], kun: ['かぜ'], el: 'sky', draft: true, mn: 'Un bichito dentro de una vela inflada: el viento que sopla.', w: ['風', 'かぜ', 'viento'] },
+  '客': { m: 'visitante · cliente', on: ['キャク', 'カク'], kun: [], el: 'person', draft: true, mn: 'Alguien que llega y se queda bajo tu techo: un visitante.', w: ['お客さん', 'おきゃくさん', 'cliente · visita'] },
   '白': { m: 'blanco', on: ['ハク', 'ビャク'], kun: ['しろ(い)'], el: 'void', mn: 'Una hoja en blanco con un brillo arriba: blanco.', w: ['白い', 'しろい', 'blanco'] },
   '赤': { m: 'rojo', on: ['セキ'], kun: ['あか(い)'], el: 'fire', mn: 'Colorado como un recién nacido: rojo.', w: ['赤い', 'あかい', 'rojo'] },
   '青': { m: 'azul', on: ['セイ'], kun: ['あお(い)'], recipes: [['生', '月']], form: 'arriba-abajo', note: 'arriba, 生 aparece sin su primer trazo', el: 'sky', mn: 'Lo que nace bajo la luna: brotes verdes y azules.', w: ['青い', 'あおい', 'azul'] },
@@ -197,6 +201,7 @@ export const KANJI = {
   '服': { m: 'ropa', on: ['フク'], kun: [], el: 'thread', note: 'sus partes (月, 卩 y 又) no se pueden armar: se obtiene en expediciones', mn: 'La mano ajusta la tela al cuerpo: la ropa.', w: ['服', 'ふく', 'ropa'] },
   '夫': { m: 'esposo · hombre', on: ['フ', 'フウ'], kun: ['おっと'], el: 'person', note: 'es 大 con un trazo más arriba; se obtiene en expediciones', mn: 'Un hombre grande con una horquilla en el pelo: ya es adulto.', w: ['夫', 'おっと', 'esposo'] },
   // — Roster v2 · primera composición —
+  '晴': { m: 'despejado', on: ['セイ'], kun: ['は(れる)'], recipes: [['日', '青']], form: 'izquierda-derecha', el: 'sun', draft: true, mn: 'El sol junto al cielo azul: un día despejado.', w: ['晴れ', 'はれ', 'buen tiempo'] },
   '三': { m: 'tres', on: ['サン'], kun: ['みっ(つ)'], recipes: [['一', '一', '一']], form: 'arriba-abajo', mn: 'Uno, más uno, más uno: tres.', w: ['三人', 'さんにん', 'tres personas'] },
   '六': { m: 'seis', on: ['ロク'], kun: ['むっ(つ)'], recipes: [['亠', '八']], form: 'arriba-abajo', mn: 'Una tapa sobre el ocho: le quitas dos y quedan seis.', w: ['六時', 'ろくじ', 'las seis'] },
   '百': { m: 'cien', on: ['ヒャク'], kun: [], recipes: [['一', '白']], form: 'arriba-abajo', mn: 'Una raya sobre el blanco: cien granos de arroz.', w: ['百円', 'ひゃくえん', 'cien yenes'] },
