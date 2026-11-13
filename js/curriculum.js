@@ -59,6 +59,25 @@ export const EXTRA = [
   { id: 'c_shita', ja: 'つくえ の した に いぬ が います', ids: ['tsukue', 'shita', 'inu', 'imasu'], pat: 'arimasu', es: 'Debajo del escritorio hay un perro.', en: 'There is a dog under the desk.' },
   { id: 'c_mae', ja: 'えき の まえ に みせ が あります', ids: ['eki', 'mae', 'mise', 'arimasu'], pat: 'arimasu', es: 'Delante de la estación hay una tienda.', en: 'There is a shop in front of the station.' },
   { id: 'c_ushiro', ja: 'いえ の うしろ に にわ が あります', ids: ['ie', 'ushiro', 'niwa', 'arimasu'], pat: 'arimasu', es: 'Detrás de la casa hay un jardín.', en: 'There is a garden behind the house.' },
+  // ── etapa 2 ──
+  { id: 'c_hiru', ja: 'ひる に ごはん を たべます', ids: ['hiru', 'gohan', 'tabemasu'], pat: 'masu', es: 'Al mediodía como.', en: 'I eat at noon.' },
+  { id: 'c_terebi', ja: 'あさ は テレビ を みません', ids: ['asa', 'terebi', 'mimasu'], pat: 'masu', es: 'A la mañana no miro la tele.', en: 'I do not watch TV in the morning.' },
+  { id: 'c_senshuu', ja: 'せんしゅう ほん を よみました', ids: ['senshuu', 'hon', 'yomimasu'], pat: 'mashita', es: 'La semana pasada leí un libro.', en: 'I read a book last week.' },
+  { id: 'c_benkyou', ja: 'きのう べんきょう を しませんでした', ids: ['kinou', 'benkyou', 'shimasu'], pat: 'mashita', es: 'Ayer no estudié.', en: 'I did not study yesterday.' },
+  { id: 'c_kotoshi', ja: 'ことし にほん へ いきます', ids: ['kotoshi', 'nihon', 'ikimasu'], pat: 'ni', es: 'Este año voy a Japón.', en: 'This year I am going to Japan.' },
+  { id: 'c_kuroi', ja: 'くろい くつ を ください', ids: ['kuroi', 'kutsu', 'kudasai'], pat: null, es: 'Unos zapatos negros, por favor.', en: 'Black shoes, please.' },
+  { id: 'c_akai', ja: 'あかい ふく は いくら です か', ids: ['akai', 'fuku', 'ikura'], pat: 'ka', es: '¿Cuánto cuesta la ropa roja?', en: 'How much are the red clothes?' },
+  { id: 'c_shiroi', ja: 'しろい ふく を かいます', ids: ['shiroi', 'fuku', 'kaimasu'], pat: 'masu', es: 'Compro ropa blanca.', en: 'I buy white clothes.' },
+  { id: 'c_takai', ja: 'くつ は たかい です', ids: ['kutsu', 'takai'], pat: 'adj', es: 'Los zapatos son caros.', en: 'The shoes are expensive.' },
+  { id: 'c_furui', ja: 'ふるい ほん です', ids: ['furui', 'hon'], pat: null, es: 'Es un libro viejo.', en: 'It is an old book.' },
+  { id: 'c_yasui', ja: 'みせ の パン は やすい です', ids: ['mise', 'pan', 'yasui'], pat: 'adj', es: 'El pan de la tienda es barato.', en: 'The bread at the shop is cheap.' },
+  { id: 'c_kirei', ja: 'はな は きれい です', ids: ['hana', 'kirei'], pat: 'adj', es: 'Las flores son lindas.', en: 'The flowers are pretty.' },
+  { id: 'c_eiga', ja: 'しゅうまつ いっしょ に えいが を みません か', ids: ['shuumatsu', 'issho', 'eiga', 'mimasu'], pat: null, es: '¿Vemos una película juntos el fin de semana?', en: 'Shall we watch a movie together this weekend?' },
+  { id: 'c_machi', ja: 'らいしゅう いっしょ に まち へ いきましょう', ids: ['raishuu', 'issho', 'machi', 'ikimasu'], pat: null, es: 'La semana que viene vamos juntos al centro.', en: "Let's go to town together next week." },
+  { id: 'c_ashitagohan', ja: 'あした ともだち と ごはん を たべます', ids: ['ashita', 'tomodachi', 'gohan', 'tabemasu'], pat: 'masu', es: 'Mañana como con un amigo.', en: 'Tomorrow I will eat with a friend.' },
+  { id: 'c_doyoubi', ja: 'どようび に えいが を みましょう', ids: ['doyoubi', 'eiga', 'mimasu'], pat: null, es: 'Veamos una película el sábado.', en: "Let's watch a movie on Saturday." },
+  { id: 'c_yuki', ja: 'ふゆ は ゆき が ふります', ids: ['fuyu', 'yuki', 'furimasu'], pat: null, es: 'En invierno nieva.', en: 'It snows in winter.' },
+  { id: 'c_deshou', ja: 'あした は あめ でしょう', ids: ['ashita', 'ame'], pat: null, es: 'Mañana probablemente llueva.', en: 'It will probably rain tomorrow.' },
 ];
 
 const T = (es, en) => ({ es, en });
@@ -148,6 +167,37 @@ export const SECTIONS = [
     words: ['arimasu', 'imasu', 'ue', 'shita', 'naka', 'mae', 'ushiro', 'heya', 'tsukue', 'niwa'],
     phrases: ['p_heya', 'p_ue', 'p_kaban', 'p_neko', 'c_shita', 'c_mae', 'c_ushiro'], pats: ['arimasu'],
     kanji: ['上', '下', '中', '前', '後'], reward: '中', rewardWord: 'naka', rival: ['上', '下', '前'] },
+  // ───────── Etapa 2 · Vida diaria ─────────
+  { id: '2.1', stage: 'e2', title: T('Mi rutina', 'My routine'), cando: T('Puedo contar qué hago cada día', 'I can say what I do every day'),
+    intro: T('Yo me levanto con el sol, ¡claro! ¿Y tú, qué haces cada día?', 'I get up with the sun, of course! What do you do every day?'),
+    words: ['asa', 'okimasu', 'mainichi', 'hiru', 'yoru', 'nemasu', 'terebi', 'mimasu'],
+    phrases: ['p_okimasu', 'p_nemasu', 'p_mainichi', 'c_hiru', 'c_terebi'], pats: ['masu'],
+    kanji: ['毎', '朝', '昼', '夜', '起'], reward: '朝', rewardWord: 'asa', rival: ['昼', '夜', '毎'] },
+  { id: '2.2', stage: 'e2', title: T('Lo que hice', 'What I did'), cando: T('Puedo contar lo que hice', 'I can say what I did'),
+    intro: T('¡La semana pasada pasaron muchas cosas! ¿Te cuento?', 'So much happened last week! Shall I tell you?'),
+    words: ['kinou', 'senshuu', 'konshuu', 'kotoshi', 'yomimasu', 'benkyou', 'shimasu', 'kaimasu'],
+    phrases: ['p_terebi', 'c_senshuu', 'c_benkyou', 'c_kotoshi'], pats: ['mashita'],
+    kanji: ['今', '先', '週', '年'], reward: '今', rewardWord: 'kotoshi', rival: ['先', '週', '年'] },
+  { id: '2.3', stage: 'e2', title: T('Comprar ropa', 'Buying clothes'), cando: T('Puedo pedir ropa por color y preguntar el precio', 'I can ask for clothes by color and ask the price'),
+    intro: T('Quiero algo nuevo para el festival. ¿Me acompañas a la tienda?', 'I want something new for the festival. Will you come to the shop with me?'),
+    words: ['fuku', 'kutsu', 'kaimasu', 'akai', 'aoi', 'shiroi', 'kuroi', 'iro'],
+    phrases: ['c_kuroi', 'c_akai', 'p_aoi', 'c_shiroi'], pats: [],
+    kanji: ['買', '赤', '白', '黒', '青'], reward: '買', rewardWord: 'kaimasu', rival: ['赤', '白', '黒'] },
+  { id: '2.4', stage: 'e2', title: T('Describir cosas', 'Describing things'), cando: T('Puedo decir cómo son las cosas', 'I can say what things are like'),
+    intro: T('Este pincel es viejo… ¡pero es mi favorito! ¿Cómo son tus cosas?', 'This brush is old… but it is my favorite! What are your things like?'),
+    words: ['atarashii', 'furui', 'takai', 'yasui', 'kirei', 'hana', 'ii', 'nagai'],
+    phrases: ['p_fuku', 'c_takai', 'c_furui', 'c_yasui', 'c_kirei'], pats: ['adj'],
+    kanji: ['新', '古', '高', '安'], reward: '新', rewardWord: 'atarashii', rival: ['古', '高', '安'] },
+  { id: '2.5', stage: 'e2', title: T('Planes para el finde', 'Weekend plans'), cando: T('Puedo invitar y hacer planes', 'I can invite someone and make plans'),
+    intro: T('¡El fin de semana no hay entrenamiento! ¿Qué hacemos?', 'No training this weekend! What shall we do?'),
+    words: ['ashita', 'shuumatsu', 'raishuu', 'issho', 'eiga', 'doyoubi', 'mimasu', 'ikimasu'],
+    phrases: ['c_eiga', 'c_machi', 'c_ashitagohan', 'c_doyoubi'], pats: [],
+    kanji: ['明', '来', '週', '末'], reward: '明', rewardWord: 'ashita', rival: ['来', '週', '日'] },
+  { id: '2.6', stage: 'e2', title: T('El clima', 'The weather'), cando: T('Puedo hablar del clima y de las estaciones', 'I can talk about the weather and the seasons'),
+    intro: T('Hoy hay mucho sol… ¡es mi día! ¿Qué tiempo hará mañana?', 'Lots of sun today… it is my day! What will the weather be like tomorrow?'),
+    words: ['tenki', 'ame', 'furimasu', 'yuki', 'haru', 'natsu', 'aki', 'fuyu', 'atsui', 'samui'],
+    phrases: ['p_tenki', 'p_ame', 'p_fuyu', 'p_natsu', 'c_yuki', 'c_deshou'], pats: [],
+    kanji: ['天', '気', '雨', '雪', '春', '夏', '秋', '冬'], reward: '雨', rewardWord: 'ame', rival: ['春', '夏', '冬'] },
 ];
 
 // Situaciones con diálogo (propuesta A-02, pantalla 3): un KANJŪ vecino o de la familia dice algo y el jugador
@@ -190,7 +240,18 @@ export const TALKS = {
   '1.9': { who: '姉', ja: 'あの ひと は あに です か', ids: ['ano', 'hito', 'ani'], es: '¿Esa persona es tu hermano mayor?', en: 'Is that person your older brother?', hint: T('No: es tu hermano menor.', 'No: it is your younger brother.'),
     opts: [O('いいえ おとうと です', ['iie', 'otouto']), O('はい あね です', ['hai', 'ane']), O('いもうと が すき です', ['imouto', 'suki'])] },
   '1.10': { who: '犬', ja: 'ねこ は どこ です か', ids: ['neko', 'doko'], es: '¿Dónde está el gato?', en: 'Where is the cat?', hint: T('Está debajo del escritorio.', 'It is under the desk.'),
-    opts: [O('つくえ の した に います', ['tsukue', 'shita', 'imasu']), O('いえ の まえ に あります', ['ie', 'mae', 'arimasu']), O('さん じ です', ['sankazu', 'ji'])] },
+    opts: [O('つくえ の した に います', ['tsukue', 'shita', 'imasu']), O('いえ の まえ に あります', ['ie', 'mae', 'arimasu']), O('さん じ です', ['sankazu', 'ji'])] },  '2.1': { who: '日', ja: 'まいにち なん じ に おきます か', ids: ['mainichi', 'nan', 'ji', 'okimasu'], es: '¿A qué hora te levantas cada día?', en: 'What time do you get up every day?', hint: T('A las seis.', 'At six.'),
+    opts: [O('ろく じ に おきます', ['roku', 'ji', 'okimasu']), O('よる に ねます', ['yoru', 'nemasu']), O('テレビ を みません', ['terebi', 'mimasu'])] },
+  '2.2': { who: '人', ja: 'きのう なに を しました か', ids: ['kinou', 'nani', 'shimasu'], es: '¿Qué hiciste ayer?', en: 'What did you do yesterday?', hint: T('Viste la tele (en pasado).', 'You watched TV (past tense).'),
+    opts: [O('テレビ を みました', ['terebi', 'mimasu']), O('テレビ を みます', ['terebi', 'mimasu']), O('ほん を かいます', ['hon', 'kaimasu'])] },
+  '2.3': { who: '店', ja: 'なに を かいます か', ids: ['nani', 'kaimasu'], es: '¿Qué vas a comprar?', en: 'What will you buy?', hint: T('Quieres zapatos negros.', 'You want black shoes.'),
+    opts: [O('くろい くつ を ください', ['kuroi', 'kutsu', 'kudasai']), O('しろい ふく です', ['shiroi', 'fuku']), O('あかい です か', ['akai'])] },
+  '2.4': { who: '古', ja: 'ほん は あたらしい です か', ids: ['hon', 'atarashii'], es: '¿El libro es nuevo?', en: 'Is the book new?', hint: T('No: es viejo.', 'No: it is old.'),
+    opts: [O('いいえ ふるい です', ['iie', 'furui']), O('はい たかい です', ['hai', 'takai']), O('いいえ やすい です', ['iie', 'yasui'])] },
+  '2.5': { who: '友', ja: 'しゅうまつ いっしょ に えいが を みません か', ids: ['shuumatsu', 'issho', 'eiga', 'mimasu'], es: '¿Vemos una película juntos el fin de semana?', en: 'Shall we watch a movie together this weekend?', hint: T('Acepta: ¡veámosla!', "Accept: let's watch it!"),
+    opts: [O('はい みましょう', ['hai', 'mimasu']), O('いいえ みました', ['iie', 'mimasu']), O('えいが は たかい です', ['eiga', 'takai'])] },
+  '2.6': { who: '天', ja: 'あした は いい てんき です か', ids: ['ashita', 'ii', 'tenki'], es: '¿Mañana hace buen tiempo?', en: 'Will the weather be good tomorrow?', hint: T('No: mañana llueve.', 'No: it rains tomorrow.'),
+    opts: [O('いいえ あめ が ふります', ['iie', 'ame', 'furimasu']), O('はい ゆき です', ['hai', 'yuki']), O('なつ は あつい です', ['natsu', 'atsui'])] },
 };
 
 export const sectionById = id => SECTIONS.find(s => s.id === id);
@@ -198,7 +259,7 @@ export const phraseById = id => PHRASES.find(p => p.id === id) || EXTRA.find(p =
 export const nextSection = id => SECTIONS[SECTIONS.findIndex(s => s.id === id) + 1] || null;
 
 // ---------- Chequeo (docs/CURRICULO.md §3). Devuelve la lista de errores. ----------
-const VERB_ENDS = ['ます', 'ました', 'ません', 'ませんでした'];
+const VERB_ENDS = ['ます', 'ました', 'ません', 'ませんでした', 'ましょう'];
 export function checkCurriculum() {
   const errs = [];
   const lex = Object.fromEntries(LEX.map(w => [w.id, w]));
