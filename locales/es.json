@@ -233,5 +233,17 @@
   "one": "¡Prueba superada! Saltaste {n} sección.",
   "other": "¡Prueba superada! Saltaste {n} secciones."
  },
- "round.testFail": "Todavía no: hace falta el 80 %. Puedes entrenar esta sección o volver a intentarlo cuando quieras."
+ "round.testFail": "Todavía no: hace falta el 80 %. Puedes entrenar esta sección o volver a intentarlo cuando quieras.",
+ "book.progress": "{n} de {total}",
+ "book.hidden": "Hay un kanji escondido a medio pintar",
+ "book.noPrize": "Sección sin kanji escondido",
+ "book.open": "ver cuaderno",
+ "book.title": "Cuaderno de entrenamiento",
+ "book.lead": "Una página por sección. Lo que pintas entrenando, cobra vida.",
+ "book.here": "Aquí estás · {n} de {total}",
+ "book.blank": "Página en blanco",
+ "book.skipped": "Saltada en la prueba",
+ "book.asleep": "Pintado · despierta cuando domines su palabra",
+ "book.alive": "Cobró vida",
+ "book.done": "Completa"
 }

@@ -233,5 +233,17 @@
   "one": "Test passed! You skipped {n} section.",
   "other": "Test passed! You skipped {n} sections."
  },
- "round.testFail": "Not yet: you need 80%. You can train this section or try again whenever you like."
+ "round.testFail": "Not yet: you need 80%. You can train this section or try again whenever you like.",
+ "book.progress": "{n} of {total}",
+ "book.hidden": "A hidden kanji is half painted",
+ "book.noPrize": "Section without a hidden kanji",
+ "book.open": "see notebook",
+ "book.title": "Training notebook",
+ "book.lead": "One page per section. What you paint while training comes to life.",
+ "book.here": "You are here · {n} of {total}",
+ "book.blank": "Blank page",
+ "book.skipped": "Skipped with the test",
+ "book.asleep": "Painted · wakes up when you master its word",
+ "book.alive": "Came to life",
+ "book.done": "Done"
 }
