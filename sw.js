@@ -9,3 +9,5 @@ FILES.push('js/i18n.js', 'locales/es.json', 'locales/en.json');
 FILES.push('js/analytics.js');
 // Favicon de la cara en PNG (para navegadores sin SVG)
 FILES.push('icons/favicon-32.png', 'icons/favicon-48.png');
+// Aprendizaje dentro del juego: lengua, diario, palabras, Camino y ejercicios de palabras
+FILES.push('js/lang.js', 'js/lex.js', 'js/diary.js', 'js/path.js', 'js/wordgames.js');

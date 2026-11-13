@@ -13,6 +13,8 @@ import { ISLANDS, island, buyIsland, objCap, shownObjs, harmony, harmonyMult, mo
 import { $, buzz, home, owned, ui, go, hud, toast, modal, floatText, covered } from './main.js';
 import { openCreature } from './sheet.js';
 import { allDue, openDojo, acadCtx } from './dojo.js';
+import { openDiary } from './diary.js';
+import { pathReady } from './path.js';
 import { artThumb } from './paper.js';
 import { webgl, mountScene, emoteAt, hopAll, poke, setFocus, rotateCam, zoomCam, tileAtScreen, flashTile } from './scene3d.js';
 import { openTraining } from './sheet.js';
@@ -338,7 +340,7 @@ function bindDock(v) {
     $('#store', v) && ($('#store', v).onclick = () => openStorage());
     $('#collectAll', v) && ($('#collectAll', v).onclick = e => harvest(placed(), e.currentTarget));
     $('#dojo', v) && ($('#dojo', v).onclick = openDojo);
-    $('#acadFab', v) && ($('#acadFab', v).onclick = () => openAcademy(acadCtx()));
+    $('#acadFab', v) && ($('#acadFab', v).onclick = () => openDiary()); // el atajo de la Academia ahora abre el diario
   }
   $('#expandRow', v) && ($('#expandRow', v).onclick = buyRow);
 }
@@ -503,8 +505,8 @@ export function goalHTML() {
   const cs = S.creatures.filter(c => !c.egg);
   let g;
   if (S.creatures.some(c => c.egg)) g = 'Tocá el huevo 3 veces para que nazca';
-  else if (!Object.keys(S.acad?.done || {}).length) g = '¿Nuevo en japonés? Tocá 学 arriba: aprendé hiragana, katakana y frases';
-  else if ((S.acad?.day?.xp || 0) < DAILY_GOAL) g = `Meta de la Academia: ${S.acad?.day?.xp || 0}/${DAILY_GOAL} XP hoy · tocá 学`;
+  else if (!Object.keys(S.lex).length) g = t('guide.firstWord');
+  else if (pathReady()) g = t('guide.pathReady');
   else if (totalPending() >= 20) g = `Tus KANJŪ produjeron ${totalPending()} 墨 · tocá 収 para recoger`;
   else if (S.gate.length) g = 'Almacén lleno: hay KANJŪ esperando en la puerta';
   else if (S.tickets) g = `Tenés ${S.tickets} 札: invocá en el altar de la Tienda`;

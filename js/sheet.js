@@ -13,7 +13,8 @@ import { COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCos
 import { $, buzz, esc, home, ui, go, hud, toast, modal, floatText } from './main.js';
 import { rankUp } from './sanctuary.js';
 import { STROKES } from './strokes.js';
-import { PIECES, isPiece, TYPES, typeOf, gradeTag } from './data.js';
+import { PIECES, isPiece, TYPES, typeOf, gradeTag, SRS_HOURS } from './data.js';
+import { useTagHTML, anchorsHTML, bindAnchors } from './diary.js';
 
 // ---------- Hoja de criatura ----------
 export function openCreature(id) {
@@ -24,8 +25,8 @@ export function openCreature(id) {
   const m = modal(`
     <div class="cr-top" style="--el:${fill}">
       <button class="cr-art" id="pet">${creatureSVG(c.k, { mood: c.mood, gold: c.gold })}${c.acc ? `<span class="acc-hat big">${c.acc}</span>` : ''}</button>
-      <div class="cr-name"><span class="big-k">${c.k}</span><div><b>${K.m}</b>${gradeTag(c.k)}<small><b class="tbadge" style="--t:${TYPES[typeOf(c.k)].col}">${TYPES[typeOf(c.k)].k} ${TYPES[typeOf(c.k)].name}</b> fuerte contra ${TYPES[TYPES[typeOf(c.k)].beats].k} · ${ELEMENTS[element(c.k)][2]}${c.gen ? ` · Gen ${c.gen}` : ''}</small></div></div>
-      <div class="reads"><button class="say" id="say" aria-label="Escuchar">${ic('sound')}</button>${reads(c.k).map((r, i) => `<span class="${i ? 'r2' : 'r1'}" ${i ? `title="Se pide desde maestría 3"` : ''}><b>${K.kun.includes(r) ? '訓' : '音'}</b>${okuHTML(rr(r))}${i && mastery(c.k) < 3 ? ` ${ic('lock')}` : ''}</span>`).join('') || '<span>—</span>'}<span class="mast" title="Maestría">熟 ${'★'.repeat(mastery(c.k))}${'☆'.repeat(Math.max(0, 6 - mastery(c.k)))}</span></div>
+      <div class="cr-name"><span class="big-k">${c.k}</span><div><b>${K.m}</b>${gradeTag(c.k)}${useTagHTML(c.k)}<small><b class="tbadge" style="--t:${TYPES[typeOf(c.k)].col}">${TYPES[typeOf(c.k)].k} ${TYPES[typeOf(c.k)].name}</b> fuerte contra ${TYPES[TYPES[typeOf(c.k)].beats].k} · ${ELEMENTS[element(c.k)][2]}${c.gen ? ` · Gen ${c.gen}` : ''}</small></div></div>
+      <div class="reads"><button class="say" id="say" aria-label="Escuchar">${ic('sound')}</button>${reads(c.k).map((r, i) => `<span class="${i ? 'r2' : 'r1'}" ${i ? `title="Se pide desde maestría 3"` : ''}><b>${K.kun.includes(r) ? '訓' : '音'}</b>${okuHTML(rr(r))}${i && mastery(c.k) < 3 ? ` ${ic('lock')}` : ''}</span>`).join('') || '<span>—</span>'}<span class="mast" title="Maestría">熟 ${'★'.repeat(mastery(c.k))}${'☆'.repeat(Math.max(0, SRS_HOURS.length - 1 - mastery(c.k)))}</span></div>
     </div>
     <div class="bars">
       <div class="bar"><label>Nv ${c.lv}<small>/${MAX_LV}</small>${c.lv >= MAX_LV ? ' MAX' : ''}</label><div><i style="width:${c.exp / expNeed(c.lv) * 100}%"></i></div></div>
@@ -42,6 +43,7 @@ export function openCreature(id) {
     ${S.items.scroll ? `<button class="btn ghost wide" id="scroll">巻 Usar pergamino (+60 EXP) · ${S.items.scroll}</button>` : ''}
     <details class="story-d"><summary>${ic('bulb')} Historia para recordarlo</summary>${storyHTML(c.k)}
       <textarea id="note" maxlength="160" placeholder="Escribí tu propia historia: las que inventás vos se recuerdan mejor">${esc(S.notes?.[c.k] || '')}</textarea></details>
+    ${anchorsHTML(c.k)}
     ${accHTML(c)}
     <h4>進化 Evoluciones <small>${evos.length} caminos · 知 = dominio en el repaso</small></h4>
     <div class="evos">${evos.length ? [...evos].sort((a, b) => (!!S.dex[b]?.seen - !!S.dex[a]?.seen) || evoLevel(a) - evoLevel(b)).map(t => evoCard(c, t)).join('') : '<p class="muted">Forma final en este santuario. Llegá a Lv MAX para renacer.</p>'}</div>
@@ -57,6 +59,7 @@ export function openCreature(id) {
   $('#train', m).onclick = () => openTraining(c, m);
   $('#awaken', m) && ($('#awaken', m).onclick = () => { if (!confirm(`Se consumirá otro ${c.k}. ¿Despertar?`)) return; awaken(c); m.close(); go(); buzz([20, 60, 20]); toast(`覚 ${c.k} despertó: ★${c.stars}`); setTimeout(() => openCreature(id), 260); });
   $('#say', m).onclick = () => speak(reads(c.k)[0] || '');
+  bindAnchors(m);
   $('#note', m).onchange = e => { S.notes ??= {}; S.notes[c.k] = e.target.value.trim(); save(); toast('筆 Historia guardada'); };
   $('#free', m).onclick = () => {
     if (!confirm(`${c.k} volverá a la naturaleza y te dejará tinta. Su entrada en el atlas se conserva. ¿Liberar?`)) return;

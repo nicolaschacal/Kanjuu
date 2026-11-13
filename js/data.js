@@ -460,7 +460,7 @@ export const BASE_CAP = 6, CAP_STEP = 3;
 export const EXPANSIONS = [40, 90, 160, 260, 400, 600];
 
 // Repetición espaciada (cajas de Leitner), en horas
-export const SRS_HOURS = [0, 8, 24, 72, 168, 384, 840];
+export const SRS_HOURS = [0, 8, 24, 72, 168, 384, 840, 2880];
 
 // Piezas 部品: componentes que no son criaturas. Se usan como accesorios para evolucionar y fusionar.
 // Para el nivel KANJŪ cuentan como nivel 1 (componentes fundamentales).

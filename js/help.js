@@ -80,6 +80,34 @@ export function romaji(s) {
   }
   return out;
 }
+// --- Romaji por kana: un andamio que vence (docs/APRENDIZAJE.md §5) ---
+// Debajo de cada kana va su romaji hasta que ese kana se acertó KANA_OK veces; después se apaga solo para ese kana.
+// El interruptor de Configuración (helpOn) sigue mandando sobre todos.
+export const KANA_OK = 3;
+const IS_KANA = /[ぁ-ゖァ-ヺ]/;
+// Unidades de lectura: el っ va con la sílaba que dobla, la ゃゅょ pequeña con la suya y la raya ー con la que alarga
+export const kanaUnits = s => String(s).match(/[っッ]?[ぁ-ゖァ-ヺ][ゃゅょャュョ]?ー?|[^]/g) || [];
+// Clave de seguimiento de una unidad: sin っ ni ー (がっこう cuenta para が・こ・う)
+const kanaKey = u => u.replace(/^[っッ](?=.)|ー$/g, '');
+const kanaKeys = text => [...new Set(kanaUnits(text).filter(u => IS_KANA.test(u)).map(kanaKey))];
+export const kanaSeen = c => S.kana[c] || 0;
+export const romajiOff = c => kanaSeen(c) >= KANA_OK;
+export function kanaHit(text) { kanaKeys(text).forEach(c => S.kana[c] = Math.min(9, kanaSeen(c) + 1)); }
+// Comprobación diferida: si falla un kana que figuraba como sabido, su romaji vuelve hasta el próximo acierto
+export function kanaMiss(text) { kanaKeys(text).forEach(c => { if (romajiOff(c)) S.kana[c] = KANA_OK - 1; }); }
+// Nivelación: marca kana como sabidos (romaji apagado); la comprobación queda diferida al repaso (kanaMiss)
+export const ALL_KANA = H + H.replace(/[ぁ-ゖ]/g, c => String.fromCharCode(c.charCodeAt(0) + 0x60));
+export function kanaSkip(texts) { texts.forEach(tx => kanaKeys(tx).forEach(c => S.kana[c] = Math.max(kanaSeen(c), KANA_OK))); }
+// Texto en kana con el romaji de cada unidad mientras haga falta. particle: は y へ sueltas son partículas (wa, e)
+export function kanaHTML(text, { particle = false } = {}) {
+  if (!helpOn()) return text;
+  const us = kanaUnits(text), wa = /(こんにちは|こんばんは)$/.test(text);
+  return us.map((u, i) => {
+    if (!IS_KANA.test(u) || romajiOff(kanaKey(u))) return u;
+    const rom = (particle && us.length === 1 && { 'は': 'wa', 'へ': 'e' }[u]) || (wa && i === us.length - 1 ? 'wa' : romaji(u));
+    return rom ? `<ruby class="kr">${u}<rt>${rom}</rt></ruby>` : u;
+  }).join('');
+}
 // Lectura con romaji si la ayuda está activa
 export const rr = r => helpOn() && r ? `${r}<i class="rmj">${romaji(r)}</i>` : r;
 
@@ -149,8 +177,8 @@ export function kanaDrill(pool, root) {
       body.innerHTML = `<p class="hint">¿Cómo suena?</p><div class="qk">${c}</div><p class="muted" style="color:#8fa3bd">${/[ァ-ヶ]/.test(c) ? 'katakana' : 'hiragana'}</p><div class="opts txt">${opts.map(o => `<button class="opt">${o}</button>`).join('')}</div>`;
       body.querySelectorAll('.opt').forEach(b => b.onclick = () => {
         body.querySelectorAll('.opt').forEach(x => x.disabled = true);
-        if (b.textContent === ans) { ok++; b.classList.add('right'); navigator.vibrate?.(8); }
-        else { b.classList.add('wrong'); [...body.querySelectorAll('.opt')].find(x => x.textContent === ans).classList.add('right'); }
+        if (b.textContent === ans) { ok++; b.classList.add('right'); navigator.vibrate?.(8); kanaHit(c); }
+        else { kanaMiss(c); b.classList.add('wrong'); [...body.querySelectorAll('.opt')].find(x => x.textContent === ans).classList.add('right'); }
         setTimeout(next, 650);
       });
     };
