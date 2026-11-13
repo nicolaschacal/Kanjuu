@@ -6,6 +6,7 @@ import { tr } from './lex.js';
 import { SECTIONS, STAGES } from './curriculum.js';
 import { cur, curSection, roundsOf, inkSVG, paintedOf, prizeState, ROUNDS } from './round.js';
 import { creatureSVG } from './creature.js';
+import { canExam, openExam } from './exam.js';
 
 // Tarjeta de la ficha (debajo de los botones de acción)
 export function bookCardHTML() {
@@ -25,11 +26,15 @@ function pageHTML(s) {
   else if (got === 'asleep') { fig = inkSVG(s.reward, paintedOf(s.id)); sub = t('book.asleep'); }
   else if (s.reward) { fig = `<span class="bk-mon">${creatureSVG(s.reward)}</span>`; sub = t('book.alive'); }
   else { fig = `<span class="rd-inkk sm">${s.kanji.slice(0, 3).join('') || '・'}</span>`; sub = t('book.done'); }
-  return `<div class="bk-page ${cls}">${c.gold[s.id] ? '<span class="bk-seal">金</span>' : ''}<span class="rd-ink-box">${fig}</span><b>${s.id} · ${tr(s.title)}</b><small>${sub}</small></div>`;
+  const exam = canExam(s.id) && !c.gold[s.id] ? `<button class="bk-exam" data-exam="${s.id}">金 ${t('exam.title')}</button>` : '';
+  return `<div class="bk-page ${cls}">${c.gold[s.id] ? '<span class="bk-seal">金</span>' : ''}<span class="rd-ink-box">${fig}</span><b>${s.id} · ${tr(s.title)}</b><small>${sub}</small>${exam}</div>`;
 }
 
-export function openBook(modal) {
+export function openBook(modal, mon) {
   const s = curSection(), st = STAGES.find(x => x.id === s.stage);
-  return modal(`<p class="eyebrow">${tr(st.title)}</p><h3>${t('book.title')}</h3><p class="muted">${t('book.lead')}</p>
+  const m = modal(`<p class="eyebrow">${tr(st.title)}</p><h3>${t('book.title')}</h3><p class="muted">${t('book.lead')}</p>
     <div class="bk-pages">${SECTIONS.filter(x => x.stage === s.stage).map(pageHTML).join('')}</div>`, 'bk');
+  // Examen dorado de una sección completa, con el KANJŪ desde cuya ficha se abrió el cuaderno
+  m.querySelectorAll('[data-exam]').forEach(b => b.onclick = () => { m.close(); openExam(mon, b.dataset.exam, modal); });
+  return m;
 }
