@@ -206,5 +206,18 @@
  "tut.endReward": "+50 墨 · +1 札 for the summoning altar",
  "tut.endNote": "Every trip brings a word to your diary and the Dojo 修 helps you keep it. Once you master a KANJŪ's kanji, it can evolve. The Sanctuary path waits for you in Missions.",
  "tut.endGo": "Let's play!",
- "tut.skip": "Skip tutorial"
+ "tut.skip": "Skip tutorial",
+ "round.free": "Free games with its kanji: they give EXP, they do not advance the section.",
+ "round.start": "Let's go!",
+ "round.kMeaning": "What does this kanji mean?",
+ "round.kRead": "How is it read?",
+ "round.counted": "Training {n} of {total} in this section.",
+ "round.notCounted": "This training did not count: you need 80% right. Try again whenever you like!",
+ "round.complete": "You finished “{title}”!",
+ "round.next": "You can now go to “{title}”.",
+ "round.levelUp": "Level {lv}!",
+ "round.again": "Train again",
+ "round.continue": "Continue",
+ "round.practice": "Just play with the kanji {k}",
+ "round.practiceTitle": "Play with {k}"
 }
