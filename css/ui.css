@@ -1002,3 +1002,24 @@ ruby.wk rt{font-family:var(--f-ui);font-size:.42em;font-weight:700;opacity:.75}
 .ai-trt{margin:0 0 8px;color:var(--muted);font-weight:700}
 .ai-goal .ai-mark{width:56px;height:56px;font-size:30px}
 .ai-left{display:flex;justify-content:space-between;align-items:center;gap:8px}.ai-left .link{margin:0;padding:0}
+
+/* ---------- Qué estuvo mal (A-12) ---------- */
+.fx{width:100%;margin:6px 0 4px;padding:12px 14px;border:var(--b);border-radius:16px;background:var(--paper3);box-shadow:var(--sh);color:var(--line);text-align:left}
+.fx-k{margin:0 0 6px;font-family:var(--f-title);font-weight:800;font-size:15px;color:var(--red)}
+.fx-h{margin:8px 0 4px;font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.fx-row{display:flex;flex-wrap:wrap;gap:5px;font-family:var(--f-jp)}
+.fx-t{padding:3px 8px;border:2px solid var(--line);border-radius:10px;background:#FFFDF6;font-size:17px;font-weight:700}
+.fx-row.mine .fx-t.x{border-color:var(--red);background:#E8452C1F}
+.fx-row.need .fx-t.x{border-color:var(--green);background:#5DB84F26}
+.fx-n,.fx-ai{display:flex;gap:8px;align-items:flex-start;margin:10px 0 0;font-size:13.5px;line-height:1.45}
+.fx-n svg,.fx-ai svg{flex:none;width:18px;height:18px;margin-top:1px}
+.fx-ai{padding:8px 10px;border-radius:12px;background:#F2B54426}
+.fx-m{margin:6px 0 0;font-size:13.5px}.fx-m b{display:inline-block;min-width:96px}.fx-m.mine b{color:var(--red)}.fx-m.need b{color:var(--green)}
+.fx .wcard{margin:10px 0 0;box-shadow:none}
+.fx-acts{display:flex;gap:8px;margin-top:12px}.fx-acts .btn{flex:1}
+.fx-ai[hidden]{display:none}.fx-t,.fx-t *{color:var(--line)!important}
+.fx-why{display:inline-flex;align-items:center;justify-content:center;gap:6px}.fx-why svg{width:16px;height:16px}
+.fx-row{gap:6px}
+.fx-t{display:inline-flex;align-items:flex-start;flex:none;white-space:nowrap;min-width:36px;justify-content:center;padding:5px 9px 4px;line-height:1.2}
+.fx-t ruby.kr{display:inline-flex;flex-direction:column;align-items:center}
+.fx-t ruby.kr rt{display:block;line-height:1.1;margin-top:1px}

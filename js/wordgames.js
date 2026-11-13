@@ -7,6 +7,7 @@ import { t } from './i18n.js';
 import { kanaUnits, kanaHTML, kanaHit, kanaMiss } from './help.js';
 import { speak, canSpeak } from './games.js';
 import { WORD, LEX, tr, wordHTML, jaHTML, jaTokens, jaPlain, phrasesOf, foundIds } from './lex.js';
+import { tokenNotes, choiceNote, fixPanel } from './feedback.js';
 
 const shuffle = a => a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(v => v[1]);
 const IS_KANA = /[ぁ-ゖァ-ヺ]/;
@@ -28,14 +29,20 @@ export function wordExercise(id, body, done) {
   if (type === 'order' && !phrase) type = 'build';
   if (type === 'l2m' && !canSpeak()) type = 'k2m';
   const readsKana = type === 'k2m' || type === 'build';
-  const fail = () => {
+  // Al fallar (A-12): qué estuvo mal y la tarjeta de la palabra. given = lo elegido o las fichas puestas
+  const fail = (given = null) => {
     if (readsKana) kanaMiss(w.kana);
     setTimeout(() => {
-      body.innerHTML = `<p class="hint">${t('dojo.remember')}</p>${wordCardHTML(w)}<button class="btn ok wide">${t('dojo.gotIt')}</button>`;
+      body.innerHTML = '';
+      const pr = prompt || '', toks = Array.isArray(given) && given.length ? given : null;
+      const r = toks ? tokenNotes(toks, answer) : null, notes = r ? r.notes : typeof given === 'string' ? [choiceNote(given)] : [];
+      if (pr) body.innerHTML = pr;
+      fixPanel(body, { diff: r?.diff, render: tok => tiles?.find(x => x.v === tok)?.html || kanaHTML(tok), notes, extra: wordCardHTML(w),
+        ask: given && { question: phrase ? `${t('dojo.order')}: «${tr(phrase)}»` : `${t('dojo.meaning')} ${w.kana}`, given: Array.isArray(given) ? given.join(type === 'build' ? '' : ' ') : given, correct: phrase ? phrase.ja : type === 'build' ? w.kana : tr(w) } }, () => done(false));
       speak(w.kana);
-      body.querySelector('.btn').onclick = () => done(false);
     }, 700);
   };
+  let tiles, answer, prompt;
   const win = () => { if (readsKana) kanaHit(w.kana); navigator.vibrate?.(8); speak(phrase ? jaPlain(phrase.ja) : w.kana); setTimeout(() => done(true), 750); };
 
   if (type === 'l2m' || type === 'k2m') {
@@ -52,12 +59,11 @@ export function wordExercise(id, body, done) {
       body.querySelectorAll('.opt').forEach(x => x.disabled = true);
       if (sp) sp.querySelector('span').innerHTML = kanaHTML(w.kana);
       if (b.textContent === correct) { b.classList.add('right'); win(); }
-      else { b.classList.add('wrong'); [...body.querySelectorAll('.opt')].find(x => x.textContent === correct)?.classList.add('right'); fail(); }
+      else { b.classList.add('wrong'); [...body.querySelectorAll('.opt')].find(x => x.textContent === correct)?.classList.add('right'); fail(b.textContent); }
     });
     return;
   }
   // Armar: se ve el significado y se recupera la forma, ficha por ficha
-  let tiles, answer, prompt;
   if (type === 'build') {
     answer = kanaUnits(w.kana);
     const extra = shuffle([...new Set(LEX.filter(x => x.id !== id).flatMap(x => kanaUnits(x.kana)))].filter(u => IS_KANA.test(u) && !answer.includes(u))).slice(0, Math.min(4, Math.max(2, 6 - answer.length)));
@@ -77,7 +83,7 @@ export function wordExercise(id, body, done) {
   const reveal = ok => {
     over = true; body.querySelectorAll('.asm-t').forEach(b => b.disabled = true); body.querySelector('.asm-skip').hidden = true;
     row.classList.add(ok ? 'right' : 'wrong');
-    ok ? win() : fail();
+    ok ? win() : fail(picked.map(x => tiles[x.dataset.i].v));
   };
   body.querySelectorAll('.asm-t').forEach(b => b.onclick = () => {
     if (over) return;

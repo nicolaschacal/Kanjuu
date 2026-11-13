@@ -12,6 +12,7 @@ import { SECTIONS, sectionById, phraseById, nextSection, TALKS } from './curricu
 import { creatureSVG } from './creature.js';
 import { STROKES } from './strokes.js';
 import { arrive } from './world.js';
+import { tokenNotes, replyMeaning, fixPanel } from './feedback.js';
 
 export const ROUNDS = 5;   // rondas para completar una sección
 export const PASS = .8;    // la ronda cuenta con el 80 % o más
@@ -157,9 +158,13 @@ function phraseExercise(ph, body, done) {
     over = true; body.querySelectorAll('.asm-t').forEach(b => b.disabled = true); body.querySelector('.asm-skip').hidden = true;
     row.classList.add(ok ? 'right' : 'wrong'); speak(jaPlain(ph.ja));
     if (ok) return setTimeout(() => done(true), 900);
+    // Qué estuvo mal (A-12): las fichas que no van, y la partícula o la forma confundida
+    const given = picked.map(x => tiles[x.dataset.i].v), html = tok => { const x = toks.find(y => y.tok === tok); return x?.w ? wordHTML(x.w, tok) : kanaHTML(tok, { particle: true }); };
     setTimeout(() => {
-      body.innerHTML = `<p class="hint">${t('dojo.remember')}</p><p class="jp qm">${jaHTML(ph.ja, ph.ids)}</p><small>${tr(ph)}</small><button class="btn ok wide">${t('dojo.gotIt')}</button>`;
-      body.querySelector('.btn').onclick = () => done(false);
+      body.innerHTML = `<div class="qm sm">«${tr(ph)}»</div>`;
+      const r = given.length ? tokenNotes(given, answer) : null;
+      fixPanel(body, { diff: r?.diff, render: html, notes: r?.notes || [], extra: r ? '' : `<p class="jp qm">${jaHTML(ph.ja, ph.ids)}</p>`,
+        ask: given.length && { question: `${t('dojo.order')}: «${tr(ph)}»`, given: given.join(' '), correct: ph.ja } }, () => done(false));
     }, 800);
   };
   body.querySelectorAll('.asm-t').forEach(b => b.onclick = () => {
@@ -179,9 +184,15 @@ export function talkExercise(d, body, done) {
     body.querySelectorAll('.rd-reply').forEach(x => x.disabled = true);
     const o = opts[+b.dataset.i];
     b.classList.add(o.ok ? 'right' : 'wrong');
-    if (!o.ok) body.querySelectorAll('.rd-reply')[opts.findIndex(x => x.ok)].classList.add('right');
-    speak(jaPlain(opts.find(x => x.ok).ja));
-    setTimeout(() => done(o.ok), o.ok ? 800 : 1500);
+    const good = opts.find(x => x.ok);
+    speak(jaPlain(good.ja));
+    if (o.ok) return setTimeout(() => done(true), 800);
+    body.querySelectorAll('.rd-reply')[opts.indexOf(good)].classList.add('right');
+    // Qué dijiste y qué correspondía (A-12)
+    const { notes } = tokenNotes(o.ja.split(/\s+/), good.ja.split(/\s+/));
+    const mean = (cls, label, x) => replyMeaning(x.ids) ? `<p class="fx-m ${cls}"><b>${label}</b> ${replyMeaning(x.ids)}</p>` : '';
+    fixPanel(body, { notes: notes.slice(0, 1), extra: mean('mine', t('fx.said'), o) + mean('need', t('fx.fits'), good),
+      ask: { question: `${t('round.reply')} ${tr(d.hint)}`, given: o.ja, correct: good.ja } }, () => done(false));
   });
 }
 
@@ -196,8 +207,12 @@ function kanjiExercise(k, ask, body, done) {
     body.querySelectorAll('.opt').forEach(x => x.disabled = true);
     const ok = b.dataset.v === correct;
     b.classList.add(ok ? 'right' : 'wrong');
-    if (!ok) [...body.querySelectorAll('.opt')].find(x => x.dataset.v === correct)?.classList.add('right');
-    speak(mainRead(k)); setTimeout(() => done(ok), ok ? 700 : 1300);
+    speak(mainRead(k));
+    if (ok) return setTimeout(() => done(true), 700);
+    [...body.querySelectorAll('.opt')].find(x => x.dataset.v === correct)?.classList.add('right');
+    const chosen = b.dataset.v, other = Object.keys(KANJI).find(x => x !== k && (ask === 'read' ? mainRead(x) : KANJI[x].m) === chosen);
+    fixPanel(body, { notes: [other ? t(ask === 'read' ? 'fx.chosenR' : 'fx.chosenK', { m: chosen, k: other }) : '', t('fx.kanjiIs', { k, m: KANJI[k].m, r: mainRead(k) })],
+      ask: { question: t(ask === 'read' ? 'round.kRead' : 'round.kMeaning') + ' ' + k, given: chosen, correct } }, () => done(false));
   });
 }
 
