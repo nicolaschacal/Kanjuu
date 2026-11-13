@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Propuesta A-02 · Ronda de entrenamiento · KANJŪ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Yuji+Syuku&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/style.css">
+<link rel="stylesheet" href="../../css/ui.css">
+<link rel="stylesheet" href="../../css/art.css">
+<style>
+/* Propuesta A-02 (docs/CURRICULO.md). Solo maqueta: no toca el juego. Prefijo rd- para no chocar. */
+html, body { height: auto; background: #0E0C1C }
+body { padding: 0 0 40px; user-select: auto; -webkit-user-select: auto }
+.pp { max-width: 480px; margin: 0 auto; padding: 14px 12px 0; color: var(--paper) }
+.pp h1 { font-size: 19px; margin: 0 0 2px; color: var(--paper) }
+.pp p { font-size: 13px; color: var(--muted-d); line-height: 1.45 }
+.pp-nav { display: flex; gap: 6px; overflow-x: auto; padding: 12px 0; scrollbar-width: none }
+.pp-nav button { flex: none; border: 2px solid #F6EBD040; color: var(--paper); border-radius: 99px; padding: 6px 12px; font-size: 12.5px; font-weight: 700 }
+.pp-nav button.on { background: var(--paper); color: var(--line); border-color: var(--paper) }
+.phone { position: relative; max-width: 480px; margin: 0 auto; min-height: 780px; background: var(--bg); overflow: hidden; border-radius: 22px }
+.notes { max-width: 480px; margin: 14px auto 0; padding: 14px 16px; background: #1E1A38; border-radius: 16px; color: var(--paper) }
+.notes h2 { font-size: 14px; margin: 0 0 6px; color: var(--gold) }
+.notes li { font-size: 13px; line-height: 1.45; color: #E9DCC0; margin: 0 0 5px 16px }
+
+/* --- piezas comunes --- */
+.rd-paper { background: var(--paper); border: var(--b); box-shadow: var(--sh); border-radius: 18px; color: var(--line) }
+.rd-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 800; padding: 3px 9px; border-radius: 99px; border: 2px solid var(--line); background: var(--paper3) }
+.rd-chip.gold { background: var(--gold) }
+.kr { ruby-position: under } .kr rt { font-size: .42em; font-weight: 700; opacity: .65; font-family: var(--f-ui); letter-spacing: 0 }
+.jp { font-family: var(--f-jp); font-weight: 700 }
+
+/* --- 1 · pestaña Entrenar --- */
+.rd-top { padding: 18px 16px 16px; background: radial-gradient(90% 70% at 50% 30%, color-mix(in srgb, #F2B544 30%, #2A2148) 0%, #16132A 72%); color: var(--paper); text-align: center }
+.rd-top .art { width: 128px; height: 128px; margin: 0 auto }
+.rd-top .art svg { width: 100%; height: 100% }
+.rd-top b { font-family: var(--f-title); font-size: 20px }
+.rd-top small { display: block; color: var(--muted-d); font-size: 12.5px }
+.rd-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 14px 12px 0 }
+.rd-tabs button { padding: 8px 0; border-radius: 12px; font-weight: 800; font-size: 13px; color: var(--muted-d); border: 2px solid transparent }
+.rd-tabs button.on { background: var(--paper); color: var(--line); border-color: var(--line); box-shadow: var(--sh-d) }
+.rd-body { padding: 14px 12px 20px }
+.rd-stage { padding: 14px 14px 10px }
+.rd-stage .eyebrow { margin: 0 }
+.rd-stage h3 { font-family: var(--f-title); font-size: 18px; margin: 0 0 10px }
+.rd-path { position: relative; display: grid; gap: 4px; padding: 4px 0 8px }
+.rd-node { display: grid; grid-template-columns: 52px 1fr auto; align-items: center; gap: 10px; text-align: left; padding: 6px 8px; border-radius: 14px }
+.rd-node .dot { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; border: var(--b); background: var(--paper3); font-family: var(--f-title); font-weight: 800; font-size: 13px; position: relative }
+.rd-node.done .dot { background: var(--green); color: #fff }
+.rd-node.gold .dot { background: var(--gold); box-shadow: 0 0 0 3px #F2B54455 }
+.rd-node.lock { opacity: .5 }
+.rd-node.lock .dot { border-style: dashed }
+.rd-node.cur { background: var(--paper3); border: var(--b); box-shadow: var(--sh) }
+.rd-node.cur .dot { background: var(--red); color: #FFF6E3 }
+.rd-node b { font-size: 14px; display: block }
+.rd-node small { font-size: 11.5px; color: var(--muted) }
+.rd-node:nth-child(odd) { margin-left: 22px } .rd-node:nth-child(even) { margin-right: 22px }
+.rd-pips { display: flex; gap: 3px; margin-top: 3px }
+.rd-pips i { width: 14px; height: 6px; border-radius: 3px; background: #1A122026 }
+.rd-pips i.on { background: var(--red) }
+.rd-prize { width: 44px; height: 44px; display: grid; place-items: center }
+.rd-prize svg { width: 44px; height: 44px }
+.rd-sil svg { filter: brightness(0) opacity(.28) }
+.rd-cur-card { margin-top: 12px; padding: 14px }
+.rd-cur-card .row { display: flex; gap: 12px; align-items: center }
+.rd-cur-card .row > div { flex: 1 }
+.rd-cur-card b { font-family: var(--f-title); font-size: 17px; display: block }
+.rd-cur-card small { color: var(--muted); font-size: 12.5px }
+.rd-free { margin-top: 16px }
+.rd-free h4 { font-family: var(--f-title); font-size: 14px; color: var(--paper); margin: 0 0 8px }
+.rd-free h4 small { color: var(--muted-d); font-weight: 500; font-family: var(--f-ui); font-size: 12px }
+.rd-free .g { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px }
+.rd-free .g button { background: var(--paper); border: var(--b); box-shadow: var(--sh-d); border-radius: 14px; padding: 8px 0 6px; display: grid; justify-items: center; gap: 2px; font-size: 11.5px; font-weight: 800 }
+.rd-free .g i { font-style: normal; font-family: var(--f-jp); font-size: 20px; font-weight: 900 }
+
+/* --- ronda --- */
+.rd-run { display: flex; flex-direction: column; min-height: 780px; background: var(--paper); color: var(--line) }
+.rd-bar { display: flex; align-items: center; gap: 10px; padding: 14px 14px 6px }
+.rd-bar .x { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px }
+.rd-prog { flex: 1; display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px }
+.rd-prog i { height: 10px; border-radius: 5px; background: #1A12201F; border: 1.5px solid #1A122030 }
+.rd-prog i.ok { background: var(--green); border-color: var(--line) }
+.rd-prog i.k { background: var(--gold); border-color: var(--line) }
+.rd-prog i.now { background: var(--paper3); border: 2px solid var(--line) }
+.rd-sec { font-size: 11.5px; font-weight: 800; color: var(--muted); padding: 0 16px; letter-spacing: .04em }
+.rd-say { display: flex; gap: 10px; align-items: flex-end; padding: 14px 16px 6px }
+.rd-say .art { width: 74px; height: 74px; flex: none }
+.rd-say .art svg { width: 100%; height: 100% }
+.rd-bub { position: relative; background: var(--paper3); border: var(--b); border-radius: 16px 16px 16px 4px; padding: 10px 12px; font-size: 15px; font-weight: 700; box-shadow: var(--sh) }
+.rd-bub small { display: block; font-weight: 500; color: var(--muted); font-size: 12px; margin-top: 2px }
+.rd-q { padding: 8px 16px 0; flex: 1 }
+.rd-q h2 { font-size: 21px; margin: 10px 0 14px }
+.rd-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px }
+.rd-opt { background: var(--paper3); border: var(--b); box-shadow: var(--sh); border-radius: 16px; padding: 16px 8px; font-size: 26px; text-align: center; transition: transform .08s }
+.rd-opt:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--line) }
+.rd-opt.ok { background: #DDF2D6; border-color: #2F7A25 }
+.rd-opt.bad { background: #FBE0DA; border-color: var(--red) }
+.rd-say-btn { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 12px; padding: 7px 12px; border: var(--b); border-radius: 12px; background: var(--paper3); font-weight: 800; font-size: 13px; box-shadow: var(--sh) }
+.rd-foot { padding: 12px 16px calc(18px + var(--safe-b)); border-top: 2.5px solid #1A12201A }
+.rd-fb { display: none; padding: 12px 14px; border-radius: 14px; margin-bottom: 10px; font-size: 14px }
+.rd-fb.on { display: block }
+.rd-fb.ok { background: #DDF2D6; border: 2px solid #2F7A25 }
+.rd-fb.bad { background: #FBE0DA; border: 2px solid var(--red) }
+.rd-fb b { display: block; font-size: 15px }
+.rd-run .btn .ic, .rd-end .btn .ic, .rd-born .btn .ic { display: inline-block; vertical-align: -5px; margin-right: 6px }
+.rd-tag { display: inline-flex; gap: 5px; align-items: center; margin: 0 16px; padding: 4px 10px; border-radius: 99px; background: var(--gold); border: 2px solid var(--line); font-size: 11.5px; font-weight: 800; width: max-content }
+
+/* armar frase */
+.rd-slots { min-height: 64px; border-bottom: 2.5px dashed #1A122040; display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0 12px; margin-bottom: 16px }
+.rd-bank { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center }
+.rd-tile { background: var(--paper3); border: var(--b); box-shadow: var(--sh); border-radius: 12px; padding: 8px 12px; font-size: 20px }
+.rd-tile.used { visibility: hidden }
+.rd-tile.part { background: #EFE3FF }
+
+/* fin de ronda */
+.rd-end { padding: 24px 16px; text-align: center; color: var(--paper) }
+.rd-end h2 { font-size: 26px; margin: 6px 0 }
+.rd-end .art { width: 140px; height: 140px; margin: 6px auto }
+.rd-end .art svg { width: 100%; height: 100% }
+.rd-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0 }
+.rd-stats div { background: var(--paper); color: var(--line); border: var(--b); box-shadow: var(--sh-d); border-radius: 14px; padding: 10px 4px }
+.rd-stats b { font-family: var(--f-title); font-size: 19px; display: block }
+.rd-stats small { font-size: 11px; color: var(--muted) }
+.rd-done { text-align: left; padding: 14px; margin-top: 4px }
+.rd-done h4 { margin: 0 0 8px; font-family: var(--f-title); font-size: 15px }
+.rd-w { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-top: 1.5px solid #1A122014; font-size: 14px }
+.rd-w .jp { font-size: 17px }
+.rd-w em { font-style: normal; letter-spacing: 1px; color: var(--red); font-size: 12px }
+
+/* nace un KANJŪ */
+.rd-born { position: relative; min-height: 780px; display: grid; align-content: center; justify-items: center; text-align: center; padding: 20px 18px; color: var(--paper); background: radial-gradient(70% 50% at 50% 40%, #3A2E66 0%, #16132A 70%) }
+.rd-word { font-family: var(--f-jp); font-weight: 900; font-size: 54px; letter-spacing: 6px; height: 80px; position: relative }
+.rd-word span { display: inline-block }
+.rd-kan { position: absolute; left: 50%; top: 0; transform: translateX(-50%); font-family: var(--brush); font-size: 76px; line-height: 80px; opacity: 0 }
+.rd-baby { width: 190px; height: 190px; opacity: 0 }
+.rd-baby svg { width: 100%; height: 100% }
+.rd-born h2 { font-size: 24px; margin: 4px 0 2px; opacity: 0 }
+.rd-born .rd-paper { margin-top: 14px; padding: 12px 14px; text-align: left; width: 100%; opacity: 0 }
+.rd-born .rd-paper b { font-family: var(--f-title) }
+.rd-born .acts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: 12px; opacity: 0 }
+.rd-ring { position: absolute; left: 50%; top: 46%; width: 10px; height: 10px; border-radius: 50%; border: 3px solid var(--gold); transform: translate(-50%, -50%); opacity: 0 }
+.play .rd-word span { animation: rd-melt 1s ease-in forwards; animation-delay: calc(.9s + var(--i) * .12s) }
+.play .rd-kan { animation: rd-in .8s 1.9s ease-out forwards }
+.play .rd-ring { animation: rd-ring 1s 2.7s ease-out forwards }
+.play .rd-baby { animation: rd-pop .7s 2.9s cubic-bezier(.3, 1.6, .5, 1) forwards }
+.play .rd-kan.go { animation: rd-in .8s 1.9s ease-out forwards, rd-up .6s 2.8s ease-in forwards }
+.play h2, .play .rd-paper, .play .acts { animation: rd-fade .5s 3.5s forwards }
+@keyframes rd-melt { to { transform: translateY(18px) scale(.4); opacity: 0; filter: blur(3px) } }
+@keyframes rd-in { from { opacity: 0; transform: translateX(-50%) scale(1.6) } to { opacity: 1; transform: translateX(-50%) scale(1) } }
+@keyframes rd-up { to { opacity: 0; transform: translateX(-50%) translateY(60px) scale(.5) } }
+@keyframes rd-ring { 0% { opacity: 1; width: 10px; height: 10px } 100% { opacity: 0; width: 320px; height: 320px } }
+@keyframes rd-pop { from { opacity: 0; transform: scale(.3) } to { opacity: 1; transform: scale(1) } }
+@keyframes rd-fade { to { opacity: 1 } }
+@media (prefers-reduced-motion: reduce) {
+  .play .rd-word span, .play .rd-kan, .play .rd-ring, .play .rd-baby, .play h2, .play .rd-paper, .play .acts { animation: none !important }
+  .rd-word { display: none } .rd-baby, .rd-born h2, .rd-born .rd-paper, .rd-born .acts { opacity: 1 }
+}
+
+/* examen */
+.rd-exam { padding: 20px 14px; color: var(--paper) }
+.rd-exam h2 { font-size: 22px; margin: 4px 0 4px }
+.rd-vs { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 6px; margin: 16px 0 }
+.rd-team { display: grid; gap: 8px }
+.rd-mon { display: flex; align-items: center; gap: 8px; background: #1E1A38; border: 2px solid #F6EBD030; border-radius: 14px; padding: 6px 8px; font-size: 12.5px; font-weight: 700 }
+.rd-mon .a { width: 44px; height: 44px; flex: none } .rd-mon .a svg { width: 100%; height: 100% }
+.rd-mon.pick { border-style: dashed; color: var(--muted-d); justify-content: center; min-height: 58px }
+.rd-mon.shadow .a svg { filter: grayscale(1) brightness(.55) contrast(1.2) }
+.rd-vs > b { font-family: var(--f-title); font-size: 18px; color: var(--gold) }
+.rd-rules { padding: 14px; margin-top: 6px }
+.rd-rules li { font-size: 13.5px; margin: 0 0 6px 18px; line-height: 1.4 }
+</style>
+</head>
+<body>
+<div class="pp">
+  <h1>Propuesta A-02 · Ronda de entrenamiento</h1>
+  <p>Maqueta navegable para aprobar antes de implementar (docs/CURRICULO.md). Toca las opciones: responden. Las pantallas siguen el flujo de un jugador en la sección 1.9 «Mi familia», entrenando con 日.</p>
+  <nav class="pp-nav" id="nav"></nav>
+</div>
+<div class="phone" id="phone"></div>
+<div class="notes" id="notes"></div>
+
+<script type="module">
+import { creatureSVG } from '../../js/creature.js';
+import { ic } from '../../js/icons.js';
+
+// Kana que este jugador ya domina: sin romaji (el andamio vence por kana, docs/APRENDIZAJE.md §5).
+const KNOWN = new Set('あいうえおかきくけこ'.split(''));
+const ROM = { あ:'a',い:'i',う:'u',え:'e',お:'o',か:'ka',き:'ki',く:'ku',け:'ke',こ:'ko',さ:'sa',し:'shi',す:'su',せ:'se',そ:'so',た:'ta',ち:'chi',つ:'tsu',て:'te',と:'to',な:'na',に:'ni',ぬ:'nu',ね:'ne',の:'no',は:'ha',ひ:'hi',ふ:'fu',へ:'he',ほ:'ho',ま:'ma',み:'mi',む:'mu',め:'me',も:'mo',が:'ga',で:'de',す:'su',ろ:'ro',ゃ:'ya' };
+const PART = { は: 'wa', へ: 'e' };
+const kana = (s, part) => [...s].map(c => KNOWN.has(c) || !ROM[c] ? c : `<ruby class="kr">${c}<rt>${part && s.length === 1 && PART[c] || ROM[c]}</rt></ruby>`).join('');
+const art = (k, o) => creatureSVG(k, o);
+const $ = s => document.querySelector(s);
+
+const SCREENS = [
+  ['train', '1 · Entrenar', train, [
+    'La pestaña Entrenar de cada KANJŪ muestra el mapa de la etapa: secciones completas (verde), doradas (oro), la actual con sus 5 rondas y las bloqueadas.',
+    'El premio de la sección actual se ve como silueta: el jugador sabe que hay algo que ganar sin saber qué es.',
+    'Un solo botón bermellón: la próxima ronda. Los juegos sueltos del kanji (trazo, lecturas…) quedan abajo como práctica libre.',
+    'Cualquier criatura avanza la misma sección: lo que cambia son sus 2 ejercicios de kanji y su voz.']],
+  ['pick', '2 · Ejercicio', pick, [
+    'La criatura narra cada ejercicio en un globo; el texto es corto y en tú.',
+    'Barra de 12 pasos: verde = acertado, oro = ejercicio del kanji de tu KANJŪ, blanco = el actual.',
+    'Romaji debajo de cada kana que el jugador todavía no domina. Acá あ い う え お か… ya no lo llevan: el andamio vence kana por kana.',
+    'Un error no corta la ronda: el ejercicio vuelve al final. Sin vidas ni energía.']],
+  ['build', '3 · Armar frase', build, [
+    'Producción: el jugador arma la frase tocando fichas. Las partículas tienen otro color para que se note su función.',
+    'Hay fichas que sobran (は, が) para que no alcance con descartar.',
+    'Al acertar se oye la frase con el motor de voces actual.']],
+  ['kanji', '4 · Kanji del KANJŪ', kanji, [
+    '2 de los 12 ejercicios son del kanji de la criatura (los juegos que ya existen: lecturas, palabra, ensamblar, escuchar, trazo).',
+    'La etiqueta dorada avisa que este ejercicio sube el nivel de esa criatura.',
+    'Si el kanji ya está dominado, se pasa a sus compuestos o a su evolución.']],
+  ['end', '5 · Fin de ronda', end, [
+    'Resumen corto: aciertos, EXP de la criatura y tinta. Sin estrellas que castiguen.',
+    'Al terminar la quinta ronda, la sección queda completa y aparece el botón dorado para cobrar el premio (oro solo para cobrar, como pide ui.css).',
+    'Lista de palabras de la sección con su avance (●), para que el jugador vea qué aprendió.']],
+  ['born', '6 · Nace un KANJŪ', born, [
+    'La palabra que se aprendió (おとうと) se disuelve, se pinta su kanji a pincel (弟) y de ahí nace la criatura.',
+    'Dura unos 4 segundos y se puede saltar con un toque. Con «reducir movimiento» se muestra el resultado sin animación.',
+    'La ficha guarda la frase donde nació, que después se ve en el diario.']],
+  ['exam', '7 · Examen dorado', exam, [
+    'Opcional, después de completar la sección. 3 contra 3 con el motor de la Arena: la criatura que entrenó la sección más 2 que elige el jugador.',
+    'Los rivales son los 3 kanji de la sección, en versión «sombra».',
+    'Las reglas se dicen antes de empezar, y se puede reintentar sin perder nada.']],
+];
+
+function nav(cur) {
+  $('#nav').innerHTML = SCREENS.map(([id, l]) => `<button data-s="${id}" class="${id === cur ? 'on' : ''}">${l}</button>`).join('');
+  $('#nav').querySelectorAll('button').forEach(b => b.onclick = () => show(b.dataset.s));
+}
+function show(id) {
+  const [, label, fn, notes] = SCREENS.find(s => s[0] === id);
+  nav(id); fn($('#phone'));
+  $('#notes').innerHTML = `<h2>Notas · ${label}</h2><ul>${notes.map(n => `<li>${n}</li>`).join('')}</ul>`;
+  $('#phone').scrollIntoView({ block: 'nearest' });
+}
+
+// ---------- 1 · pestaña Entrenar ----------
+function train(v) {
+  const S = [['1.1', 'De dónde soy', 'gold'], ['1.2', '¿Qué es esto?', 'gold'], ['1.3', 'Decir la hora', 'done'], ['1.4', 'Precios en el mercado', 'done'],
+    ['1.5', 'Comer y beber', 'done'], ['1.6', 'Los días de la semana', 'done'], ['1.7', 'Ir y volver', 'done'], ['1.8', 'Lo que me gusta', 'done'],
+    ['1.9', 'Mi familia', 'cur'], ['1.10', '¿Dónde está?', 'lock']];
+  const sub = { gold: 'Dorada', done: 'Completa', lock: 'Bloqueada' };
+  v.innerHTML = `<div class="rd-top"><div class="art">${art('日')}</div><b>日 · sol · día</b><small>Nv 7 · produce 4,2 墨/h</small></div>
+  <div class="rd-tabs"><button>Ficha</button><button class="on">Entrenar</button><button>Evolución</button></div>
+  <div class="rd-body">
+    <div class="rd-paper rd-stage"><p class="eyebrow">Etapa 1</p><h3>Primeros pasos</h3>
+      <div class="rd-path">${S.map(([n, t, st]) => `<div class="rd-node ${st}">
+        <span class="dot">${st === 'done' || st === 'gold' ? ic('check') : st === 'lock' ? ic('lock') : n}</span>
+        <span><b>${n} · ${t}</b>${st === 'cur' ? `<small>Ronda 4 de 5</small><span class="rd-pips">${[1, 1, 1, 0, 0].map(o => `<i class="${o ? 'on' : ''}"></i>`).join('')}</span>` : `<small>${sub[st]}</small>`}</span>
+        ${st === 'cur' ? `<span class="rd-prize rd-sil">${art('弟')}</span>` : ''}</div>`).join('')}</div></div>
+    <div class="rd-paper rd-cur-card"><div class="row"><div><b>1.9 · Mi familia</b><small>Puedo presentar a mi familia · 12 ejercicios · 3 a 5 min</small></div><span class="rd-prize rd-sil">${art('弟')}</span></div>
+      <button class="btn ok wide" id="go">Entrenar · ronda 4 de 5</button></div>
+    <div class="rd-free"><h4>Práctica libre de 日 <small>suma EXP, no avanza la sección</small></h4>
+      <div class="g"><button><i>書</i>Trazo</button><button><i>読</i>Lecturas</button><button><i>語</i>Palabra</button><button><i>聴</i>Escuchar</button></div></div>
+  </div>`;
+  $('#go').onclick = () => show('pick');
+}
+
+// ---------- barra de la ronda ----------
+const bar = (pos, kAt = [4, 9]) => `<div class="rd-bar"><button class="x" aria-label="Salir">${ic('x')}</button>
+  <div class="rd-prog">${Array.from({ length: 12 }, (_, i) => `<i class="${i < pos ? (kAt.includes(i) ? 'k' : 'ok') : i === pos ? 'now' : ''}"></i>`).join('')}</div></div>
+  <p class="rd-sec">1.9 · MI FAMILIA · RONDA 4 DE 5</p>`;
+const say = (k, txt, sm) => `<div class="rd-say"><div class="art">${art(k)}</div><div class="rd-bub">${txt}${sm ? `<small>${sm}</small>` : ''}</div></div>`;
+const foot = (next) => `<div class="rd-foot"><div class="rd-fb" id="fb"></div><button class="btn ok wide" id="next" disabled>Comprobar</button></div>`;
+function options(v, correct, okMsg, badMsg, next) {
+  let done = false;
+  v.querySelectorAll('.rd-opt').forEach(b => b.onclick = () => {
+    if (done) return;
+    const ok = b.dataset.v === correct;
+    b.classList.add(ok ? 'ok' : 'bad');
+    const fb = $('#fb'); fb.className = `rd-fb on ${ok ? 'ok' : 'bad'}`; fb.innerHTML = ok ? okMsg : badMsg;
+    if (ok) { done = true; const n = $('#next'); n.disabled = false; n.textContent = 'Seguir'; n.onclick = () => show(next); }
+  });
+}
+
+// ---------- 2 · elegir ----------
+function pick(v) {
+  const W = [['おとうと', 1], ['あに', 0], ['いもうと', 0], ['あね', 0]];
+  v.innerHTML = `<div class="rd-run">${bar(6)}${say('日', '¿Cuál es «hermano menor»?', 'Mi hermano menor también es un KANJŪ…')}
+    <div class="rd-q"><button class="rd-say-btn">${ic('sound')} Escuchar</button>
+    <div class="rd-opts">${W.map(([w]) => `<button class="rd-opt jp" data-v="${w}">${kana(w)}</button>`).join('')}</div></div>${foot()}</div>`;
+  options(v, 'おとうと', '<b>¡Eso es!</b><span class="jp">おとうと · 弟</span> · hermano menor', '<b>Casi.</b> Esa es otra persona de la familia. Este ejercicio vuelve al final.', 'build');
+}
+
+// ---------- 3 · armar frase ----------
+function build(v) {
+  const RIGHT = ['あに', 'も', 'おとうと', 'も', 'がくせい', 'です'];
+  const bank = [['おとうと'], ['は', 1], ['がくせい'], ['も', 1], ['あに'], ['です', 1], ['が', 1], ['も', 1]];
+  v.innerHTML = `<div class="rd-run">${bar(7)}${say('日', 'Arma la frase:', '«Mi hermano mayor y mi hermano menor son estudiantes.»')}
+    <div class="rd-q"><div class="rd-slots" id="slots"></div>
+    <div class="rd-bank">${bank.map(([w, p], i) => `<button class="rd-tile jp ${p ? 'part' : ''}" data-i="${i}" data-w="${w}">${kana(w, true)}</button>`).join('')}</div></div>${foot()}</div>`;
+  const picked = [];
+  const render = () => {
+    $('#slots').innerHTML = picked.map((i, j) => `<button class="rd-tile jp ${bank[i][1] ? 'part' : ''}" data-j="${j}">${kana(bank[i][0], true)}</button>`).join('');
+    $('#slots').querySelectorAll('[data-j]').forEach(b => b.onclick = () => { picked.splice(+b.dataset.j, 1); render(); });
+    v.querySelectorAll('.rd-bank .rd-tile').forEach(b => b.classList.toggle('used', picked.includes(+b.dataset.i)));
+    const n = $('#next'); n.disabled = picked.length < 3; n.textContent = 'Comprobar';
+    n.onclick = () => {
+      const ok = picked.map(i => bank[i][0]).join(' ') === RIGHT.join(' ');
+      const fb = $('#fb'); fb.className = `rd-fb on ${ok ? 'ok' : 'bad'}`;
+      fb.innerHTML = ok ? '<b>¡Perfecto!</b><span class="jp">あに も おとうと も がくせい です</span>' : '<b>Todavía no.</b> Pista: «A も B も» = «tanto A como B». Toca una ficha para sacarla.';
+      if (ok) { n.textContent = 'Seguir'; n.onclick = () => show('kanji'); }
+    };
+  };
+  v.querySelectorAll('.rd-bank .rd-tile').forEach(b => b.onclick = () => { if (!picked.includes(+b.dataset.i)) { picked.push(+b.dataset.i); render(); } });
+  render();
+}
+
+// ---------- 4 · kanji de la criatura ----------
+function kanji(v) {
+  v.innerHTML = `<div class="rd-run">${bar(9, [4])}<span class="rd-tag">${ic('star')} Ejercicio de 日 · sube su nivel</span>
+    ${say('日', '¡Este soy yo! ¿Cómo me leo en 日曜日?', 'にちようび · domingo')}
+    <div class="rd-q"><h2 class="jp" style="font-size:44px;text-align:center"><u>日</u>曜日</h2>
+    <div class="rd-opts">${['にち', 'ひ', 'つき', 'か'].map(w => `<button class="rd-opt jp" data-v="${w}">${kana(w)}</button>`).join('')}</div></div>${foot()}</div>`;
+  options(v, 'にち', '<b>¡Bien!</b> En 日曜日, 日 se lee <span class="jp">にち</span>. Sola, como «sol», se lee <span class="jp">ひ</span>.', '<b>No es esa.</b> Pista: suena como el comienzo de にちようび.', 'end');
+}
+
+// ---------- 5 · fin de ronda ----------
+function end(v) {
+  const W = [['おとうと', '弟', 'hermano menor', 4], ['いもうと', '妹', 'hermana menor', 3], ['あに', '兄', 'hermano mayor', 4], ['あね', '姉', 'hermana mayor', 3], ['かぞく', '家族', 'familia', 5]];
+  v.innerHTML = `<div class="rd-end"><p class="eyebrow" style="color:var(--gold)">Ronda 5 de 5</p><h2>¡Sección completa!</h2>
+    <div class="art">${art('日', { mood: 1 })}</div>
+    <div class="rd-stats"><div><b>11/12</b><small>aciertos</small></div><div><b>+24</b><small>EXP de 日</small></div><div><b>+12</b><small>墨 tinta</small></div></div>
+    <div class="rd-paper rd-done"><h4>Lo que aprendiste en «Mi familia»</h4>${W.map(([k, j, es, n]) => `<div class="rd-w"><span><span class="jp">${j}</span> <small>${k} · ${es}</small></span><em>${'●'.repeat(n)}${'○'.repeat(5 - n)}</em></div>`).join('')}</div>
+    <button class="btn gold wide" id="claim">${ic('gift')} Cobrar el premio de la sección</button>
+    <button class="btn ghost wide" id="toExam">Intentar el examen dorado</button></div>`;
+  $('#claim').onclick = () => show('born'); $('#toExam').onclick = () => show('exam');
+}
+
+// ---------- 6 · nace un KANJŪ ----------
+function born(v) {
+  v.innerHTML = `<div class="rd-born" id="stage">
+    <p class="eyebrow" style="color:var(--gold)">Premio de «Mi familia»</p>
+    <div class="rd-word">${[...'おとうと'].map((c, i) => `<span style="--i:${i}">${c}</span>`).join('')}<span class="rd-kan go">弟</span></div>
+    <div class="rd-ring"></div>
+    <div class="rd-baby">${art('弟')}</div>
+    <h2>¡Nació 弟!</h2><p style="color:var(--muted-d);opacity:.9">La palabra que aprendiste tomó forma.</p>
+    <div class="rd-paper"><b>弟 · hermano menor</b><br><small class="jp">おとうと · テイ · ダイ</small>
+      <p style="font-size:13px;margin-top:6px">Nació en <b>1.9 · Mi familia</b> · <span class="jp">あに も おとうと も がくせい です</span></p></div>
+    <div class="acts"><button class="btn ghost">Ver en el diario</button><button class="btn ok">Al santuario</button></div>
+    <button class="btn ghost" id="again" style="margin-top:12px;opacity:.8">${ic('refresh')} Repetir animación</button></div>`;
+  const st = $('#stage'); requestAnimationFrame(() => st.classList.add('play'));
+  $('#again').onclick = () => born(v);
+}
+
+// ---------- 7 · examen dorado ----------
+function exam(v) {
+  const mon = (k, name, cls = '') => `<div class="rd-mon ${cls}"><span class="a">${art(k)}</span>${name}</div>`;
+  v.innerHTML = `<div class="rd-exam"><p class="eyebrow" style="color:var(--gold)">Opcional · 1.9 Mi familia</p><h2>Examen dorado</h2>
+    <p style="color:var(--muted-d);font-size:13.5px">Gánale a las sombras de la sección para dorarla.</p>
+    <div class="rd-vs"><div class="rd-team">${mon('日', '日 · entrenó')}${mon('火', '火 · elegido')}<div class="rd-mon pick">${ic('plus')} Elegir</div></div>
+      <b>VS</b><div class="rd-team">${mon('兄', 'Sombra de 兄', 'shadow')}${mon('姉', 'Sombra de 姉', 'shadow')}${mon('妹', 'Sombra de 妹', 'shadow')}</div></div>
+    <div class="rd-paper rd-rules"><ul>
+      <li>15 preguntas de «Mi familia», sin romaji ni furigana.</li>
+      <li>Cada acierto es un ataque de tu equipo; 3 seguidos, un ataque especial de su elemento.</li>
+      <li>Cada error, ataca una sombra. Ganas con 13 de 15.</li>
+      <li>Si pierdes, no pasa nada: puedes reintentar cuando quieras.</li></ul>
+      <p style="font-size:13px;margin-top:6px"><b>Premio:</b> marco dorado en la sección y en el diario, y tinta extra.</p></div>
+    <button class="btn ok wide">Empezar el examen</button></div>`;
+}
+
+show(new URLSearchParams(location.search).get('p') || 'train');
+</script>
+</body>
+</html>
