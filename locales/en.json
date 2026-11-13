@@ -252,5 +252,7 @@
  "round.sayPhrase": "Let's build a sentence together.",
  "round.sayPower": "My power! Help me read it: I am {k}.",
  "round.sayOk": "Nice!|That's it!|Great!|Well done!",
- "round.sayMiss": "Almost! It will come back later.|No worries, we'll review it later.|Oops… next time!"
+ "round.sayMiss": "Almost! It will come back later.|No worries, we'll review it later.|Oops… next time!",
+ "round.reply": "Answer them.",
+ "round.today": "What you practiced today"
 }

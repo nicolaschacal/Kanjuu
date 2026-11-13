@@ -19,7 +19,7 @@ import { t } from './i18n.js';
 import { tr } from './lex.js';
 import { curSection, roundsOf, runRound, endRound, passTest, ROUNDS, inkSVG, paintedOf, strokesOf, prizeState, wakeBox, PRIZE_INK } from './round.js';
 import { sectionById } from './curriculum.js';
-import { WORD } from './lex.js';
+import { WORD, wordHTML } from './lex.js';
 import { bookCardHTML, openBook } from './book.js';
 
 // ---------- Hoja de criatura ----------
@@ -125,6 +125,7 @@ export async function openTraining(c, parent) {
   const out = modal(`<div class="result"><div class="res-art">${creatureSVG(c.k, { mood: r.counted ? 1 : .5 })}</div>
     <p><b>${res.right}/${res.total}</b> · +${Math.round(exp * (1 + c.gen * .25))} EXP · +${ink} 墨${ups ? ` · <b class="g">${t('round.levelUp', { lv: c.lv })}</b>` : ''}</p>
     <p class="${r.counted ? 'g' : 'muted'}">${msg}</p>${prizeHTML}
+    ${res.words?.length ? `<p class="rd-today-h">${t('round.today')}</p><div class="rd-today">${res.words.filter(id => WORD[id]).slice(0, 6).map(id => `<span><b class="jp">${wordHTML(WORD[id])}</b><small>${tr(WORD[id])}</small></span>`).join('')}</div>` : ''}
     ${evolutionsOf(c.k).some(x => c.lv >= evoLevel(x) && c.lv - ups < evoLevel(x)) ? '<p class="g">✦ ¡Nueva evolución disponible!</p>' : ''}
     <div class="row"><button class="btn ghost" id="again">${t('round.again')}</button><button class="btn ok" id="done">${t('round.continue')}</button></div>
     <button class="link" id="practice">${t('round.practice', { k: c.k })}</button></div>`);

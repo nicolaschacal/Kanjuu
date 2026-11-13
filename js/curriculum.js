@@ -150,6 +150,49 @@ export const SECTIONS = [
     kanji: ['上', '下', '中', '前', '後'], reward: '中', rewardWord: 'naka', rival: ['上', '下', '前'] },
 ];
 
+// Situaciones con diálogo (propuesta A-02, pantalla 3): un KANJŪ vecino o de la familia dice algo y el jugador
+// elige qué contestar. `opts[0]` es la respuesta correcta (se mezclan al mostrarse). Una por sección.
+// Mismas reglas que las frases: fichas = palabras de `ids` (o su conjugación) o partículas; palabras ya vistas.
+const O = (ja, ids) => ({ ja, ids });
+export const TALKS = {
+  '0.1': { who: '人', ja: 'こんにちは', ids: ['konnichiwa'], es: '¡Hola!', en: 'Hello!', hint: T('Te saluda al llegar.', 'They greet you as they arrive.'),
+    opts: [O('こんにちは', ['konnichiwa']), O('さようなら', ['sayounara']), O('すみません', ['sumimasen'])] },
+  '0.2': { who: '店', ja: 'どうぞ', ids: ['douzo'], es: 'Aquí tienes.', en: 'Here you are.', hint: T('Te alcanza un té.', 'They hand you a tea.'),
+    opts: [O('ありがとう', ['arigatou']), O('さようなら', ['sayounara']), O('いいえ', ['iie'])] },
+  '0.3': { who: '女', ja: 'はじめまして やました です', ids: ['hajimemashite', 'yamashita'], es: 'Mucho gusto, soy Yamashita.', en: 'Nice to meet you, I am Yamashita.', hint: T('Preséntate: hoy eres Ogawa.', 'Introduce yourself: today you are Ogawa.'),
+    opts: [O('はじめまして おがわ です', ['hajimemashite', 'ogawa']), O('さようなら', ['sayounara']), O('おちゃ を ください', ['ocha', 'kudasai'])] },
+  '0.4': { who: '子', ja: 'いち に さん', ids: ['ichi', 'ni', 'sankazu'], es: 'Uno, dos, tres…', en: 'One, two, three…', hint: T('Sigue contando.', 'Keep counting.'),
+    opts: [O('よん', ['yon']), O('ろく', ['roku']), O('はち', ['hachi'])] },
+  '0.5': { who: '母', ja: 'ごはん です', ids: ['gohan'], es: '¡A comer!', en: 'Dinner is ready!', hint: T('¿Qué se dice antes de comer?', 'What do you say before eating?'),
+    opts: [O('いただきます', ['itadakimasu']), O('さようなら', ['sayounara']), O('おはよう', ['ohayou'])] },
+  '0.6': { who: '店', ja: 'どうぞ ケーキ です', ids: ['douzo', 'keeki'], es: 'Aquí tienes, un pastel.', en: 'Here you are, a cake.', hint: T('Agradécele.', 'Thank them.'),
+    opts: [O('ありがとう ございます', ['arigatou']), O('いいえ', ['iie']), O('こんにちは', ['konnichiwa'])] },
+  '0.7': { who: '人', ja: 'ウルグアイ の がくせい です か', ids: ['uruguai', 'gakusei'], es: '¿Eres estudiante de Uruguay?', en: 'Are you a student from Uruguay?', hint: T('Contesta que sí.', 'Say yes.'),
+    opts: [O('はい ウルグアイ の がくせい です', ['hai', 'uruguai', 'gakusei']), O('おちゃ を ください', ['ocha', 'kudasai']), O('いただきます', ['itadakimasu'])] },
+  '0.8': { who: '店', ja: 'どうぞ ジュース です', ids: ['douzo', 'juusu'], es: 'Aquí tienes, un jugo.', en: 'Here you are, a juice.', hint: T('Agradécele mucho.', 'Thank them a lot.'),
+    opts: [O('どうも ありがとう', ['doumo', 'arigatou']), O('おはよう', ['ohayou']), O('さようなら', ['sayounara'])] },
+  '1.1': { who: '人', ja: 'たなか さん は にほんじん です か', ids: ['tanaka', 'san', 'nihonjin'], es: '¿El señor Tanaka es japonés?', en: 'Is Mr. Tanaka Japanese?', hint: T('Sí, lo es.', 'Yes, he is.'),
+    opts: [O('はい にほんじん です', ['hai', 'nihonjin']), O('いいえ ケーキ です', ['iie', 'keeki']), O('おちゃ を ください', ['ocha', 'kudasai'])] },
+  '1.2': { who: '目', ja: 'これ は なん です か', ids: ['kore', 'nan'], es: '¿Qué es esto?', en: 'What is this?', hint: T('Te muestra una mochila.', 'They show you a bag.'),
+    opts: [O('それ は かばん です', ['sore', 'kaban']), O('いいえ がくせい です', ['iie', 'gakusei']), O('いただきます', ['itadakimasu'])] },
+  '1.3': { who: '時', ja: 'いま なん じ です か', ids: ['ima', 'nan', 'ji'], es: '¿Qué hora es?', en: 'What time is it?', hint: T('Son las tres.', "It is three o'clock."),
+    opts: [O('さん じ です', ['sankazu', 'ji']), O('はち じ はん です', ['hachi', 'ji', 'han']), O('ごぜん です', ['gozen'])] },
+  '1.4': { who: '店', ja: 'それ は ご ひゃく えん です', ids: ['sore', 'go', 'hyaku', 'en'], es: 'Eso cuesta quinientos yenes.', en: 'That is five hundred yen.', hint: T('Te lo llevas.', 'You will take it.'),
+    opts: [O('これ を ください', ['kore', 'kudasai']), O('おはよう ございます', ['ohayou']), O('それ は ほん です', ['sore', 'hon'])] },
+  '1.5': { who: '母', ja: 'なに を たべます か', ids: ['nani', 'tabemasu'], es: '¿Qué vas a comer?', en: 'What will you eat?', hint: T('Quieres pescado.', 'You want fish.'),
+    opts: [O('さかな を たべます', ['sakana', 'tabemasu']), O('みず を のみます', ['mizu', 'nomimasu']), O('ごはん です', ['gohan'])] },
+  '1.6': { who: '月', ja: 'あした は きんようび です か', ids: ['ashita', 'kinyoubi'], es: '¿Mañana es viernes?', en: 'Is tomorrow Friday?', hint: T('Sí, lo es.', 'Yes, it is.'),
+    opts: [O('はい きんようび です', ['hai', 'kinyoubi']), O('いいえ さん じ です', ['iie', 'sankazu', 'ji']), O('いただきます', ['itadakimasu'])] },
+  '1.7': { who: '車', ja: 'どこ へ いきます か', ids: ['doko', 'ikimasu'], es: '¿Adónde vas?', en: 'Where are you going?', hint: T('Vas a la escuela.', 'You are going to school.'),
+    opts: [O('がっこう へ いきます', ['gakkou', 'ikimasu']), O('でんしゃ です', ['densha']), O('いえ に かえりました', ['ie', 'kaerimasu'])] },
+  '1.8': { who: '犬', ja: 'ねこ が すき です か', ids: ['neko', 'suki'], es: '¿Te gustan los gatos?', en: 'Do you like cats?', hint: T('Sí, te gustan.', 'Yes, you do.'),
+    opts: [O('はい すき です', ['hai', 'suki']), O('いいえ おおきい です', ['iie', 'ookii']), O('さようなら', ['sayounara'])] },
+  '1.9': { who: '姉', ja: 'あの ひと は あに です か', ids: ['ano', 'hito', 'ani'], es: '¿Esa persona es tu hermano mayor?', en: 'Is that person your older brother?', hint: T('No: es tu hermano menor.', 'No: it is your younger brother.'),
+    opts: [O('いいえ おとうと です', ['iie', 'otouto']), O('はい あね です', ['hai', 'ane']), O('いもうと が すき です', ['imouto', 'suki'])] },
+  '1.10': { who: '犬', ja: 'ねこ は どこ です か', ids: ['neko', 'doko'], es: '¿Dónde está el gato?', en: 'Where is the cat?', hint: T('Está debajo del escritorio.', 'It is under the desk.'),
+    opts: [O('つくえ の した に います', ['tsukue', 'shita', 'imasu']), O('いえ の まえ に あります', ['ie', 'mae', 'arimasu']), O('さん じ です', ['sankazu', 'ji'])] },
+};
+
 export const sectionById = id => SECTIONS.find(s => s.id === id);
 export const phraseById = id => PHRASES.find(p => p.id === id) || EXTRA.find(p => p.id === id);
 export const nextSection = id => SECTIONS[SECTIONS.findIndex(s => s.id === id) + 1] || null;
@@ -220,5 +263,32 @@ export function checkCurriculum() {
     if (s.stage === 'e0' && s.kana === undefined) errs.push(`${where}: falta kana`);
   }
   EXTRA.forEach(p => { if (!usedExtra.has(p.id)) errs.push(`EXTRA ${p.id}: ninguna sección la usa`); });
+
+  // Diálogos: fichas válidas y solo palabras de su sección o de las anteriores
+  const tokOk = (where, ja, ids) => {
+    const ws = ids.map(id => lex[id]);
+    ids.forEach((id, i) => { if (!ws[i]) errs.push(`${where}: la palabra ${id} no existe en LEX`); });
+    const used = new Set();
+    for (const tok of ja.split(' ')) {
+      const hit = ws.filter(w => w && forms(w).includes(tok));
+      if (hit.length) hit.forEach(w => used.add(w.id)); else if (!PARTICLES.includes(tok)) errs.push(`${where}: la ficha «${tok}» no es una palabra de ids ni una partícula`);
+    }
+    ids.forEach(id => { if (lex[id] && !used.has(id)) errs.push(`${where}: ${id} está en ids pero no en ja`); });
+  };
+  const upTo = new Set();
+  for (const s of SECTIONS) {
+    s.words.forEach(id => upTo.add(id));
+    const d = TALKS[s.id], where = `Diálogo ${s.id}`;
+    if (!d) { errs.push(`${where}: falta`); continue; }
+    if (!KANJI[d.who]) errs.push(`${where}: ${d.who} no está en el roster`);
+    if (!d.es || !d.en || !d.hint?.es || !d.hint?.en) errs.push(`${where}: falta traducción o pista`);
+    if (!Array.isArray(d.opts) || d.opts.length !== 3) errs.push(`${where}: se esperan 3 respuestas`);
+    [d, ...(d.opts || [])].forEach((x, i) => {
+      tokOk(`${where}${i ? `, respuesta ${i}` : ''}`, x.ja, x.ids);
+      const late = x.ids.filter(id => !upTo.has(id));
+      if (late.length) errs.push(`${where}${i ? `, respuesta ${i}` : ''}: usa palabras de secciones posteriores (${late.join(', ')})`);
+    });
+    if (new Set(d.opts.map(o => o.ja)).size !== d.opts.length) errs.push(`${where}: respuestas repetidas`);
+  }
   return errs;
 }

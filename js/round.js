@@ -8,7 +8,7 @@ import { kanaHTML } from './help.js';
 import { speak } from './games.js';
 import { wordExercise } from './wordgames.js';
 import { WORD, tr, jaTokens, jaHTML, jaPlain, wordHTML, gradeWord, meet, lexDue } from './lex.js';
-import { SECTIONS, sectionById, phraseById, nextSection } from './curriculum.js';
+import { SECTIONS, sectionById, phraseById, nextSection, TALKS } from './curriculum.js';
 import { creatureSVG } from './creature.js';
 import { STROKES } from './strokes.js';
 import { arrive } from './world.js';
@@ -86,7 +86,9 @@ export function planRound(k, secId = cur().sec, rnd = Math.random) {
   const dueK = Object.keys(S.srs).filter(x => x !== k && KANJI[x] && S.srs[x].due <= Date.now());
   const rev = i => dueW[i] ? { t: 'word', id: dueW[i], review: true } : dueK[i] ? { t: 'kanji', k: dueK[i], ask: 'meaning', review: true } : w(6 + i);
   const kan = ask => KANJI[k] ? { t: 'kanji', k, ask } : w(7);
-  return [{ t: 'intro' }, w(0), w(1), w(2), kan('meaning'), w(3), p(0), w(4), kan('read'), rev(0), rev(1), p(1)];
+  // La situación con diálogo de la sección (si tiene) ocupa el lugar de una palabra
+  const talk = TALKS[secId] ? { t: 'talk' } : w(3);
+  return [{ t: 'intro' }, w(0), w(1), w(2), kan('meaning'), talk, p(0), w(4), kan('read'), rev(0), rev(1), p(1)];
 }
 
 // ---------- Cerrar la ronda ----------
@@ -168,6 +170,21 @@ function phraseExercise(ph, body, done) {
   });
   body.querySelector('.asm-skip').onclick = () => !over && reveal(false);
 }
+// Situación: elegir qué contestarle al personaje (la primera respuesta de los datos es la correcta)
+function talkExercise(d, body, done) {
+  const opts = shuffle(d.opts.map((o, i) => ({ ...o, ok: i === 0 })));
+  body.innerHTML = `<p class="hint">${t('round.reply')} <b>${tr(d.hint)}</b></p>
+    <div class="rd-replies">${opts.map((o, i) => `<button class="rd-reply jp" data-i="${i}">${jaHTML(o.ja, o.ids)}</button>`).join('')}</div>`;
+  body.querySelectorAll('.rd-reply').forEach(b => b.onclick = () => {
+    body.querySelectorAll('.rd-reply').forEach(x => x.disabled = true);
+    const o = opts[+b.dataset.i];
+    b.classList.add(o.ok ? 'right' : 'wrong');
+    if (!o.ok) body.querySelectorAll('.rd-reply')[opts.findIndex(x => x.ok)].classList.add('right');
+    speak(jaPlain(opts.find(x => x.ok).ja));
+    setTimeout(() => done(o.ok), o.ok ? 800 : 1500);
+  });
+}
+
 // Kanji de la criatura: qué significa, o cómo se lee su lectura principal
 function kanjiExercise(k, ask, body, done) {
   const pool = shuffle(Object.keys(KANJI).filter(x => x !== k && !KANJI[x].recipes?.some(r => r.some(p => !KANJI[p]))));
@@ -205,24 +222,24 @@ export function runRound(c, root, { test = false } = {}) {
     const n = test ? steps.length : steps.length - 1;
     wrap.innerHTML = `<div class="rd-scene">${roomSVG()}<button class="x rd-x" aria-label="${t('dojo.back')}">${'✕'}</button>
       <div class="rd-drops">${Array.from({ length: n }, (_, i) => `<i class="${steps[test ? i : i + 1]?.t === 'kanji' && steps[test ? i : i + 1]?.k === c.k ? 'k' : ''}"></i>`).join('')}</div>
-      <div class="rd-bub"><span class="who">${c.k}</span><p></p></div><span class="rd-me">${creatureSVG(c.k)}</span></div>
+      <div class="rd-bub"><span class="who">${c.k}</span><p></p></div><span class="rd-me">${creatureSVG(c.k)}</span><span class="rd-npc"></span></div>
       <p class="rd-sec">${tr(s.title)}</p><div class="game-body rd-low"></div>`;
     root.append(wrap);
     const body = wrap.querySelector('.game-body'), drops = [...wrap.querySelectorAll('.rd-drops i')], scene = wrap.querySelector('.rd-scene');
-    const say = txt => { const b = wrap.querySelector('.rd-bub p'); b.textContent = txt; wrap.querySelector('.rd-bub').classList.remove('pop'); void b.offsetWidth; wrap.querySelector('.rd-bub').classList.add('pop'); };
+    const say = (txt, who = c.k, html = false) => { const b = wrap.querySelector('.rd-bub p'); b[html ? 'innerHTML' : 'textContent'] = txt; wrap.querySelector('.rd-bub .who').textContent = who; wrap.querySelector('.rd-bub').classList.toggle('npc', who !== c.k); wrap.querySelector('.rd-bub').classList.remove('pop'); void b.offsetWidth; wrap.querySelector('.rd-bub').classList.add('pop'); };
     const react = ok => { say(pick(t(ok ? 'round.sayOk' : 'round.sayMiss').split('|'))); wrap.querySelector('.rd-me').classList.toggle('happy', ok); };
     const queue = steps.map((st, i) => ({ ...st, i })), retried = new Set();
-    let right = 0, total = 0, kanjiOk = 0, pos = 0; // pos = pasos terminados (acertados, o fallados por segunda vez)
+    let right = 0, total = 0, kanjiOk = 0, pos = 0; const used = new Set(), use = id => { touchWord(id, s.id); used.add(id); }; // pos = pasos terminados (acertados, o fallados por segunda vez)
     const end = res => { wrap.classList.add('out'); setTimeout(() => wrap.remove(), 250); resolve(res); };
     wrap.querySelector('.x').onclick = () => end(null);
     const paint = () => drops.forEach((d, i) => { d.classList.toggle('on', i < pos); d.classList.toggle('now', i === pos); });
     const next = () => {
       const st = queue.shift(); paint();
-      if (!st) return end({ right, total, kanjiOk });
+      if (!st) return end({ right, total, kanjiOk, words: [...used] });
       const after = ok => {
         if (!retried.has(st.i)) { total++; if (ok) right++; }
         if (!test) react(ok);
-        scene.classList.remove('power');
+        scene.classList.remove('power', 'talk'); wrap.querySelector('.rd-npc').innerHTML = '';
         if (!ok && !retried.has(st.i) && !test) { retried.add(st.i); queue.push(st); }
         if (ok || st.again || test) pos++;
         if (!ok && !st.again) queue[queue.length - 1].again = true;
@@ -236,14 +253,21 @@ export function runRound(c, root, { test = false } = {}) {
         return body.querySelector('.btn').onclick = () => { pos = 0; next(); };
       }
       if (st.t === 'word') {
-        touchWord(st.id, s.id); say(t(st.review ? 'round.sayReview' : 'round.sayWord'));
+        use(st.id); say(t(st.review ? 'round.sayReview' : 'round.sayWord'));
         return wordExercise(st.id, body, ok => { gradeWord(st.id, ok); after(ok); });
       }
       if (st.t === 'phrase') {
         const ph = phraseById(st.id); say(t('round.sayPhrase'));
-        ph.ids.forEach(id => touchWord(id, s.id));
+        ph.ids.forEach(use);
         // La frase suma encuentros a sus palabras; no cambia sus cajas (eso lo hacen los ejercicios de cada palabra)
         return phraseExercise(ph, body, ok => { (S.phr[ph.id] ??= { n: 0, t: Date.now() }).n++; if (ok) ph.ids.forEach(id => meet(id, 'train')); after(ok); });
+      }
+      if (st.t === 'talk') {
+        const d = TALKS[s.id];
+        d.ids.forEach(use);
+        scene.classList.add('talk'); wrap.querySelector('.rd-npc').innerHTML = creatureSVG(d.who);
+        say(`<span class="jp">${jaHTML(d.ja, d.ids)}</span><small>${tr(d)}</small>`, d.who, true);
+        return talkExercise(d, body, ok => { if (ok) d.ids.forEach(id => meet(id, 'train')); after(ok); });
       }
       const mine = st.k === c.k;
       if (mine) { scene.classList.add('power'); say(t('round.sayPower', { k: c.k })); } else say(t('round.sayReview'));

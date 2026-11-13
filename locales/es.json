@@ -252,5 +252,7 @@
  "round.sayPhrase": "Armemos una frase juntos.",
  "round.sayPower": "¡Mi poder! Ayúdame a leer: soy {k}.",
  "round.sayOk": "¡Bien!|¡Eso es!|¡Genial!|¡Qué bien lo hiciste!",
- "round.sayMiss": "¡Casi! Volverá más tarde.|No pasa nada, la repasamos luego.|Uy… ¡la próxima sale!"
+ "round.sayMiss": "¡Casi! Volverá más tarde.|No pasa nada, la repasamos luego.|Uy… ¡la próxima sale!",
+ "round.reply": "Contéstale.",
+ "round.today": "Lo que practicaste hoy"
 }
