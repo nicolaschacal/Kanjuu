@@ -74,6 +74,11 @@ export const LEX = [
   { id: 'getsuyoubi', kana: 'げつようび', kanji: '月曜日', es: 'lunes', en: 'Monday', sit: 'hill', kind: 'n' },
   { id: 'namae', kana: 'なまえ', kanji: '名前', es: 'nombre', en: 'name', sit: 'hill', kind: 'n' },
   { id: 'nihon', kana: 'にほん', kanji: '日本', es: 'Japón', en: 'Japan', sit: 'hill', kind: 'n' },
+  // Agregadas para el currículo (docs/CURRICULO.md, etapa 1)
+  { id: 'kayoubi', kana: 'かようび', kanji: '火曜日', es: 'martes', en: "Tuesday", sit: 'hill', kind: 'n' },
+  { id: 'suiyoubi', kana: 'すいようび', kanji: '水曜日', es: 'miércoles', en: "Wednesday", sit: 'hill', kind: 'n' },
+  { id: 'mokuyoubi', kana: 'もくようび', kanji: '木曜日', es: 'jueves', en: "Thursday", sit: 'hill', kind: 'n' },
+  { id: 'kinyoubi', kana: 'きんようび', kanji: '金曜日', es: 'viernes', en: "Friday", sit: 'hill', kind: 'n' },
 
   // ── valley · Familia y personas ──
   { id: 'kazoku', kana: 'かぞく', kanji: '家族', es: 'familia', en: 'family', sit: 'valley', kind: 'n' },
@@ -95,6 +100,14 @@ export const LEX = [
   { id: 'otousan', kana: 'おとうさん', kanji: 'お父さん', es: 'padre (el de otra persona) · papá', en: "father (someone else's) · dad", sit: 'valley', kind: 'n' },
   { id: 'onna', kana: 'おんな', kanji: '女', es: 'mujer', en: 'woman · female', sit: 'valley', kind: 'n' },
   { id: 'okaasan', kana: 'おかあさん', kanji: 'お母さん', es: 'madre (la de otra persona) · mamá', en: "mother (someone else's) · mom", sit: 'valley', kind: 'n' },
+  // Agregadas para el currículo (etapas 0 y 1)
+  { id: 'kuni', kana: 'くに', kanji: '国', es: 'país', en: "country", sit: 'valley', kind: 'n' },
+  { id: 'nihonjin', kana: 'にほんじん', kanji: '日本人', es: 'japonés · japonesa (persona)', en: "Japanese (person)", sit: 'valley', kind: 'n' },
+  { id: 'uruguai', kana: 'ウルグアイ', kanji: null, es: 'Uruguay', en: "Uruguay", sit: 'valley', kind: 'n' },
+  { id: 'amerika', kana: 'アメリカ', kanji: null, es: 'Estados Unidos', en: "the United States", sit: 'valley', kind: 'n' },
+  { id: 'supein', kana: 'スペイン', kanji: null, es: 'España', en: "Spain", sit: 'valley', kind: 'n' },
+  { id: 'mekishiko', kana: 'メキシコ', kanji: null, es: 'México', en: "Mexico", sit: 'valley', kind: 'n' },
+  { id: 'burajiru', kana: 'ブラジル', kanji: null, es: 'Brasil', en: "Brazil", sit: 'valley', kind: 'n' },
 
   // ── spring · Comida y gustos ──
   { id: 'gohan', kana: 'ごはん', kanji: 'ご飯', es: 'arroz cocido · comida', en: 'cooked rice · meal', sit: 'spring', kind: 'n' },
@@ -118,6 +131,10 @@ export const LEX = [
   { id: 'ashi', kana: 'あし', kanji: '足', es: 'pie · pierna', en: 'foot · leg', sit: 'spring', kind: 'n' },
   { id: 'koohii', kana: 'コーヒー', kanji: null, es: 'café', en: 'coffee', sit: 'spring', kind: 'n' },
   { id: 'totemo', kana: 'とても', kanji: null, es: 'muy', en: 'very', sit: 'spring', kind: 'expr' },
+  // Agregadas para el currículo (etapa 0)
+  { id: 'juusu', kana: 'ジュース', kanji: null, es: 'jugo', en: "juice", sit: 'spring', kind: 'n' },
+  { id: 'keeki', kana: 'ケーキ', kanji: null, es: 'pastel · torta', en: "cake", sit: 'spring', kind: 'n' },
+  { id: 'kafe', kana: 'カフェ', kanji: null, es: 'café (el lugar)', en: "café", sit: 'spring', kind: 'n' },
 
   // ── post · Compras y ciudad ──
   { id: 'kore', kana: 'これ', kanji: null, es: 'esto', en: 'this', sit: 'post', kind: 'n' },
@@ -166,6 +183,11 @@ export const LEX = [
   { id: 'tegami', kana: 'てがみ', kanji: '手紙', es: 'carta', en: 'letter', sit: 'ruins', kind: 'n' },
   { id: 'shigoto', kana: 'しごと', kanji: '仕事', es: 'trabajo', en: 'work · job', sit: 'ruins', kind: 'n' },
   { id: 'sara', kana: 'さら', kanji: '皿', es: 'plato', en: 'plate', sit: 'ruins', kind: 'n' },
+  // Agregadas para el currículo (etapa 1)
+  { id: 'are', kana: 'あれ', kanji: null, es: 'aquello', en: "that (over there)", sit: 'ruins', kind: 'n' },
+  { id: 'kuchi', kana: 'くち', kanji: '口', es: 'boca', en: "mouth", sit: 'ruins', kind: 'n' },
+  { id: 'shita', kana: 'した', kanji: '下', es: 'abajo · debajo', en: "below · under", sit: 'ruins', kind: 'n' },
+  { id: 'ushiro', kana: 'うしろ', kanji: '後ろ', es: 'detrás', en: "behind", sit: 'ruins', kind: 'n' },
 
   // ── ranch · Animales y campo ──
   { id: 'inu', kana: 'いぬ', kanji: '犬', es: 'perro', en: 'dog', sit: 'ranch', kind: 'n' },
@@ -512,7 +534,7 @@ export function checkLang() {
   for (const s of SITUATIONS) {
     const n = LEX.filter(w => w.sit === s.id).length;
     if (!n) errs.push(`Situación ${s.id}: sin palabras`);
-    else if (n < 15 || n > 25) errs.push(`Situación ${s.id}: ${n} palabras (se esperan 15–25)`);
+    else if (n < 15 || n > 30) errs.push(`Situación ${s.id}: ${n} palabras (se esperan 15–30; el currículo de docs/CURRICULO.md suma palabras a las situaciones)`);
     const np = PHRASES.filter(p => p.sit === s.id).length;
     if (np < 5 || np > 8) errs.push(`Situación ${s.id}: ${np} frases (se esperan 5–8)`);
     for (const f of ['title', 'cando']) if (!s[f]?.es || !s[f]?.en) errs.push(`Situación ${s.id}: falta ${f}`);
