@@ -1,6 +1,6 @@
 // KANJŪ · lex.js — las palabras del diario: hallar, anotar, recuperar y reencontrar (docs/APRENDIZAJE.md)
 // Aquí solo hay estado y reglas; las pantallas están en js/diary.js y los ejercicios en js/wordgames.js.
-import { LEX, PHRASES, READINGS, SITUATIONS, PATTERNS } from './lang.js';
+import { LEX, PHRASES, READINGS, SITUATIONS, PATTERNS, verbForms, verbKanji } from './lang.js';
 import { SRS_HOURS, REGIONS, WORDS } from './data.js';
 import { S, bump } from './state.js';
 import { lang } from './i18n.js';
@@ -97,13 +97,11 @@ export const showsKanji = w => !!w.kanji && [...w.kanji].filter(c => KANJI_RX.te
 export function wordHTML(w, form = w.kana) {
   if (!showsKanji(w)) return kanaHTML(form);
   // Verbos: la terminación conjugada se pega a la raíz con kanji (食べます → 食べました)
-  const kj = w.kind === 'v' && form === w.te ? (w.tek || w.kanji) : w.kind === 'v' && form !== w.kana ? w.kanji.slice(0, -2) + form.slice(w.kana.length - 2) : w.kanji;
+  const kj = verbKanji(w, form);
   return `<ruby class="wk">${kj}${helpOn() ? `<rt>${form}</rt>` : ''}</ruby>`;
 }
 // Formas con que una palabra puede aparecer en una frase: los verbos (en ます) también en ました · ません · ませんでした
-const VERB_ENDS = ['ます', 'ました', 'ません', 'ませんでした', 'ましょう'];
-// …y en forma て (たべて, よんで), que va en el campo te
-const formsOf = w => w.kind === 'v' ? [...VERB_ENDS.map(e => w.kana.slice(0, -2) + e), ...(w.te ? [w.te] : [])] : [w.kana];
+const formsOf = verbForms;
 // Texto japonés segmentado con espacios: cada ficha es una palabra del diario o una partícula.
 // Cada ficha se resuelve solo contra los ids de su frase (さん y に tienen dos lecturas posibles).
 export function jaTokens(ja, ids) {

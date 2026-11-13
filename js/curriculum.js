@@ -12,7 +12,7 @@
 //   contiene: la entrega depende de su dominio. `egg: true` = se entrega como huevo (etapa 0).
 // - `rival` = los 3 KANJŪ rivales del combate de examen (docs/CURRICULO.md §6).
 // - `intro` = la frase con la que la criatura presenta la sección (en tú).
-import { LEX, PHRASES, PATTERNS, PARTICLES } from './lang.js';
+import { LEX, PHRASES, PATTERNS, PARTICLES, verbForms } from './lang.js';
 import { KANJI } from './data.js';
 
 export const STAGES = [
@@ -99,7 +99,32 @@ export const EXTRA = [
   { id: 'c_ongaku', ja: 'おんがく が すき です', ids: ['ongaku', 'suki'], pat: 'suki', es: 'Me gusta la música.', en: 'I like music.' },
   { id: 'c_uta', ja: 'まいにち うた を うたいます', ids: ['mainichi', 'uta', 'utaimasu'], pat: 'masu', es: 'Canto canciones todos los días.', en: 'I sing songs every day.' },
   { id: 'c_shumi', ja: 'わたし は おんがく と えいが が すき です', ids: ['watashi', 'ongaku', 'eiga', 'suki'], pat: 'suki', es: 'Me gustan la música y el cine.', en: 'I like music and movies.' },
-  { id: 'c_kiitemasu', ja: 'おんがく を きいて います', ids: ['ongaku', 'kikimasu', 'imasu'], pat: null, es: 'Estoy escuchando música.', en: 'I am listening to music.' },
+  { id: 'c_kiitemasu', ja: 'おんがく を きいて います', ids: ['ongaku', 'kikimasu', 'imasu'], pat: null, es: 'Estoy escuchando música.', en: 'I am listening to music.' },  // ── etapa 3 ──
+  { id: 'c_yori', ja: 'いぬ は ねこ より おおきい です', ids: ['inu', 'neko', 'ookii'], pat: null, es: 'El perro es más grande que el gato.', en: 'The dog is bigger than the cat.' },
+  { id: 'c_hou', ja: 'なつ より ふゆ の ほう が すき です', ids: ['natsu', 'fuyu', 'hou', 'suki'], pat: null, es: 'Me gusta más el invierno que el verano.', en: 'I like winter more than summer.' },
+  { id: 'c_ichiban', ja: 'ラーメン が いちばん すき です', ids: ['raamen', 'ichiban', 'suki'], pat: 'suki', es: 'El ramen es lo que más me gusta.', en: 'I like ramen the most.' },
+  { id: 'c_ooi', ja: 'まち は ひと が おおい です', ids: ['machi', 'hito', 'ooi'], pat: null, es: 'En el centro hay mucha gente.', en: 'There are a lot of people in town.' },
+  { id: 'c_nagai', ja: 'みち は ながい です', ids: ['michi', 'nagai'], pat: 'adj', es: 'El camino es largo.', en: 'The road is long.' },
+  { id: 'c_nekoichiban', ja: 'ねこ が いちばん かわいい です', ids: ['neko', 'ichiban', 'kawaii'], pat: null, es: 'Los gatos son los más tiernos.', en: 'Cats are the cutest.' },
+  { id: 'c_atama', ja: 'あたま が いたい です', ids: ['atama', 'itai'], pat: null, es: 'Me duele la cabeza.', en: 'I have a headache.' },
+  { id: 'c_kusuri', ja: 'くすり を のんだ ほう が いい です', ids: ['kusuri', 'nomimasu', 'hou', 'ii'], pat: null, es: 'Es mejor que tomes un remedio.', en: 'You should take some medicine.' },
+  { id: 'c_yasunda', ja: 'やすんだ ほう が いい です', ids: ['yasumimasu', 'hou', 'ii'], pat: null, es: 'Es mejor que descanses.', en: 'You should rest.' },
+  { id: 'c_ashi', ja: 'あし が いたい です', ids: ['ashi', 'itai'], pat: null, es: 'Me duele el pie.', en: 'My foot hurts.' },
+  { id: 'c_itta', ja: 'にほん へ いった こと が あります', ids: ['nihon', 'ikimasu', 'koto', 'arimasu'], pat: null, es: 'Fui a Japón alguna vez.', en: 'I have been to Japan.' },
+  { id: 'c_tabeta', ja: 'ラーメン を たべた こと が あります', ids: ['raamen', 'tabemasu', 'koto', 'arimasu'], pat: null, es: 'Alguna vez comí ramen.', en: 'I have eaten ramen before.' },
+  { id: 'c_mita', ja: 'ゆき を みた こと が ありません', ids: ['yuki', 'mimasu', 'koto', 'arimasu'], pat: null, es: 'Nunca vi la nieve.', en: 'I have never seen snow.' },
+  { id: 'c_ryokou', ja: 'りょこう が すき です', ids: ['ryokou', 'suki'], pat: 'suki', es: 'Me gusta viajar.', en: 'I like traveling.' },
+  { id: 'c_soto', ja: 'そと は さむい です', ids: ['soto', 'samui'], pat: 'adj', es: 'Afuera hace frío.', en: 'It is cold outside.' },
+  { id: 'c_tari', ja: 'やま を あるいたり うみ を みたり します', ids: ['yama', 'arukimasu', 'umi', 'mimasu', 'shimasu'], pat: null, es: 'Camino por la montaña, miro el mar, y cosas así.', en: 'I walk in the mountains, look at the sea, and so on.' },
+  { id: 'c_sora', ja: 'そら が きれい です', ids: ['sora', 'kirei'], pat: 'adj', es: 'El cielo está precioso.', en: 'The sky is beautiful.' },
+  { id: 'c_umi', ja: 'うみ は おおきい です', ids: ['umi', 'ookii'], pat: 'adj', es: 'El mar es grande.', en: 'The sea is big.' },
+  { id: 'c_ki', ja: 'やま に き が たくさん あります', ids: ['yama', 'ki', 'takusan', 'arimasu'], pat: 'arimasu', es: 'En la montaña hay muchos árboles.', en: 'There are many trees on the mountain.' },
+  { id: 'c_kawa', ja: 'かわ で はしったり あるいたり しました', ids: ['kawa', 'hashirimasu', 'arukimasu', 'shimasu'], pat: null, es: 'En el río corrí, caminé, y cosas así.', en: 'By the river I ran, walked, and so on.' },
+  { id: 'c_omouame', ja: 'あした は あめ だ と おもいます', ids: ['ashita', 'ame', 'omoimasu'], pat: null, es: 'Creo que mañana llueve.', en: 'I think it will rain tomorrow.' },
+  { id: 'c_omouoishii', ja: 'ラーメン は おいしい と おもいます', ids: ['raamen', 'oishii', 'omoimasu'], pat: null, es: 'Creo que el ramen está rico.', en: 'I think ramen is tasty.' },
+  { id: 'c_shitte', ja: 'せんせい の なまえ を しって います', ids: ['sensei', 'namae', 'shirimasu', 'imasu'], pat: null, es: 'Sé el nombre del profesor.', en: 'I know the teacher’s name.' },
+  { id: 'c_kangae', ja: 'まいにち にほんご で かんがえます', ids: ['mainichi', 'nihongo', 'kangaemasu'], pat: null, es: 'Todos los días pienso en japonés.', en: 'Every day I think in Japanese.' },
+  { id: 'c_kuru', ja: 'ともだち は くる と おもいます', ids: ['tomodachi', 'kimasu', 'omoimasu'], pat: null, es: 'Creo que mi amigo viene.', en: 'I think my friend is coming.' },
 ];
 
 const T = (es, en) => ({ es, en });
@@ -249,6 +274,37 @@ export const SECTIONS = [
     words: ['ongaku', 'uta', 'utaimasu', 'eiga', 'suki', 'kikimasu', 'mainichi', 'mimasu'],
     phrases: ['c_ongaku', 'c_uta', 'c_shumi', 'c_kiitemasu'], pats: [],
     kanji: ['音', '楽', '歌', '見'], reward: '音', rewardWord: 'ongaku', rival: ['楽', '見', '聞'] },
+  // ───────── Etapa 3 · Ampliar el mundo ─────────
+  { id: '3.1', stage: 'e3', title: T('Comparar', 'Comparing'), cando: T('Puedo comparar cosas y decir cuál me gusta más', 'I can compare things and say which I like most'),
+    intro: T('¿Qué es más fuerte, el sol o la luna? ¡Vamos a comparar!', "What is stronger, the sun or the moon? Let's compare!"),
+    words: ['hou', 'ichiban', 'ooi', 'sukunai', 'nagai', 'ookii', 'takai', 'suki'],
+    phrases: ['c_yori', 'c_hou', 'c_ichiban', 'c_ooi', 'c_nagai'], pats: [],
+    kanji: ['多', '少', '長'], reward: '長', rewardWord: 'nagai', rival: ['少', '大', '小'] },
+  { id: '3.2', stage: 'e3', title: T('El café de animales', 'The animal café'), cando: T('Puedo hablar de animales', 'I can talk about animals'),
+    intro: T('¡Abrieron un café lleno de animales! Vamos a verlos.', "An animal café opened! Let's go see them."),
+    words: ['inu', 'neko', 'tori', 'uma', 'ushi', 'doubutsu', 'takusan', 'kawaii'],
+    phrases: ['p_umaushi', 'p_tori', 'p_kawaii', 'c_nekoichiban'], pats: [],
+    kanji: ['犬', '猫', '鳥', '馬', '牛'], reward: '鳥', rewardWord: 'tori', rival: ['犬', '馬', '牛'] },
+  { id: '3.3', stage: 'e3', title: T('Me siento mal', 'I feel sick'), cando: T('Puedo decir qué me duele y dar un consejo', 'I can say what hurts and give advice'),
+    intro: T('Uy… hoy no me siento bien. ¿Me ayudas a decir qué me pasa?', "Ugh… I don't feel well today. Will you help me say what's wrong?"),
+    words: ['atama', 'te', 'ashi', 'karada', 'byouki', 'kusuri', 'itai', 'yasumimasu'],
+    phrases: ['c_atama', 'c_kusuri', 'c_yasunda', 'c_ashi'], pats: [],
+    kanji: ['体', '頭', '手', '足', '病', '薬'], reward: '体', rewardWord: 'karada', rival: ['手', '足', '心'] },
+  { id: '3.4', stage: 'e3', title: T('¿Alguna vez…?', 'Have you ever…?'), cando: T('Puedo contar lo que hice alguna vez', 'I can say what I have done before'),
+    intro: T('Yo una vez fui hasta el mar. ¿Y tú, qué hiciste alguna vez?', 'I once went all the way to the sea. What have you done before?'),
+    words: ['koto', 'ryokou', 'soto', 'iimasu', 'nihon', 'ikimasu', 'tabemasu', 'mimasu'],
+    phrases: ['c_itta', 'c_tabeta', 'c_mita', 'c_ryokou', 'c_soto'], pats: [],
+    kanji: ['旅', '外', '言'], reward: '旅', rewardWord: 'ryokou', rival: ['外', '行', '言'] },
+  { id: '3.5', stage: 'e3', title: T('Un día en la naturaleza', 'A day in nature'), cando: T('Puedo contar varias cosas que hice', 'I can list several things I did'),
+    intro: T('¡Hoy entrenamos afuera, entre montañas y ríos!', 'Today we train outside, among mountains and rivers!'),
+    words: ['yama', 'kawa', 'umi', 'sora', 'ki', 'arukimasu', 'hashirimasu', 'shimasu'],
+    phrases: ['c_tari', 'c_sora', 'c_umi', 'c_ki', 'c_kawa'], pats: [],
+    kanji: ['山', '川', '海', '空'], reward: '海', rewardWord: 'umi', rival: ['山', '川', '空'] },
+  { id: '3.6', stage: 'e3', title: T('Charla casual', 'Casual talk'), cando: T('Puedo decir lo que pienso', 'I can say what I think'),
+    intro: T('Entre amigos se habla más corto. ¿Te enseño?', 'Among friends we speak more casually. Shall I show you?'),
+    words: ['omoimasu', 'shirimasu', 'kangaemasu', 'kimasu', 'ame', 'oishii', 'ashita', 'nihongo'],
+    phrases: ['c_omouame', 'c_omouoishii', 'c_shitte', 'c_kangae', 'c_kuru'], pats: [],
+    kanji: ['思', '知', '考'], reward: '思', rewardWord: 'omoimasu', rival: ['知', '心', '言'] },
 ];
 
 // Situaciones con diálogo (propuesta A-02, pantalla 3): un KANJŪ vecino o de la familia dice algo y el jugador
@@ -313,7 +369,18 @@ export const TALKS = {
   '2.11': { who: '母', ja: 'いま なに を して います か', ids: ['ima', 'nani', 'shimasu', 'imasu'], es: '¿Qué estás haciendo ahora?', en: 'What are you doing now?', hint: T('Estás leyendo un libro.', 'You are reading a book.'),
     opts: [O('ほん を よんで います', ['hon', 'yomimasu', 'imasu']), O('ほん を よみました', ['hon', 'yomimasu']), O('ほん を かいます', ['hon', 'kaimasu'])] },
   '2.12': { who: '楽', ja: 'おんがく が すき です か', ids: ['ongaku', 'suki'], es: '¿Te gusta la música?', en: 'Do you like music?', hint: T('Sí, ¡muchísimo!', 'Yes, a lot!'),
-    opts: [O('はい とても すき です', ['hai', 'totemo', 'suki']), O('いいえ うた です', ['iie', 'uta']), O('おんがく を ききました', ['ongaku', 'kikimasu'])] },
+    opts: [O('はい とても すき です', ['hai', 'totemo', 'suki']), O('いいえ うた です', ['iie', 'uta']), O('おんがく を ききました', ['ongaku', 'kikimasu'])] },  '3.1': { who: '大', ja: 'なに が いちばん すき です か', ids: ['nani', 'ichiban', 'suki'], es: '¿Qué es lo que más te gusta?', en: 'What do you like the most?', hint: T('El ramen.', 'Ramen.'),
+    opts: [O('ラーメン が いちばん すき です', ['raamen', 'ichiban', 'suki']), O('ラーメン より おおきい です', ['raamen', 'ookii']), O('いちばん です か', ['ichiban'])] },
+  '3.2': { who: '犬', ja: 'どうぶつ が すき です か', ids: ['doubutsu', 'suki'], es: '¿Te gustan los animales?', en: 'Do you like animals?', hint: T('Sí, sobre todo los gatos.', 'Yes, especially cats.'),
+    opts: [O('はい ねこ が いちばん すき です', ['hai', 'neko', 'ichiban', 'suki']), O('いいえ うし です', ['iie', 'ushi']), O('とり が います', ['tori', 'imasu'])] },
+  '3.3': { who: '医', ja: 'どこ が いたい です か', ids: ['doko', 'itai'], es: '¿Dónde te duele?', en: 'Where does it hurt?', hint: T('La cabeza.', 'Your head.'),
+    opts: [O('あたま が いたい です', ['atama', 'itai']), O('くすり を のみます', ['kusuri', 'nomimasu']), O('あたま です か', ['atama'])] },
+  '3.4': { who: '人', ja: 'にほん へ いった こと が あります か', ids: ['nihon', 'ikimasu', 'koto', 'arimasu'], es: '¿Fuiste alguna vez a Japón?', en: 'Have you ever been to Japan?', hint: T('No, nunca.', 'No, never.'),
+    opts: [O('いいえ いった こと が ありません', ['iie', 'ikimasu', 'koto', 'arimasu']), O('はい いきます', ['hai', 'ikimasu']), O('にほん へ いきましょう', ['nihon', 'ikimasu'])] },
+  '3.5': { who: '山', ja: 'しゅうまつ なに を しました か', ids: ['shuumatsu', 'nani', 'shimasu'], es: '¿Qué hiciste el fin de semana?', en: 'What did you do on the weekend?', hint: T('Caminaste por la montaña y miraste el mar.', 'You walked in the mountains and looked at the sea.'),
+    opts: [O('やま を あるいたり うみ を みたり しました', ['yama', 'arukimasu', 'umi', 'mimasu', 'shimasu']), O('やま を あるきます', ['yama', 'arukimasu']), O('うみ が すき です', ['umi', 'suki'])] },
+  '3.6': { who: '友', ja: 'あした は あめ だ と おもいます か', ids: ['ashita', 'ame', 'omoimasu'], es: '¿Crees que mañana llueve?', en: 'Do you think it will rain tomorrow?', hint: T('Sí, eso crees.', 'Yes, you think so.'),
+    opts: [O('はい あめ だ と おもいます', ['hai', 'ame', 'omoimasu']), O('いいえ あめ が すき です', ['iie', 'ame', 'suki']), O('あめ を みた こと が あります', ['ame', 'mimasu', 'koto', 'arimasu'])] },
 };
 
 export const sectionById = id => SECTIONS.find(s => s.id === id);
@@ -321,12 +388,11 @@ export const phraseById = id => PHRASES.find(p => p.id === id) || EXTRA.find(p =
 export const nextSection = id => SECTIONS[SECTIONS.findIndex(s => s.id === id) + 1] || null;
 
 // ---------- Chequeo (docs/CURRICULO.md §3). Devuelve la lista de errores. ----------
-const VERB_ENDS = ['ます', 'ました', 'ません', 'ませんでした', 'ましょう'];
 export function checkCurriculum() {
   const errs = [];
   const lex = Object.fromEntries(LEX.map(w => [w.id, w]));
   const pats = new Set(PATTERNS.map(p => p.id)), stages = new Set(STAGES.map(s => s.id));
-  const forms = w => w.kind === 'v' ? [...VERB_ENDS.map(e => w.kana.slice(0, -2) + e), ...(w.te ? [w.te] : [])] : [w.kana];
+  const forms = verbForms;
   const ids = new Set(), extraIds = new Set(), rewards = {};
 
   for (const p of EXTRA) {
