@@ -101,7 +101,7 @@ export function wordHTML(w, form = w.kana) {
   return `<ruby class="wk">${kj}${helpOn() ? `<rt>${form}</rt>` : ''}</ruby>`;
 }
 // Formas con que una palabra puede aparecer en una frase: los verbos (en ます) también en ました · ません · ませんでした
-const VERB_ENDS = ['ます', 'ました', 'ません', 'ませんでした'];
+const VERB_ENDS = ['ます', 'ました', 'ません', 'ませんでした', 'ましょう'];
 const formsOf = w => w.kind === 'v' ? VERB_ENDS.map(e => w.kana.slice(0, -2) + e) : [w.kana];
 // Texto japonés segmentado con espacios: cada ficha es una palabra del diario o una partícula.
 // Cada ficha se resuelve solo contra los ids de su frase (さん y に tienen dos lecturas posibles).
