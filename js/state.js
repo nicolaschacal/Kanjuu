@@ -20,6 +20,7 @@ export function norm(s) {
   s.lex ??= {}; s.phr ??= {}; s.read ??= {}; s.kana ??= {};
   s.level ??= s.creatures?.length ? 0 : null; // null = todavía no se preguntó "¿Qué sabes ya?"
   s.path ??= { claimed: [] }; s.path.claimed ??= [];
+  s.ai ??= { lib: [], flavor: {} }; s.ai.lib ??= []; s.ai.flavor ??= {}; // cuentos y frases de sabor con IA (A-11b)
   Object.keys(s.dex || {}).forEach(k => s.dex[k].owned && (s.srs[k] ??= { box: 0, due: 0, ok: 0, miss: 0 }));
   return s;
 }

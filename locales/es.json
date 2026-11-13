@@ -307,5 +307,41 @@
  "ai.err.net": "No se pudo conectar. Revisa tu conexión.",
  "ai.err.generic": "Algo falló con la IA. Prueba de nuevo.",
  "ai.err.story": "La IA no devolvió un cuento válido. Prueba de nuevo.",
- "ai.err.kanji": "La IA usó kanji que todavía no tienes. Prueba de nuevo."
+ "ai.err.kanji": "La IA usó kanji que todavía no tienes. Prueba de nuevo.",
+ "aip.card": "Cuentos y misiones de {k}",
+ "aip.cardOn": "Con IA, solo con palabras que ya conoces",
+ "aip.cardOff": "Conecta la IA: incluida con Plus o con tu clave",
+ "aip.saved": {
+  "one": "{n} cuento guardado",
+  "other": "{n} cuentos guardados"
+ },
+ "aip.eyebrow": "Con IA",
+ "aip.lead": "Se escriben con las palabras de tu diario y, como mucho, una nueva de tu sección. Lo que no puedes leer, no aparece.",
+ "aip.story": "Un cuento",
+ "aip.storySub": "{k} protagoniza una historia corta · +{n} 墨",
+ "aip.mission": "Una misión",
+ "aip.missionSub": "{k} necesita tu ayuda: contesta en japonés · +{n} 墨",
+ "aip.own": "Con tu clave: sin límite",
+ "aip.left": {
+  "one": "Te queda {n} uso este mes",
+  "other": "Te quedan {n} usos este mes"
+ },
+ "aip.settings": "Ajustes de IA",
+ "aip.library": "Cuentos guardados",
+ "aip.back": "Volver",
+ "aip.writing": "{k} está escribiendo su cuento…",
+ "aip.planning": "{k} está pensando qué necesita…",
+ "aip.onlyKnown": "Solo con palabras que ya conoces",
+ "aip.tooHard": "La IA no logró escribirlo solo con tus palabras. Prueba de nuevo o aprende algunas más.",
+ "aip.showTr": "Ver traducción",
+ "aip.hear": "Escuchar",
+ "aip.next": "Siguiente",
+ "aip.finish": "Terminar",
+ "aip.askSay": "¿Entendiste mi cuento?",
+ "aip.storyDone": "Leíste el cuento de {k} · {n}/{total} respuestas",
+ "aip.missionGoal": "Contesta a cada personaje para ayudar a {k}.",
+ "aip.help": "Ayudar",
+ "aip.missionDone": "Ayudaste a {k} · {n}/{total} respuestas",
+ "aip.newWords": "Palabra nueva para tu diario",
+ "aip.readSay": "Te leo mi cuento · {n} de {total}"
 }

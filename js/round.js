@@ -171,7 +171,7 @@ function phraseExercise(ph, body, done) {
   body.querySelector('.asm-skip').onclick = () => !over && reveal(false);
 }
 // Situación: elegir qué contestarle al personaje (la primera respuesta de los datos es la correcta)
-function talkExercise(d, body, done) {
+export function talkExercise(d, body, done) {
   const opts = shuffle(d.opts.map((o, i) => ({ ...o, ok: i === 0 })));
   body.innerHTML = `<p class="hint">${t('round.reply')} <b>${tr(d.hint)}</b></p>
     <div class="rd-replies">${opts.map((o, i) => `<button class="rd-reply jp" data-i="${i}">${jaHTML(o.ja, o.ids)}</button>`).join('')}</div>`;
@@ -202,7 +202,7 @@ function kanjiExercise(k, ask, body, done) {
 }
 
 // Salón de entrenamiento de papel (propuesta A-02): pared shōji, tatami y sol. De noche cuando la criatura usa su poder.
-function roomSVG(h = 260) {
+export function roomSVG(h = 260) {
   return `<svg class="rd-room" viewBox="0 0 390 ${h}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
     <rect width="390" height="${h}" class="wall"/>
     <g class="ribs" stroke-width="3">${[0, 1, 2, 3, 4].map(i => `<line x1="${i * 98}" y1="0" x2="${i * 98}" y2="${h * .68}"/>`).join('')}<line x1="0" y1="${h * .34}" x2="390" y2="${h * .34}"/></g>
@@ -227,7 +227,13 @@ export function runRound(c, root, { test = false } = {}) {
     root.append(wrap);
     const body = wrap.querySelector('.game-body'), drops = [...wrap.querySelectorAll('.rd-drops i')], scene = wrap.querySelector('.rd-scene');
     const say = (txt, who = c.k, html = false) => { const b = wrap.querySelector('.rd-bub p'); b[html ? 'innerHTML' : 'textContent'] = txt; wrap.querySelector('.rd-bub .who').textContent = who; wrap.querySelector('.rd-bub').classList.toggle('npc', who !== c.k); wrap.querySelector('.rd-bub').classList.remove('pop'); void b.offsetWidth; wrap.querySelector('.rd-bub').classList.add('pop'); };
-    const react = ok => { say(pick(t(ok ? 'round.sayOk' : 'round.sayMiss').split('|'))); wrap.querySelector('.rd-me').classList.toggle('happy', ok); };
+    // Con IA, a veces la criatura festeja con una frase de sabor propia (aigen.js; solo palabras que ya conoces)
+    const flavor = S.ai?.flavor?.[c.k] || [];
+    const react = ok => {
+      const f = ok && flavor.length && Math.random() < .35 ? pick(flavor) : null;
+      f ? say(`<span class="jp">${jaHTML(f.ja, f.ids)}</span><small>${f.tr.replace(/</g, '&lt;')}</small>`, c.k, true) : say(pick(t(ok ? 'round.sayOk' : 'round.sayMiss').split('|')));
+      wrap.querySelector('.rd-me').classList.toggle('happy', ok);
+    };
     const queue = steps.map((st, i) => ({ ...st, i })), retried = new Set();
     let right = 0, total = 0, kanjiOk = 0, pos = 0; const used = new Set(), use = id => { touchWord(id, s.id); used.add(id); }; // pos = pasos terminados (acertados, o fallados por segunda vez)
     const end = res => { wrap.classList.add('out'); setTimeout(() => wrap.remove(), 250); resolve(res); };

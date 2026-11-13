@@ -21,6 +21,7 @@ import { curSection, roundsOf, runRound, endRound, passTest, ROUNDS, inkSVG, pai
 import { sectionById } from './curriculum.js';
 import { WORD, wordHTML } from './lex.js';
 import { bookCardHTML, openBook } from './book.js';
+import { aiCardHTML, bindAICard } from './aiplay.js';
 import { openExam } from './exam.js';
 
 // ---------- Hoja de criatura ----------
@@ -45,7 +46,7 @@ export function openCreature(id) {
       <button class="act ${c.lv >= MAX_LV ? 'hot' : ''}" id="reborn" ${c.lv < MAX_LV ? 'disabled' : ''}><i>輪</i>Renacer</button>
       <button class="act" id="free" ${S.creatures.filter(x => !x.egg).length <= 1 ? 'disabled' : ''}><i>放</i>Liberar</button>
     </div>
-    ${c.egg ? '' : bookCardHTML()}
+    ${c.egg ? '' : bookCardHTML() + aiCardHTML(c)}
     ${c.pos ? `<p class="prod">収 Produce <b>${rate(c).toFixed(1)} 墨/h</b>${c.insp > Date.now() ? ' · <b class="g">inspirado ×2</b>' : ' · entrenalo para inspirarlo ×2'}${neighbors(c).length ? ` · aura ${neighbors(c).map(o => OBJS[o.t].k).join('')}` : ''}</p>` : '<p class="r">En el almacén: colocalo en el santuario para entrenar y producir</p>'}
     ${dupesOf(c).length && (c.stars || 0) < 5 ? `<button class="btn ok wide gold" id="awaken">覚 Despertar ★${(c.stars || 0) + 1} · usa un ${c.k} duplicado (+20% tinta y EXP)</button>` : ''}
     ${S.items.scroll ? `<button class="btn ghost wide" id="scroll">巻 Usar pergamino (+60 EXP) · ${S.items.scroll}</button>` : ''}
@@ -59,6 +60,7 @@ export function openCreature(id) {
     <p class="hist">${c.hist.join(' → ')}</p>`, 'cr');
 
   $('#bookCard', m) && ($('#bookCard', m).onclick = () => { buzz(5); openBook(modal, c); });
+  bindAICard(m, c, () => { go(); openCreature(c.id); });
   $('#pet', m).onclick = e => {
     c.mood = Math.min(1, c.mood + .12); c.bond++; bump('pet'); giveExp(c, 1); emit('pet');
     floatText(e.currentTarget, '♥', 'heart'); buzz(6);
