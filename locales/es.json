@@ -206,5 +206,19 @@
  "tut.endReward": "+50 墨 · +1 札 para el altar de invocación",
  "tut.endNote": "Cada viaje trae una palabra a tu diario y el Dojo 修 te ayuda a no olvidarla. Cuando domines el kanji de un KANJŪ, podrá evolucionar. En Misiones te espera el Camino del santuario.",
  "tut.endGo": "¡A jugar!",
- "tut.skip": "Saltar tutorial"
+ "tut.skip": "Saltar tutorial",
+ "round.cardTitle": "Paseo · {title}",
+ "round.cardSub": "Paseo {n} de {total}",
+ "round.cardDone": "Lugar visitado · puedes volver cuando quieras",
+ "round.free": "O juega con su kanji (suma EXP, no avanza el paseo):",
+ "round.start": "¡Vamos!",
+ "round.kMeaning": "¿Qué significa este kanji?",
+ "round.kRead": "¿Cómo se lee?",
+ "round.counted": "Paseo {n} de {total} completo.",
+ "round.notCounted": "Este paseo no contó: hace falta acertar el 80 %. ¡Vuelve a intentarlo cuando quieras!",
+ "round.complete": "¡Terminaste «{title}»!",
+ "round.next": "Ya puedes ir a «{title}».",
+ "round.levelUp": "¡Nivel {lv}!",
+ "round.again": "Otro paseo",
+ "round.continue": "Seguir"
 }

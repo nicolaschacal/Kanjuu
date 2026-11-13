@@ -15,6 +15,9 @@ import { rankUp } from './sanctuary.js';
 import { STROKES } from './strokes.js';
 import { PIECES, isPiece, TYPES, typeOf, gradeTag, SRS_HOURS } from './data.js';
 import { useTagHTML, anchorsHTML, bindAnchors } from './diary.js';
+import { t } from './i18n.js';
+import { tr } from './lex.js';
+import { curSection, roundsOf, isDone, runRound, endRound, ROUNDS } from './round.js';
 
 // ---------- Hoja de criatura ----------
 export function openCreature(id) {
@@ -95,9 +98,33 @@ export function evoCard(c, t) {
 }
 export function openTraining(c, parent) {
   const games = Object.entries(GAMES).filter(([id]) => (id !== 'word' || hasWord(c.k)) && (id !== 'parts' || hasParts(c.k)) && (id !== 'trace' || STROKES[c.k]?.length));
-  const m = modal(`<h3>練 Entrenar con ${c.k}</h3><div class="games">${games.map(([id, g]) =>
+  const sec = curSection(), done = roundsOf(sec.id);
+  const m = modal(`<h3>練 Entrenar con ${c.k}</h3>
+    <button class="gcard rd-card" id="round"><i>歩</i><b>${t('round.cardTitle', { title: tr(sec.title) })}</b><small>${isDone(sec.id) ? t('round.cardDone') : t('round.cardSub', { n: done + 1, total: ROUNDS })} · ${tr(sec.cando)}</small></button>
+    <p class="muted">${t('round.free')}</p><div class="games">${games.map(([id, g]) =>
     `<button class="gcard" data-g="${id}"><i>${g.k}</i><b>${g.name}</b><small>${g.desc}</small></button>`).join('')}</div>
     <p class="muted">Saber: ${'●'.repeat(Math.min(5, c.know))}${'○'.repeat(Math.max(0, 5 - c.know))} · la dificultad se adapta</p>`);
+  m.querySelector('#round').onclick = async () => {
+    m.close(); parent.close();
+    const res = await runRound(c, $('#layer'));
+    if (!res) return go();
+    const r = endRound(sec.id, res.right, res.total);
+    // Misma economía que los juegos de entrenamiento: EXP según aciertos, tinta y rango
+    const exp = (6 + res.right * 2) * (c.mood > .6 ? 1.2 : 1) * expBonus(c);
+    gather(c); if (r.counted) c.insp = Date.now() + 36e5;
+    const rk = addXP(6 + res.right * 2), ups = giveExp(c, exp), ink = res.right + ups * 6;
+    S.ink += ink; c.know += res.kanjiOk ? 1 : 0; emit('train');
+    c.mood = Math.max(0, c.mood - .05); S.stats.trainings++; bump('train'); save();
+    const msg = r.completed ? t('round.complete', { title: tr(sec.title) }) + (r.next ? ' ' + t('round.next', { title: tr(r.next.title) }) : '')
+      : r.counted ? t('round.counted', { n: r.rounds, total: ROUNDS }) : t('round.notCounted');
+    const out = modal(`<div class="result"><div class="res-art">${creatureSVG(c.k, { mood: r.counted ? 1 : .5 })}</div>
+      <p><b>${res.right}/${res.total}</b> · +${Math.round(exp * (1 + c.gen * .25))} EXP · +${ink} 墨${ups ? ` · <b class="g">${t('round.levelUp', { lv: c.lv })}</b>` : ''}</p>
+      <p class="${r.counted ? 'g' : 'muted'}">${msg}</p>
+      <div class="row"><button class="btn ghost" id="again">${t('round.again')}</button><button class="btn ok" id="done">${t('round.continue')}</button></div></div>`);
+    $('#again', out).onclick = () => { out.close(); openTraining(c, { close() {} }); };
+    $('#done', out).onclick = () => { out.close(); go(); openCreature(c.id); if (rk.length) rankUp(rk); };
+    hud();
+  };
   m.querySelectorAll('[data-g]').forEach(b => b.onclick = async () => {
     m.close(); parent.close();
     const stars = await play(b.dataset.g, c.k, c.know, $('#layer'));

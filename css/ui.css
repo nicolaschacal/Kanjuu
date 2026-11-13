@@ -879,3 +879,10 @@ ruby.wk rt{font-family:var(--f-ui);font-size:.42em;font-weight:700;opacity:.75}
 /* Con cuatro pestañas o más en la cabecera del panel, las inactivas muestran solo su ícono */
 .pn-tabs:has(button:nth-child(4)) button:not(.on) span{display:none}
 .pn-tabs:has(button:nth-child(4)) button:not(.on){flex:0 0 48px}
+
+/* Paseos del entrenamiento (js/round.js, tarea A-03). Interfaz provisoria hasta aprobar la propuesta A-02. */
+.rd-card{width:100%;margin:0 0 6px;border:var(--b);box-shadow:var(--sh)}
+.rd-card i{background:var(--red);color:#FFF6E3}
+.game.round .rd-dots{margin-left:auto;margin-right:8px;font-family:var(--f-title);font-weight:800;font-size:13px;color:var(--muted)}
+.rd-intro{display:grid;justify-items:center;gap:10px;text-align:center;padding:12px 0}
+.rd-intro .rd-art{width:120px;height:120px}.rd-intro .rd-art svg{width:100%;height:100%}
