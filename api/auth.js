@@ -52,7 +52,7 @@ export default async function handler(req, res) {
       const [u] = await sql`SELECT id, pass FROM users WHERE id = ${uid}`;
       if (!u || !checkPass(String(b.password || ''), u.pass)) { await fail(keys); return send(res, 401, { error: 'Contraseña incorrecta' }); }
       await clearFails(keys);
-      if (action === 'delete') { await sql`DELETE FROM users WHERE id = ${uid}`; clearSession(res); return send(res, 200, { ok: true }); }
+      if (action === 'delete') { await sql`DELETE FROM ai_keys WHERE user_id = ${uid}`.catch(() => {}); await sql`DELETE FROM users WHERE id = ${uid}`; clearSession(res); return send(res, 200, { ok: true }); }
       if (action === 'newcode') { const code = newCode(); await sql`UPDATE users SET recovery = ${hashPass(normCode(code))} WHERE id = ${uid}`; return send(res, 200, { recovery: code }); }
       if (String(b.newPassword || '').length < 8) return send(res, 400, { error: 'La nueva contraseña debe tener al menos 8 caracteres' });
       await sql`UPDATE users SET pass = ${hashPass(b.newPassword)} WHERE id = ${uid}`;
