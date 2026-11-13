@@ -251,6 +251,7 @@ Criterio: 訓 (kun'yomi) si el kanji se usa mucho solo o con okurigana (子 こ,
 | 茶 | té | 音 チャ | 音 サ |
 | 魚 | pez | 訓 さかな | 音 ギョ · 訓 うお |
 | 猫 | gato | 訓 ねこ | 音 ビョウ |
+| 獣 | bestia | 音 ジュウ | 訓 けもの |
 | 黒 | negro | 訓 くろ(い) | 音 コク |
 | 化 | transformar | 音 カ | 音 ケ · 訓 ば(ける) |
 | 台 | base · contador de máquinas | 音 ダイ | 音 タイ |

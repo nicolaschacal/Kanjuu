@@ -17,16 +17,16 @@ Nivel KANJŪ = composition_depth + 1 (máximo 5).
 | Pieza | Nombre | Significado | Forma |
 |---|---|---|---|
 | 宀 | うかんむり (ukanmuri) | techo | 字 安 空 室 完 |
-| 儿 | ひとあし (hitoashi) | piernas | 見 兄 元 |
+| 儿 | ひとあし (hitoashi) | piernas | 見 兄 売 元 |
 | 攵 | のぶん (nobun) | golpear · actuar | 枚 故 教 |
 | 辶 | しんにょう (shinnyō) | camino · avanzar | 近 連 運 道 週 |
 | 广 | まだれ (madare) | techo abierto | 床 店 |
-| 亠 | なべぶた (nabebuta) | tapa | 享 六 夜 京 交 |
-| 冖 | わかんむり (wakanmuri) | cubierta | 軍 |
+| 亠 | なべぶた (nabebuta) | tapa | 享 主 高 言 六 夜 京 交 |
+| 冖 | わかんむり (wakanmuri) | cubierta | 軍 売 |
 | 疒 | やまいだれ (yamaidare) | enfermedad | 疲 症 病 |
-| 彳 | ぎょうにんべん (gyōninben) | ir · paso | 待 彼 |
+| 彳 | ぎょうにんべん (gyōninben) | ir · paso | 待 後 行 彼 |
 | 尸 | しかばね (shikabane) | cuerpo | 尾 居 屋 |
-| 冂 | けいがまえ (keigamae) | marco | 同 内 周 |
+| 冂 | けいがまえ (keigamae) | marco | 同 内 央 高 周 |
 | 勹 | つつみがまえ (tsutsumigamae) | envolver | 句 旬 魚 |
 | 厂 | がんだれ (gandare) | acantilado | 圧 厚 |
 | 彡 | さんづくり (sanzukuri) | pelo · adorno | 杉 |
@@ -35,11 +35,11 @@ Nivel KANJŪ = composition_depth + 1 (máximo 5).
 | 囗 | くにがまえ (kunigamae) | recinto | 国 回 |
 | 卜 | ぼく (boku) | vara de adivino | 外 占 |
 | 厶 | む (mu) | lo propio | 会 台 至 |
-| 丁 | てい (tei) | clavo · cuadra | 町 可 |
+| 丁 | てい (tei) | clavo · cuadra | 行 町 可 |
 | 尺 | しゃく (shaku) | medida | 駅 昼 |
 | 聿 | ふでづくり (fudezukuri) | pincel | 書 |
 | 罒 | あみがしら (amigashira) | red | 買 |
-| 夂 | ふゆがしら (fuyugashira) | pie que baja | 夏 |
+| 夂 | ふゆがしら (fuyugashira) | pie que baja | 後 夏 |
 | 禾 | のぎへん (nogihen) | espiga | 秋 |
 | 匕 | さじ (saji) | cuchara | 化 |
 | 乍 | さく (saku) | de pronto · fabricar | 作 |
@@ -57,11 +57,16 @@ Nivel KANJŪ = composition_depth + 1 (máximo 5).
 | 酉 | とりへん (torihen) | vasija de sake | 酒 |
 | 阝 | おおざと (ōzato) | poblado | 都 |
 | 隹 | ふるとり (furutori) | ave pequeña | 曜 |
-| ⺍ | つかんむり (tsukanmuri) | corona de luz | 学 |
+| ⺍ | つかんむり (tsukanmuri) | corona de luz | 獣 学 |
+| 丿 | の (no) | trazo caído | 千 少 |
+| 丶 | てん (ten) | punto | 自 白 犬 玉 |
+| 丨 | ぼう (bō) | palo | 半 中 |
+| 丷 | そいち (soichi) | cuernitos | 半 首 米 |
+| ナ | な (na) | mano | 右 左 |
 
-## Nivel 1 · Componentes fundamentales (115)
+## Nivel 1 · Componentes fundamentales (85)
 
-一 木 人 日 月 火 田 力 女 子 口 十 目 生 心 皿 水 艸 手 糸 示 衣 立 車 止 土 寸 皮 毛 豆 斤 二 五 七 八 九 千 万 円 金 年 午 半 夕 毎 冬 先 後 父 母 友 弟 私 自 主 王 士 上 下 中 右 左 西 南 北 市 里 央 戸 門 方 大 小 少 山 川 雨 白 赤 青 色 長 高 気 行 来 出 入 食 言 走 欠 用 事 未 耳 足 首 肉 米 牛 馬 鳥 犬 羽 玉 刀 工 矢 文 四 家 売 服 夫
+一 木 人 日 月 火 田 力 女 子 口 十 目 生 心 皿 水 艸 手 糸 示 衣 立 車 止 土 寸 皮 毛 豆 斤 五 七 八 九 万 円 金 年 午 夕 冬 先 父 母 友 弟 私 王 士 上 下 西 南 北 市 戸 門 方 大 小 山 川 雨 色 長 気 入 食 欠 用 事 未 耳 牛 馬 鳥 羽 刀 工 矢 文 四 家 服
 
 ## Nivel 2 · Primera composición (125)
 
@@ -109,91 +114,91 @@ Nivel KANJŪ = composition_depth + 1 (máximo 5).
 | 旬 | temporada | 勹 + 日 | 1 |
 | 杉 | cedro japonés | 木 + 彡 | 1 |
 | 登 | subir | 癶 + 豆 | 1 |
-| 三 | tres | 一 + 一 + 一 | 1 |
+| 二 | dos | 一 + 一 (dos 一, uno sobre otro) | 1 |
+| 千 | mil | 十 + 丿 (un trazo caído sobre 十) | 1 |
+| 毎 | cada | 人 + 母 (la parte de arriba (𠂉) es una forma de 人) | 1 |
+| 後 | después · atrás | 彳 + 糸 + 夂 (el centro (幺) es la parte de arriba de 糸) | 1 |
+| 自 | uno mismo | 目 + 丶 (un trazo corto sobre 目) | 1 |
+| 主 | dueño · principal | 王 + 亠 (la tapa 亠 comparte su trazo con 王) | 1 |
+| 中 | dentro · medio | 口 + 丨 (un palo atraviesa 口 por el medio) | 1 |
+| 右 | derecha | 口 + ナ | 1 |
+| 左 | izquierda | 工 + ナ | 1 |
+| 里 | aldea | 田 + 土 | 1 |
+| 央 | centro | 大 + 冂 (la persona grande queda dentro de un marco abierto) | 1 |
+| 少 | poco | 小 + 丿 (a 小 se le quita un pedazo con un trazo) | 1 |
+| 白 | blanco | 日 + 丶 (un rayo sobre 日) | 1 |
+| 赤 | rojo | 土 + 火 (abajo, 火 aparece abierto) | 1 |
+| 青 | azul | 生 + 月 (arriba, 生 aparece sin su primer trazo) | 1 |
+| 高 | alto · caro | 口 + 口 + 亠 + 冂 (cuatro piezas: 亠 y 口 arriba, 冂 y 口 abajo) | 1 |
+| 行 | ir | 彳 + 一 + 丁 (la parte derecha (亍) es 一 sobre 丁) | 1 |
+| 出 | salir | 山 + 山 (dos 山, uno sobre otro) | 1 |
+| 走 | correr | 土 + 止 (止 aparece abajo, abierto) | 1 |
+| 足 | pie · pierna | 口 + 止 (止 aparece abajo, abierto) | 1 |
+| 米 | arroz | 木 + 丷 (dos granos sobre 木) | 1 |
+| 犬 | perro | 大 + 丶 (un punto junto a 大) | 1 |
+| 玉 | joya · bola | 王 + 丶 (un punto junto a 王) | 1 |
+| 売 | vender | 士 + 冖 + 儿 (tres piezas: 士 arriba, 冖 y 儿 abajo) | 1 |
 | 六 | seis | 亠 + 八 | 1 |
-| 百 | cien | 一 + 白 | 1 |
 | 今 | ahora | 人 + 一 (debajo lleva además un trazo en gancho) | 1 |
 | 分 | minuto · dividir · entender | 八 + 刀 | 1 |
 | 間 | entre · intervalo | 門 + 日 | 1 |
 | 前 | antes · delante | 八 + 月 + 刀 (刀 aparece como 刂) | 1 |
 | 早 | temprano · rápido | 日 + 十 | 1 |
 | 夜 | noche | 亠 + 人 + 夕 (人 aparece como 亻) | 1 |
-| 夏 | verano | 一 + 自 + 夂 | 1 |
 | 秋 | otoño | 禾 + 火 | 1 |
 | 曜 | día de la semana | 日 + 羽 + 隹 | 1 |
 | 終 | terminar | 糸 + 冬 | 1 |
 | 外 | fuera | 夕 + 卜 | 1 |
 | 東 | este | 木 + 日 (el sol se dibuja sobre el tronco del árbol) | 1 |
 | 天 | cielo | 一 + 大 | 1 |
-| 国 | país | 囗 + 玉 | 1 |
 | 町 | pueblo · barrio | 田 + 丁 | 1 |
 | 村 | aldea | 木 + 寸 | 1 |
-| 道 | camino | 首 + 辶 | 1 |
 | 駅 | estación | 馬 + 尺 | 1 |
 | 社 | empresa · santuario | 示 + 土 (示 aparece como 礻) | 1 |
 | 京 | capital | 亠 + 口 + 小 | 1 |
 | 県 | prefectura | 目 + 小 | 1 |
 | 地 | suelo · tierra | 土 + 也 | 1 |
 | 池 | estanque | 水 + 也 (水 aparece como 氵) | 1 |
-| 海 | mar | 水 + 毎 (水 aparece como 氵) | 1 |
 | 空 | cielo · vacío | 宀 + 八 + 工 | 1 |
 | 所 | lugar | 戸 + 斤 | 1 |
 | 周 | alrededor | 冂 + 士 + 口 | 1 |
 | 回 | vez · girar | 囗 + 口 | 1 |
 | 名 | nombre | 夕 + 口 | 1 |
-| 元 | origen · ánimo | 二 + 儿 | 1 |
 | 姉 | hermana mayor | 女 + 市 | 1 |
 | 妹 | hermana menor | 女 + 未 | 1 |
 | 彼 | él | 彳 + 皮 | 1 |
 | 者 | persona | 耂 + 日 | 1 |
-| 若 | joven | 艸 + 右 (艸 aparece como 艹) | 1 |
 | 聞 | escuchar · preguntar | 門 + 耳 | 1 |
 | 開 | abrir | 門 + 开 | 1 |
-| 会 | reunirse | 人 + 二 + 厶 | 1 |
 | 書 | escribir | 聿 + 日 (日 aparece como 曰) | 1 |
-| 語 | idioma · palabra | 言 + 五 + 口 | 1 |
 | 飲 | beber | 食 + 欠 (食 aparece como 飠) | 1 |
 | 作 | hacer | 人 + 乍 (人 aparece como 亻) | 1 |
 | 知 | saber | 矢 + 口 | 1 |
-| 住 | vivir | 人 + 主 (人 aparece como 亻) | 1 |
 | 仕 | servir · trabajo | 人 + 士 (人 aparece como 亻) | 1 |
 | 洗 | lavar | 水 + 先 (水 aparece como 氵) | 1 |
-| 歩 | caminar | 止 + 少 | 1 |
-| 起 | levantarse | 走 + 己 | 1 |
 | 切 | cortar | 七 + 刀 | 1 |
 | 交 | cruzar · intercambiar | 亠 + 父 | 1 |
 | 可 | posible | 口 + 丁 | 1 |
-| 舌 | lengua | 千 + 口 | 1 |
 | 貝 | concha | 目 + 八 | 1 |
 | 味 | sabor | 口 + 未 | 1 |
 | 茶 | té | 艸 + 人 + 木 (艸 aparece como 艹) | 1 |
 | 魚 | pez | 田 + 火 + 勹 (火 aparece como 灬; la cabeza figura en KanjiVG como 勹) | 1 |
-| 猫 | gato | 犬 + 艸 + 田 (犬 aparece como 犭 y 艸 como 艹) | 1 |
-| 黒 | negro | 里 + 火 (火 aparece como 灬) | 1 |
 | 化 | transformar | 人 + 匕 (人 aparece como 亻) | 1 |
 | 台 | base · contador de máquinas | 厶 + 口 | 1 |
 | 物 | cosa | 牛 + 勿 | 1 |
-| 料 | material · tarifa | 米 + 斗 | 1 |
-| 理 | razón · lógica | 王 + 里 | 1 |
 | 飯 | arroz cocido · comida | 食 + 反 (食 aparece como 飠) | 1 |
 | 紙 | papel | 糸 + 氏 | 1 |
 | 酒 | sake · alcohol | 水 + 酉 (水 aparece como 氵) | 1 |
 | 電 | electricidad | 雨 + 日 (la parte de abajo es un 日 con cola: el rayo) | 1 |
 | 学 | estudiar | ⺍ + 子 (la corona (⺍ con 冖 debajo) cuenta como una sola pieza) | 1 |
 | 医 | medicina | 矢 + 匸 | 1 |
-| 楽 | divertido · música | 白 + 木 + 冫 | 1 |
-| 英 | Inglaterra · excelente | 艸 + 央 (艸 aparece como 艹) | 1 |
-| 重 | pesado | 千 + 里 | 1 |
 | 短 | corto | 矢 + 豆 | 1 |
 | 全 | todo | 人 + 王 | 1 |
-| 番 | número · turno | 米 + 田 (米 lleva un trazo arriba (釆)) | 1 |
-| 読 | leer | 言 + 売 | 1 |
 | 占 | adivinar · ocupar | 卜 + 口 | 1 |
 | 至 | llegar | 厶 + 土 (lleva además un trazo horizontal arriba) | 1 |
 | 孝 | respeto a los padres | 耂 + 子 | 1 |
-| 漢 | China · kanji | 水 + 艸 + 口 + 夫 (水 aparece como 氵 y 艸 como 艹) | 1 |
 
-## Nivel 3 · Composición intermedia (43)
+## Nivel 3 · Composición intermedia (64)
 
 | Kanji | Significado | Receta | Profundidad |
 |---|---|---|---|
@@ -217,6 +222,33 @@ Nivel KANJŪ = composition_depth + 1 (máximo 5).
 | 禁 | prohibir | 林 + 示 | 2 |
 | 意 | intención · mente | 音 + 心 | 2 |
 | 薪 | leña | 艸 + 新 (艸 aparece como 艹) | 2 |
+| 半 | mitad | 二 + 丷 + 丨 (tres piezas: 丷 arriba, 二 y un palo que lo corta) | 2 |
+| 来 | venir | 米 + 一 (un trazo cruza 米 por arriba) | 2 |
+| 言 | decir | 口 + 二 + 亠 (tres piezas: 亠 y 二 arriba, 口 abajo) | 2 |
+| 首 | cuello · cabeza | 自 + 一 + 丷 | 2 |
+| 肉 | carne | 内 + 人 (dentro de 内 hay una persona más) | 2 |
+| 夫 | esposo · hombre | 二 + 人 (dos trazos cruzan a 人) | 2 |
+| 三 | tres | 二 + 一 (a 二 se le suma un 一) | 2 |
+| 百 | cien | 一 + 白 | 2 |
+| 夏 | verano | 一 + 自 + 夂 | 2 |
+| 国 | país | 囗 + 玉 | 2 |
+| 海 | mar | 水 + 毎 (水 aparece como 氵) | 2 |
+| 元 | origen · ánimo | 二 + 儿 | 2 |
+| 若 | joven | 艸 + 右 (艸 aparece como 艹) | 2 |
+| 会 | reunirse | 人 + 二 + 厶 | 2 |
+| 住 | vivir | 人 + 主 (人 aparece como 亻) | 2 |
+| 歩 | caminar | 止 + 少 | 2 |
+| 起 | levantarse | 走 + 己 | 2 |
+| 舌 | lengua | 千 + 口 | 2 |
+| 猫 | gato | 犬 + 艸 + 田 (犬 aparece como 犭 y 艸 como 艹) | 2 |
+| 獣 | bestia | 犬 + 田 + 口 + ⺍ (cuatro piezas: ⺍, 田 y 口 a la izquierda, 犬 a la derecha · Jū, la mascota del juego) | 2 |
+| 黒 | negro | 里 + 火 (火 aparece como 灬) | 2 |
+| 料 | material · tarifa | 米 + 斗 | 2 |
+| 理 | razón · lógica | 王 + 里 | 2 |
+| 楽 | divertido · música | 白 + 木 + 冫 | 2 |
+| 英 | Inglaterra · excelente | 艸 + 央 (艸 aparece como 艹) | 2 |
+| 重 | pesado | 千 + 里 | 2 |
+| 番 | número · turno | 米 + 田 (米 lleva un trazo arriba (釆)) | 2 |
 | 病 | enfermedad | 疒 + 一 + 内 (en KanjiVG 一 y 内 forman 丙) | 2 |
 | 店 | tienda | 广 + 占 | 2 |
 | 室 | sala | 宀 + 至 | 2 |
@@ -225,23 +257,17 @@ Nivel KANJŪ = composition_depth + 1 (máximo 5).
 | 週 | semana | 周 + 辶 | 2 |
 | 何 | qué | 人 + 可 (人 aparece como 亻) | 2 |
 | 校 | escuela | 木 + 交 | 2 |
-| 話 | hablar | 言 + 舌 | 2 |
 | 買 | comprar | 罒 + 貝 | 2 |
 | 員 | miembro · empleado | 口 + 貝 | 2 |
 | 親 | padres · cercano | 立 + 木 + 見 | 2 |
 | 朝 | mañana | 十 + 早 + 月 | 2 |
 | 昼 | mediodía | 尺 + 旦 | 2 |
-| 春 | primavera | 三 + 人 + 日 | 2 |
 | 花 | flor | 艸 + 化 (艸 aparece como 艹) | 2 |
-| 薬 | medicina | 艸 + 楽 (艸 aparece como 艹) | 2 |
 | 始 | empezar | 女 + 台 | 2 |
-| 絵 | dibujo | 糸 + 会 | 2 |
-| 動 | moverse | 重 + 力 | 2 |
 | 暗 | oscuro | 日 + 音 | 2 |
 | 都 | capital · metrópoli | 者 + 阝 | 2 |
-| 完 | completo | 宀 + 元 | 2 |
 
-## Nivel 4 · Composición compleja (9)
+## Nivel 4 · Composición compleja (17)
 
 | Kanji | Significado | Receta | Profundidad |
 |---|---|---|---|
@@ -252,14 +278,24 @@ Nivel KANJŪ = composition_depth + 1 (máximo 5).
 | 襟 | cuello (de ropa) | 衣 + 禁 (衣 aparece como 衤) | 3 |
 | 億 | cien millones | 人 + 意 (人 aparece como 亻) | 3 |
 | 憶 | recordar | 心 + 意 (心 aparece como 忄) | 3 |
-| 院 | institución | 阜 + 完 | 3 |
-| 働 | trabajar | 人 + 動 (人 aparece como 亻 · kanji creado en Japón) | 3 |
+| 道 | camino | 首 + 辶 | 3 |
+| 語 | idioma · palabra | 言 + 五 + 口 | 3 |
+| 読 | leer | 言 + 売 | 3 |
+| 漢 | China · kanji | 水 + 艸 + 口 + 夫 (水 aparece como 氵 y 艸 como 艹) | 3 |
+| 話 | hablar | 言 + 舌 | 3 |
+| 春 | primavera | 三 + 人 + 日 | 3 |
+| 薬 | medicina | 艸 + 楽 (艸 aparece como 艹) | 3 |
+| 絵 | dibujo | 糸 + 会 | 3 |
+| 動 | moverse | 重 + 力 | 3 |
+| 完 | completo | 宀 + 元 | 3 |
 
-## Nivel 5 · Composición avanzada (1)
+## Nivel 5 · Composición avanzada (3)
 
 | Kanji | Significado | Receta | Profundidad |
 |---|---|---|---|
 | 藻 | alga | 艸 + 澡 (艸 aparece como 艹) | 4 |
+| 院 | institución | 阜 + 完 | 4 |
+| 働 | trabajar | 人 + 動 (人 aparece como 亻 · kanji creado en Japón) | 4 |
 
 ## Cadenas hasta el nivel 4
 
