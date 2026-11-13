@@ -122,7 +122,7 @@ Encima del juego base, nunca requisito:
 
 **Salvaguarda i+1:** todo texto generado pasa por un control contra `S.lex`/`S.srs` antes de mostrarse; como mucho 5 % de palabras nuevas, y solo de la sección actual o la siguiente. Si se pasa, se regenera o se usa el contenido fijo.
 
-**Se hace después** (decidido por Nicolás el 13 de noviembre de 2026, con la tarea A-11): hoy la clave propia vive en el dispositivo (`js/ai.js`, localStorage) y la app habla directo con el proveedor. El plan pide que la clave nunca viva en el navegador: guardarla cifrada en el servidor y llamar al proveedor desde `api/`. Eso necesita una variable de entorno nueva (clave de cifrado) en Vercel, que los agentes no pueden crear (CLAUDE.md, regla 6). El plan pago necesita además una clave del juego y un precio (a definir).
+**Hecho** (tareas A-11a y A-11b, 13 de noviembre de 2026): la clave propia vive cifrada en el servidor y la IA incluida de Plus tiene cupo mensual (`docs/IA.md`). Cuentos y misiones salen desde la ficha de cada KANJŪ con el control i+1 de arriba. Falta: charla libre con corrección, y el precio de Plus.
 
 ## 8. Revisión del japonés
 

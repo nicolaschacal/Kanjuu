@@ -307,5 +307,41 @@
  "ai.err.net": "Couldn't connect. Check your connection.",
  "ai.err.generic": "Something went wrong with the AI. Try again.",
  "ai.err.story": "The AI didn't return a valid story. Try again.",
- "ai.err.kanji": "The AI used kanji you don't have yet. Try again."
+ "ai.err.kanji": "The AI used kanji you don't have yet. Try again.",
+ "aip.card": "{k}'s stories and missions",
+ "aip.cardOn": "With AI, using only words you know",
+ "aip.cardOff": "Connect AI: included with Plus or with your own key",
+ "aip.saved": {
+  "one": "{n} saved story",
+  "other": "{n} saved stories"
+ },
+ "aip.eyebrow": "With AI",
+ "aip.lead": "Written with the words in your diary and, at most, one new word from your section. Anything you can't read won't show up.",
+ "aip.story": "A story",
+ "aip.storySub": "{k} stars in a short story · +{n} 墨",
+ "aip.mission": "A mission",
+ "aip.missionSub": "{k} needs your help: answer in Japanese · +{n} 墨",
+ "aip.own": "With your key: no limit",
+ "aip.left": {
+  "one": "{n} use left this month",
+  "other": "{n} uses left this month"
+ },
+ "aip.settings": "AI settings",
+ "aip.library": "Saved stories",
+ "aip.back": "Back",
+ "aip.writing": "{k} is writing their story…",
+ "aip.planning": "{k} is thinking about what they need…",
+ "aip.onlyKnown": "Only with words you already know",
+ "aip.tooHard": "The AI couldn't write it with only your words. Try again or learn a few more.",
+ "aip.showTr": "Show translation",
+ "aip.hear": "Listen",
+ "aip.next": "Next",
+ "aip.finish": "Finish",
+ "aip.askSay": "Did you understand my story?",
+ "aip.storyDone": "You read {k}'s story · {n}/{total} answers",
+ "aip.missionGoal": "Answer each character to help {k}.",
+ "aip.help": "Help",
+ "aip.missionDone": "You helped {k} · {n}/{total} answers",
+ "aip.newWords": "New word for your diary",
+ "aip.readSay": "I'll read you my story · {n} of {total}"
 }

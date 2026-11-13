@@ -28,3 +28,11 @@ Hoy un jugador es Plus si su email está en `KANJUU_PLUS_EMAILS` o si tiene una 
 ## Tablas (se crean solas)
 
 `ai_keys` (clave propia cifrada), `ai_usage` (usos por jugador y mes), `plus`.
+
+## Cuentos, misiones y frases de sabor (A-11b)
+
+Desde la ficha de cada KANJŪ (`js/aiplay.js`, motor en `js/aigen.js`). Cada cuento o misión es 1 uso de IA.
+- **Cuento:** 5 a 7 oraciones protagonizadas por la criatura, con su perfil (significado, elemento, tipo, nivel, vínculo, familia de kanji), y 2 o 3 preguntas. Se guardan los últimos 20 (`S.ai.lib`) para releer sin gastar usos. +15 墨 (+3 al releer).
+- **Misión:** la criatura pide ayuda; 3 pasos en los que otro KANJŪ habla y el jugador elige la respuesta. +20 墨.
+- **Frases de sabor:** cada cuento deja hasta 5 frases cortas de la criatura (`S.ai.flavor`), que el entrenamiento usa a veces al acertar.
+- **Salvaguarda i+1** (`checkLine`, `checkText`): la IA escribe en kana con espacios y cada ficha se controla contra el diario (`S.lex`, caja 2 o más; si son menos de 20, todas las halladas). Pasan partículas, nombres de los KANJŪ del jugador y como mucho un 5 % de palabras nuevas de la sección actual o la siguiente. Lo demás se descarta; si quedan pocas oraciones, se pide una vez más diciendo qué falló.

@@ -985,3 +985,20 @@ ruby.wk rt{font-family:var(--f-ui);font-size:.42em;font-weight:700;opacity:.75}
 .ex-rules li{margin-bottom:4px}
 .bk-exam{display:block;width:100%;margin-top:8px;padding:6px 0;border:2px solid #A47410;border-radius:10px;background:#FFE9A8;color:#6B4A08;font-weight:800;font-size:12px}
 .chal.exam .ck{font-size:clamp(34px,11vw,56px)}
+
+/* ---------- Cuentos y misiones con IA (A-11b) ---------- */
+.ai-card{margin-top:8px}
+.ai-mark{display:grid;place-items:center;width:64px;height:64px;flex:none;border:2px solid var(--line);border-radius:14px;background:#FFFDF6 radial-gradient(#E9DCC0 1px,transparent 1px);background-size:12px 12px;font-family:var(--brush);font-size:36px;color:var(--line)}
+.ai-picks{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 8px}
+.ai-pick{display:grid;justify-items:start;gap:4px;padding:12px;border:var(--b);border-radius:16px;background:var(--paper3);box-shadow:var(--sh);text-align:left;color:var(--line)}
+.ai-pick i{font-family:var(--brush);font-style:normal;font-size:30px;line-height:1}
+.ai-pick b{font-family:var(--f-title);font-size:15px}
+.ai-pick small{color:var(--muted);font-size:12px;line-height:1.35}
+.ai-lib{display:grid;gap:6px;margin-bottom:10px}
+.ai-book{display:flex;justify-content:space-between;gap:8px;padding:9px 12px;border:2px solid var(--line);border-radius:12px;background:#FFFDF6;color:var(--line);text-align:left}
+.ai-book small{color:var(--muted)}
+.muted.sm{font-size:12.5px}
+.ai-play .ai-line{font-size:22px;line-height:1.7;margin:6px 0}
+.ai-trt{margin:0 0 8px;color:var(--muted);font-weight:700}
+.ai-goal .ai-mark{width:56px;height:56px;font-size:30px}
+.ai-left{display:flex;justify-content:space-between;align-items:center;gap:8px}.ai-left .link{margin:0;padding:0}

@@ -25,6 +25,7 @@ const api = async (body) => {
   return { ok: r.ok, status: r.status, d };
 };
 const left = () => st ? Math.max(0, (st.limit || 0) - (st.used || 0)) : 0;
+export const aiLeft = () => st?.own ? Infinity : houseOn() ? left() : 0;
 const houseOn = () => !!(st?.plus && st?.house && st.limit > 0);
 export const aiOn = () => !!(st?.own || (houseOn() && left() > 0));
 
@@ -50,7 +51,7 @@ function fail(r) {
   if (r.status === 402) return new Error(r.d.reason === 'quota' ? t('ai.err.quota', { n: r.d.limit }) : t('ai.err.none'));
   return new Error(r.d.error || t('ai.err.generic'));
 }
-async function ai(opts) {
+export async function ai(opts) {
   let r;
   try { r = await api({ action: 'gen', ...opts }); } catch { throw new Error(t('ai.err.net')); }
   if (!r.ok) { if (r.status === 402 && st) { st.used = st.limit; S.aiOn = aiOn(); } throw fail(r); }
