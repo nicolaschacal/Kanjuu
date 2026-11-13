@@ -881,9 +881,6 @@ ruby.wk rt{font-family:var(--f-ui);font-size:.42em;font-weight:700;opacity:.75}
 .pn-tabs:has(button:nth-child(4)) button:not(.on){flex:0 0 48px}
 
 /* Paseos del entrenamiento (js/round.js, tarea A-03). Interfaz provisoria hasta aprobar la propuesta A-02. */
-.game.round .rd-dots{margin-left:auto;margin-right:8px;font-family:var(--f-title);font-weight:800;font-size:13px;color:var(--muted)}
-.rd-intro{display:grid;justify-items:center;gap:10px;text-align:center;padding:12px 0}
-.rd-intro .rd-art{width:120px;height:120px}.rd-intro .rd-art svg{width:100%;height:100%}
 /* Premio pintado con tinta (A-04): trazos reales de KanjiVG; el kanji cobra vida al completarse */
 .rd-prize{display:grid;justify-items:center;gap:6px;margin:10px 0 4px}
 .rd-prize small{color:var(--muted);font-size:12.5px;text-align:center;max-width:30ch}
@@ -926,3 +923,35 @@ ruby.wk rt{font-family:var(--f-ui);font-size:.42em;font-weight:700;opacity:.75}
 .bk-seal{position:absolute;right:10px;top:8px;z-index:1;font-family:var(--brush);color:#A47410;font-size:18px}
 .rd-inkk.q{font-family:var(--f-title);font-size:30px;color:#8A6E4B}
 .rd-inkk.sm{font-size:32px}
+/* Lección (A-06b, propuesta A-02): salón de papel arriba con la criatura y su globo; ejercicios en papel abajo */
+.game.rd-lesson{background:var(--paper);color:var(--line)}
+.rd-scene{position:relative;height:clamp(200px,34dvh,260px);flex:none;overflow:hidden;border-bottom:var(--b)}
+.rd-room{position:absolute;inset:0;width:100%;height:100%}
+.rd-room .wall{fill:#F7E6C4}.rd-room .ribs{stroke:#E3CFA4}.rd-room .sun{fill:#F2B544;opacity:.55}.rd-room .mat{fill:#D8C48E}.rd-room .mat-l{stroke:#BFA86E}.rd-room .sill{fill:#7A4B32}
+.rd-scene.power .rd-room .wall{fill:#2A2148}.rd-scene.power .rd-room .ribs{stroke:#3A2E66}.rd-scene.power .rd-room .sun{fill:#E9DCC0;opacity:.45}.rd-scene.power .rd-room .mat{fill:#3A3352}.rd-scene.power .rd-room .mat-l{stroke:#2A2148}
+.rd-room *{transition:fill .5s,stroke .5s}
+.rd-x{position:absolute;left:10px;top:calc(10px + var(--safe-t));z-index:3;width:36px;height:36px;border-radius:12px;background:#FFF6E3D0;border:2px solid var(--line);color:var(--line);font-weight:900}
+.rd-drops{position:absolute;left:56px;right:12px;top:calc(24px + var(--safe-t));z-index:3;display:flex;gap:4px}
+.rd-drops i{flex:1;height:8px;border-radius:4px;background:#1A122022}
+.rd-drops i.k{background:#C98A0B55}.rd-drops i.on{background:var(--line)}.rd-drops i.k.on{background:#C98A0B}.rd-drops i.now{box-shadow:0 0 0 2px var(--line)}
+.rd-bub{position:absolute;z-index:2;left:130px;right:16px;top:calc(50px + var(--safe-t));background:var(--paper3);border:var(--b);border-radius:18px 18px 18px 4px;padding:8px 12px;box-shadow:var(--sh)}
+.rd-bub .who{font-size:11px;font-weight:800;color:var(--red);letter-spacing:.06em}
+.rd-bub p{font-size:14.5px;font-weight:700;line-height:1.35;margin:0}
+.rd-bub.pop{animation:rd-bub .3s ease-out}
+@keyframes rd-bub{from{transform:scale(.94);opacity:.4}}
+.rd-me{position:absolute;left:14px;bottom:10px;width:110px;height:110px}.rd-me svg{width:100%;height:100%}
+.rd-me.happy svg{animation:k2-hop .45s 1}
+.rd-sec{margin:0;padding:8px 16px 0;font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.rd-low{color:var(--line);justify-content:flex-start}
+.rd-low .hint{color:var(--line)}.rd-low .hint b{color:var(--red)}
+.rd-low .qm{color:var(--line)}
+.rd-low .opt{border:var(--b);box-shadow:var(--sh);background:var(--paper3)}
+.rd-low .opt.right{background:#DDF2D6;color:var(--line);border-color:#2F7A25}
+.rd-low .opt.wrong{background:#F3E3DE;color:#9A7A70}
+.rd-low .asm-row{border-color:#1A122040}
+.rd-low .asm-skip,.rd-low .link{color:var(--muted)}
+.rd-low .qw{box-shadow:var(--sh)}
+.rd-goal{display:flex;gap:12px;align-items:center;width:100%;padding:12px;border:var(--b);border-radius:16px;background:var(--paper3);box-shadow:var(--sh);margin:6px 0 8px}
+.rd-goal .rd-ink-box{width:72px;height:72px;flex:none;border-width:2px}
+.rd-goal b{display:block;font-family:var(--f-title)}.rd-goal small{color:var(--muted);font-size:12.5px}
+@media (prefers-reduced-motion:reduce){.rd-bub.pop,.rd-me.happy svg{animation:none}}
