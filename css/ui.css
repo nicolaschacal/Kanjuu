@@ -1033,7 +1033,7 @@ ruby.wk rt{font-family:var(--f-ui);font-size:.42em;font-weight:700;opacity:.75}
 .ts-sky{position:relative;flex:1;min-height:0;display:grid;place-items:center}
 .ts-moon{position:absolute;left:50%;top:50%;width:min(86vw,400px);aspect-ratio:1;border-radius:50%;transform:translate(-50%,-46%);background:radial-gradient(circle at 50% 45%,#F2B54433,#F2B54408 62%,transparent 63%)}
 .ts-logo{position:relative;text-align:center;animation:stIn .7s cubic-bezier(.2,1.2,.4,1) both}
-.ts-seal{display:grid;place-items:center;width:104px;height:104px;margin:0 auto 14px;border-radius:24px;background:var(--red);color:#FFF6E3;font-family:var(--f-jp);font-weight:900;font-size:40px;line-height:1;border:var(--b);box-shadow:0 6px 0 #000;transform:rotate(-4deg)}
+.ts-seal{display:block;width:104px;height:104px;margin:0 auto 14px;border-radius:24px;border:var(--b);box-shadow:0 6px 0 #000;transform:rotate(-4deg)}
 .ts-logo h1{margin:0;font-size:46px;letter-spacing:.06em!important;color:var(--paper)}
 .ts-logo p{margin:4px 0 0;font-size:14px;font-weight:700;color:#F6EBD0B3}
 @keyframes stIn{from{opacity:0;transform:translateY(14px) scale(.96)}}
@@ -1055,7 +1055,7 @@ ruby.wk rt{font-family:var(--f-ui);font-size:.42em;font-weight:700;opacity:.75}
 .ts-form .err{margin:0 0 8px;min-height:0;font-size:13px}.ts-form .err:empty{display:none}
 .ts-links{display:flex;justify-content:space-between;gap:10px;margin-top:10px}.ts-links .link{margin:0;padding:6px 0;font-size:13px}
 /* Con el teclado abierto se achica el cielo para que el formulario quede a la vista */
-.title-scr.typing .ts-seal{width:64px;height:64px;font-size:24px;border-radius:16px;margin-bottom:8px}.title-scr.typing .ts-logo h1{font-size:30px}.title-scr.typing .ts-logo p,.title-scr.typing .ts-moon{display:none}
+.title-scr.typing .ts-seal{width:64px;height:64px;border-radius:16px;margin-bottom:8px}.title-scr.typing .ts-logo h1{font-size:30px}.title-scr.typing .ts-logo p,.title-scr.typing .ts-moon{display:none}
 @media (max-height:640px){.title-scr.typing .ts-hill{display:none}}
 @media (prefers-reduced-motion:reduce){.ts-logo,.ts-c,.ts-brush::after,.title-scr.out{animation:none}}
 

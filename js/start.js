@@ -32,7 +32,7 @@ export function startScreen() {
     el.innerHTML = `
       <button class="ts-lang" id="stLang" aria-label="${t('menu.lang')}">${ic('globe')}<span>${lang().toUpperCase()}</span></button>
       <div class="ts-sky"><i class="ts-moon"></i>
-        <div class="ts-logo"><span class="ts-seal" aria-hidden="true">漢獣</span><h1>KANJŪ</h1><p>${t('start.tag')}</p></div>
+        <div class="ts-logo"><img class="ts-seal" src="icons/icon-512.png" alt="" width="104" height="104"><h1>KANJŪ</h1><p>${t('start.tag')}</p></div>
       </div>
       <div class="ts-hill"><div class="ts-cast">${ks.map((k, i) => `<span class="ts-c c${i}">${creatureSVG(k, { mood: 1 })}</span>`).join('')}</div></div>
       <div class="ts-low">${low()}</div>`;

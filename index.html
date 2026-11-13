@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <title>KANJŪ</title>
 <style>/* Arranque: se ve al instante, antes de que carguen los estilos y el juego */
-html,body{margin:0;height:100%;background:#16132A}#boot{position:fixed;inset:0;z-index:99;display:grid;place-items:center;background:#16132A}#boot b{display:grid;place-items:center;width:112px;height:112px;border-radius:26px;background:#E8452C;color:#FFF6E3;font:900 44px/1 "Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",sans-serif;box-shadow:0 6px 0 #000}</style>
+html,body{margin:0;height:100%;background:#16132A}#boot{position:fixed;inset:0;z-index:99;display:grid;place-items:center;background:#16132A}#boot img{width:112px;height:112px;border-radius:26px;box-shadow:0 6px 0 #000}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Yuji+Syuku&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -24,7 +24,7 @@ html,body{margin:0;height:100%;background:#16132A}#boot{position:fixed;inset:0;z
 <link rel="stylesheet" href="css/art.css">
 </head>
 <body>
-<div id="boot" aria-hidden="true"><b>漢獣</b></div>
+<div id="boot" aria-hidden="true"><img src="icons/icon-192.png" alt="" width="112" height="112"></div>
 <div id="app"></div>
 <script type="module" src="js/main.js"></script>
 </body>
