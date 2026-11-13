@@ -17,7 +17,7 @@ import { PIECES, isPiece, TYPES, typeOf, gradeTag, SRS_HOURS } from './data.js';
 import { useTagHTML, anchorsHTML, bindAnchors } from './diary.js';
 import { t } from './i18n.js';
 import { tr } from './lex.js';
-import { curSection, roundsOf, runRound, endRound, ROUNDS, inkSVG, paintedOf, strokesOf, prizeState, wakeBox, PRIZE_INK } from './round.js';
+import { curSection, roundsOf, runRound, endRound, passTest, ROUNDS, inkSVG, paintedOf, strokesOf, prizeState, wakeBox, PRIZE_INK } from './round.js';
 import { sectionById } from './curriculum.js';
 import { WORD } from './lex.js';
 
@@ -105,6 +105,7 @@ export async function openTraining(c, parent) {
   parent.close();
   const res = await runRound(c, $('#layer'));
   if (!res) return go();
+  if (res.skipTest) return skipTest(c, sec);
   const r = endRound(sec.id, res.right, res.total);
   const painted = paintedOf(sec.id), total = sec.reward ? strokesOf(sec.reward) : 0;
   const asleep = r.completed && prizeState(sec.id) === 'asleep';
@@ -130,6 +131,19 @@ export async function openTraining(c, parent) {
   hud();
   // Premios que despertaron (de esta sección o de una anterior que estaba dormida)
   for (const p of r.prizes) await prizeBorn(p);
+}
+
+// Prueba «Ya sé esto» (A-05): 10 preguntas sin repetición; con 80 % se saltan sus secciones, sin premio
+async function skipTest(c, sec) {
+  const res = await runRound(c, $('#layer'), { test: true });
+  if (!res) return go();
+  const r = passTest(sec.id, res.right, res.total); save();
+  const out = modal(`<div class="result"><div class="res-art">${creatureSVG(c.k, { mood: r.ok ? 1 : .6 })}</div>
+    <p><b>${res.right}/${res.total}</b></p>
+    <p class="${r.ok ? 'g' : 'muted'}">${r.ok ? t('round.testPass', { n: r.secs.length }) + (r.next ? ' ' + t('round.next', { title: tr(r.next.title) }) : '') : t('round.testFail')}</p>
+    <div class="row"><button class="btn ok" id="done">${t('round.continue')}</button></div></div>`);
+  $('#done', out).onclick = () => { out.close(); go(); };
+  hud();
 }
 
 // El kanji pintado cobra vida: se hunde en una gota de tinta y nace la criatura (propuesta A-02, pantalla 7)

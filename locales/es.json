@@ -226,5 +226,12 @@
  "round.bornSub": "Lo pintaste entrenando «{title}» y despertó porque ya sabes {w}.",
  "round.inkInstead": "Ya tenías a {k}: su tinta se convirtió en +{ink} 墨.",
  "round.atGate": "No había lugar en el santuario: te espera en la puerta.",
- "round.great": "¡Genial!"
+ "round.great": "¡Genial!",
+ "round.skip": "Ya sé esto · prueba corta para saltar esta sección",
+ "round.skipKana": "Ya leo kana · prueba corta para saltar la etapa 0",
+ "round.testPass": {
+  "one": "¡Prueba superada! Saltaste {n} sección.",
+  "other": "¡Prueba superada! Saltaste {n} secciones."
+ },
+ "round.testFail": "Todavía no: hace falta el 80 %. Puedes entrenar esta sección o volver a intentarlo cuando quieras."
 }
