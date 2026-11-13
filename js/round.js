@@ -21,9 +21,41 @@ const shuffle = (a, rnd = Math.random) => a.map(v => [rnd(), v]).sort((x, y) => 
 // Partidas sin S.cur: empiezan en la etapa 0, o en la 1 si en la nivelación dijeron que leen kana (S.level ≥ 1).
 // La ubicación fina de partidas viejas es la tarea A-05.
 export function cur() {
-  S.cur ??= { sec: (S.level || 0) >= 1 ? '1.1' : '0.1', rounds: {}, done: {}, gold: {}, got: {}, skipped: {}, eggs: {} };
+  if (!S.cur) { S.cur = { sec: SECTIONS[0].id, rounds: {}, done: {}, gold: {}, got: {}, skipped: {}, eggs: {} }; place(); }
   if (!sectionById(S.cur.sec)) S.cur.sec = SECTIONS[0].id;
   return S.cur;
+}
+// Ubicación (tarea A-05): quien dijo que lee kana (S.level ≥ 1) salta la etapa 0, y toda partida salta las secciones
+// cuyas palabras ya domina (80 % en caja 2 o más, por viajes o el Dojo). Las salteadas quedan completas y sin premio.
+export const known = s => s.words.filter(id => (S.lex[id]?.box || 0) >= 2).length >= Math.ceil(s.words.length * PASS);
+function place() {
+  for (const s of SECTIONS) {
+    if (!(s.stage === 'e0' && (S.level || 0) >= 1) && !known(s)) { S.cur.sec = s.id; return; }
+    skip(s.id);
+  }
+}
+function skip(id) { const c = S.cur; c.done[id] ??= Date.now(); c.skipped[id] = true; c.rounds[id] = ROUNDS; }
+// Prueba «Ya sé esto»: en la etapa 0 cubre todo lo que queda de la etapa (para quien ya lee kana); después, la sección.
+export const testScope = (secId = cur().sec) => {
+  const s = sectionById(secId);
+  return s.stage === 'e0' ? SECTIONS.filter(x => x.stage === 'e0' && !cur().done[x.id]) : [s];
+};
+export const TEST_SIZE = 10;
+export function planTest(secId = cur().sec, rnd = Math.random) {
+  const secs = testScope(secId), words = shuffle([...new Set(secs.flatMap(s => s.words))], rnd).slice(0, TEST_SIZE - 1);
+  const ph = shuffle(secs.flatMap(s => s.phrases), rnd)[0];
+  return [...words.map(id => ({ t: 'word', id })), { t: 'phrase', id: ph }];
+}
+// Aprobar la prueba (80 %) completa las secciones de su alcance sin premio y lleva a la siguiente
+export function passTest(secId, right, total) {
+  const ok = total > 0 && right / total >= PASS, secs = testScope(secId);
+  if (ok) {
+    secs.forEach(s => skip(s.id));
+    const last = secs.at(-1), next = nextSection(last.id);
+    if (next) S.cur.sec = next.id;
+    return { ok, secs, next };
+  }
+  return { ok, secs, next: null };
 }
 export const curSection = () => sectionById(cur().sec);
 export const roundsOf = id => cur().rounds[id] || 0;
@@ -153,8 +185,8 @@ function kanjiExercise(k, ask, body, done) {
 
 // ---------- Jugar una ronda ----------
 // Resuelve { right, total, kanjiOk } o null si el jugador sale. Un error no corta la ronda: el paso vuelve al final una vez.
-export function runRound(c, root) {
-  const s = curSection(), steps = planRound(c.k, s.id);
+export function runRound(c, root, { test = false } = {}) {
+  const s = curSection(), steps = test ? planTest(s.id) : planRound(c.k, s.id);
   return new Promise(resolve => {
     const wrap = document.createElement('div');
     wrap.className = 'game round';
@@ -165,20 +197,23 @@ export function runRound(c, root) {
     let right = 0, total = 0, kanjiOk = 0, pos = 0; // pos = pasos terminados (acertados, o fallados por segunda vez)
     const end = res => { wrap.classList.add('out'); setTimeout(() => wrap.remove(), 250); resolve(res); };
     wrap.querySelector('.x').onclick = () => end(null);
-    const paint = () => dots.textContent = `${Math.min(pos, steps.length - 1)}/${steps.length - 1}`;
+    const n = test ? steps.length : steps.length - 1;
+    const paint = () => dots.textContent = `${Math.min(pos, n)}/${n}`;
     const next = () => {
       const st = queue.shift(); paint();
       if (!st) return end({ right, total, kanjiOk });
       const after = ok => {
         if (!retried.has(st.i)) { total++; if (ok) right++; }
-        if (!ok && !retried.has(st.i)) { retried.add(st.i); queue.push(st); }
-        if (ok || st.again) pos++;
+        if (!ok && !retried.has(st.i) && !test) { retried.add(st.i); queue.push(st); }
+        if (ok || st.again || test) pos++;
         if (!ok && !st.again) queue[queue.length - 1].again = true;
         next();
       };
       if (st.t === 'intro') {
         pos++;
-        body.innerHTML = `<div class="rd-intro"><span class="rd-art">${creatureSVG(c.k)}</span><p class="qm sm">${tr(s.intro)}</p></div><button class="btn ok wide">${t('round.start')}</button>`;
+        body.innerHTML = `<div class="rd-intro"><span class="rd-art">${creatureSVG(c.k)}</span><p class="qm sm">${tr(s.intro)}</p></div><button class="btn ok wide">${t('round.start')}</button>
+          ${isDone(s.id) ? '' : `<button class="link rd-skip">${t(s.stage === 'e0' ? 'round.skipKana' : 'round.skip')}</button>`}`;
+        body.querySelector('.rd-skip') && (body.querySelector('.rd-skip').onclick = () => end({ skipTest: true }));
         return body.querySelector('.btn').onclick = next;
       }
       if (st.t === 'word') {

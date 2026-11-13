@@ -226,5 +226,12 @@
  "round.bornSub": "You painted it training “{title}”, and it woke up because you now know {w}.",
  "round.inkInstead": "You already had {k}: its ink became +{ink} 墨.",
  "round.atGate": "There was no room in the sanctuary: it is waiting at the gate.",
- "round.great": "Great!"
+ "round.great": "Great!",
+ "round.skip": "I know this · short test to skip this section",
+ "round.skipKana": "I can read kana · short test to skip stage 0",
+ "round.testPass": {
+  "one": "Test passed! You skipped {n} section.",
+  "other": "Test passed! You skipped {n} sections."
+ },
+ "round.testFail": "Not yet: you need 80%. You can train this section or try again whenever you like."
 }
