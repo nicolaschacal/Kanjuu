@@ -19,7 +19,8 @@ Antes de trabajar, leer: `docs/SPRINTS.md` (proceso), `docs/BACKLOG.md` (qué ha
 - El juego enseña kanji reales: recetas de fusión verificadas con KanjiVG (`docs/NIVELES.md`); cada criatura muestra solo lecturas exactas de su kanji (`docs/LECTURAS.md`).
 - Nunca vender kanji del currículo central, evoluciones, maestría ni ventaja en la Arena. Sin anuncios. Público: todos (ver `ROADMAP.md` §8 y §9).
 - Sin rachas punitivas, sin energía que bloquee jugar.
-- **Idiomas:** español neutro con tú (base), variante Río de la Plata con voseo, e inglés. Una vez que exista `js/i18n.js`, todo texto nuevo va con `t()` y en ambos diccionarios.
+- **Idioma:** solo español neutro con tú, sin voseo (decidido por Nicolás el 13 de noviembre de 2026; se sacaron el inglés y la variante rioplatense). Todo texto nuevo va con `t()` en `locales/es.json`.
+- La Academia ya no existe: no mencionarla en textos del juego (el aprendizaje vive en el entrenamiento de cada KANJŪ).
 - La furigana en la interfaz es necesaria y se puede apagar; no quitarla.
 - Íconos estilo sistema operativo, no emojis.
 

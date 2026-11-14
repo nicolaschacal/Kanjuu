@@ -96,7 +96,7 @@ Incluye 2 o 3 preguntas.`;
   return s;
 }
 export async function explain(question, given, correct, context = '') {
-  const L = lang() === 'en' ? 'English' : 'español neutro (tú)';
+  const L = 'español neutro (tú)';
   const x = await ai({ system: `Eres un profesor de japonés paciente para principiantes. Explica en ${L}, en máximo 3 oraciones cortas y simples, por qué la respuesta del alumno es incorrecta y cómo recordar la correcta. La respuesta correcta es la que se te da: no la discutas ni propongas otra. Sin markdown.`,
     user: `Ejercicio: ${String(question).slice(0, 300)}\nRespuesta del alumno: ${String(given).slice(0, 160)}\nRespuesta correcta: ${String(correct).slice(0, 160)}${context ? `\nPista del juego: ${String(context).replace(/<[^>]+>/g, '').slice(0, 400)}` : ''}`, maxTokens: 300 });
   return x.replace(/\*\*/g, '');

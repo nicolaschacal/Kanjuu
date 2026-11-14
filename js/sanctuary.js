@@ -52,7 +52,7 @@ function viewHome3d(v) {
       ${mode === 'buy' ? buyHTML(buyPick, preview) : mode === 'sel' ? miniHTML(findIt(sel)) : editing ? sheetHTML() : ''}
       ${focusId ? focusHTML(findIt(focusId)) : ''}
     </div>
-    ${placing ? `<div class="place-bar">Tocá dónde colocar <b>${placing.t ? OBJS[placing.t].k : placing.k}</b><button class="btn ghost" id="cancelPlace">Cancelar</button></div>` : ''}
+    ${placing ? `<div class="place-bar">Toca dónde colocar <b>${placing.t ? OBJS[placing.t].k : placing.k}</b><button class="btn ghost" id="cancelPlace">Cancelar</button></div>` : ''}
   </div>`;
   const app = document.getElementById('app');
   app.classList.toggle('focus', !!focusId); app.classList.toggle('building', build || !!placing); covered();
@@ -147,20 +147,20 @@ function sheetHTML() {
     }
     n = Math.ceil(cards.length / 8);
     body = `<div class="bm-chips">${chip('data-isub', 'obj', invSub, 'Objetos', invO.length)}${chip('data-isub', 'mon', invSub, 'KANJŪ', invM.length)}${chip('data-isub', 'nat', invSub, 'Naturaleza')}${chip('data-isub', 'luz', invSub, 'Luces')}</div>
-      ${pages(cards, invSub === 'mon' ? 'Todos tus KANJŪ están en la isla' : `No tenés objetos guardados<button class="bm-link" data-seg="shop">${ic('shop')}Ir a la Tienda</button>`)}`;
-    foot = `<span class="bm-hint">${ic('hand')}Arrastralo a la isla · gratis</span>`;
+      ${pages(cards, invSub === 'mon' ? 'Todos tus KANJŪ están en la isla' : `No tienes objetos guardados<button class="bm-link" data-seg="shop">${ic('shop')}Ir a la Tienda</button>`)}`;
+    foot = `<span class="bm-hint">${ic('hand')}Arrástralo a la isla · gratis</span>`;
   } else if (trayTab === 'shop') {
     const own = t => S.objs.filter(o => o.t === t).length;
     const cards = Object.entries(OBJS).filter(([, d]) => !d.hide && d.cat === shopSub).sort((a, b) => a[1].rank - b[1].rank || a[1].cost - b[1].cost).map(([k, d]) => {
       const lock = S.rank.lv < d.rank, c = objCost(k), o = own(k);
       if (lock) return `<button class="bm-card lock" disabled aria-label="${d.name}: rango ${d.rank}"><img src="${artThumb(d.art)}" alt=""><span class="lk">${ic('lock')}Rango ${d.rank}</span></button>`;
-      return `<button class="bm-card" data-pick="${k}" aria-label="${d.name}, ${c} de tinta">${o ? `<span class="tag own">TENÉS ${o}</span>` : d.rank === S.rank.lv ? `<span class="tag new">NUEVO</span>` : ''}<img src="${artThumb(d.art)}" alt=""><span class="price ${S.ink < c ? 'no' : ''}">${inkSvg(11)}${c}</span></button>`;
+      return `<button class="bm-card" data-pick="${k}" aria-label="${d.name}, ${c} de tinta">${o ? `<span class="tag own">Tienes ${o}</span>` : d.rank === S.rank.lv ? `<span class="tag new">NUEVO</span>` : ''}<img src="${artThumb(d.art)}" alt=""><span class="price ${S.ink < c ? 'no' : ''}">${inkSvg(11)}${c}</span></button>`;
     });
     n = Math.ceil(cards.length / 8);
-    body = `<div class="bm-chips">${Object.entries(CATS).map(([id, l]) => chip('data-ssub', id, shopSub, l)).join('')}</div>${pages(cards, 'Nada por acá todavía')}`;
-    foot = `<span class="bm-hint">Tocá para ver el detalle antes de comprar</span>`;
+    body = `<div class="bm-chips">${Object.entries(CATS).map(([id, l]) => chip('data-ssub', id, shopSub, l)).join('')}</div>${pages(cards, 'Nada por aquí todavía')}`;
+    foot = `<span class="bm-hint">Toca para ver el detalle antes de comprar</span>`;
   } else {
-    body = `<div class="bm-lab">Pintar suelo <span>Arrastrá el dedo · gratis</span></div>
+    body = `<div class="bm-lab">Pintar suelo <span>Arrastra el dedo · gratis</span></div>
       <div class="bm-sw">${Object.entries(GROUNDS).filter(([id]) => id !== 'snow').map(([id, g]) => `<button class="${tool === id ? 'on' : ''}" data-tool="${id}" aria-pressed="${tool === id}"><i style="background:${g.c}"></i>${g.n}</button>`).join('')}</div>
       <div class="bm-lab">Dar forma</div>
       <div class="bm-tools">${[['raise', 'Relieve', 'Subir 1·2·3'], ['ramp', 'Rampa', 'Une alturas'], ['fall', 'Cascada', 'Sube el agua']].map(([id, l, s]) => `<button class="${tool === id ? 'on' : ''}" data-tool="${id}" aria-pressed="${tool === id}">${TOOL_SVG[id]}<span>${l}<small>${s}</small></span></button>`).join('')}</div>`;
@@ -183,9 +183,9 @@ function buyHTML(k, spot) {
     <div class="bb-hero"><div class="bb-art"><img src="${artThumb(d.art)}" alt=""></div>
       <div><div class="bb-kind">${CATS[d.cat]} · ${d.w}×${d.h}</div><h2>${d.name}</h2><div class="bb-k">${read}</div></div></div>
     <div class="bb-stats"><div><b>${e1}</b><small>${e2}</small></div><div><b>和 +${d.har}</b><small>Armonía</small></div><div><b>${lit ? 'De noche' : d.w + '×' + d.h}</b><small>${lit ? 'se enciende' : 'casillas'}</small></div></div>
-    ${mine.length ? `<div class="bb-own"><span>Ya tenés ${mine.length} en la Mochila</span><button data-place="${mine[0].id}">Usar el mío</button></div>` : ''}
+    ${mine.length ? `<div class="bb-own"><span>Ya tienes ${mine.length} en la Mochila</span><button data-place="${mine[0].id}">Usar el mío</button></div>` : ''}
     <button class="bb-buy" id="bbBuy" ${poor ? 'disabled' : ''}>${poor ? `Faltan ${c - S.ink}` : 'Comprar'} <span>${inkSvg(14)}${c}</span></button>
-    <p class="bb-after">${poor ? 'Conseguí tinta cuidando a tus KANJŪ' : `Te quedan ${S.ink - c} 墨 · ${spot ? 'aparece en la casilla verde' : 'va a tu Mochila: no hay lugar libre'}`}</p>
+    <p class="bb-after">${poor ? 'Consigue tinta cuidando a tus KANJŪ' : `Te quedan ${S.ink - c} 墨 · ${spot ? 'aparece en la casilla verde' : 'va a tu Mochila: no hay lugar libre'}`}</p>
   </div>`;
 }
 // Seleccionado: nombre y acciones debajo del objeto (siguen a la cámara), flechas para arrastrar
@@ -204,7 +204,7 @@ function ctxHTML(it) {
 function miniHTML(it) {
   const name = it.t ? OBJS[it.t].name.toLowerCase() : it.k;
   return `<div class="bm-mini"><span class="bm-grab"></span>
-    <p><b>Moviendo ${it.t ? 'el ' + short(name) : 'a ' + name}</b>Arrastralo a una casilla verde. Tocá afuera para soltarlo.</p>
+    <p><b>Moviendo ${it.t ? 'el ' + short(name) : 'a ' + name}</b>Arrástralo a una casilla verde. Toca afuera para soltarlo.</p>
     <button class="bm-circ" data-a="undo" aria-label="Deshacer" ${selFrom && (selFrom.x !== it.pos.x || selFrom.y !== it.pos.y) ? '' : 'disabled'}>${ic('undo')}</button>
     <button class="bm-circ ok" data-a="x" aria-label="Confirmar">${ic('check')}</button>
   </div>`;
@@ -224,8 +224,8 @@ function bindBuild(stg) {
   $('#undo', stg) && ($('#undo', stg).onclick = () => { const prev = undoStack.pop(); if (!prev) return; S.tiles = JSON.parse(prev); buzz(8); save(); go(); });
   const place = (id, at) => {
     const it = findIt(id);
-    if (it.t ? shownObjs() >= objCap() : !monFits(it)) { buzz(30); return toast(it.t ? `置 La isla ya tiene ${objCap()} objetos · tocá + para ampliarla` : `獣 No quedan plazas para ${it.k} · guardá a otro KANJŪ`); }
-    if (settle(it, at) !== 'grid') { buzz(30); return toast('No hay lugar libre · mové o guardá algo'); }
+    if (it.t ? shownObjs() >= objCap() : !monFits(it)) { buzz(30); return toast(it.t ? `置 La isla ya tiene ${objCap()} objetos · toca + para ampliarla` : `獣 No quedan plazas para ${it.k} · guarda a otro KANJŪ`); }
+    if (settle(it, at) !== 'grid') { buzz(30); return toast('No hay lugar libre · mueve o guarda algo'); }
     it.prodAt ??= Date.now(); pick(it.id); selFrom = null; buzz(12); save(); go();
   };
   // Mochila: tocar lo pone en un lugar libre; arrastrarlo hacia arriba lo suelta en la casilla elegida
@@ -332,7 +332,7 @@ const TOOL_SVG = {
   ramp: '<svg viewBox="0 0 46 46" aria-hidden="true"><path d="M4 40 L42 40 L42 14 Z" fill="#8DBF5E" stroke="#2E2620" stroke-width="2.5" stroke-linejoin="round"/><path d="M14 34 L30 24" stroke="#2E2620" stroke-width="2.5" stroke-linecap="round"/><path d="M24 23 L30 24 L28 30" fill="none" stroke="#2E2620" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   fall: '<svg viewBox="0 0 46 46" aria-hidden="true"><path d="M4 14 H24 V40 H4 Z" fill="#A47D55" stroke="#2E2620" stroke-width="2.5"/><path d="M4 12 H26 V16 H4 Z" fill="#5AA5D2" stroke="#2E2620" stroke-width="2"/><path d="M26 14 C33 16 32 28 33 40" fill="none" stroke="#5AA5D2" stroke-width="6" stroke-linecap="round"/><path d="M24 40 H44" stroke="#5AA5D2" stroke-width="4" stroke-linecap="round"/></svg>',
 };
-const TOOL_HINT = { move: 'Tocá un objeto o KANJŪ para moverlo, guardarlo o mejorarlo', raise: 'Tocá una casilla para subirla; en la cima vuelve a llano', ramp: 'Tocá una casilla al pie de una colina', fall: 'Tocá agua para subirla; cae por los bordes más bajos' };
+const TOOL_HINT = { move: 'Toca un objeto o KANJŪ para moverlo, guardarlo o mejorarlo', raise: 'Toca una casilla para subirla; en la cima vuelve a llano', ramp: 'Toca una casilla al pie de una colina', fall: 'Toca agua para subirla; cae por los bordes más bajos' };
 function bindDock(v) {
   if (placing) { $('#cancelPlace', v).onclick = () => { placing = null; go(); }; }
   else {
@@ -357,7 +357,7 @@ function viewHome2d(v) {
       </div>
       ${S.rows < BASE_ROWS + ROW_COSTS.length ? `<button class="expand-row" id="expandRow">＋ Expandir terreno · ${ROW_COSTS[S.rows - BASE_ROWS]} 墨 · Rango ${ROW_RANK[S.rows - BASE_ROWS]}</button>` : ''}
     </div>
-    ${placing ? `<div class="place-bar">Tocá dónde colocar <b>${placing.t ? OBJS[placing.t].k : placing.k}</b><button class="btn ghost" id="cancelPlace">Cancelar</button></div>` : `
+    ${placing ? `<div class="place-bar">Toca dónde colocar <b>${placing.t ? OBJS[placing.t].k : placing.k}</b><button class="btn ghost" id="cancelPlace">Cancelar</button></div>` : `
     <div class="dock">
       <button class="dk ${tilesUsed() >= tilesTotal() ? 'full' : ''}" id="build"><i>${build ? '✓' : '匠'}</i><span>${build ? 'Listo' : 'Construir'}</span></button>
       <button class="dk" id="store"><i>蔵</i><span>${stored().length}/${S.storeCap}</span>${S.gate.length ? `<b>${S.gate.length}</b>` : ''}</button>
@@ -399,7 +399,7 @@ export function itemHTML(it) {
 }
 export function harvest(list, el) {
   let sum = 0; list.forEach(it => sum += gather(it));
-  if (!sum) return toast('Todavía no hay tinta para recoger · entrená para inspirar a tus KANJŪ');
+  if (!sum) return toast('Todavía no hay tinta para recoger · entrena para inspirar a tus KANJŪ');
   const ups = addXP(sum / 10); buzz([8, 30, 8]); emit('harvest'); floatText(el, `+${sum} 墨`); hud(); go();
   if (ups.length) rankUp(ups);
 }
@@ -449,8 +449,8 @@ export function markValid(grid) {
 export function tapCell(x, y, el) {
   if (!placing) return;
   const [w, h] = foot(placing);
-  if (!fits(w, h, x, y, placing)) { if (el) { el.classList.add('no'); setTimeout(() => el.classList.remove('no'), 300); } else toast('No entra ahí · elegí una casilla marcada'); buzz(30); return; }
-  if (!placing.pos && (placing.t ? shownObjs() >= objCap() : !monFits(placing))) { toast(placing.t ? `置 La isla ya tiene ${objCap()} objetos · ampliala en 匠` : `獣 Ocupa ${slot(placing)} plazas y quedan ${monCap() - shownMons()} · guardá uno o ampliá la isla`); buzz(30); return; }
+  if (!fits(w, h, x, y, placing)) { if (el) { el.classList.add('no'); setTimeout(() => el.classList.remove('no'), 300); } else toast('No entra ahí · elige una casilla marcada'); buzz(30); return; }
+  if (!placing.pos && (placing.t ? shownObjs() >= objCap() : !monFits(placing))) { toast(placing.t ? `置 La isla ya tiene ${objCap()} objetos · amplíala en 匠` : `獣 Ocupa ${slot(placing)} plazas y quedan ${monCap() - shownMons()} · guarda uno o amplía la isla`); buzz(30); return; }
   const it = placing; it.pos = { x, y }; it.prodAt ??= Date.now(); placing = null; buzz(12); go();
   const near = neighbors(it).map(o => OBJS[o.t].k).join(' ');
   if (!it.t && near) toast(`${it.k} recibe el aura de ${near}`);
@@ -458,7 +458,7 @@ export function tapCell(x, y, el) {
 export function buyRow() {
   const nx = ISLANDS[(S.island || 0) + 1], r = buyIsland();
   if (r === 'max') return toast('Tu isla ya es la más grande');
-  if (r === 'rank') return toast(`${nx.name}: necesitás rango ${nx.rank}`);
+  if (r === 'rank') return toast(`${nx.name}: necesitas rango ${nx.rank}`);
   if (r === 'ink') return toast(`Te faltan ${nx.cost - S.ink} 墨 para la ${nx.name}`);
   buzz([20, 60, 20]); hud(); toast(`拡 ¡${island().name} ${S.cols}×${S.rows}! Más lugar para KANJŪ y objetos`); go();
 }
@@ -470,17 +470,17 @@ export function openStorage(tab) {
 }
 export const storeTabNow = () => storeTab, setStoreTab = t => storeTab = t;
 export const CONSUMABLES = [
-  { id: 'scroll', k: '巻', name: 'Pergamino de saber', use: '+60 EXP: usalo desde la ficha de una criatura' },
-  { id: 'wind', k: '風', name: 'Viento veloz', use: 'Termina un viaje al instante: usalo en 旅 Viajes' },
+  { id: 'scroll', k: '巻', name: 'Pergamino de saber', use: '+60 EXP: úsalo desde la ficha de una criatura' },
+  { id: 'wind', k: '風', name: 'Viento veloz', use: 'Termina un viaje al instante: úsalo en 旅 Viajes' },
 ];
 export function storedMenu(it, parent) {
   const isObj = !!it.t, egg = !!it.egg, spot = findSpot(...foot(it));
   const capOk = isObj ? shownObjs() < objCap() : monFits(it);
   const free = monCap() - shownMons();
-  const why = !capOk ? (isObj ? `La isla ya tiene ${objCap()} objetos. Guardá uno o ampliá la isla.` : `Ocupa ${slot(it)} ${slot(it) === 1 ? 'plaza' : 'plazas'} y en la isla quedan ${free} de ${monCap()}. Guardá uno o ampliá la isla.`)
-    : spot ? '' : 'No hay lugar libre de ese tamaño. Ampliá la isla o guardá algo.';
+  const why = !capOk ? (isObj ? `La isla ya tiene ${objCap()} objetos. Guarda uno o amplía la isla.` : `Ocupa ${slot(it)} ${slot(it) === 1 ? 'plaza' : 'plazas'} y en la isla quedan ${free} de ${monCap()}. Guarda uno o amplía la isla.`)
+    : spot ? '' : 'No hay lugar libre de ese tamaño. Amplía la isla o guarda algo.';
   const m = modal(`<h3>${isObj ? `${OBJS[it.t].k} ${OBJS[it.t].name}` : egg ? '卵 Huevo misterioso' : `${it.k} · ${KANJI[it.k].m}`}</h3>
-    ${egg ? '<p class="muted">Colocalo en la isla y tocalo 3 veces para que nazca.</p>' : isObj ? '' : `<p class="muted">${gradeTag(it.k)} · ocupa ${slot(it)} ${slot(it) === 1 ? 'plaza' : 'plazas'} (${monCap() - shownMons()} libres)</p>`}
+    ${egg ? '<p class="muted">Colócalo en la isla y tócalo 3 veces para que nazca.</p>' : isObj ? '' : `<p class="muted">${gradeTag(it.k)} · ocupa ${slot(it)} ${slot(it) === 1 ? 'plaza' : 'plazas'} (${monCap() - shownMons()} libres)</p>`}
     <div class="menu-acts">
     <button class="btn ok" id="put" ${spot && capOk ? '' : 'disabled'}>✥ Colocar en la isla</button>
     ${isObj ? `<button class="btn ghost" id="sell">Vender · +${sellValue(it)} 墨</button>` : egg ? '' : `<button class="btn ghost" id="see">Ver ficha</button><button class="btn ghost" id="free" ${S.creatures.filter(c => !c.egg).length <= 1 ? 'disabled' : ''}>放 Liberar</button>`}</div>
@@ -494,7 +494,7 @@ export function rankUp(ups) {
   const r = ups[ups.length - 1];
   const m = modal(`<div class="result rank-up"><div class="rank-badge">位<b>${r}</b></div><h3>¡Rango ${r}!</h3>
     <p>+${ups.reduce((a, l) => a + 20 + l * 10, 0)} 墨 · +${ups.length} 札</p>
-    ${ISLANDS.some(i => i.rank === r) ? `<p class="g">拡 Ya podés ampliar a la ${ISLANDS.find(i => i.rank === r).name} desde 匠 Construir</p>` : ''}
+    ${ISLANDS.some(i => i.rank === r) ? `<p class="g">拡 Ya puedes ampliar a la ${ISLANDS.find(i => i.rank === r).name} desde 匠 Construir</p>` : ''}
     ${Object.values(OBJS).filter(o => o.rank === r).map(o => `<p class="g">Nuevo objeto en la tienda: ${o.k} ${o.name}</p>`).join('')}
     <button class="btn ok wide">¡Genial!</button></div>`);
   buzz([20, 60, 20]); $('.btn', m).onclick = () => m.close();
@@ -504,22 +504,22 @@ export function rankUp(ups) {
 export function goalHTML() {
   const cs = S.creatures.filter(c => !c.egg);
   let g;
-  if (S.creatures.some(c => c.egg)) g = 'Tocá el huevo 3 veces para que nazca';
+  if (S.creatures.some(c => c.egg)) g = 'Toca el huevo 3 veces para que nazca';
   else if (!Object.keys(S.lex).length) g = t('guide.firstWord');
   else if (pathReady()) g = t('guide.pathReady');
-  else if (totalPending() >= 20) g = `Tus KANJŪ produjeron ${totalPending()} 墨 · tocá 収 para recoger`;
+  else if (totalPending() >= 20) g = `Tus KANJŪ produjeron ${totalPending()} 墨 · toca 収 para recoger`;
   else if (S.gate.length) g = 'Almacén lleno: hay KANJŪ esperando en la puerta';
-  else if (S.tickets) g = `Tenés ${S.tickets} 札: invocá en el altar de la Tienda`;
-  else if (!S.objs.length && S.ink >= 40) g = 'Comprá una 硯 Piedra de tinta en la Tienda para producir más';
-  else if (allDue() >= 3) g = `${allDue()} cosas para repasar hoy · tocá 修 Repaso`;
+  else if (S.tickets) g = `Tienes ${S.tickets} 札: invoca en el altar de la Tienda`;
+  else if (!S.objs.length && S.ink >= 40) g = 'Compra una 硯 Piedra de tinta en la Tienda para producir más';
+  else if (allDue() >= 3) g = `${allDue()} cosas para repasar hoy · toca 修 Repaso`;
   else if (S.creatures.some(c => c.away && Date.now() >= c.away.end)) g = 'Una criatura volvió de su expedición';
   else {
     const ready = cs.find(c => evolutionsOf(c.k).some(t => c.lv >= evoLevel(t)));
     const fuseOk = Object.keys(KANJI).find(t => !S.dex[t]?.owned && KANJI[t].recipes?.some(r => r.every(k => cs.filter(c => c.k === k && !c.away).length >= r.filter(x => x === k).length)));
-    if (fuseOk) g = 'Tenés lo necesario para una fusión en 錬';
-    else if (ready) g = `${ready.k} puede evolucionar · abrí su ficha`;
-    else if (!S.creatures.some(c => c.away) && owned() < 3) g = 'Enviá una criatura de expedición para encontrar nuevos kanji';
-    else { const c = cs.sort((a, b) => b.lv - a.lv)[0]; const t = c && evolutionsOf(c.k)[0]; g = t ? `Entrená a ${c.k} hasta Lv ${evoLevel(t)}` : 'Llevá una criatura a Lv MAX para renacer'; }
+    if (fuseOk) g = 'Tienes lo necesario para una fusión en 錬';
+    else if (ready) g = `${ready.k} puede evolucionar · abre su ficha`;
+    else if (!S.creatures.some(c => c.away) && owned() < 3) g = 'Envía una criatura de expedición para encontrar nuevos kanji';
+    else { const c = cs.sort((a, b) => b.lv - a.lv)[0]; const t = c && evolutionsOf(c.k)[0]; g = t ? `Entrena a ${c.k} hasta Lv ${evoLevel(t)}` : 'Lleva una criatura a Lv MAX para renacer'; }
   }
   return `<button class="goal" aria-label="Objetivo">${ic('target')}<span>${g}</span></button>`;
 }

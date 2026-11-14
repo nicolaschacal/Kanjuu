@@ -4,7 +4,7 @@ self.addEventListener('install', e => e.waitUntil(caches.open(C).then(c => c.add
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== C).map(k => caches.delete(k))))));
 self.addEventListener('fetch', e => e.request.method === 'GET' && !e.request.url.includes('/api/') && e.respondWith(fetch(e.request, { cache: 'no-cache' }).then(r => { const cp = r.clone(); caches.open(C).then(c => c.put(e.request, cp)); return r; }).catch(() => caches.match(e.request))));
 // Idiomas (S1-01): se suman aparte para no chocar con otros cambios de la lista
-FILES.push('js/i18n.js', 'locales/es.json', 'locales/en.json');
+FILES.push('js/i18n.js', 'locales/es.json');
 // Analítica de la Academia (S1-02)
 FILES.push('js/analytics.js');
 // Favicon de la cara en PNG (para navegadores sin SVG)

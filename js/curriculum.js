@@ -602,7 +602,7 @@ export function checkCurriculum() {
     if (extraIds.has(p.id) || PHRASES.some(q => q.id === p.id)) errs.push(`EXTRA ${p.id}: id repetido`);
     extraIds.add(p.id);
     if (!/^c_[a-z0-9]+$/.test(p.id)) errs.push(`EXTRA ${p.id}: el id debe empezar con c_`);
-    if (!p.es || !p.en) errs.push(`EXTRA ${p.id}: falta traducción`);
+    if (!p.es) errs.push(`EXTRA ${p.id}: falta traducción`);
     if (p.pat !== null && !pats.has(p.pat)) errs.push(`EXTRA ${p.id}: patrón desconocido ${p.pat}`);
     const words = p.ids.map(id => lex[id]);
     p.ids.forEach((id, i) => { if (!words[i]) errs.push(`EXTRA ${p.id}: la palabra ${id} no existe en LEX`); });
@@ -626,7 +626,7 @@ export function checkCurriculum() {
     if (!stages.has(s.stage)) errs.push(`${where}: etapa desconocida ${s.stage}`);
     if (si < prevStage) errs.push(`${where}: fuera del orden de etapas`);
     prevStage = si;
-    for (const f of ['title', 'cando', 'intro']) if (!s[f]?.es || !s[f]?.en) errs.push(`${where}: falta ${f}`);
+    for (const f of ['title', 'cando', 'intro']) if (!s[f]?.es) errs.push(`${where}: falta ${f}`);
     if (s.words.length < 8 || s.words.length > 20) errs.push(`${where}: ${s.words.length} palabras núcleo (se esperan 8–20)`);
     const minP = s.stage === 'e0' ? 2 : 3;
     if (s.phrases.length < minP) errs.push(`${where}: ${s.phrases.length} frases (mínimo ${minP})`);
@@ -673,7 +673,7 @@ export function checkCurriculum() {
     const d = TALKS[s.id], where = `Diálogo ${s.id}`;
     if (!d) { errs.push(`${where}: falta`); continue; }
     if (!KANJI[d.who]) errs.push(`${where}: ${d.who} no está en el roster`);
-    if (!d.es || !d.en || !d.hint?.es || !d.hint?.en) errs.push(`${where}: falta traducción o pista`);
+    if (!d.es || !d.hint?.es) errs.push(`${where}: falta traducción o pista`);
     if (!Array.isArray(d.opts) || d.opts.length !== 3) errs.push(`${where}: se esperan 3 respuestas`);
     [d, ...(d.opts || [])].forEach((x, i) => {
       tokOk(`${where}${i ? `, respuesta ${i}` : ''}`, x.ja, x.ids);

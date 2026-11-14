@@ -99,7 +99,7 @@ export const KANJI = {
   '延': { m: 'extender', on: ['エン'], kun: ['の(びる)'], recipes: [['正', '廴']], form: 'envolvente', note: 'en KanjiVG la parte izquierda figura como 正', mn: 'Seguir el camino largo sin detenerse: extender.' },
   '喿': { m: 'piar de pájaros', on: ['ソウ'], kun: [], recipes: [['品', '木']], form: 'arriba-abajo', note: 'carácter componente, casi no se usa solo', mn: 'Tres bocas sobre un árbol: pájaros cantando en las ramas.' },
   '禁': { m: 'prohibir', on: ['キン'], kun: [], recipes: [['林', '示']], form: 'arriba-abajo', mn: 'Una arboleda sagrada sobre un altar: está prohibido entrar.' },
-  '意': { m: 'intención · mente', on: ['イ'], kun: [], recipes: [['音', '心']], form: 'arriba-abajo', mn: 'El sonido del corazón: lo que querés decir.' },
+  '意': { m: 'intención · mente', on: ['イ'], kun: [], recipes: [['音', '心']], form: 'arriba-abajo', mn: 'El sonido del corazón: lo que quieres decir.' },
   '薪': { m: 'leña', on: ['シン'], kun: ['たきぎ'], recipes: [['艸', '新']], form: 'arriba-abajo', note: '艸 aparece como 艹', mn: 'Hierba sobre madera recién cortada: leña.' },
   // — Composición compleja (nivel 4) —
   '操': { m: 'manejar', on: ['ソウ'], kun: ['あやつ(る)', 'みさお'], recipes: [['手', '喿']], form: 'izquierda-derecha', note: '手 aparece como 扌', mn: 'Una mano que controla el alboroto de los pájaros: manejar.' },

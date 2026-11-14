@@ -145,9 +145,10 @@ Después: A-06 (implementar A-02), A-07 (combate de examen y dorado), A-08 a A-1
 ---
 
 ## Próximos sprints (tentativo; se confirma en cada planificación)
+Cancelado por Nicolás el 13 de noviembre de 2026: el juego queda solo en español neutro (sin inglés) y sin Academia. Los sprints de idiomas tachados ya no se hacen.
 Decidido por Nicolás el 10 de noviembre de 2026: la parte educativa (Academia, lecciones, ejercicios, cursos) se traduce y se rediseña en su propio sprint, porque también va a cambiar. El resto de los idiomas va antes.
-- **Sprint 3 · Idiomas, etapa 2:** textos del menú interno (cada hoja, tienda, altar, Arena, Fusión, Viajes, mensajes y avisos), nombres y descripciones de los 101 KANJŪ y de sus piezas, en español e inglés. Sin Academia
-- **Sprint 4 · Academia en dos idiomas:** traducción y ajustes de lecciones, ejercicios, cursos, Dojo y lecturas; la IA (cuentos y explicaciones) recibe el idioma del jugador
+- ~~**Sprint 3 · Idiomas, etapa 2:** textos del menú interno (cada hoja, tienda, altar, Arena, Fusión, Viajes, mensajes y avisos), nombres y descripciones de los 101 KANJŪ y de sus piezas, en español e inglés. Sin Academia~~
+- ~~**Sprint 4 · Academia en dos idiomas:** traducción y ajustes de lecciones, ejercicios, cursos, Dojo y lecturas; la IA (cuentos y explicaciones) recibe el idioma del jugador~~
 - **Sprint 5 · Academia, contenido nuevo:** cada unidad termina desbloqueando un kanji; ejercicio de armar frases tocando tarjetas; mapa de unidades si se aprobó (S1-05)
 - **Sprint 6:** volver a simular la economía con 293 kanji y la Arena
 - **Sprint 7:** telemetría de economía y validación de partida en el servidor; recompensa de regreso
