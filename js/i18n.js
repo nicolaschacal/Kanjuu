@@ -1,13 +1,13 @@
 // KANJŪ · i18n.js — textos de la interfaz en varios idiomas
 // t('clave', { n, ... }) busca en el idioma actual y cae al español neutro si falta.
 // Una entrada puede ser un texto o un objeto de plurales ({ one, other, ... }) elegido con Intl.PluralRules según vars.n.
-// Idiomas: español neutro con tú (base) e inglés. Sin variantes regionales por ahora.
+// Idioma: solo español neutro con tú (decidido por Nicolás el 13 de noviembre de 2026). La estructura queda para
+// poder sumar idiomas más adelante: alcanza con agregar una entrada en LANGS y su archivo en locales/.
 import { S, save } from './state.js';
 
 // Nombre de cada idioma en su propio idioma, código para Intl y de qué idioma hereda.
 export const LANGS = [
   { id: 'es', name: 'Español', intl: 'es', base: null },
-  { id: 'en', name: 'English', intl: 'en', base: 'es' },
 ];
 const info = id => LANGS.find(l => l.id === id);
 const D = {};
@@ -19,8 +19,7 @@ await Promise.all(LANGS.map(async l => {
 export function detect(list = navigator.languages?.length ? navigator.languages : [navigator.language || 'es']) {
   for (const raw of list) {
     const [l] = String(raw).split(/[-_]/);
-    if (l === 'es') return 'es';
-    if (l === 'en') return 'en';
+    if (info(l)) return l;
   }
   return 'es';
 }

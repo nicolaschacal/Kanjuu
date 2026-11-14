@@ -115,7 +115,7 @@ export const rr = r => helpOn() && r ? `${r}<i class="rmj">${romaji(r)}</i>` : r
 export const LESSONS = [
   { k: '字', t: '¿Qué es un kanji?', ink: 15, body: `<p>El japonés mezcla tres escrituras:</p>
     <ul><li><b>Kanji</b> (漢字): signos con significado, como <b>木</b> = árbol.</li><li><b>Hiragana</b> (ひらがな): sonidos para gramática y lecturas.</li><li><b>Katakana</b> (カタカナ): sonidos para palabras extranjeras… ¡y para las lecturas 音!</li></ul>
-    <p>En KANJŪ cada kanji es una criatura. No hace falta saber japonés: aprendés jugando.</p>` },
+    <p>En KANJŪ cada kanji es una criatura. No hace falta saber japonés: aprendes jugando.</p>` },
   { k: '音', t: 'Las dos lecturas: 音 y 訓', ink: 20, body: `<p>Casi todo kanji tiene dos tipos de lectura:</p>
     <ul><li><b>音 on</b>: lectura de origen chino, escrita en katakana. 木 → モク (<i>moku</i>).</li><li><b>訓 kun</b>: lectura japonesa, escrita en hiragana. 木 → き (<i>ki</i>).</li></ul>
     <p>Truco: solo, un kanji suele usar 訓 (木 = <i>ki</i>, árbol). En palabras compuestas suele usar 音 (森林 = <i>shinrin</i>, bosque).</p>` },
@@ -123,16 +123,16 @@ export const LESSONS = [
     <div class="kana-row"><span>か<i>ka</i></span><span>き<i>ki</i></span><span>く<i>ku</i></span><span>け<i>ke</i></span><span>こ<i>ko</i></span></div>
     <div class="kana-row"><span>カ<i>ka</i></span><span>キ<i>ki</i></span><span>ク<i>ku</i></span><span>ケ<i>ke</i></span><span>コ<i>ko</i></span></div>
     <p>Arriba hiragana, abajo katakana: mismo sonido, distinta forma. En el Dojo vas a encontrar el <b>entrenador de kana</b> con los sonidos de tus criaturas.</p>` },
-  { k: '組', t: 'Los kanji se arman con piezas', ink: 20, body: `<p>Muchos kanji combinan otros más simples. Por eso podés <b>fusionar</b> criaturas:</p>
+  { k: '組', t: 'Los kanji se arman con piezas', ink: 20, body: `<p>Muchos kanji combinan otros más simples. Por eso puedes <b>fusionar</b> criaturas:</p>
     <div class="kana-row"><span>木</span><em>+</em><span>木</span><em>=</em><span>林</span><em>+</em><span>木</span><em>=</em><span>森</span></div>
-    <p>Árbol + árbol = arboleda. Arboleda + árbol = bosque. Si reconocés las piezas, adivinás el significado de kanji nuevos.</p>` },
+    <p>Árbol + árbol = arboleda. Arboleda + árbol = bosque. Si reconoces las piezas, adivinas el significado de kanji nuevos.</p>` },
   { k: '部', t: 'Kanji con piezas', ink: 15, body: `<p>Muchos kanji llevan <b>piezas</b> (部品) que casi nunca aparecen solas, como 宀 <i>techo</i> o 儿 <i>piernas</i>.</p>
     <div class="kana-row"><span>宀</span><em>+</em><span>子</span><em>=</em><span>字</span></div>
-    <p>Techo + niño = <b>letra</b>: un niño estudiando bajo techo. En KANJŪ las piezas son <b>accesorios</b>: se los equipás a una criatura para que evolucione, o los sumás en el laboratorio de fusión.</p>
-    <p>Las conseguís en la Tienda, en los viajes y completando estas lecciones.</p>` },
+    <p>Techo + niño = <b>letra</b>: un niño estudiando bajo techo. En KANJŪ las piezas son <b>accesorios</b>: se los equipas a una criatura para que evolucione, o los sumas en el laboratorio de fusión.</p>
+    <p>Las consigues en la Tienda, en los viajes y completando estas lecciones.</p>` },
   { k: '語', t: 'Palabras con dos kanji', ink: 25, body: `<p>Juntando kanji se forman palabras: <b>日</b> (sol) + <b>本</b> (origen) = <b>日本</b> <i>nihon</i>, Japón: "el origen del sol".</p>
     <p>El juego Palabra 語 te entrena en esto. Leer las piezas te da una pista del significado.</p>
-    <p>Para recordar mejor: escribí tu propia historia en la ficha de cada criatura (知).</p>` },
+    <p>Para recordar mejor: escribe tu propia historia en la ficha de cada criatura (知).</p>` },
 ];
 export const lessonsNew = () => LESSONS.filter((_, i) => !(S.lessons || []).includes(i)).length;
 export function openAcademy(modal, toast, hud, kana) {

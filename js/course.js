@@ -74,7 +74,7 @@ export const UNITS = [
     { id: 'g1', type: 'phrase', name: 'Saludos', tip: `<p>Saludos básicos. Ojo: en <b>こんにちは</b> la última は se lee <b>wa</b>, porque originalmente era una partícula.</p>`,
       vocab: [['おはよう ございます', 'buenos días'], ['こんにちは', 'hola / buenas tardes'], ['こんばんは', 'buenas noches'], ['ありがとう', 'gracias'], ['すみません', 'perdón / disculpe'], ['さようなら', 'adiós']],
       sents: [] },
-    { id: 'g2', type: 'phrase', name: 'Yo soy…', tip: `<p>La frase básica es <b>A は B です</b> = "A es B".</p><p><b>は</b> marca el tema y se lee <b>wa</b>. <b>です</b> es como "es / soy", cortés.</p><p>Para preguntar, agregá <b>か</b> al final: がくせい です か = ¿es estudiante?</p>`,
+    { id: 'g2', type: 'phrase', name: 'Yo soy…', tip: `<p>La frase básica es <b>A は B です</b> = "A es B".</p><p><b>は</b> marca el tema y se lee <b>wa</b>. <b>です</b> es como "es / soy", cortés.</p><p>Para preguntar, agrega <b>か</b> al final: がくせい です か = ¿es estudiante?</p>`,
       vocab: [['わたし', 'yo'], ['がくせい', 'estudiante'], ['せんせい', 'profesor'], ['にほんじん', 'japonés (persona)'], ['はい', 'sí'], ['いいえ', 'no']],
       sents: [['わたし は がくせい です', 'Yo soy estudiante'], ['せんせい は にほんじん です', 'El profesor es japonés'], ['がくせい です か', '¿Es estudiante?'], ['はい、 がくせい です', 'Sí, soy estudiante']],
       blanks: [['わたし _ がくせい です', 'は', 'Yo soy estudiante'], ['がくせい です _', 'か', '¿Es estudiante?']] },
@@ -143,7 +143,7 @@ export const STORIES = [
   { kanji: ['星', '月', '明', '目', '日'], lines: [
     ['きのう の よる、 星{ほし} を みました。', 'Anoche miré las estrellas.'],
     ['月{つき} も 明{あか}るかった です。', 'La luna también estaba brillante.'],
-    ['目{め} を とじて、 ねがいごと を しました。', 'Cerré los ojos y pedí un deseo.'],
+    ['目{め} を とじて、 ねがいごと を しました。', 'Cerré los ojos y pide un deseo.'],
     ['明日{あした} も いい 日{ひ} です。', 'Mañana también será un buen día.'],
   ], qs: [['¿Qué miró anoche?', 'Las estrellas', ['El mar', 'Un libro']], ['¿Qué hizo al cerrar los ojos?', 'Pidió un deseo', ['Se durmió', 'Comió']]] },
   { kanji: ['古', '本', '十', '木', '枯'], lines: [

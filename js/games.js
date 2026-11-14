@@ -10,11 +10,11 @@ const pick = a => a[Math.floor(Math.random() * a.length)];
 const h = (html) => { const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; };
 
 export const GAMES = {
-  trace: { name: 'Trazo', k: '書', desc: 'Escribilo en el orden correcto' },
-  bubbles: { name: 'Lecturas', k: '読', desc: 'Atrapá sus lecturas' },
-  word: { name: 'Palabra', k: '語', desc: 'Completá la palabra' },
-  parts: { name: 'Ensamblar', k: '組', desc: 'Construí el kanji con sus piezas' },
-  listen: { name: 'Escuchar', k: '聴', desc: 'Oí la lectura y elegí el kanji' },
+  trace: { name: 'Trazo', k: '書', desc: 'Escríbelo en el orden correcto' },
+  bubbles: { name: 'Lecturas', k: '読', desc: 'Atrapa sus lecturas' },
+  word: { name: 'Palabra', k: '語', desc: 'Completa la palabra' },
+  parts: { name: 'Ensamblar', k: '組', desc: 'Construye el kanji con sus piezas' },
+  listen: { name: 'Escuchar', k: '聴', desc: 'Escucha la lectura y elige el kanji' },
 };
 export const hasParts = k => !!KANJI[k].recipes;
 
@@ -55,7 +55,7 @@ function trace(k, know, body, end) {
   const strokes = STROKES[k];
   if (!strokes?.length) return end(-1);
   const NS = 'http://www.w3.org/2000/svg';
-  body.innerHTML = `<p class="hint">Escribí <b>${k}</b> · ${KANJI[k].m} <span class="sc">Trazo <b>1</b>/${strokes.length}</span></p>
+  body.innerHTML = `<p class="hint">Escribe <b>${k}</b> · ${KANJI[k].m} <span class="sc">Trazo <b>1</b>/${strokes.length}</span></p>
     <svg class="pad stroke-pad" viewBox="0 0 109 109"><g class="grid-l"><line x1="54.5" y1="0" x2="54.5" y2="109"/><line x1="0" y1="54.5" x2="109" y2="54.5"/></g>
     <g class="guide">${know < 3 ? strokes.map(d => `<path d="${d}"/>`).join('') : ''}</g><g class="done"></g><g class="hintg"></g><path class="ink" d=""/></svg>
     <div class="row"><button class="btn ghost demo">▶ Ver orden</button></div>`;
@@ -116,7 +116,7 @@ function bubbles(k, know, body, end) {
   const others = shuffle(Object.keys(KANJI).filter(x => x !== k).flatMap(x => reads(x)).filter(r => !reads(k).includes(r)));
   const pool = shuffle([...good, ...good, ...others.slice(0, 4 + know * 2)]);
   const total = good.length * 2, time = Math.max(7, 12 - know);
-  body.innerHTML = `<p class="hint">Tocá las lecturas de <b class="big">${k}</b></p><div class="pond"></div><div class="timer"><i></i></div>`;
+  body.innerHTML = `<p class="hint">Toca las lecturas de <b class="big">${k}</b></p><div class="pond"></div><div class="timer"><i></i></div>`;
   const pond = body.querySelector('.pond'), bar = body.querySelector('.timer i');
   let score = 0, caught = 0, over = false;
   pool.forEach((r, i) => {
@@ -138,7 +138,7 @@ function word(k, know, body, end) {
   const known = Object.keys(S.dex).filter(x => x !== k);
   const opts = shuffle([k, ...shuffle(known.length >= 3 ? known : Object.keys(KANJI).filter(x => x !== k)).slice(0, 3)]);
   const masked = w[0].replace(k, '<span class="blank">？</span>');
-  body.innerHTML = `<p class="hint">Completá la palabra</p><div class="word">${masked}</div>
+  body.innerHTML = `<p class="hint">Completa la palabra</p><div class="word">${masked}</div>
     <p class="reading">${know < 3 ? w[1] + ' · ' : ''}${w[2]}</p><div class="opts">${opts.map(o => `<button class="opt">${o}</button>`).join('')}</div>`;
   let tries = 0;
   body.querySelectorAll('.opt').forEach(b => b.onclick = () => {
@@ -155,7 +155,7 @@ function parts(k, know, body, end) {
   const fundamentals = Object.keys(KANJI).filter(x => !rec.includes(x));
   const tiles = shuffle([...rec, ...shuffle(fundamentals).slice(0, 3 + Math.min(3, know))]);
   let picked = [], mistakes = 0;
-  body.innerHTML = `<p class="hint">Construí el kanji de <b>«${KANJI[k].m}»</b></p>
+  body.innerHTML = `<p class="hint">Construye el kanji de <b>«${KANJI[k].m}»</b></p>
     <div class="target ${know < 2 ? 'peek' : ''}">${know < 2 ? k : '？'}</div>
     <div class="slots-row">${rec.map(() => '<span class="pslot"></span>').join('<em>+</em>')}</div>
     <div class="tiles">${tiles.map((t, i) => `<button class="tile" data-i="${i}">${t}<small>${(KANJI[t] || PIECES[t]).m}</small></button>`).join('')}</div>`;
@@ -230,7 +230,7 @@ export function review(list, root, onGrade) {
           b.classList.add('wrong'); [...body.querySelectorAll('.opt')].find(x => x.textContent === correct)?.classList.add('right');
           if (!item.retry) { res.wrong++; onGrade(k, false); queue.push({ k, retry: true }); }
           setTimeout(() => {
-            body.innerHTML = `<p class="hint">Recordalo así</p>${storyHTML(k)}<button class="btn ok wide">Entendido</button>`;
+            body.innerHTML = `<p class="hint">Recuérdalo así</p>${storyHTML(k)}<button class="btn ok wide">Entendido</button>`;
             body.querySelector('.btn').onclick = next;
           }, 700);
         }

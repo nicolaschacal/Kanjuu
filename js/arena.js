@@ -42,7 +42,7 @@ export function study(n) {
   c.pts = Math.min(CHESTS[c.t].need, c.pts + n);
 }
 
-// Estadísticas de combate: el nivel, el rango KANJŪ, las estrellas y lo que sabés del kanji importan
+// Estadísticas de combate: el nivel, el rango KANJŪ, las estrellas y lo que sabes del kanji importan
 export function stats(c) {
   const L = kLevel(c.k), m = c.enemy ? c.m : mastery(c.k);
   return {
@@ -62,16 +62,16 @@ export function viewArena(v) {
   const a = A(), ar = arenaOf(a.cups), i = ARENAS.indexOf(ar), next = ARENAS[i + 1];
   const team = myTeam(), pend = ROAD.filter(r => a.best >= r.at && !a.road.includes(r.at));
   v.innerHTML = `<div class="arena">
-    ${scrHead('闘', 'Arena', 'Duelos de kanji: ganá copas y abrí cofres estudiando', `<span class="pill-w">${ic('trophy')}<b>${a.cups}</b></span>`)}
+    ${scrHead('闘', 'Arena', 'Duelos de kanji: gana copas y abre cofres estudiando', `<span class="pill-w">${ic('trophy')}<b>${a.cups}</b></span>`)}
     <div class="arena-card" style="--i:${i}">
       <span class="ak">${ar.k}</span><div><small>Arena ${i + 1}</small><b>${ar.name}</b>
       <div class="cups">${ic('trophy')} ${a.cups}${next ? `<div class="tbar"><i style="width:${(a.cups - ar.min) / (next.min - ar.min) * 100}%"></i></div><small>${next.min - a.cups} para ${next.name}</small>` : ''}</div></div>
     </div>
-    <div class="team-pick"><h4>Tu equipo <small>los 3 KANJŪ más fuertes · tocá para cambiar</small></h4>
-      <div class="team">${team.map(c => cardHTML(c, false, 'data-swap="' + c.id + '"')).join('') || '<p class="muted">Necesitás al menos 1 KANJŪ.</p>'}</div></div>
+    <div class="team-pick"><h4>Tu equipo <small>los 3 KANJŪ más fuertes · toca para cambiar</small></h4>
+      <div class="team">${team.map(c => cardHTML(c, false, 'data-swap="' + c.id + '"')).join('') || '<p class="muted">Necesitas al menos 1 KANJŪ.</p>'}</div></div>
     <button class="btn ok wide battle-btn" id="fight" ${team.length ? '' : 'disabled'}>闘 ¡A combatir!</button>
     <p class="muted center">Cada ataque es un desafío del kanji de tu KANJŪ. Los tipos 五行 deciden quién es fuerte contra quién.</p>
-    <h4>箱 Cofres <small>se abren estudiando: cada acierto en el Repaso, la Academia o entrenando suma</small></h4>
+    <h4>箱 Cofres <small>se abren estudiando: cada acierto en el Repaso o en un entrenamiento suma</small></h4>
     <div class="chests">${Array.from({ length: SLOTS }, (_, j) => {
       const c = a.chests[j]; if (!c) return '<div class="chest empty">vacío</div>';
       const d = CHESTS[c.t], ready = c.pts >= d.need;
@@ -151,9 +151,9 @@ export function startDuel(opts = {}) {
     const ef = target();
     w.innerHTML = `<div class="duel-head"><span>${rival}${ex ? '' : ` · 杯${Math.max(0, a.cups + Math.round(Math.random() * 60 - 30))}`}</span><button class="x">✕</button></div>
       <div class="side foes">${foes.map((f, j) => unit(f, true, f === ef)).join('')}</div>
-      <div class="duel-mid"><p>${msg || 'Elegí un rival y quién ataca'}</p>${meters()}</div>
+      <div class="duel-mid"><p>${msg || 'Elige un rival y quién ataca'}</p>${meters()}</div>
       <div class="side mine">${mine.map(f => unit(f, false)).join('')}</div>`;
-    w.querySelector('.x').onclick = () => { if (confirm(ex ? '¿Salir del examen? Puedes volver a intentarlo cuando quieras.' : '¿Rendirte? Perdés copas.')) finish(false); };
+    w.querySelector('.x').onclick = () => { if (confirm(ex ? '¿Salir del examen? Puedes volver a intentarlo cuando quieras.' : '¿Rendirte? Pierdes copas.')) finish(false); };
     w.querySelectorAll('[data-atk]').forEach(b => b.onclick = () => !busy && attack(mine[+b.dataset.atk]));
     w.querySelectorAll('[data-tgt]').forEach(b => b.onclick = () => aim(+b.dataset.tgt));
     runBar();
@@ -162,7 +162,7 @@ export function startDuel(opts = {}) {
   function render3d(msg) {
     const ef = target(), ui = w.querySelector('.duel-ui'), stage = w.querySelector('.duel-stage'), ov = stage.querySelector('.stage-ov');
     ui.innerHTML = `<div class="duel-head"><span class="rv"><i>敵</i>${rival}${ex ? '' : `<small>杯${Math.max(0, a.cups + 12)}</small>`}</span><button class="x" aria-label="Rendirse">✕</button></div>
-      <div class="duel-mid"><p>${msg || 'Elegí un rival y tocá a tu KANJŪ para atacar'}</p>${meters()}</div>`;
+      <div class="duel-mid"><p>${msg || 'Elige un rival y toca a tu KANJŪ para atacar'}</p>${meters()}</div>`;
     const lab = (f, enemy, j) => {
       const t = TYPES[typeOf(f.c.k)], mult = !enemy && ef ? typeMult(typeOf(f.c.k), typeOf(ef.c.k)) : 1;
       return `<button class="ulabel ${enemy ? 'e' : 'm'} ${f.hp <= 0 ? 'down' : ''}" data-anchor="${enemy ? 'e' : 'm'}${j}" ${enemy ? '' : 'data-foot'} ${f.hp <= 0 ? 'disabled' : enemy ? `data-tgt="${j}"` : `data-atk="${j}"`} ${enemy && f === ef ? 'aria-current="true"' : ''} style="--t:${t.col}">
@@ -172,7 +172,7 @@ export function startDuel(opts = {}) {
     ov.innerHTML = foes.map((f, j) => lab(f, true, j)).join('') + mine.map((f, j) => lab(f, false, j)).join('');
     const it = (f, side, j) => ({ id: side + j, side, slot: j, svg: creatureSVG(f.c.k, { mood: f.hp / f.max > .3 ? 1 : .2, gold: f.c.gold }), down: f.hp <= 0, target: side === 'e' && f === ef });
     mountArena(stage, { scene: opts.scene ?? arenaIdx(a.cups), items: [...foes.map((f, j) => it(f, 'e', j)), ...mine.map((f, j) => it(f, 'm', j))], onTap: id => { if (id[0] === 'e') return aim(+id[1]); if (!busy && mine[+id[1]].hp > 0) attack(mine[+id[1]]); } });
-    ui.querySelector('.x').onclick = () => { if (confirm(ex ? '¿Salir del examen? Puedes volver a intentarlo cuando quieras.' : '¿Rendirte? Perdés copas.')) finish(false); };
+    ui.querySelector('.x').onclick = () => { if (confirm(ex ? '¿Salir del examen? Puedes volver a intentarlo cuando quieras.' : '¿Rendirte? Pierdes copas.')) finish(false); };
     ov.querySelectorAll('[data-atk]').forEach(b => b.onclick = () => !busy && attack(mine[+b.dataset.atk]));
     ov.querySelectorAll('[data-tgt]').forEach(b => b.onclick = () => aim(+b.dataset.tgt));
     runBar();
@@ -247,7 +247,7 @@ export function startDuel(opts = {}) {
     const promoted = arenaIdx(a.cups) > ar0;
     const card = `<div class="duel-end ${win ? 'win' : 'lose'}"><h2>${win ? '勝利 ¡Victoria!' : '敗北 Derrota'}</h2>
       <p class="cupd">${ic('trophy')} ${delta > 0 ? '+' : ''}${delta}</p>
-      ${win ? `<p>+${ink} 墨${chest ? ` · ${CHESTS[chest].k} ${CHESTS[chest].name}` : ' · <span class="r">cofres llenos: abrí alguno estudiando</span>'}</p>` : '<p class="muted">Entrená a tus KANJŪ y estudiá sus kanji para atacar más fuerte.</p>'}
+      ${win ? `<p>+${ink} 墨${chest ? ` · ${CHESTS[chest].k} ${CHESTS[chest].name}` : ' · <span class="r">cofres llenos: abre alguno estudiando</span>'}</p>` : '<p class="muted">Entrena a tus KANJŪ y estudia sus kanji para atacar más fuerte.</p>'}
       ${promoted ? `<div class="promo"><span>${arenaOf(a.cups).k}</span><b>¡Nueva arena!</b><small>${arenaOf(a.cups).name}</small></div>` : ''}
       <button class="btn ok wide">Continuar</button></div>`;
     // En 3D el resultado aparece sobre la arena (que sigue viva) y el equipo ganador festeja
@@ -299,7 +299,7 @@ function rollChest(t) {
 function openChest(j) {
   const a = A(), c = a.chests[j]; if (!c) return;
   const d = CHESTS[c.t];
-  if (c.pts < d.need) return toast(j === 0 ? `Faltan ${d.need - c.pts} aciertos de estudio para abrirlo · andá a 修 Repaso o 学 Academia` : 'Se abre después del primero de la fila');
+  if (c.pts < d.need) return toast(j === 0 ? `Faltan ${d.need - c.pts} aciertos de estudio para abrirlo · repasa en 修 Repaso o entrena a un KANJŪ` : 'Se abre después del primero de la fila');
   a.chests.splice(j, 1);
   const got = rollChest(c.t); save(); buzz([20, 60, 20]);
   const m = modal(`<div class="result chest-open"><div class="chest big" style="--c:${d.col}"><span>${d.k}</span></div><h3>${d.name}</h3><div class="loot">${got.map(g => `<span>${g}</span>`).join('')}</div><button class="btn ok wide">¡Genial!</button></div>`);

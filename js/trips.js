@@ -25,11 +25,11 @@ export function tripsLeft(r) {
 const untilTomorrow = () => { const d = new Date(); d.setHours(24, 0, 0, 0); const m = Math.ceil((d - Date.now()) / 60000); return m >= 60 ? `${m / 60 | 0} h ${m % 60} min` : `${m} min`; };
 export function viewExp(v) {
   const n = owned(), fast = tripMult();
-  v.innerHTML = `<div class="exps">${scrHead('旅', 'Viajes', 'Enviá KANJŪ a explorar: vuelven con tinta, piezas y a veces amigos')}
+  v.innerHTML = `<div class="exps">${scrHead('旅', 'Viajes', 'Envía KANJŪ a explorar: vuelven con tinta, piezas y a veces amigos')}
   ${REGIONS.map(r => {
     const c = S.creatures.find(x => x.away?.region === r.id), lock = n < r.need;
     let inner;
-    if (lock) inner = `<p class="muted lockline">${ic('lock')} Obtené ${r.need} kanji para desbloquear (${n}/${r.need})</p>`;
+    if (lock) inner = `<p class="muted lockline">${ic('lock')} Obtén ${r.need} kanji para desbloquear (${n}/${r.need})</p>`;
     else if (c) {
       const left = Math.max(0, c.away.end - Date.now()), done = !left;
       inner = `<div class="trip"><div class="trip-mon ${done ? '' : 'walking'}">${creatureSVG(c.k)}</div><div class="trip-info"><b>${c.k} ${done ? 'regresó' : 'explorando…'}</b>
@@ -95,7 +95,7 @@ export function collect(c) {
   S.ink += ink;
   const m = modal(`<div class="result"><h3>${c.k} volvió de ${r.name}</h3>
     <p>+${ink} 墨 · +EXP${up ? ` · <b class="g">¡Nivel ${c.lv}!</b>` : ''}</p>
-    ${found ? `<div class="newmon"><span class="new-tag">${found.gate ? '門 Espera en la puerta' : found.store ? '¡Nuevo! · está en el almacén' : '¡Nuevo KANJŪ!'}</span>${creatureSVG(found.k, { mood: 1 })}${storyHTML(found.k)}${found.gate ? '<small class="r">Santuario y almacén llenos. Liberá espacio para recibirlo.</small>' : ''}</div>` : `<p class="muted">No volvió acompañado, pero encontró huellas.</p><div class="tracks-big">足跡 ${'●'.repeat(tracks(r))}${'○'.repeat(TRACKS_MAX - tracks(r))}<small>${tracks(r) >= TRACKS_MAX ? '¡El próximo viaje a esta región trae un compañero seguro!' : `+${gained} · con ${TRACKS_MAX} huellas el próximo compañero es seguro`}</small></div>${bonus ? `<p class="g">${bonus}</p>` : ''}`}
+    ${found ? `<div class="newmon"><span class="new-tag">${found.gate ? '門 Espera en la puerta' : found.store ? '¡Nuevo! · está en el almacén' : '¡Nuevo KANJŪ!'}</span>${creatureSVG(found.k, { mood: 1 })}${storyHTML(found.k)}${found.gate ? '<small class="r">Santuario y almacén llenos. Libera espacio para recibirlo.</small>' : ''}</div>` : `<p class="muted">No volvió acompañado, pero encontró huellas.</p><div class="tracks-big">足跡 ${'●'.repeat(tracks(r))}${'○'.repeat(TRACKS_MAX - tracks(r))}<small>${tracks(r) >= TRACKS_MAX ? '¡El próximo viaje a esta región trae un compañero seguro!' : `+${gained} · con ${TRACKS_MAX} huellas el próximo compañero es seguro`}</small></div>${bonus ? `<p class="g">${bonus}</p>` : ''}`}
     <button class="btn ok wide">Genial</button></div>`);
   // Después del resumen de tinta, el hallazgo de lengua: una palabra nueva o un reencuentro (js/diary.js)
   $('.btn', m).onclick = () => { m.close(); go(); setTimeout(() => openFind(r.id), 240); };

@@ -696,7 +696,7 @@ export function checkLang() {
     if (!(w.sit in sitIdx)) errs.push(`LEX ${w.id}: situación desconocida ${w.sit}`);
     if (!KINDS.includes(w.kind)) errs.push(`LEX ${w.id}: kind desconocido ${w.kind}`);
     if (!w.kana || !/^[ぁ-ゟ゠-ヿ]+$/.test(w.kana)) errs.push(`LEX ${w.id}: kana inválido`);
-    if (!w.es || !w.en) errs.push(`LEX ${w.id}: falta traducción`);
+    if (!w.es) errs.push(`LEX ${w.id}: falta traducción`);
     if (w.kind === 'v' && !w.kana.endsWith('ます')) errs.push(`LEX ${w.id}: los verbos van en forma ます`);
     if (i && sitIdx[w.sit] < sitIdx[LEX[i - 1].sit]) errs.push(`LEX ${w.id}: fuera del orden de situaciones`);
   });
@@ -706,7 +706,7 @@ export function checkLang() {
     else if (n < 15 || n > 50) errs.push(`Situación ${s.id}: ${n} palabras (se esperan 15–50; el currículo de docs/CURRICULO.md suma palabras a las situaciones)`);
     const np = PHRASES.filter(p => p.sit === s.id).length;
     if (np < 5 || np > 8) errs.push(`Situación ${s.id}: ${np} frases (se esperan 5–8)`);
-    for (const f of ['title', 'cando']) if (!s[f]?.es || !s[f]?.en) errs.push(`Situación ${s.id}: falta ${f}`);
+    for (const f of ['title', 'cando']) if (!s[f]?.es) errs.push(`Situación ${s.id}: falta ${f}`);
   }
 
   // Cada ficha de `ja` es una palabra listada en ids (o su conjugación) o una partícula; y cada id se usa.
@@ -730,7 +730,7 @@ export function checkLang() {
     if (si < prevSit) errs.push(`Frase ${p.id}: fuera del orden de situaciones`);
     if (si !== prevSit) { prevSit = si; runMax = -1; }
     if (p.pat !== null && !patIds.has(p.pat)) errs.push(`Frase ${p.id}: patrón desconocido ${p.pat}`);
-    if (!p.es || !p.en) errs.push(`Frase ${p.id}: falta traducción`);
+    if (!p.es) errs.push(`Frase ${p.id}: falta traducción`);
     let max = -1;
     for (const id of p.ids) {
       const w = byId[id];
@@ -753,7 +753,7 @@ export function checkLang() {
 
   let prevLevel = -1;
   for (const r of READINGS) {
-    if (!r.title?.es || !r.title?.en) errs.push(`Lectura ${r.id}: falta título`);
+    if (!r.title?.es) errs.push(`Lectura ${r.id}: falta título`);
     if (r.lines.length < 2 || r.lines.length > 5) errs.push(`Lectura ${r.id}: ${r.lines.length} líneas (se esperan 2–5)`);
     const used = new Set();
     let level = -1;
@@ -763,7 +763,7 @@ export function checkLang() {
     }
     if (new Set(r.ids).size !== r.ids.length) errs.push(`Lectura ${r.id}: ids repetidos`);
     r.lines.forEach((l, i) => {
-      if (!l.es || !l.en) errs.push(`Lectura ${r.id}, línea ${i + 1}: falta traducción`);
+      if (!l.es) errs.push(`Lectura ${r.id}, línea ${i + 1}: falta traducción`);
       checkJa(`Lectura ${r.id}, línea ${i + 1}`, l.ja, r.ids).forEach(id => used.add(id));
     });
     for (const id of r.ids) if (byId[id] && !used.has(id)) errs.push(`Lectura ${r.id}: ${id} está en ids pero no en el texto`);

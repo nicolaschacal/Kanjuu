@@ -30,7 +30,7 @@ export function openAccount() {
     $('#sync', m).onclick = async () => { try { await cloud.pushNow(S); toast('Partida guardada en la nube'); } catch (e) { toast(e.message); } };
     $('#out', m).onclick = async () => {
       if (!confirm('¿Cerrar sesión? Tu santuario queda guardado en tu cuenta.')) return;
-      try { await cloud.pushNow(S); } catch { return toast('Sin conexión: no se pudo guardar. Probá de nuevo antes de salir.'); }
+      try { await cloud.pushNow(S); } catch { return toast('Sin conexión: no se pudo guardar. Prueba de nuevo antes de salir.'); }
       await cloud.logout(); try { localStorage.removeItem('kanjuu.save.v1'); } catch {} location.reload();
     };
     return;
@@ -47,7 +47,7 @@ export function passPrompt(title, withNew, run, warn = '') {
 // El código de recuperación reemplaza al email: se muestra una sola vez
 export function showRecovery(code) {
   return new Promise(done => {
-    const m = modal(`<h3>鍵 Tu código de recuperación</h3><p>Si olvidás tu contraseña, con este código podés recuperar tu cuenta. <b>Guardalo</b> (captura de pantalla o en tus notas): no lo vamos a volver a mostrar.</p>
+    const m = modal(`<h3>鍵 Tu código de recuperación</h3><p>Si olvidas tu contraseña, con este código puedes recuperar tu cuenta. <b>Guárdalo</b> (captura de pantalla o en tus notas): no lo vamos a volver a mostrar.</p>
       <div class="rcode">${code}</div><button class="btn ghost wide" id="cp">Copiar</button><button class="btn ok wide" id="ok">Ya lo guardé</button>`, 'onacct wall');
     m.onclick = null;
     $('#cp', m).onclick = () => { navigator.clipboard?.writeText(code); toast('Código copiado'); };
@@ -55,10 +55,10 @@ export function showRecovery(code) {
   });
 }
 export function recoverForm(wall) {
-  const m = modal(`<h3>鍵 Recuperar cuenta</h3><p class="muted">Usá el código de recuperación que guardaste al crear tu cuenta.</p>
+  const m = modal(`<h3>鍵 Recuperar cuenta</h3><p class="muted">Usa el código de recuperación que guardaste al crear tu cuenta.</p>
     <form class="auth"><input name="email" type="email" placeholder="Email" value="${esc(cloud.lastUser() || '')}" required><input name="code" placeholder="Código (XXXX-XXXX-XXXX)" autocapitalize="characters" required>
     <input name="password" type="password" autocomplete="new-password" placeholder="Nueva contraseña (mín. 8)" minlength="8" required><p class="err r"></p><button class="btn ok wide" type="submit">Recuperar</button></form>
-    <p class="muted">¿No tenés el código? Escribinos desde tu email para verificar tu identidad.</p>`, 'onacct');
+    <p class="muted">¿No tienes el código? Escríbenos desde tu email para verificar tu identidad.</p>`, 'onacct');
   m.style.zIndex = 96;
   const f = $('form', m);
   f.onsubmit = async e => {
