@@ -73,7 +73,7 @@ export function choiceNote(chosen, { kanji = false } = {}) {
 export const replyMeaning = ids => ids.map(id => LEX.find(w => w.id === id)).filter(Boolean).map(w => `${w.kana} = ${tr(w)}`).join(' · ');
 
 // ---------- Panel ----------
-const rowHTML = (toks, cls, render) => `<div class="fx-row ${cls}">${toks.map(x => `<span class="fx-t${x.ok ? '' : ' x'}">${render(x.tok)}</span>`).join('')}</div>`;
+const rowHTML = (toks, cls, render) => `<div class="fx-row ${cls}">${toks.map(x => `<span class="fx-t${x.ok ? '' : ' bad'}">${render(x.tok)}</span>`).join('')}</div>`;
 // opts: { diff?, render?, notes, ask: { question, given, correct } } · al tocar «Entendido», onDone()
 export function fixPanel(body, { diff, render = esc, notes = [], extra = '', ask }, onDone) {
   const why = ask && aiOn();
@@ -86,7 +86,8 @@ export function fixPanel(body, { diff, render = esc, notes = [], extra = '', ask
     <div class="fx-ai" hidden></div>
     <div class="fx-acts">${why ? `<button class="btn ghost fx-why">${ic('sparkles')} ${t('fx.why')}</button>` : ''}<button class="btn ok fx-ok">${t('dojo.gotIt')}</button></div>`;
   body.append(box);
-  box.scrollIntoView?.({ block: 'nearest' });
+  // La lección puede ser más alta que la pantalla: el área de abajo hace scroll y el botón queda a la vista
+  requestAnimationFrame(() => box.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' }));
   box.querySelector('.fx-ok').onclick = () => onDone();
   const w = box.querySelector('.fx-why');
   if (w) w.onclick = async () => {
