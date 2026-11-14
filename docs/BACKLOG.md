@@ -144,6 +144,28 @@ Después: A-06 (implementar A-02), A-07 (combate de examen y dorado), A-08 a A-1
 
 ---
 
+## Bloque B · KANJŪ como app (pedido por Nicolás el 13 de noviembre de 2026)
+Preparar el juego para empaquetarlo en iOS y Android (ROADMAP §7).
+
+### B-01 · Pantalla de inicio y acceso
+- Pantalla de arranque inmediata, título mientras carga la partida y acceso (crear cuenta, entrar, recuperar) en la misma pantalla
+- Detalles de app: sin resaltado ni menú de pulsación larga, sin zoom, archivos completos para abrir sin conexión
+
+**Aceptación:** con sesión entra sola; sin sesión se puede crear cuenta y entrar; sin errores de consola en 390 × 844.
+
+### B-02 · Gestos
+- Deslizar hacia abajo para cerrar hojas y ventanas; deslizar desde el borde izquierdo para volver; deslizar a los lados entre pestañas
+- Botón «atrás» de Android y vibración nativa cuando esté empaquetada
+
+**Aceptación:** las ventanas obligatorias (acceso, primer huevo) no se cierran con gestos; el mapa del Santuario no cambia.
+
+### B-03 · Proyecto nativo con Capacitor
+- Configuración, carpeta de la app, dirección de la API para la app y guía paso a paso para generar iOS y Android
+
+**Aceptación:** `npm run app:build` arma la carpeta `www/`; la guía permite abrir el proyecto en Xcode y Android Studio.
+
+---
+
 ## Próximos sprints (tentativo; se confirma en cada planificación)
 Cancelado por Nicolás el 13 de noviembre de 2026: el juego queda solo en español neutro (sin inglés) y sin Academia. Los sprints de idiomas tachados ya no se hacen.
 Decidido por Nicolás el 10 de noviembre de 2026: la parte educativa (Academia, lecciones, ejercicios, cursos) se traduce y se rediseña en su propio sprint, porque también va a cambiar. El resto de los idiomas va antes.

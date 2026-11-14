@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1024 1024" width="1024" height="1024"><defs>
+      <filter id="grano" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="7"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .3 -.12"/>
+      </filter>
+      <clipPath id="boca"><path d="M380 570 Q512 592 644 570 Q626 824 512 830 Q398 824 380 570Z"/></clipPath>
+      <g id="rasgos">
+        <rect x="512" width="512" height="1024" fill="#1E1A24" opacity=".11"/>
+        <rect width="1024" height="1024" filter="url(#grano)"/>
+        <path d="M512 0 V1024" stroke="#FFFDF8" stroke-width="5" opacity=".5"/>
+        <path d="M0 528 C330 514 690 520 1024 538" stroke="#FFFDF8" stroke-width="8" opacity=".85" fill="none"/>
+        <g transform="translate(512 505) scale(1.25) translate(-512 -505)">
+        <circle cx="512" cy="345" r="165" fill="#FFFDF8" stroke="#1E1A24" stroke-opacity=".28" stroke-width="6"/>
+        <rect x="477" y="276" width="70" height="122" rx="35" fill="#1E1A24"/>
+        <circle cx="497" cy="306" r="15" fill="#FFFDF8"/>
+        <path d="M380 570 Q512 592 644 570 Q626 824 512 830 Q398 824 380 570Z" fill="#7A2E3A" stroke="#FFFDF8" stroke-width="12" stroke-linejoin="round" paint-order="stroke"/>
+        <g clip-path="url(#boca)"><ellipse cx="530" cy="826" rx="118" ry="84" fill="#D8452F"/></g>
+        <path d="M418 583 L446 646 L474 587Z M550 587 L578 646 L606 583Z" fill="#FFFDF8"/>
+        </g>
+      </g>
+      
+      <symbol id="caraFuego" viewBox="0 0 1024 1024">
+        <rect width="1024" height="1024" fill="#F2825A"/>
+        <use href="#rasgos"/>
+      </symbol>
+    <clipPath id="redondo"><rect width="1024" height="1024" rx="230"/></clipPath></defs><g clip-path="url(#redondo)"><use href="#caraFuego"/></g></svg>

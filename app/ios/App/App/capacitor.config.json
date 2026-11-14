@@ -1,0 +1,38 @@
+{
+	"appId": "com.kanjuu.app",
+	"appName": "KANJŪ",
+	"webDir": "www",
+	"backgroundColor": "#16132A",
+	"ios": {
+		"contentInset": "never",
+		"scrollEnabled": false
+	},
+	"android": {
+		"allowMixedContent": false
+	},
+	"plugins": {
+		"CapacitorHttp": {
+			"enabled": true
+		},
+		"CapacitorCookies": {
+			"enabled": true
+		},
+		"SplashScreen": {
+			"launchShowDuration": 600,
+			"launchAutoHide": true,
+			"backgroundColor": "#16132A",
+			"showSpinner": false
+		},
+		"StatusBar": {
+			"overlaysWebView": true,
+			"style": "DARK",
+			"backgroundColor": "#16132A"
+		}
+	},
+	"packageClassList": [
+		"AppPlugin",
+		"HapticsPlugin",
+		"SplashScreenPlugin",
+		"StatusBarPlugin"
+	]
+}

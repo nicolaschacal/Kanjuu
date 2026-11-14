@@ -11,3 +11,5 @@ FILES.push('js/analytics.js');
 FILES.push('icons/favicon-32.png', 'icons/favicon-48.png');
 // Aprendizaje dentro del juego: lengua, diario, palabras, Camino y ejercicios de palabras
 FILES.push('js/lang.js', 'js/lex.js', 'js/diary.js', 'js/path.js', 'js/wordgames.js');
+// Todo lo demás del juego, para que abra sin conexión (B-01)
+FILES.push('js/aigen.js', 'js/aiplay.js', 'js/book.js', 'js/curriculum.js', 'js/exam.js', 'js/feedback.js', 'js/round.js', 'js/start.js');
