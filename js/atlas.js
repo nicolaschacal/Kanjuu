@@ -26,7 +26,7 @@ export function viewDex(v) {
   if (tab === 'diary') return viewDiary(v); // Diario de descubrimientos (js/diary.js)
   let body = '';
   if (tab === 'atlas') body = `<p class="eyebrow">Tu colección</p><h2 class="pn-h">Atlas</h2>
-    <p class="pn-lead">${owned()} de ${all.length} kanji descubiertos · tocá uno para ver su historia</p>
+    <p class="pn-lead">${owned()} de ${all.length} kanji descubiertos · toca uno para ver su historia</p>
     <div class="tbar dex-bar"><i style="width:${owned() / all.length * 100}%"></i></div>
     ${[...new Set(all.map(kLevel))].map(L => `<h4 class="gh">${gradeTag(all.find(k => kLevel(k) === L))}<small>${GRADES[L - 1].d} · ${all.filter(k => kLevel(k) === L && S.dex[k]?.owned).length}/${all.filter(k => kLevel(k) === L).length}</small></h4>
     <div class="dex-grid">${all.filter(k => kLevel(k) === L).map(k => {
@@ -37,7 +37,7 @@ export function viewDex(v) {
     <button class="link" id="wipe">Reiniciar partida</button>`;
   if (tab === 'fam') { const n = FAMILIES.filter(f => f.members.every(k => S.dex[k]?.owned)).length;
     body = `<p class="eyebrow">Familias 族</p><h2 class="pn-h">Familias</h2>
-    <p class="pn-lead">Completá cada familia para ganar tinta y un boleto · ${n}/${FAMILIES.length} completas</p>
+    <p class="pn-lead">Completa cada familia para ganar tinta y un boleto · ${n}/${FAMILIES.length} completas</p>
     <div class="fams">${FAMILIES.map(f => { const n = f.members.filter(k => S.dex[k]?.owned).length, done = n === f.members.length, got = (S.fams || []).includes(f.root);
       return `<button class="fam ${done && !got ? 'claim' : ''} ${got ? 'got' : ''}" data-fam="${f.root}" ${done && !got ? '' : 'disabled'}><span class="fr">${f.root}</span><div><b>Familia ${f.root}${PIECES[f.root] ? ` · ${PIECES[f.root].m}` : KANJI[f.root] ? ` · ${KANJI[f.root].m}` : ''}</b>
         <span class="fm">${f.members.map(k => `<i class="${S.dex[k]?.owned ? 'on' : ''}">${S.dex[k]?.seen ? k : '？'}</i>`).join('')}</span>

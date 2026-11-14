@@ -22,7 +22,7 @@ import { viewShop, openLogin } from './shop.js';
 import { acadCtx } from './dojo.js';
 import { openAccount, authWall } from './account.js';
 import { startScreen } from './start.js';
-import { t, setLang, langName, locale, detect, LANGS } from './i18n.js';
+import { t, locale } from './i18n.js';
 import { pathReady } from './path.js';
 import { kanaSkip, ALL_KANA } from './help.js';
 import { LEX } from './lex.js';
@@ -35,24 +35,24 @@ export const sorted = a => [...a].sort().join('');
 export const home = () => S.creatures.filter(c => !c.away);
 
 export const MISSIONS = [
-  { id: 'pet', label: 'Mimá a tus KANJŪ', goal: 5, ink: 8 },
-  { id: 'train', label: 'Completá entrenamientos', goal: 3, ink: 12 },
-  { id: 'exp', label: 'Enviá una expedición', goal: 1, ink: 8 },
-  { id: 'review', label: 'Repasá kanji en el Dojo', goal: 8, ink: 15 },
+  { id: 'pet', label: 'Mima a tus KANJŪ', goal: 5, ink: 8 },
+  { id: 'train', label: 'Completa entrenamientos', goal: 3, ink: 12 },
+  { id: 'exp', label: 'Envía una expedición', goal: 1, ink: 8 },
+  { id: 'review', label: 'Repasa kanji en el Dojo', goal: 8, ink: 15 },
   { id: 'words', key: 'quest.words', goal: 5, ink: 15 }, // hallazgos, reencuentros y aciertos de palabras en el Dojo
-  { id: 'duel', label: 'Ganá 2 duelos en la Arena', goal: 2, ink: 20 },
+  { id: 'duel', label: 'Gana 2 duelos en la Arena', goal: 2, ink: 20 },
 ];
 export const WEEKLY = [
-  { id: 'duel', label: 'Ganá 12 duelos', goal: 12, ink: 80 },
-  { id: 'review', label: 'Repasá 50 kanji', goal: 50, ink: 60 },
-  { id: 'disc', label: 'Descubrí 3 kanji nuevos', goal: 3, ink: 50 },
-  { id: 'evo', label: 'Evolucioná o fusioná 3 veces', goal: 3, ink: 50 },
-  { id: 'train', label: 'Entrená 20 veces', goal: 20, ink: 40 },
+  { id: 'duel', label: 'Gana 12 duelos', goal: 12, ink: 80 },
+  { id: 'review', label: 'Repasa 50 kanji', goal: 50, ink: 60 },
+  { id: 'disc', label: 'Descubre 3 kanji nuevos', goal: 3, ink: 50 },
+  { id: 'evo', label: 'Evoluciona o fusiona 3 veces', goal: 3, ink: 50 },
+  { id: 'train', label: 'Entrena 20 veces', goal: 20, ink: 40 },
 ];
 export const ACHIEVEMENTS = [
-  ['闘', 'Primera victoria', () => (S.arena?.wins || 0) >= 1, 'Ganá un duelo', 30],
-  ['城', 'Señor del castillo', () => (S.arena?.best || 0) >= 1400, 'Llegá a la Arena 5', 150],
-  ['族', 'Primera familia', () => (S.fams || []).length >= 1, 'Completá una familia de kanji', 60],
+  ['闘', 'Primera victoria', () => (S.arena?.wins || 0) >= 1, 'Gana un duelo', 30],
+  ['城', 'Señor del castillo', () => (S.arena?.best || 0) >= 1400, 'Llega a la Arena 5', 150],
+  ['族', 'Primera familia', () => (S.fams || []).length >= 1, 'Completa una familia de kanji', 60],
   ['芽', 'Primer brote', () => S.stats.evolutions >= 1, 'Evoluciona una criatura', 20],
   ['合', 'Alquimista', () => S.stats.fusions >= 1, 'Realiza una fusión', 20],
   ['輪', 'Ciclo eterno', () => S.stats.rebirths >= 1, 'Completa un renacimiento', 40],
@@ -201,7 +201,6 @@ export function openMenu() {
   const m = modal(`<h3>${ic('gear')} ${t('menu.title')}</h3>
     <div class="menu-list">
       ${row('mAcct', 'user', 'menu.account', cloud.user ? esc(cloud.user.email) : t('menu.accountSub'))}
-      ${row('mLang', 'globe', 'menu.lang', esc(S.lang && S.lang !== 'auto' ? langName() : `${t('lang.auto')} · ${langName()}`))}
       ${row('mAI', 'sparkles', 'menu.ai', t('menu.aiSub'))}
       ${row('mLevel', 'cap', 'menu.level', t(LEVELS[S.level || 0][0]))}
       ${sw('mFuri', 'kana', 'menu.furi', helpOn())}
@@ -209,22 +208,11 @@ export function openMenu() {
       ${row('mWx', 'sun', 'menu.wx', t('menu.wxSub'))}
     </div>`);
   $('#mAcct', m).onclick = () => { m.close(); openAccount(); };
-  $('#mLang', m).onclick = () => { m.close(); openLang(); };
   $('#mAI', m).onclick = () => { m.close(); openAISettings(modal, toast, go); };
   $('#mLevel', m).onclick = () => { m.close(); openLevel(openMenu); };
   $('#mFuri', m).onchange = e => { setHelp(e.target.checked); go(); };
   $('#mGrain', m).onchange = e => setGrain(e.target.checked);
   $('#mWx', m).onclick = () => { m.close(); try { localStorage.removeItem(GEO); } catch {} weather(true); };
-}
-// Elegir idioma: automático (según el dispositivo) o uno fijo. Cambia al instante, sin recargar.
-function openLang() {
-  const cur = S.lang && S.lang !== 'auto' ? S.lang : 'auto';
-  const opt = (id, name, sub = '') => `<button class="row-k${cur === id ? ' on' : ''}" data-l="${id}" aria-pressed="${cur === id}"><span class="row-t"><b>${esc(name)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</span>${cur === id ? ic('check', 'chev') : ''}</button>`;
-  const m = modal(`<h3>${ic('globe')} ${t('lang.title')}</h3>
-    <div class="menu-list">${opt('auto', t('lang.auto'), t('lang.autoSub', { name: langName(detect()) }))}${LANGS.map(l => opt(l.id, l.name)).join('')}</div>`);
-  m.querySelectorAll('[data-l]').forEach(b => b.onclick = () => {
-    buzz(5); setLang(b.dataset.l); m.close(); go(); toast(t('lang.changed', { name: esc(langName()) })); openMenu();
-  });
 }
 // Nivelación: "¿Qué sabes ya?" (docs/APRENDIZAJE.md §6). Autodeclarar primero; ante la duda, un peldaño abajo.
 // 0 empiezo de cero · 1 leo hiragana y katakana · 2 además reconozco algunos kanji
@@ -270,8 +258,8 @@ export function floatText(el, txt, cls = '') {
 export function onboarding() {
   const starters = ['木', '日', '火'];
   const m = modal(`<div class="onb"><div class="onb-k">漢獣</div><h2>Bienvenido al santuario</h2>
-    <p>Cada kanji es una criatura viva. Criala, entrenala y descubrí en qué se convierte.</p>
-    <p class="muted">Elegí tu primer huevo</p>
+    <p>Cada kanji es una criatura viva. Críala, entrénala y descubre en qué se convierte.</p>
+    <p class="muted">Elige tu primer huevo</p>
     <div class="eggs">${starters.map(k => `<button class="egg-pick" data-k="${k}">${creatureSVG(k, { egg: true })}<small>${ELEMENTS[element(k)][2]}</small></button>`).join('')}</div></div>`, 'onbm');
   m.onclick = null;
   m.querySelectorAll('.egg-pick').forEach(b => b.onclick = () => {
@@ -279,7 +267,7 @@ export function onboarding() {
     setTimeout(() => {
       const c = arrive(b.dataset.k).c; c.mood = 1; m.close(); go();
       const w = modal(`<div class="result"><h3>¡Nació tu primer KANJŪ!</h3>${creatureSVG(c.k, { mood: 1 })}${storyHTML(c.k)}
-        <p class="muted">Cada kanji tiene una historia para recordarlo. Tocá a ${c.k} en el santuario para mimarlo y entrenarlo.</p><button class="btn ok wide">¡Vamos!</button></div>`);
+        <p class="muted">Cada kanji tiene una historia para recordarlo. Toca a ${c.k} en el santuario para mimarlo y entrenarlo.</p><button class="btn ok wide">¡Vamos!</button></div>`);
       speak(reads(c.k)[0]); const done = () => { w.close(); if (S.level == null) openLevel(); };
       $('.btn', w).onclick = done; w.onclick = e => { if (e.target === w) done(); };
     }, 700);

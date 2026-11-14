@@ -1,4 +1,4 @@
-// KANJŪ · diary.js — Diario de descubrimientos (reemplaza la entrada a la Academia) y tarjeta de hallazgo de los viajes.
+// KANJŪ · diary.js — Diario de descubrimientos y tarjeta de hallazgo de los viajes.
 // Pestañas: Palabras · Frases · Lecturas · Kana · Puedo…  (docs/APRENDIZAJE.md §2, §3 y §7)
 import { ic } from './icons.js';
 import { KANJI, SRS_HOURS, reads } from './data.js';
@@ -6,13 +6,11 @@ import { S, save, bump } from './state.js';
 import { t } from './i18n.js';
 import { romaji, kanaPool, kanaDrill, kanaHTML, kanaUnits, kanaSeen, romajiOff, helpOn } from './help.js';
 import { speak } from './games.js';
-import { openAcademy } from './academy.js';
 import { emit } from './tutorial.js';
 import { useOf } from './lang.js';
 import { WORD, LEX, READINGS, SITUATIONS, tr, sitOf, sitWords, patOf, regionOf, foundIds, meet, findWord, markKnown, nextWord, phraseFor, reencounter, seePhrase, phrasesOf, seenPhrases,
   readingMissing, readingOpen, finishReading, READ_INK, sitFound, sitSolid, canDo, wordHTML, jaHTML, jaPlain, anchorsOf, ownedAnchors, ENC_MAX } from './lex.js';
 import { $, ui, go, hud, toast, modal, buzz } from './main.js';
-import { acadCtx } from './dojo.js';
 
 const TABS = [['words', 'pen', 'diary.words'], ['phrases', 'list', 'diary.phrases'], ['reads', 'book', 'diary.reads'], ['kana', 'kana', 'diary.kana'], ['cando', 'check', 'diary.cando']];
 const KIND = { n: 'diary.kind.noun', v: 'diary.kind.verb', adj: 'diary.kind.adj', expr: 'diary.kind.expr', num: 'diary.kind.num', q: 'diary.kind.q' };
@@ -48,7 +46,6 @@ export function viewDiary(v) {
     const r = await kanaDrill(pool, $('#layer')); save(); hud(); viewDiary(v);
     if (r.total) toast(t('diary.kanaDone', { right: r.right, total: r.total }));
   });
-  $('#dyBooks', v) && ($('#dyBooks', v).onclick = () => openAcademy(acadCtx()));
   $('#dyTrip', v) && ($('#dyTrip', v).onclick = () => { ui.tab = 'exp'; go(); });
 }
 const emptyHTML = (title, sub) => `<div class="tr-empty"><b>${title}</b><small>${sub}</small></div><button class="btn ok wide" id="dyTrip">${ic('compass')} ${t('diary.goTrip')}</button>`;
@@ -150,8 +147,7 @@ function kanaTab() {
     <h4 class="dy-h">${t('diary.hira')}<small>${count(GOJUON)}/${total}</small></h4>${grid(GOJUON)}
     <h4 class="dy-h">${t('diary.kata')}<small>${count(kata)}/${total}</small></h4>${grid(kata)}
     <p class="dy-more">${t('diary.kanaLegend')}</p>
-    <button class="btn ok wide" id="dyDrill">${ic('kana')} ${t('diary.kanaDrill')}</button>
-    <button class="btn ghost wide" id="dyBooks">${ic('cap')} ${t('diary.kanaBooks')}</button>`;
+    <button class="btn ok wide" id="dyDrill">${ic('kana')} ${t('diary.kanaDrill')}</button>`;
 }
 
 // ---------- Puedo… ----------

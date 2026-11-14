@@ -4,8 +4,7 @@
 import { S } from './state.js';
 import { creatureSVG } from './creature.js';
 import * as cloud from './cloud.js';
-import { t, lang, setLang, LANGS } from './i18n.js';
-import { ic } from './icons.js';
+import { t } from './i18n.js';
 import { showRecovery, recoverForm, syncAfterLogin } from './account.js';
 import { aiStatus } from './ai.js';
 import { $, esc, shell, toast, startGame, buzz } from './main.js';
@@ -30,7 +29,6 @@ export function startScreen() {
   const draw = () => {
     const ks = cast();
     el.innerHTML = `
-      <button class="ts-lang" id="stLang" aria-label="${t('menu.lang')}">${ic('globe')}<span>${lang().toUpperCase()}</span></button>
       <div class="ts-sky"><i class="ts-moon"></i>
         <div class="ts-logo"><img class="ts-seal" src="icons/icon-512.png" alt="" width="104" height="104"><h1>KANJŪ</h1><p>${t('start.tag')}</p></div>
       </div>
@@ -55,7 +53,6 @@ export function startScreen() {
       </form>`;
   };
   const bind = () => {
-    $('#stLang', el).onclick = () => { const i = LANGS.findIndex(l => l.id === lang()); buzz(5); setLang(LANGS[(i + 1) % LANGS.length].id); draw(); };
     el.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { buzz(5); form = b.dataset.f; mode = 'form'; el.classList.add('typing'); draw(); });
     const f = $('.ts-form', el); if (!f) return;
     $('#stBack', el).onclick = () => { mode = 'guest'; el.classList.remove('typing'); draw(); };

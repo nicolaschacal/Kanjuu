@@ -1028,8 +1028,6 @@ ruby.wk rt{font-family:var(--f-ui);font-size:.42em;font-weight:700;opacity:.75}
 .title-scr{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;background:linear-gradient(#16132A 0%,#2A2148 58%,#3A2E66 100%);color:var(--paper);overflow:hidden;padding:var(--safe-t) 0 0}
 .title-scr.out{animation:stOut .42s ease forwards}
 @keyframes stOut{to{opacity:0;transform:scale(1.04)}}
-.ts-lang{position:absolute;top:calc(12px + var(--safe-t));right:14px;z-index:2;display:flex;align-items:center;gap:6px;height:36px;padding:0 12px;border-radius:12px;border:2px solid #F6EBD055;color:var(--paper);font-family:var(--f-title);font-weight:800;font-size:12.5px;background:#16132A66}
-.ts-lang svg{width:16px;height:16px}
 .ts-sky{position:relative;flex:1;min-height:0;display:grid;place-items:center}
 .ts-moon{position:absolute;left:50%;top:50%;width:min(86vw,400px);aspect-ratio:1;border-radius:50%;transform:translate(-50%,-46%);background:radial-gradient(circle at 50% 45%,#F2B54433,#F2B54408 62%,transparent 63%)}
 .ts-logo{position:relative;text-align:center;animation:stIn .7s cubic-bezier(.2,1.2,.4,1) both}
