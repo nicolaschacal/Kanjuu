@@ -116,16 +116,16 @@ export const itemOn = (x, y) => placed().find(it => { const [w, h] = foot(it), p
 export function paintTile(x, y, g) {
   const t = tileAt(x, y); if (t.g === g) return null;
   const it = itemOn(x, y);
-  if (g === 'water' && it && !it.t) return 'Mové primero al KANJŪ: no nadan';
-  if (g === 'water' && it?.t && !OBJS[it.t].water) return 'Quitá el objeto antes de hacer agua';
+  if (g === 'water' && it && !it.t) return 'Mueve primero al KANJŪ: no nadan';
+  if (g === 'water' && it?.t && !OBJS[it.t].water) return 'Quita el objeto antes de hacer agua';
   t.g = g; if (g === 'water') t.r = null; putTile(x, y, t); return null;
 }
 export function raiseTile(x, y) {
-  const t = tileAt(x, y); if (t.g === 'water') return 'Para subir el agua usá Cascada';
+  const t = tileAt(x, y); if (t.g === 'water') return 'Para subir el agua usa Cascada';
   t.h = (t.h + 1) % 4; t.r = null; putTile(x, y, t); return null;
 }
 export function cascadeTile(x, y) {
-  const t = tileAt(x, y); if (t.g !== 'water') return 'Tocá una casilla de agua';
+  const t = tileAt(x, y); if (t.g !== 'water') return 'Toca una casilla de agua';
   t.h = (t.h + 1) % 4; putTile(x, y, t); return null;
 }
 export function rampTile(x, y) {
@@ -268,7 +268,7 @@ export function addXP(n) {
   return ups;
 }
 
-// --- Calendario de 7 días (avanza solo los días que entrás; nunca se reinicia) ---
+// --- Calendario de 7 días (avanza solo los días que entras; nunca se reinicia) ---
 export const LOGIN = [{ ink: 40 }, { tickets: 1 }, { ink: 80 }, { scroll: 2 }, { tickets: 2 }, { ink: 150 }, { tickets: 3, gold: 1 }];
 export const today = () => new Date().toISOString().slice(0, 10);
 export const loginReady = () => S.creatures.length && S.login.last !== today();

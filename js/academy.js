@@ -98,7 +98,7 @@ const toks = line => line.replace(/([㐀-鿿々]+)\{([^}]+)\}/g, (_, k, y) => {
 const plainLine = line => line.replace(/([㐀-鿿々]+)\{([^}]+)\}/g, '$2').replace(/\s/g, '');
 function storyHTML(st) {
   return `<div class="story-read">${st.lines.map(([jp, es], i) => `<div class="sline" data-i="${i}"><button class="say-l" data-say="${i}">音</button><p class="jp">${toks(jp.replace(/ /g, ''))}</p><p class="es">${es}</p></div>`).join('')}
-    <p class="muted">Tocá una oración para ver su traducción. Tocá un kanji para ver su lectura. La furigana desaparece en los kanji que ya dominás.</p></div>`;
+    <p class="muted">Toca una oración para ver su traducción. Toca un kanji para ver su lectura. La furigana desaparece en los kanji que ya dominas.</p></div>`;
 }
 
 // ---------- Reproductor de lecciones ----------
@@ -150,9 +150,9 @@ export function runLesson(L, root, custom) {
     function render(e) {
       body.className = 'lp-body t-' + e.t;
       if (info.includes(e.t)) {
-        if (e.t === 'intro') body.innerHTML = `<p class="lp-q">Nuevo carácter</p><button class="big-kana" id="sp">${e.c}</button><p class="rom">${romaji(e.c)}</p><p class="muted">Tocá para escuchar</p>`;
+        if (e.t === 'intro') body.innerHTML = `<p class="lp-q">Nuevo carácter</p><button class="big-kana" id="sp">${e.c}</button><p class="rom">${romaji(e.c)}</p><p class="muted">Toca para escuchar</p>`;
         else if (e.t === 'vintro') body.innerHTML = `<p class="lp-q">Nueva palabra</p><button class="big-word" id="sp">${e.jp}</button><p class="rom">${romaji(e.jp)}</p><p class="es-big">${e.es}</p>`;
-        else if (e.t === 'read') body.innerHTML = `<p class="lp-q">Leé la historia</p>${storyHTML(e.st)}`;
+        else if (e.t === 'read') body.innerHTML = `<p class="lp-q">Lee la historia</p>${storyHTML(e.st)}`;
         else body.innerHTML = `<div class="tipcard">知 ${e.html}</div>`;
         const sp = $('#sp', body); if (sp) { sp.onclick = () => speak(e.c || e.jp); speak(e.c || e.jp); }
         body.querySelectorAll('.sline').forEach(l => l.onclick = ev => { if (ev.target.closest('.say-l')) return; l.classList.toggle('open'); });
@@ -163,12 +163,12 @@ export function runLesson(L, root, custom) {
       if (e.t === 'match') return renderMatch(e);
       let q = '', opts = [], correct;
       if (e.t === 'k2r') { q = `<p class="lp-q">¿Cómo suena?</p><div class="big-kana">${e.c}</div>`; correct = romaji(e.c); opts = optsFrom(correct, e.pool.map(romaji)); }
-      else if (e.t === 'r2k') { q = `<p class="lp-q">Elegí <b>${romaji(e.c)}</b></p>`; correct = e.c; opts = optsFrom(correct, e.pool); }
-      else if (e.t === 'listen') { q = `<p class="lp-q">¿Qué escuchás?</p><button class="spk" id="sp" aria-label="Escuchar">${ic('sound')}</button>`; correct = e.c; opts = optsFrom(correct, e.pool); setTimeout(() => speak(e.c), 250); }
+      else if (e.t === 'r2k') { q = `<p class="lp-q">Elige <b>${romaji(e.c)}</b></p>`; correct = e.c; opts = optsFrom(correct, e.pool); }
+      else if (e.t === 'listen') { q = `<p class="lp-q">¿Qué escuchas?</p><button class="spk" id="sp" aria-label="Escuchar">${ic('sound')}</button>`; correct = e.c; opts = optsFrom(correct, e.pool); setTimeout(() => speak(e.c), 250); }
       else if (e.t === 'mean') { q = `<p class="lp-q">¿Qué significa?</p><button class="big-word" id="sp">${e.jp}</button>${helpOn() ? `<p class="rom">${romaji(e.jp)}</p>` : ''}`; correct = e.es; opts = optsFrom(correct, e.opts, 3); speak(e.jp); }
-      else if (e.t === 'listenv') { q = `<p class="lp-q">Escuchá y elegí: <b>${e.es}</b></p><button class="spk" id="sp" aria-label="Escuchar">${ic('sound')}</button>`; correct = e.jp; opts = optsFrom(correct, e.opts, 3); setTimeout(() => speak(e.jp), 250); }
-      else if (e.t === 'trans') { q = `<p class="lp-q">Traducí</p><button class="big-word sm" id="sp">${e.jp.replace(/ /g, '')}</button>${helpOn() ? `<p class="rom">${romaji(e.jp)}</p>` : ''}`; correct = e.es; opts = optsFrom(correct, e.opts, 3); speak(e.jp); }
-      else if (e.t === 'blank') { q = `<p class="lp-q">Completá · <i>${e.es}</i></p><div class="big-word sm">${e.s.replace('_', '<span class="gap">？</span>').replace(/ /g, '')}</div>`; correct = e.a; opts = optsFrom(correct, ['は', 'を', 'に', 'で', 'の', 'か', 'が', 'います', 'あります'], 4); }
+      else if (e.t === 'listenv') { q = `<p class="lp-q">Escucha y elige: <b>${e.es}</b></p><button class="spk" id="sp" aria-label="Escuchar">${ic('sound')}</button>`; correct = e.jp; opts = optsFrom(correct, e.opts, 3); setTimeout(() => speak(e.jp), 250); }
+      else if (e.t === 'trans') { q = `<p class="lp-q">Traduce</p><button class="big-word sm" id="sp">${e.jp.replace(/ /g, '')}</button>${helpOn() ? `<p class="rom">${romaji(e.jp)}</p>` : ''}`; correct = e.es; opts = optsFrom(correct, e.opts, 3); speak(e.jp); }
+      else if (e.t === 'blank') { q = `<p class="lp-q">Completa · <i>${e.es}</i></p><div class="big-word sm">${e.s.replace('_', '<span class="gap">？</span>').replace(/ /g, '')}</div>`; correct = e.a; opts = optsFrom(correct, ['は', 'を', 'に', 'で', 'の', 'か', 'が', 'います', 'あります'], 4); }
       else if (e.t === 'tense' || e.t === 'q') { q = `<p class="lp-q">${e.q}</p>`; correct = e.a; opts = shuffle([...new Set(e.opts)]); if (e.speak) setTimeout(() => speak(e.speak), 250); }
       else if (e.t === 'build') return renderBuild(e);
       body.innerHTML = `${q}<div class="lp-opts ${opts.some(o => o.length > 8) ? 'col' : ''}">${opts.map(o => `<button class="lo">${o}</button>`).join('')}</div>`;
@@ -185,7 +185,7 @@ export function runLesson(L, root, custom) {
     }
     function renderBuild(e) {
       const words = e.jp.split(' '), bank = shuffle([...words, ...shuffle(e.extra.filter(x => !words.includes(x))).slice(0, 3)]);
-      body.innerHTML = `<p class="lp-q">Escribí en japonés</p><p class="es-big">${e.es}</p><div class="ans-row"></div><div class="bank">${bank.map((t, i) => `<button class="tk" data-i="${i}">${t}</button>`).join('')}</div>`;
+      body.innerHTML = `<p class="lp-q">Escribe en japonés</p><p class="es-big">${e.es}</p><div class="ans-row"></div><div class="bank">${bank.map((t, i) => `<button class="tk" data-i="${i}">${t}</button>`).join('')}</div>`;
       const row = $('.ans-row', body), sel = [];
       body.querySelectorAll('.tk').forEach(b => b.onclick = () => {
         if (b.parentNode === row) { row.removeChild(b); $('.bank', body).append(b); sel.splice(sel.indexOf(b), 1); }
@@ -196,7 +196,7 @@ export function runLesson(L, root, custom) {
     }
     function renderMatch(e) {
       const L2 = shuffle(e.pairs.map(p => p[0])), R2 = shuffle(e.pairs.map(p => p[1]));
-      body.innerHTML = `<p class="lp-q">Uní los pares</p><div class="match"><div>${L2.map(x => `<button class="mt" data-s="l">${x}</button>`).join('')}</div><div>${R2.map(x => `<button class="mt" data-s="r">${x}</button>`).join('')}</div></div>`;
+      body.innerHTML = `<p class="lp-q">Une los pares</p><div class="match"><div>${L2.map(x => `<button class="mt" data-s="l">${x}</button>`).join('')}</div><div>${R2.map(x => `<button class="mt" data-s="r">${x}</button>`).join('')}</div></div>`;
       let a = null, left = e.pairs.length, errs = 0;
       body.querySelectorAll('.mt').forEach(b => b.onclick = () => {
         if (b.disabled) return;
@@ -287,8 +287,8 @@ export function openAcademy(ctx) {
   };
   function openNode(L) {
     const st = L.type === 'story' ? STORIES[L.story] : null;
-    if (!unlocked(L)) return ctx.toast('Completá la lección anterior para desbloquear esta');
-    if (st && !storyReady(st)) return ctx.toast(`Para leer esta historia conseguí al menos la mitad de: ${st.kanji.join(' ')}`);
+    if (!unlocked(L)) return ctx.toast('Completa la lección anterior para desbloquear esta');
+    if (st && !storyReady(st)) return ctx.toast(`Para leer esta historia consigue al menos la mitad de: ${st.kanji.join(' ')}`);
     start(L);
   }
   async function start(L) {
@@ -296,7 +296,7 @@ export function openAcademy(ctx) {
     if (!res) return;
     const first = !crowns(L.id);
     let pieceMsg = '';
-    if (first && L.type === 'piece') { S.pieces ??= {}; S.pieces[L.piece] = (S.pieces[L.piece] || 0) + 1; pieceMsg = `<p class="g">部品 Ganaste la pieza ${L.piece}: equipala desde la ficha de una criatura</p>`; }
+    if (first && L.type === 'piece') { S.pieces ??= {}; S.pieces[L.piece] = (S.pieces[L.piece] || 0) + 1; pieceMsg = `<p class="g">部品 Ganaste la pieza ${L.piece}: equípala desde la ficha de una criatura</p>`; }
     a.done[L.id] = Math.min(3, crowns(L.id) + 1);
     const xp = (L.type === 'tip' ? 5 : 10) + (res.perfect ? 5 : 0) + Math.min(5, res.best >> 1);
     a.xp += xp; a.day.xp += xp; learnItems(L);
@@ -326,7 +326,7 @@ export function openAcademy(ctx) {
     m.querySelector('#aiCfg').onclick = () => { m.close(); openAISettings(ctx.modal, ctx.toast, render); };
   }
   async function makeStory(theme) {
-    const wait = ctx.modal(`<div class="result"><div class="quill">筆</div><h3>Tu IA está escribiendo…</h3><p class="muted">Usando solo los kanji que ya tenés</p></div>`);
+    const wait = ctx.modal(`<div class="result"><div class="quill">筆</div><h3>Tu IA está escribiendo…</h3><p class="muted">Usando solo los kanji que ya tienes</p></div>`);
     wait.onclick = null;
     let st;
     try { st = await genStory(theme); } catch (e) { wait.close(); return ctx.toast(e.message); }
@@ -350,7 +350,7 @@ export function openAcademy(ctx) {
   }
   function openLibrary() {
     const L = S.library || [];
-    const m = ctx.modal(`<h3>${ic('book')} Tu biblioteca</h3>${L.length ? L.map((st, i) => `<button class="lesson" data-b="${i}"><i>読</i><div><b>${st.title}</b><small>${new Date(st.date).toLocaleDateString()} · ${st.lines.length} oraciones</small></div></button>`).join('') : '<p class="muted">Todavía no hay cuentos. Creá uno con ✦.</p>'}`);
+    const m = ctx.modal(`<h3>${ic('book')} Tu biblioteca</h3>${L.length ? L.map((st, i) => `<button class="lesson" data-b="${i}"><i>読</i><div><b>${st.title}</b><small>${new Date(st.date).toLocaleDateString()} · ${st.lines.length} oraciones</small></div></button>`).join('') : '<p class="muted">Todavía no hay cuentos. Crea uno con ✦.</p>'}`);
     m.querySelectorAll('[data-b]').forEach(b => b.onclick = () => { m.close(); readStory(L[+b.dataset.b], false); });
   }
   render(); document.body.append(v);

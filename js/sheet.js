@@ -47,15 +47,15 @@ export function openCreature(id) {
       <button class="act" id="free" ${S.creatures.filter(x => !x.egg).length <= 1 ? 'disabled' : ''}><i>放</i>Liberar</button>
     </div>
     ${c.egg ? '' : bookCardHTML() + aiCardHTML(c)}
-    ${c.pos ? `<p class="prod">収 Produce <b>${rate(c).toFixed(1)} 墨/h</b>${c.insp > Date.now() ? ' · <b class="g">inspirado ×2</b>' : ' · entrenalo para inspirarlo ×2'}${neighbors(c).length ? ` · aura ${neighbors(c).map(o => OBJS[o.t].k).join('')}` : ''}</p>` : '<p class="r">En el almacén: colocalo en el santuario para entrenar y producir</p>'}
+    ${c.pos ? `<p class="prod">収 Produce <b>${rate(c).toFixed(1)} 墨/h</b>${c.insp > Date.now() ? ' · <b class="g">inspirado ×2</b>' : ' · entrénalo para inspirarlo ×2'}${neighbors(c).length ? ` · aura ${neighbors(c).map(o => OBJS[o.t].k).join('')}` : ''}</p>` : '<p class="r">En el almacén: colócalo en el santuario para entrenar y producir</p>'}
     ${dupesOf(c).length && (c.stars || 0) < 5 ? `<button class="btn ok wide gold" id="awaken">覚 Despertar ★${(c.stars || 0) + 1} · usa un ${c.k} duplicado (+20% tinta y EXP)</button>` : ''}
     ${S.items.scroll ? `<button class="btn ghost wide" id="scroll">巻 Usar pergamino (+60 EXP) · ${S.items.scroll}</button>` : ''}
     <details class="story-d"><summary>${ic('bulb')} Historia para recordarlo</summary>${storyHTML(c.k)}
-      <textarea id="note" maxlength="160" placeholder="Escribí tu propia historia: las que inventás vos se recuerdan mejor">${esc(S.notes?.[c.k] || '')}</textarea></details>
+      <textarea id="note" maxlength="160" placeholder="Escribe tu propia historia: las que inventas tú se recuerdan mejor">${esc(S.notes?.[c.k] || '')}</textarea></details>
     ${anchorsHTML(c.k)}
     ${accHTML(c)}
     <h4>進化 Evoluciones <small>${evos.length} caminos · 知 = dominio en el repaso</small></h4>
-    <div class="evos">${evos.length ? [...evos].sort((a, b) => (!!S.dex[b]?.seen - !!S.dex[a]?.seen) || evoLevel(a) - evoLevel(b)).map(t => evoCard(c, t)).join('') : '<p class="muted">Forma final en este santuario. Llegá a Lv MAX para renacer.</p>'}</div>
+    <div class="evos">${evos.length ? [...evos].sort((a, b) => (!!S.dex[b]?.seen - !!S.dex[a]?.seen) || evoLevel(a) - evoLevel(b)).map(t => evoCard(c, t)).join('') : '<p class="muted">Forma final en este santuario. Llega a Lv MAX para renacer.</p>'}</div>
     ${K.recipes ? `<p class="muted">Composición: ${K.recipes.map(r => r.join(' + ')).join('  ·  ')}${K.note ? ` — ${K.note}` : ''}</p>` : ''}
     <p class="hist">${c.hist.join(' → ')}</p>`, 'cr');
 
@@ -78,7 +78,7 @@ export function openCreature(id) {
   if (S.items.scroll) $('#scroll', m).onclick = () => { S.items.scroll--; const up = giveExp(c, 60); m.close(); go(); toast(`${c.k} absorbió el pergamino${up ? ` · ¡Nivel ${c.lv}!` : ''}`); setTimeout(() => openCreature(id), 260); };
   $('#reborn', m).onclick = () => {
     if (!confirm(`${c.k} volverá a ser un huevo de su raíz y ganará +25% EXP para siempre. ¿Renacer?`)) return;
-    rebirth(c); m.close(); ui.tab = 'home'; go(); toast('Un huevo apareció en el santuario. Tocalo 3 veces.');
+    rebirth(c); m.close(); ui.tab = 'home'; go(); toast('Un huevo apareció en el santuario. Tócalo 3 veces.');
   };
   m.querySelectorAll('[data-evo]').forEach(b => b.onclick = () => { m.close(); evolveFX(c, b.dataset.evo); });
   m.querySelectorAll('[data-eq]').forEach(b => b.onclick = () => {
@@ -101,7 +101,7 @@ export function evoCard(c, t) {
   return `<button class="evo ${ok ? 'ready' : ''}" data-evo="${t}" ${ok ? '' : 'disabled'}>
     <div class="evo-k ${known ? '' : 'unk'}">${known ? t : '？'}</div>
     <div class="evo-b"><b>${known ? KANJI[t].m : 'Por descubrir'}</b><small class="evo-r">${c.k} + ${others.join(' + ')}</small>
-    <span class="evo-q">${q(c.lv >= need, `Nv ${need}`)}${q(learned, `知 ${Math.min(mastery(c.k), gate)}/${gate}`)}${missing.length ? q(false, `Conocé ${missing.join(' ')}`) : ''}${piece ? q(pieceOk, `Pieza ${piece}`) : ''}</span></div>
+    <span class="evo-q">${q(c.lv >= need, `Nv ${need}`)}${q(learned, `知 ${Math.min(mastery(c.k), gate)}/${gate}`)}${missing.length ? q(false, `Conoce ${missing.join(' ')}`) : ''}${piece ? q(pieceOk, `Pieza ${piece}`) : ''}</span></div>
   </button>`;
 }
 // Entrenar: abre directo la lección de la sección actual (docs/CURRICULO.md). Los juegos del kanji quedan
@@ -217,5 +217,5 @@ export function accHTML(c) {
   const useful = [...new Set(evolutionsOf(c.k).flatMap(t => KANJI[t].recipes.filter(r => r.includes(c.k)).flat()).filter(isPiece))];
   if (!useful.length && !c.acc) return '';
   return `<h4>部品 Accesorio</h4><div class="acc-row">${c.acc ? `<div class="acc-on"><span>${c.acc}</span><div><b>${PIECES[c.acc].name}</b><small>${PIECES[c.acc].m} · se consume al evolucionar</small></div><button class="btn ghost" data-eq="">Quitar</button></div>` : ''}
-    ${useful.filter(p => p !== c.acc).map(p => `<button class="acc-opt" data-eq="${p}" ${S.pieces[p] ? '' : 'disabled'}><span>${p}</span><small>${PIECES[p].m}<br>${S.pieces[p] ? `Equipar · tenés ${S.pieces[p]}` : 'No tenés'}</small></button>`).join('')}</div>`;
+    ${useful.filter(p => p !== c.acc).map(p => `<button class="acc-opt" data-eq="${p}" ${S.pieces[p] ? '' : 'disabled'}><span>${p}</span><small>${PIECES[p].m}<br>${S.pieces[p] ? `Equipar · tienes ${S.pieces[p]}` : 'No tienes'}</small></button>`).join('')}</div>`;
 }
