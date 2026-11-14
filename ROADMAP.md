@@ -6,7 +6,7 @@ Estado: ✅ hecho · 🔜 siguiente · ⬜ pendiente. Revisado el 9 de noviembre
 
 | # | Fase | Por qué en este orden |
 |---|---|---|
-| 0 | **Idiomas: base español + inglés** | Hay que montar la infraestructura antes de seguir sumando textos; cada pantalla nueva nace traducida |
+| 0 | **Idioma: español neutro** | Textos centralizados en `locales/es.json`; sin inglés (decidido el 13 de noviembre de 2026) |
 | 1 | **Academia** | Es la mitad del juego que menos engancha hoy; sin aprendizaje que retenga no hay producto |
 | 2 | **Diseño de criaturas** (con aprobación previa) | El apego a las criaturas es el motor de la retención y de la monetización cosmética |
 | 3 | **Economía instrumentada** | Antes de tocar retención o cobrar hay que medir fuentes y sumideros y validar en servidor |
@@ -63,21 +63,8 @@ Siguiente, en orden:
 9. ⬜ Torres JLPT N5 → N1 desbloqueables
 10. ⬜ Curva del olvido personal (estadísticas de retención para el jugador)
 
-## 2b. Idiomas — español e inglés desde el lanzamiento
-El juego sale en **español e inglés**; portugués queda para después del lanzamiento. El idioma elegido es el de la interfaz y también el idioma desde el que se aprende japonés (significados, mnemotecnias, explicaciones y cursos).
-
-1. 🔜 **Infraestructura:** módulo `js/i18n.js` con `t('clave', vars)`, diccionarios `locales/es.json` y `locales/en.json`, plurales con `Intl.PluralRules`, números y fechas con `Intl`
-2. 🔜 **Idioma automático** según el dispositivo, con selector en Configuración; se guarda en la cuenta
-3. 🔜 **Interfaz traducida:** HUD, menús, hojas, Tienda, Arena, tutorial, ayudas y errores
-4. 🔜 **Datos de kanji en dos idiomas:** significado, mnemotecnia, historia al fallar y descripción de piezas (`meaning: { es, en }`)
-5. 🔜 **Academia en inglés:** consignas, traducciones de frases, explicaciones de gramática; los ejercicios de traducir y armar oraciones usan el idioma del jugador
-6. 🔜 **IA en el idioma del jugador:** cuentos, "¿Por qué?" y conversaciones reciben el idioma como parámetro
-7. 🔜 **Control de calidad:** script que detecta claves faltantes entre `es` y `en` y textos escritos directamente en el código; corre antes de cada pull request
-8. ⬜ Ficha de las tiendas, capturas, política de privacidad y términos en ambos idiomas
-9. ⬜ Revisión del inglés por un hablante nativo antes del lanzamiento
-10. ⬜ Portugués (Brasil) después del lanzamiento
-
-**Decidido (9 de noviembre de 2026):** el español base es **neutro, con tú** (toca, responde, elige). El voseo actual pasa a ser la variante **"Español (Río de la Plata)"** (`es-419-rp`), seleccionable en Configuración y elegida automáticamente en Uruguay y Argentina. Inglés base: `en`.
+## 2b. Idioma — solo español neutro
+Decidido por Nicolás el 13 de noviembre de 2026: KANJŪ sale **solo en español neutro con tú** (sin inglés ni voseo). La estructura de textos (`js/i18n.js`, `locales/es.json`) queda lista por si más adelante se suma otro idioma.
 
 ## 3. Diseño de criaturas — FASE 2
 - ✅ **Estilo aprobado (9 de noviembre de 2026):** una forma propia por kanji que muestra solo lo que significa (dos significados → se ven los dos); ojos de papel con pupila de píldora y cinco temperamentos; tinta y bermellón en la cara; broche dorado en las piezas; marcas de grado; el elemento se lee por el color. Referencia: docs/arte/estilo.html
@@ -244,4 +231,4 @@ Por qué estos números: Duolingo Super ronda los USD 13 al mes; KANJŪ es más 
 - **Modelo principal:** suscripción KANJŪ Plus centrada en el tutor IA; pase, expansiones y jade como complementos (§8)
 - **Expansiones:** agregan kanji nuevos, temáticos y fuera del currículo JLPT; el camino para aprender japonés sigue siendo gratis (§8)
 - **Precios:** fijados en §8, a revisar tras el soft launch
-- **Idiomas:** español neutro con tú como base, voseo como variante Río de la Plata, e inglés (§2b)
+- **Idioma:** solo español neutro con tú (§2b)

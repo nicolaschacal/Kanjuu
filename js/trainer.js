@@ -27,12 +27,12 @@ function bagTab(v) {
   const objs = S.objs.filter(o => !o.pos), pcs = Object.keys(PIECES).filter(p => S.pieces[p]), cons = CONSUMABLES.filter(c => S.items[c.id]);
   const segs = [['obj', '飾', 'Objetos', objs.length], ['evo', '部', 'Piezas', pcs.reduce((a, p) => a + S.pieces[p], 0)], ['con', '品', 'Consumibles', cons.reduce((a, c) => a + S.items[c.id], 0)]];
   let body = '';
-  if (tab === 'obj') body = `<p class="pn-lead">Tocá un objeto para colocarlo en la isla · ${shownObjs()}/${objCap()} colocados</p>
-    <div class="tr-grid">${objs.map(o => `<button class="tr-card" data-s="${o.id}"><span class="tr-th obj">${OBJS[o.t].art ? `<img class="obj-art" src="${artThumb(OBJS[o.t].art)}" alt="">` : `<i>${OBJS[o.t].k}</i>`}</span><span class="tr-t"><b>${OBJS[o.t].name}</b><small>Nv${o.lv} · ${OBJS[o.t].w}×${OBJS[o.t].h}</small></span></button>`).join('') || empty('No hay objetos guardados', 'Comprá decoración y edificios en la Tienda')}</div>`;
+  if (tab === 'obj') body = `<p class="pn-lead">Toca un objeto para colocarlo en la isla · ${shownObjs()}/${objCap()} colocados</p>
+    <div class="tr-grid">${objs.map(o => `<button class="tr-card" data-s="${o.id}"><span class="tr-th obj">${OBJS[o.t].art ? `<img class="obj-art" src="${artThumb(OBJS[o.t].art)}" alt="">` : `<i>${OBJS[o.t].k}</i>`}</span><span class="tr-t"><b>${OBJS[o.t].name}</b><small>Nv${o.lv} · ${OBJS[o.t].w}×${OBJS[o.t].h}</small></span></button>`).join('') || empty('No hay objetos guardados', 'Compra decoración y edificios en la Tienda')}</div>`;
   if (tab === 'evo') body = `<p class="pn-lead">Piezas 部品: se equipan desde la ficha de un KANJŪ para evolucionar o se suman en la fusión.</p>
     <div class="tr-grid">${pcs.map(p => `<div class="tr-card"><span class="tr-th obj"><i>${p}</i></span><span class="tr-t"><b>${PIECES[p].name}</b><small>${PIECES[p].m} · ×${S.pieces[p]}</small></span></div>`).join('') || empty('Sin piezas', 'Salen de viajes, cofres y la Tienda')}</div>`;
   if (tab === 'con') body = `<p class="pn-lead">Objetos de un solo uso.</p>
-    <div class="tr-list">${cons.map(c => `<div class="tr-card wide"><span class="tr-th obj"><i>${c.k}</i></span><span class="tr-t"><b>${c.name} · ×${S.items[c.id]}</b><small>${c.use}</small></span></div>`).join('') || empty('No tenés consumibles', 'Están en la Tienda')}</div>`;
+    <div class="tr-list">${cons.map(c => `<div class="tr-card wide"><span class="tr-th obj"><i>${c.k}</i></span><span class="tr-t"><b>${c.name} · ×${S.items[c.id]}</b><small>${c.use}</small></span></div>`).join('') || empty('No tienes consumibles', 'Están en la Tienda')}</div>`;
   v.innerHTML = `<div class="tr">
     <p class="eyebrow">Tu mochila</p><h2 class="pn-h">Inventario</h2>
     <div class="st-tabs">${segs.map(([id, k, l, n]) => `<button class="${tab === id ? 'on' : ''}" data-seg="${id}"><i>${k}</i><span>${l}</span>${n ? `<b>${n}</b>` : ''}</button>`).join('')}</div>
@@ -58,7 +58,7 @@ function kanTab(v) {
     ${more ? `<button class="btn ghost wide" id="moreStore">蔵 +5 lugares en el almacén · ${more} 墨</button>` : ''}</div>`;
   v.querySelectorAll('[data-c]').forEach(b => b.onclick = () => {
     const c = findIt(b.dataset.c); buzz(6);
-    if (c.egg && c.pos) return toast('Tocá el huevo en la isla 3 veces para que nazca');
+    if (c.egg && c.pos) return toast('Toca el huevo en la isla 3 veces para que nazca');
     !c.pos && !c.away ? storedMenu(c, noop) : openCreature(c.id);
   });
   v.querySelectorAll('[data-gin]').forEach(b => b.onclick = () => { const g = S.gate.splice(+b.dataset.gin, 1)[0]; arrive(g.k, { gold: g.gold }); go(); });
@@ -81,7 +81,7 @@ function meTab(v) {
       <div><b>${S.stats.evolutions + S.stats.fusions}</b><small>Evoluciones</small></div><div><b>${S.arena?.cups || 0}</b><small>Copas</small></div>
     </div>
     <div class="menu-list">
-      <button class="row-k" id="uRev"><span class="row-ic ${due ? 'hot' : ''}">${ic('refresh')}</span><span class="row-t"><b>Repaso del día</b><small>${due ? `${due} para repasar hoy` : 'Todo al día · volvé mañana'}</small></span>${due ? `<b class="row-n">${due}</b>` : ic('right', 'chev')}</button>
+      <button class="row-k" id="uRev"><span class="row-ic ${due ? 'hot' : ''}">${ic('refresh')}</span><span class="row-t"><b>Repaso del día</b><small>${due ? `${due} para repasar hoy` : 'Todo al día · vuelve mañana'}</small></span>${due ? `<b class="row-n">${due}</b>` : ic('right', 'chev')}</button>
       <button class="row-k" id="uDiary"><span class="row-ic">${ic('pen')}</span><span class="row-t"><b>${t('diary.title')}</b><small>${t('diary.rowSub', { n: foundIds().length })}</small></span>${ic('right', 'chev')}</button>
       <button class="row-k" id="uQuest"><span class="row-ic">${ic('list')}</span><span class="row-t"><b>Misiones</b><small>Diarias y semanales</small></span>${ic('right', 'chev')}</button>
       <button class="row-k" id="uShop"><span class="row-ic">${ic('bag')}</span><span class="row-t"><b>Tienda</b><small>Invocar, decorar, edificios y piezas · ${totalRate()} 墨/h</small></span>${ic('right', 'chev')}</button>

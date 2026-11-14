@@ -23,7 +23,7 @@ export const ITEMS = [
 ];
 function shopObjs(decor) {
   return Object.entries(OBJS).filter(([, d]) => (d.kind === 'decor') === decor && !d.hide).map(([t, d]) => { const lock = S.rank.lv < d.rank, n = S.objs.filter(o => o.t === t).length;
-    return `<div class="shop-row ${lock ? 'locked' : ''}"><i class="shop-art">${d.art ? `<img src="${artThumb(d.art)}" alt="">` : d.k}</i><div><b>${d.name}${n ? ` · tenés ${n}` : ''}</b><small>${d.kind === 'decor' ? d.desc : d.desc} · ${d.w}×${d.h} · 和+${d.har}</small></div>
+    return `<div class="shop-row ${lock ? 'locked' : ''}"><i class="shop-art">${d.art ? `<img src="${artThumb(d.art)}" alt="">` : d.k}</i><div><b>${d.name}${n ? ` · tienes ${n}` : ''}</b><small>${d.kind === 'decor' ? d.desc : d.desc} · ${d.w}×${d.h} · 和+${d.har}</small></div>
       <button class="btn ok" data-obj="${t}" ${lock || S.ink < objCost(t) ? 'disabled' : ''}>${lock ? `Rango ${d.rank}` : objCost(t) + ' 墨'}</button></div>`; }).join('');
 }
 let shopTab = 'inv';
@@ -46,22 +46,22 @@ export function viewShop(v) {
     ${shopTab === 'bld' ? `<h4>Edificios <small>tienen efecto sobre sus vecinos · mejoralos hasta Nv${OBJ_MAX}</small></h4>
     ${shopObjs(false)}` : ''}
     ${shopTab === 'pcs' ? `<h4>Piezas 部品 <small>accesorios para evolucionar y fusionar</small></h4>
-    ${Object.entries(PIECES).map(([p, d]) => `<div class="shop-row"><i class="pc-i">${p}</i><div><b>${d.name} <small class="rmj">${d.rom}</small> · ${d.m}${S.pieces[p] ? ` · tenés ${S.pieces[p]}` : ''}</b><small>Forma ${d.ex}</small></div><button class="btn ok" data-piece="${p}" ${S.ink < d.cost ? 'disabled' : ''}>${d.cost} 墨</button></div>`).join('')}
+    ${Object.entries(PIECES).map(([p, d]) => `<div class="shop-row"><i class="pc-i">${p}</i><div><b>${d.name} <small class="rmj">${d.rom}</small> · ${d.m}${S.pieces[p] ? ` · tienes ${S.pieces[p]}` : ''}</b><small>Forma ${d.ex}</small></div><button class="btn ok" data-piece="${p}" ${S.ink < d.cost ? 'disabled' : ''}>${d.cost} 墨</button></div>`).join('')}
 ` : ''}
     ${shopTab === 'inv' ? `<h4>Consumibles <small>se usan una vez</small></h4>
-    ${ITEMS.map(it => `<div class="shop-row"><i>${it.k}</i><div><b>${it.name}${S.items[it.id] ? ` · tenés ${S.items[it.id]}` : ''}</b><small>${it.desc}</small></div><button class="btn ok" data-buy="${it.id}" ${S.ink < it.cost ? 'disabled' : ''}>${it.cost} 墨</button></div>`).join('')}
+    ${ITEMS.map(it => `<div class="shop-row"><i>${it.k}</i><div><b>${it.name}${S.items[it.id] ? ` · tienes ${S.items[it.id]}` : ''}</b><small>${it.desc}</small></div><button class="btn ok" data-buy="${it.id}" ${S.ink < it.cost ? 'disabled' : ''}>${it.cost} 墨</button></div>`).join('')}
 ` : ''}
   </div>`;
   v.querySelectorAll('[data-st]').forEach(b => b.onclick = () => { shopTab = b.dataset.st; buzz(5); go(); });
   v.querySelectorAll('[data-piece]').forEach(b => b.onclick = () => {
     const p = b.dataset.piece; S.ink -= PIECES[p].cost; S.pieces[p] = (S.pieces[p] || 0) + 1; buzz(10);
-    toast(`部品 ${p} ${PIECES[p].name} guardada · equipala desde la ficha de una criatura`); go();
+    toast(`部品 ${p} ${PIECES[p].name} guardada · equípala desde la ficha de una criatura`); go();
   });
   v.querySelectorAll('[data-pull]').forEach(b => b.onclick = () => doPull(+b.dataset.pull));
   $('#buyIsle', v) && ($('#buyIsle', v).onclick = () => { const r = buyIsland(); if (r === 'ok') { buzz([20, 60, 20]); toast(`拡 ¡${island().name}! Más lugar para KANJŪ y objetos`); go(); } });
   v.querySelectorAll('[data-obj]').forEach(b => b.onclick = () => {
     const t = b.dataset.obj, d = OBJS[t]; S.ink -= objCost(t); const o = newObj(t); buzz(12);
-    if (o.pos) { toast(`${d.k} colocado en la isla · 和+${d.har} · movelo con 匠 Construir`); } else toast(`${d.k} guardado en 蔵 Almacén › Objetos (la isla está llena)`);
+    if (o.pos) { toast(`${d.k} colocado en la isla · 和+${d.har} · muévelo con 匠 Construir`); } else toast(`${d.k} guardado en 蔵 Almacén › Objetos (la isla está llena)`);
     go();
   });
   v.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => {
@@ -74,7 +74,7 @@ export function viewShop(v) {
 }
 export function doPull(n) {
   const useT = S.tickets >= n, cost = n === 1 ? PULL : PULL10;
-  if (!useT && S.ink < cost) return toast(`Te faltan ${cost - S.ink} 墨 · también podés usar 札`);
+  if (!useT && S.ink < cost) return toast(`Te faltan ${cost - S.ink} 墨 · también puedes usar 札`);
   if (useT) S.tickets -= n; else S.ink -= cost;
   const res = pull(n); bump('pull', n);
   const fx = document.createElement('div'); fx.className = 'summon';
@@ -90,7 +90,7 @@ export function doPull(n) {
 // ---------- Entrenador de kana ----------
 export async function startKana() {
   const pool = kanaPool(reads);
-  if (pool.length < 4) return toast('Conseguí más criaturas para tener sonidos que practicar');
+  if (pool.length < 4) return toast('Consigue más criaturas para tener sonidos que practicar');
   const r = await kanaDrill(pool, $('#layer'));
   const ink = r.right * 2; S.ink += ink; bump('review', r.right); const up = addXP(r.right * 2); save(); hud();
   toast(`仮 ${r.right}/${r.total} · +${ink} 墨`); if (up.length) rankUp(up);
@@ -99,7 +99,7 @@ export async function startKana() {
 // ---------- Calendario de entrada ----------
 export function openLogin() {
   const day = S.login.day % 7;
-  const m = modal(`<h3>暦 Regalo del día</h3><p class="muted">Avanza cada día que entrás. Si faltás, no perdés nada: sigue donde quedó.</p>
+  const m = modal(`<h3>暦 Regalo del día</h3><p class="muted">Avanza cada día que entras. Si faltas, no pierdes nada: sigue donde quedó.</p>
     <div class="cal">${LOGIN.map((r, i) => `<div class="cal-d ${i < day ? 'got' : i === day ? 'today' : ''}"><small>Día ${i + 1}</small><b>${r.ink ? `${r.ink}<i>墨</i>` : r.tickets ? `${r.tickets}<i>札</i>` : `${r.scroll}<i>巻</i>`}</b>${r.gold ? '<em>✦ dorado</em>' : ''}</div>`).join('')}</div>
     <button class="btn ok wide" id="claim">Recibir</button>`, 'onacct');
   m.onclick = null;

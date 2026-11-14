@@ -27,18 +27,18 @@ export function viewLab(v) {
   const weak = match ? [...new Set(sel.map(c => c.k))].filter(k => mastery(k) < learnGate(match)) : [];
   v.innerHTML = `
   <div class="lab">
-    ${scrHead('錬', 'Fusión', 'Combiná KANJŪ y piezas: nace uno nuevo y los demás se consumen')}
+    ${scrHead('錬', 'Fusión', 'Combina KANJŪ y piezas: nace uno nuevo y los demás se consumen')}
     <div class="altar">
       <div class="slots">${Array.from({ length: Math.min(4, Math.max(2, labSel.length + 1)) }, (_, i) => i).map(i => labSel[i] ? slotHTML(labSel[i]) : `<div class="slot">＋</div>`).join('<span class="plus">+</span>')}</div>
       <div class="arrow">↓</div>
-      <div class="result-slot ${match ? 'ok' : ''}">${match ? `<span class="big-k">${match}</span><small>${KANJI[match].m} · ${KANJI[match].form}</small>` : `<span class="big-k dim">？</span><small>${sel.length ? 'Sin composición conocida' : 'Elegí criaturas'}</small>`}</div>
-      ${weak.length ? `<p class="gate-msg">${ic('lock')} Para fusionar necesitás dominar ${weak.map(k => `<b>${k}</b> ${mastery(k)}/${learnGate(match)}`).join(' · ')}. Repasalos en el Dojo en días distintos.</p>` : ''}
+      <div class="result-slot ${match ? 'ok' : ''}">${match ? `<span class="big-k">${match}</span><small>${KANJI[match].m} · ${KANJI[match].form}</small>` : `<span class="big-k dim">？</span><small>${sel.length ? 'Sin composición conocida' : 'Elige criaturas'}</small>`}</div>
+      ${weak.length ? `<p class="gate-msg">${ic('lock')} Para fusionar necesitas dominar ${weak.map(k => `<b>${k}</b> ${mastery(k)}/${learnGate(match)}`).join(' · ')}. Repasalos en el Dojo en días distintos.</p>` : ''}
       <button class="btn ok wide" id="fuse" ${match && !weak.length ? '' : 'disabled'}>合 Fusionar</button>
     </div>
-    <h4>Tus KANJŪ <small>tocá para ponerlos en el altar</small></h4>
+    <h4>Tus KANJŪ <small>toca para ponerlos en el altar</small></h4>
     <div class="roster">${avail.map(c => `<button class="chip-mon ${labSel.includes(c.id) ? 'on' : ''}" data-id="${c.id}">${creatureSVG(c.k)}<small>${c.k} Lv${c.lv}</small></button>`).join('') || '<p class="muted">No hay criaturas disponibles.</p>'}</div>
     <h4>部品 Piezas <small>accesorios que también se fusionan</small></h4>
-    <div class="roster">${Object.keys(PIECES).filter(p => S.pieces[p] > 0).map(p => `<button class="chip-mon pc ${labSel.includes('p:' + p) ? 'on' : ''}" data-p="${p}"><span>${p}</span><small>${PIECES[p].m} ×${S.pieces[p]}</small></button>`).join('') || '<p class="muted">No tenés piezas. Conseguilas en la Tienda o en viajes.</p>'}</div>
+    <div class="roster">${Object.keys(PIECES).filter(p => S.pieces[p] > 0).map(p => `<button class="chip-mon pc ${labSel.includes('p:' + p) ? 'on' : ''}" data-p="${p}"><span>${p}</span><small>${PIECES[p].m} ×${S.pieces[p]}</small></button>`).join('') || '<p class="muted">No tienes piezas. Conseguilas en la Tienda o en viajes.</p>'}</div>
     <h4>合 Libro de composiciones</h4>
     <div class="recipes ${labAll ? 'all' : ''}">${Object.keys(KANJI).filter(t => KANJI[t].recipes).sort((a, b) => (!!S.dex[b]?.seen - !!S.dex[a]?.seen)).map(t => {
       const dx = S.dex[t], show = dx?.seen;
