@@ -5,6 +5,7 @@ import { ic } from './icons.js';
 import { S, save } from './state.js';
 import { KANJI } from './data.js';
 import { t, lang } from './i18n.js';
+import { API, CREDS } from './env.js';
 
 export const PROVIDERS = {
   gemini: { label: 'Google Gemini', models: ['gemini-2.5-flash', 'gemini-2.5-flash-lite'], prefixes: ['AIza'], keyUrl: 'https://aistudio.google.com/apikey', free: true },
@@ -20,7 +21,7 @@ export const detect = k => Object.keys(PROVIDERS).find(id => PROVIDERS[id].prefi
 let st = null;
 const OLD = 'kanjuu.ai.v1'; // clave que versiones anteriores guardaban en el dispositivo
 const api = async (body) => {
-  const r = await fetch('/api/ai', body ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) } : {});
+  const r = await fetch(API + '/api/ai', body ? { method: 'POST', credentials: CREDS, headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) } : { credentials: CREDS });
   const d = await r.json().catch(() => ({}));
   return { ok: r.ok, status: r.status, d };
 };

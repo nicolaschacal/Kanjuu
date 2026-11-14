@@ -1,3 +1,4 @@
+import { API, CREDS } from './env.js';
 // Analítica de la Academia (S1-02): eventos en lotes a /api/events.
 // Sin datos personales: el servidor guarda solo un hash de la cuenta o de un id de dispositivo al azar.
 // Nada de esto puede romper el juego: todo va dentro de try/catch y los fallos se ignoran.
@@ -51,7 +52,7 @@ export async function flush() {
   busy = true;
   const batch = q.slice(0, BATCH);
   try {
-    const r = await fetch('/api/events', { method: 'POST', credentials: 'same-origin', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: body(batch) });
+    const r = await fetch(API + '/api/events', { method: 'POST', credentials: CREDS, keepalive: true, headers: { 'Content-Type': 'application/json' }, body: body(batch) });
     // 4xx: el lote es inválido y reintentarlo no sirve; se descarta
     if (r.ok || (r.status >= 400 && r.status < 500 && r.status !== 404 && r.status !== 429)) drop(batch);
   } catch {}
@@ -62,7 +63,7 @@ export async function flush() {
 // Al salir de la app se usa sendBeacon, que sobrevive al cierre de la página.
 // No ve la respuesta, así que la cola no se borra: lo que llegó se ignora como repetido en el próximo envío.
 function beacon() {
-  try { if (q.length && navigator.sendBeacon) navigator.sendBeacon('/api/events', new Blob([body(q.slice(0, BATCH))], { type: 'application/json' })); } catch {}
+  try { if (q.length && navigator.sendBeacon) navigator.sendBeacon(API + '/api/events', new Blob([body(q.slice(0, BATCH))], { type: 'application/json' })); } catch {}
 }
 try {
   addEventListener('visibilitychange', () => { if (document.hidden) beacon(); });
