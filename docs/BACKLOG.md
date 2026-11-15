@@ -131,6 +131,27 @@ Especificación completa en **docs/PROGRESION.md**: el modelo de Duolingo para e
 ### P-09 · Contenido: etapas 3 y 4 hasta el N4 (~1500 palabras)
 Cada tarea de contenido: frases de manual (Genki, Marugoto, Irodori), kanji ordenados según sus recetas (componentes antes), `tools/check_curriculo.mjs` sin errores.
 
+*Agregado el 15 de noviembre de 2026, con las decisiones de Nicolás (docs/PROGRESION.md §11 a §14):*
+
+### P-08c · P-08d · P-08e · Etapa 2, unidades nuevas 2.13 a 2.30 *(después de aprobar el mapa §13)*
+- 6 unidades por PR, cada una con 18–20 palabras, 12–15 frases, diálogo, rivales y premio, según el mapa de docs/PROGRESION.md §13
+
+**Aceptación:** la etapa 2 llega a ~800 palabras acumuladas; `tools/check_curriculo.mjs` sin errores; una partida vieja carga en su unidad.
+
+### P-10 · Pasado y negativo de los adjetivos い y な, y de です *(decidido por Nicolás)*
+- Formas 〜くない, 〜かった, 〜くなかった, 〜くて; じゃない, じゃありません y でした como fichas; frases nuevas
+
+**Aceptación:** en la 2.4 se arma 「この くつ は たかくない です」 y se ve 高くない con furigana.
+
+### P-11 · Propuesta: leer de corrido *(diseño)*
+- Maqueta en `docs/propuestas/P-11-lectura.html`: lectura por unidad sin espacios, furigana solo en kanji no dominados, tocar una palabra, audio y preguntas de comprensión (§12)
+
+**Aceptación:** maqueta navegable en el teléfono; Nicolás la aprueba o la rechaza.
+
+### P-12 · Lectura por unidad *(después de aprobar P-11)*
+### P-13 · Lecturas de las etapas 1 y 2 *(después de P-12)*
+### P-14 · Forma ない y forma た corta en el motor
+
 ---
 
 ## Bloque A · Aprendizaje en el entrenamiento *(va primero: decidido por Nicolás el 13 de noviembre de 2026)*
