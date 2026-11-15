@@ -78,7 +78,7 @@ export function checkCurriculum() { … }  // como checkLang(): devuelve la list
 Reglas que valida `checkCurriculum()` (y un script `tools/check_curriculo.mjs`):
 - Cada palabra, frase y patrón existe en `js/lang.js`; cada kanji y cada recompensa existe en `KANJI`.
 - Una frase de una sección solo usa palabras de esa sección o de secciones anteriores.
-- Cada sección tiene entre 8 y 20 palabras núcleo y al menos 4 frases.
+- Cada sección tiene entre 8 y 30 palabras núcleo y al menos 4 frases (el tope era 20; Nicolás aceptó aumentarlo el 15/11/2026).
 - `reward` aparece en la forma escrita de `rewardWord`.
 - Ningún KANJŪ es recompensa de dos secciones.
 
@@ -172,12 +172,12 @@ Las palabras concretas de cada sección se cargan en `js/curriculum.js` etapa po
 | 2.4 | Describir cosas | adjetivos い / な, pasado | 新 古 高 安 | 新 |
 | 2.5 | Planes para el finde (futuro) | presente con valor futuro, 〜ませんか, 〜ましょう | 明 来週 末 | 明 |
 | 2.6 | El clima | 〜でしょう, estaciones | 天 気 雨 雪 春 夏 秋 冬 | 雨 |
-| 2.7 | Mi casa | 〜に 〜が あります / います, 〜の となり / ちかく | 家 門 窓 | 家 |
-| 2.8 | Pedir direcciones | forma て, 〜てください, 〜を 〜に まがって, 〜まで あるいて | 道 駅 右 左 | 道 |
-| 2.9 | En el restaurante | 〜に します, 〜と 〜, 〜を ひとつ / ふたつ ください | 肉 魚 卵 米 | 魚 |
-| 2.10 | Pedir permiso | 〜てもいいですか, 〜てはいけません | 入 出 休 | 休 |
-| 2.11 | Lo que estoy haciendo | 〜ています (acción en curso; estado: すんで / けっこん して います) | 話 聞 読 書 | 話 |
-| 2.12 | Mis hobbies | しゅみ は 〜 です, 〜が 好き, よく / ときどき / ぜんぜん (〜のが 好き con forma de diccionario queda para más adelante) | 音 楽 歌 見 | 音 |
+| 2.7 | Mi casa | 〜に 〜が あります / います, 〜の となり / ちかく, に かい (contador de pisos) | 家 門 窓 台 | 家 |
+| 2.8 | Pedir direcciones | forma て, 〜てください, 〜を 〜に まがって, 〜まで あるいて, 〜ばんめ, みぎがわ / ひだりがわ | 道 駅 右 左 | 道 |
+| 2.9 | En el restaurante | 〜に します, 〜と 〜, 〜を ひとつ / ふたつ ください, 〜は いかが ですか, いいえ けっこう です | 田 肉 魚 卵 米 (田 antes que 魚) | 魚 |
+| 2.10 | Pedir permiso | 〜てもいいですか, 〜てはいけません, 〜てください (つけて / けして / たって) | 入 出 休 開 立 (立 antes que 音) | 休 |
+| 2.11 | Lo que estoy haciendo | 〜ています (acción en curso; estado: すんで / けっこん して / しって います) | 耳 言 話 聞 読 書 (耳 antes que 聞, 言 antes que 話 y 読) | 話 |
+| 2.12 | Mis hobbies | しゅみ は 〜 です, 〜が 好き, よく / ときどき / ぜんぜん, 〜のが 好き con forma de diccionario | 音 楽 歌 見 料 | 音 |
 
 ### Etapa 3 · Ampliar el mundo (A1+ a A2)
 
