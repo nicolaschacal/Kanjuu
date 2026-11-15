@@ -172,12 +172,12 @@ Las palabras concretas de cada sección se cargan en `js/curriculum.js` etapa po
 | 2.4 | Describir cosas | adjetivos い / な, pasado | 新 古 高 安 | 新 |
 | 2.5 | Planes para el finde (futuro) | presente con valor futuro, 〜ませんか, 〜ましょう | 明 来週 末 | 明 |
 | 2.6 | El clima | 〜でしょう, estaciones | 天 気 雨 雪 春 夏 秋 冬 | 雨 |
-| 2.7 | Mi casa | 〜が あります, contadores | 家 門 窓 | 家 |
+| 2.7 | Mi casa | 〜が あります, contadores | 家 門 窓 台 | 家 |
 | 2.8 | Pedir direcciones | forma て, 〜てください | 道 駅 右 左 | 道 |
-| 2.9 | En el restaurante | 〜に します, 〜と 〜 | 肉 魚 卵 米 | 魚 |
-| 2.10 | Pedir permiso | 〜てもいいですか, 〜てはいけません | 入 出 休 | 休 |
-| 2.11 | Lo que estoy haciendo | 〜ています | 話 聞 読 書 | 話 |
-| 2.12 | Mis hobbies | 〜のが 好き, forma de diccionario | 音 楽 歌 見 | 音 |
+| 2.9 | En el restaurante | 〜に します, 〜と 〜 | 田 肉 魚 卵 米 (田 antes que 魚) | 魚 |
+| 2.10 | Pedir permiso | 〜てもいいですか, 〜てはいけません | 入 出 休 開 立 (立 antes que 音) | 休 |
+| 2.11 | Lo que estoy haciendo | 〜ています | 耳 言 話 聞 読 書 (耳 antes que 聞, 言 antes que 話 y 読) | 話 |
+| 2.12 | Mis hobbies | 〜のが 好き, forma de diccionario | 音 楽 歌 見 料 | 音 |
 
 ### Etapa 3 · Ampliar el mundo (A1+ a A2)
 
