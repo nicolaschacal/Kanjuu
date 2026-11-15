@@ -211,13 +211,13 @@ Las unidades 2.1 a 2.12 ya existen (P-08a #47, P-08b #48 o #49). Se suman 2.13 a
 | 2.20 | Planes de viaje | 〜たり 〜たり します, 〜ましょう | 歩 方 | 歩 |
 | 2.21 | Mi barrio | Lugares y tiendas: 〜の となり / まえ | 店 屋 | 店 |
 | 2.22 | Horarios de trabajo | 〜時から 〜時まで, 〜ごろ, 〜曜日 | 働 | 働 |
-| 2.23 | Rumbo a una fiesta | 〜て、〜て (secuencia), 〜て から | 番 回 | 番 |
-| 2.24 | Eventos | Fechas: 〜月 〜日, 〜は いつ ですか | 誕? (si está en el roster) | 回 |
+| 2.23 | Rumbo a una fiesta | 〜て、〜て (secuencia), 〜て から | 番 | 番 |
+| 2.24 | Eventos | Fechas: 〜月 〜日, 〜は いつ ですか | 回 | 回 |
 | 2.25 | Vida en la universidad | Forma ない: 〜ないで ください | 英 字 | 英 |
 | 2.26 | Hábitos sanos | 〜た ほうが いい, 〜ない ほうが いい | 医 | 医 |
 | 2.27 | Mis clases | 〜まえに, 〜た あとで | 室 | 室 |
 | 2.28 | Comprar ropa (2) | 〜が ほしい, 〜は どう ですか | 服 | 服 |
-| 2.29 | Reservar un hotel | Días y noches, 〜を おねがいします, 〜で (precio) | 部? / 泊? (si están en el roster) | 屋 |
+| 2.29 | Reservar un hotel | Días y noches, 〜を おねがいします, 〜で (precio) | 屋 | 屋 |
 | 2.30 | En el supermercado | 〜は どこ ですか, 〜と 〜と, repaso de la etapa | 理 | 理 |
 
 Notas del mapa:
