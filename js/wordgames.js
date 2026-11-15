@@ -43,6 +43,12 @@ export function extraTiles(toks) {
 }
 
 export const wordType = box => box <= 0 ? 'l2m' : box === 1 ? 'k2m' : box <= 3 ? 'build' : 'order';
+// El nivel de la sección acota el tipo (P-04): { min, max } entre l2m · k2m · build · order
+const TYPES = ['l2m', 'k2m', 'build', 'order'];
+export const clampType = (type, { min, max } = {}) => {
+  const i = TYPES.indexOf(type), lo = min ? TYPES.indexOf(min) : 0, hi = max ? TYPES.indexOf(max) : TYPES.length - 1;
+  return TYPES[Math.min(hi, Math.max(lo, i))];
+};
 
 // Tarjeta de la palabra: se muestra al fallar, con una frase que ya se puede leer
 export function wordCardHTML(w) {
@@ -52,9 +58,9 @@ export function wordCardHTML(w) {
 }
 
 // Un ejercicio para la palabra `id`; llama a done(true|false) cuando termina
-export function wordExercise(id, body, done) {
+export function wordExercise(id, body, done, range) {
   const w = WORD[id], box = S.lex[id]?.box || 0;
-  let type = wordType(box);
+  let type = clampType(wordType(box), range);
   const phrase = type === 'order' ? shuffle(phrasesOf(id).filter(p => jaTokens(p.ja, p.ids).length >= 3))[0] : null;
   if (type === 'order' && !phrase) type = 'build';
   if (type === 'l2m' && !canSpeak()) type = 'k2m';
