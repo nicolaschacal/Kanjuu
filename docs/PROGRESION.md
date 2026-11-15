@@ -19,7 +19,7 @@ Nicolás llegó a la etapa 4 «con los ojos cerrados» sin dominar el N5. Causas
 | **Las frases están en hiragana.** 0 de las 232 frases del currículo llevan kanji | `EXTRA` en `js/curriculum.js` | Se lee hiragana en todas las etapas |
 | **Casi todo es elegir 1 de 4 en español**, con distractores al azar de cualquier tema | `wordExercise()` en `js/wordgames.js` | Se responde por descarte |
 | **Armar frases con la traducción a la vista** y solo 2 fichas de más | `phraseExercise()` en `js/round.js` | Sale por lógica, sin entender el japonés |
-| **No se reprueba.** 80 % para contar, y el ejercicio fallado vuelve hasta acertarlo | `endRound()` | Toda ronda cuenta |
+| **Aprobar es fácil.** Cuenta el primer intento (80 %), pero con distractores al azar casi nadie falla | `endRound()`, `runRound()` | Toda ronda cuenta |
 | **5 rondas de 12 ejercicios por sección** (60 en total) | `ROUNDS`, `planRound()` | Una unidad de Duolingo tiene 15 a 25 lecciones de ~15 ejercicios (≈300) |
 
 **La cuenta que lo resume:** Duolingo Japonés tiene unas 4800 lecciones y unas 6900 palabras. Kanjuu tiene hoy 270 rondas (54 × 5) y 295 palabras: menos del 5 % del volumen. Por eso las 4 etapas se sienten como la sección 1 de Duolingo.
@@ -108,7 +108,7 @@ Las unidades actuales se conservan como esqueleto y se reparten: las etapas 1 a 
 
 ## 6. Para que cueste de verdad
 
-- **Cuenta el primer intento.** El ejercicio fallado vuelve al final (para aprender), pero no suma para aprobar.
+- **Cuenta el primer intento** (ya era así en el motor). El ejercicio fallado vuelve al final para aprender, sin sumar.
 - Una ronda cuenta con el 80 % de aciertos al primer intento.
 - Sin corazones ni energía: nunca se bloquea jugar (regla del juego). Si una ronda no cuenta, se repite cuando quieras.
 - El nivel 5 de cada unidad mezcla un 30 % de las unidades anteriores.
