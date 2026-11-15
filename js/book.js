@@ -3,8 +3,8 @@
 // de la etapa: una página por sección con lo que se pintó.
 import { t } from './i18n.js';
 import { tr } from './lex.js';
-import { SECTIONS, STAGES } from './curriculum.js';
-import { cur, curSection, roundsOf, inkSVG, paintedOf, prizeState, ROUNDS } from './round.js';
+import { SECTIONS, STAGES, LEVELS, ROUNDS_PER_LEVEL } from './curriculum.js';
+import { cur, curSection, levelOf, levelRounds, inkSVG, paintedOf, prizeState } from './round.js';
 import { creatureSVG } from './creature.js';
 import { canExam, openExam } from './exam.js';
 
@@ -12,7 +12,7 @@ import { canExam, openExam } from './exam.js';
 export function bookCardHTML() {
   const s = curSection(), st = STAGES.find(x => x.id === s.stage);
   return `<button class="bk-card" id="bookCard"><span class="rd-ink-box">${s.reward ? inkSVG(s.reward, paintedOf(s.id)) : `<span class="rd-inkk">${s.kanji[0] || '・'}</span>`}</span>
-    <span class="bk-t"><b>${tr(s.title)} · ${t('book.progress', { n: roundsOf(s.id), total: ROUNDS })}</b>
+    <span class="bk-t"><b>${tr(s.title)} · ${t('book.level', { l: levelOf(s.id), total: LEVELS })}</b>
     <small>${s.reward ? t('book.hidden') : t('book.noPrize')} · ${tr(st.title)} · ${t('book.open')}</small></span></button>`;
 }
 
@@ -20,7 +20,7 @@ export function bookCardHTML() {
 function pageHTML(s) {
   const c = cur(), done = !!c.done[s.id], here = c.sec === s.id, got = prizeState(s.id);
   let fig, sub, cls = '';
-  if (here) { fig = s.reward ? inkSVG(s.reward, paintedOf(s.id)) : `<span class="rd-inkk">${s.kanji[0] || '・'}</span>`; sub = t('book.here', { n: roundsOf(s.id), total: ROUNDS }); cls = 'cur'; }
+  if (here) { fig = s.reward ? inkSVG(s.reward, paintedOf(s.id)) : `<span class="rd-inkk">${s.kanji[0] || '・'}</span>`; sub = t('book.here', { l: levelOf(s.id), total: LEVELS, n: levelRounds(s.id), rounds: ROUNDS_PER_LEVEL }); cls = 'cur'; }
   else if (!done) { fig = '<span class="rd-inkk q">？</span>'; sub = t('book.blank'); cls = 'next'; }
   else if (c.skipped[s.id]) { fig = `<span class="rd-inkk sm">${s.kanji.slice(0, 3).join('') || '・'}</span>`; sub = t('book.skipped'); }
   else if (got === 'asleep') { fig = inkSVG(s.reward, paintedOf(s.id)); sub = t('book.asleep'); }

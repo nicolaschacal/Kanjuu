@@ -78,7 +78,7 @@ export function checkCurriculum() { … }  // como checkLang(): devuelve la list
 Reglas que valida `checkCurriculum()` (y un script `tools/check_curriculo.mjs`):
 - Cada palabra, frase y patrón existe en `js/lang.js`; cada kanji y cada recompensa existe en `KANJI`.
 - Una frase de una sección solo usa palabras de esa sección o de secciones anteriores.
-- Cada sección tiene entre 8 y 20 palabras núcleo y al menos 4 frases.
+- Cada sección tiene entre 8 y 30 palabras núcleo y al menos 4 frases (el tope era 20; Nicolás aceptó aumentarlo el 15/11/2026).
 - `reward` aparece en la forma escrita de `rewardWord`.
 - Ningún KANJŪ es recompensa de dos secciones.
 
@@ -151,14 +151,14 @@ Las palabras concretas de cada sección se cargan en `js/curriculum.js` etapa po
 
 | # | Situación | Gramática | Kanji nuevos | Recompensa |
 |---|---|---|---|---|
-| 1.1 | De dónde soy | X は Y です, の, 〜じん | 私 人 日 本 国 | 本 |
+| 1.1 | De dónde soy | X は Y です, の, 〜じん | 私 人 日 木 本 国 | 本 |
 | 1.2 | ¿Qué es esto? | これ / それ / あれ, 何ですか | 何 口 目 | 口 |
-| 1.3 | Decir la hora | 〜時, 〜分, 何時 | 時 分 半 二–十 | 時 |
+| 1.3 | Decir la hora | 〜時, 〜分, 何時 | 時 半 二–十 (八 antes que 六) | 時 |
 | 1.4 | Precios en el mercado | いくら, 百 / 千 / 万 | 百 千 万 円 | 円 |
 | 1.5 | Comer y beber | 〜ます, を | 食 飲 水 | 食 |
-| 1.6 | Los días de la semana | 〜曜日, に (tiempo) | 月 火 木 金 土 曜 | — |
+| 1.6 | Los días de la semana | 〜曜日, に (tiempo) | 月 火 金 土 曜 | — |
 | 1.7 | Ir y volver | 行きます / 来ます / 帰ります, へ, で | 行 来 帰 車 | 車 |
-| 1.8 | Lo que me gusta | 〜が 好きです, adjetivos básicos | 好 大 小 | 好 |
+| 1.8 | Lo que me gusta | 〜が 好きです, adjetivos básicos | 女 子 好 大 小 | 好 |
 | 1.9 | Mi familia | 〜が います, お〜さん | 父 母 兄 弟 姉 妹 | 弟 o 妹 |
 | 1.10 | ¿Dónde está? | あります / います, に (lugar) | 上 下 中 前 後 | 中 |
 
@@ -166,18 +166,18 @@ Las palabras concretas de cada sección se cargan en `js/curriculum.js` etapa po
 
 | # | Situación | Gramática | Kanji nuevos | Recompensa |
 |---|---|---|---|---|
-| 2.1 | Mi rutina | 〜ます / 〜ません, 毎〜 | 毎 朝 昼 夜 起 | 朝 |
-| 2.2 | Lo que hice ayer | 〜ました / 〜ませんでした | 今 先 週 年 | 今 |
+| 2.1 | Mi rutina | 〜ます / 〜ません, 毎〜 | 毎 早 朝 昼 夕 夜 起 (早 antes que 朝, 夕 antes que 夜) | 朝 |
+| 2.2 | Lo que hice ayer | 〜ました / 〜ませんでした | 今 先 生 週 年 (生 antes que 青) | 今 |
 | 2.3 | Comprar ropa | 〜を ください, colores | 買 赤 白 黒 青 | 買 |
 | 2.4 | Describir cosas | adjetivos い / な, pasado | 新 古 高 安 | 新 |
 | 2.5 | Planes para el finde (futuro) | presente con valor futuro, 〜ませんか, 〜ましょう | 明 来週 末 | 明 |
 | 2.6 | El clima | 〜でしょう, estaciones | 天 気 雨 雪 春 夏 秋 冬 | 雨 |
-| 2.7 | Mi casa | 〜が あります, contadores | 家 門 窓 | 家 |
-| 2.8 | Pedir direcciones | forma て, 〜てください | 道 駅 右 左 | 道 |
-| 2.9 | En el restaurante | 〜に します, 〜と 〜 | 肉 魚 卵 米 | 魚 |
-| 2.10 | Pedir permiso | 〜てもいいですか, 〜てはいけません | 入 出 休 | 休 |
-| 2.11 | Lo que estoy haciendo | 〜ています | 話 聞 読 書 | 話 |
-| 2.12 | Mis hobbies | 〜のが 好き, forma de diccionario | 音 楽 歌 見 | 音 |
+| 2.7 | Mi casa | 〜に 〜が あります / います, 〜の となり / ちかく, に かい (contador de pisos) | 家 門 窓 台 | 家 |
+| 2.8 | Pedir direcciones | forma て, 〜てください, 〜を 〜に まがって, 〜まで あるいて, 〜ばんめ, みぎがわ / ひだりがわ | 道 駅 右 左 | 道 |
+| 2.9 | En el restaurante | 〜に します, 〜と 〜, 〜を ひとつ / ふたつ ください, 〜は いかが ですか, いいえ けっこう です | 田 肉 魚 卵 米 (田 antes que 魚) | 魚 |
+| 2.10 | Pedir permiso | 〜てもいいですか, 〜てはいけません, 〜てください (つけて / けして / たって) | 入 出 休 開 立 (立 antes que 音) | 休 |
+| 2.11 | Lo que estoy haciendo | 〜ています (acción en curso; estado: すんで / けっこん して / しって います) | 耳 言 話 聞 読 書 (耳 antes que 聞, 言 antes que 話 y 読) | 話 |
+| 2.12 | Mis hobbies | しゅみ は 〜 です, 〜が 好き, よく / ときどき / ぜんぜん, 〜のが 好き con forma de diccionario | 音 楽 歌 見 料 | 音 |
 
 ### Etapa 3 · Ampliar el mundo (A1+ a A2)
 

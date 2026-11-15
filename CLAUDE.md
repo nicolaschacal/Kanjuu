@@ -5,7 +5,7 @@ Juego mobile-first (vertical, táctil) de criaturas kanji. Web estática sin bui
 Antes de trabajar, leer: `docs/SPRINTS.md` (proceso), `docs/BACKLOG.md` (qué hacer), `ROADMAP.md` (hacia dónde va).
 
 ## Reglas que no se rompen
-1. **Nunca hacer push ni merge a `main`.** Todo va en una rama `sprint-NN/ID-…` con su pull request. Merge = aprobación de Nicolás. Única excepción: documentación (backlog, roadmap, especificaciones en `docs/`) que Nicolás pide explícitamente en el chat puede ir directo a `main`. Los turnos nocturnos nunca usan esta excepción.
+1. **Nunca hacer push directo a `main`.** Todo va en una rama `sprint-NN/ID-…` con su pull request. **Aprobación delegada (decidido por Nicolás el 15 de noviembre de 2026):** el director aprueba y mergea él mismo cada pull request cuando el `revisor` lo verificó contra sus criterios de aceptación y contra estas reglas, los chequeos pasan y la prueba en 390 × 844 no da errores. Lo que cae en la regla 8 (irreversible o dudoso) no se mergea: queda abierto para Nicolás con «Necesita tu decisión».
 2. **Una tarea por pull request.** Si una tarea no entra en un turno, dividirla y avisarlo en el PR.
 3. **Lo visual se aprueba antes de implementarse:** propuesta primero, implementación después (ver `docs/SPRINTS.md`). La implementación debe quedar igual a lo aprobado.
 4. **Santuario (con modo editor) y Arenas están cerrados.** No rediseñarlos; solo corregir errores o lo que una tarea pida explícitamente.

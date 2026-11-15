@@ -7,6 +7,9 @@ El equipo trabaja solo, sin supervisión, y **nunca toca `main`**. Cada cambio l
 - **Turno de trabajo:** una tarea programada abre una sesión nueva todas las noches. Cada turno trabaja como máximo en una tarea nueva, más las correcciones pendientes.
 - **Límite de trabajo en curso: 3 pull requests esperando revisión.** Si ya hay 3, el turno solo atiende comentarios y no empieza nada nuevo. Así no se acumulan cambios que después chocan entre sí.
 
+## Aprobación delegada (decidido por Nicolás el 15 de noviembre de 2026)
+El director aprueba y mergea cada pull request cuando el `revisor` lo verificó contra sus criterios y las reglas de `CLAUDE.md`, los chequeos pasan y la prueba en 390 × 844 no da errores. Las propuestas visuales también las aprueba el director, contra las reglas de diseño de este documento y de `docs/PROGRESION.md`. Lo irreversible o dudoso (regla 8) queda abierto para Nicolás. Con la aprobación delegada no hay límite de pull requests en revisión: cada uno se mergea antes de empezar el siguiente que toque los mismos archivos.
+
 ## Cómo aprueba Nicolás (desde la app de GitHub o el navegador)
 | Quiero… | Hago… |
 |---|---|
