@@ -23,6 +23,13 @@ export const STAGES = [
   { id: 'e4', title: { es: 'Conversación cotidiana', en: 'Everyday conversation' }, level: 'N4' },
 ];
 
+// Niveles dentro de cada sección (docs/PROGRESION.md §3, tarea P-04). Valores provisorios: cambiar uno es una línea.
+export const LEVELS = 5;            // niveles por sección; cada nivel completo pinta una parte del kanji de tinta
+export const ROUNDS_PER_LEVEL = 3;  // rondas que cuentan para pasar de nivel
+export const ROUND_SIZE = 15;       // ejercicios por ronda (sin contar la apertura)
+export const PRIOR_MIX = .3;        // en el nivel 5, parte de la ronda que repasa secciones anteriores
+export const JUMP_ERRORS = 3;       // «Saltar aquí» (P-06): errores permitidos en la prueba
+
 // Frases propias del currículo.
 export const EXTRA = [
   // ── etapa 0 ──

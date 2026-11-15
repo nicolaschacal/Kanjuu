@@ -4,7 +4,7 @@ import { LEX, PHRASES, READINGS, SITUATIONS, PATTERNS, verbForms, verbKanji } fr
 import { SRS_HOURS, REGIONS, WORDS } from './data.js';
 import { S, bump } from './state.js';
 import { lang } from './i18n.js';
-import { kanaHTML, helpOn } from './help.js';
+import { kanaHTML, helpOn, aidLevel } from './help.js';
 
 export const WORD = Object.fromEntries(LEX.map(w => [w.id, w]));
 // Textos de lang.js: { es, en } (o una palabra con sus campos es/en)
@@ -93,12 +93,16 @@ export const canDo = sit => { const n = sitWords(sit).length; return n > 0 && si
 const KANJI_RX = /[㐀-鿿々]/;
 // La palabra va en kana hasta que el jugador tiene todos los kanji de su forma escrita
 export const showsKanji = w => !!w.kanji && [...w.kanji].filter(c => KANJI_RX.test(c) && c !== '々').every(c => S.dex[c]?.owned);
+// Furigana según el nivel de la ronda (P-04): en los niveles 3 y 4 se apaga si todos sus kanji están dominados
+// (caja FURI_OFF del repaso de kanji); en el 5 no hay. Fuera de una ronda, siempre (si la ayuda está activa).
+export const FURI_OFF = 3;
+const furiNeeded = w => { const a = aidLevel(); return a < 3 || (a < 5 && ![...w.kanji].filter(c => KANJI_RX.test(c) && c !== '々').every(c => (S.srs[c]?.box || 0) >= FURI_OFF)); };
 // form: la ficha tal como aparece en la frase (un verbo puede venir en ました o ません); por defecto, la forma del diario
 export function wordHTML(w, form = w.kana) {
   if (!showsKanji(w)) return kanaHTML(form);
   // Verbos: la terminación conjugada se pega a la raíz con kanji (食べます → 食べました)
   const kj = verbKanji(w, form);
-  return `<ruby class="wk">${kj}${helpOn() ? `<rt>${form}</rt>` : ''}</ruby>`;
+  return `<ruby class="wk">${kj}${helpOn() && furiNeeded(w) ? `<rt>${form}</rt>` : ''}</ruby>`;
 }
 // Formas con que una palabra puede aparecer en una frase: los verbos (en ます) también en ました · ません · ませんでした
 const formsOf = verbForms;
