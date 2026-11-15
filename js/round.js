@@ -4,18 +4,23 @@
 import { KANJI, mainRead } from './data.js';
 import { S, grade } from './state.js';
 import { t } from './i18n.js';
-import { kanaHTML } from './help.js';
+import { kanaHTML, setAid } from './help.js';
 import { speak } from './games.js';
-import { wordExercise } from './wordgames.js';
+import { wordExercise, extraTiles } from './wordgames.js';
 import { WORD, tr, jaTokens, jaHTML, jaPlain, wordHTML, gradeWord, meet, lexDue } from './lex.js';
-import { SECTIONS, sectionById, phraseById, nextSection, TALKS } from './curriculum.js';
+import { SECTIONS, sectionById, phraseById, nextSection, TALKS, LEVELS, ROUNDS_PER_LEVEL, ROUND_SIZE, PRIOR_MIX } from './curriculum.js';
 import { creatureSVG } from './creature.js';
 import { STROKES } from './strokes.js';
 import { arrive } from './world.js';
 import { tokenNotes, replyMeaning, fixPanel } from './feedback.js';
 
-export const ROUNDS = 5;   // rondas para completar una sección
+// Una sección tiene LEVELS niveles de ROUNDS_PER_LEVEL rondas (docs/PROGRESION.md §3, tarea P-04)
+export const UNIT_ROUNDS = LEVELS * ROUNDS_PER_LEVEL;
+const OLD_ROUNDS = 5; // rondas por sección antes de P-04: S.cur.rounds se sigue escribiendo así para partidas viejas
 export const PASS = .8;    // la ronda cuenta con el 80 % o más
+// Qué ejercicios de palabra admite cada nivel (wordgames.js): reconocer al principio, producir al final
+// (nivel 2 sigue en japonés → significado; armar en japonés empieza en el 3)
+const LEVEL_TYPES = { 1: { max: 'k2m' }, 2: { max: 'k2m' }, 3: { min: 'k2m' }, 4: { min: 'build' }, 5: { min: 'build' } };
 const pick = a => a[Math.floor(Math.random() * a.length)];
 const shuffle = (a, rnd = Math.random) => a.map(v => [rnd(), v]).sort((x, y) => x[0] - y[0]).map(v => v[1]);
 
@@ -23,7 +28,10 @@ const shuffle = (a, rnd = Math.random) => a.map(v => [rnd(), v]).sort((x, y) => 
 // Partidas sin S.cur: empiezan en la etapa 0, o en la 1 si en la nivelación dijeron que leen kana (S.level ≥ 1).
 // La ubicación fina de partidas viejas es la tarea A-05.
 export function cur() {
-  if (!S.cur) { S.cur = { sec: SECTIONS[0].id, rounds: {}, done: {}, gold: {}, got: {}, skipped: {}, eggs: {} }; place(); }
+  if (!S.cur) { S.cur = { sec: SECTIONS[0].id, rounds: {}, prog: {}, done: {}, gold: {}, got: {}, skipped: {}, eggs: {} }; place(); }
+  // P-04: S.cur.prog[sección] = rondas que contaron (0 a UNIT_ROUNDS). Una partida vieja arranca su sección en el
+  // nivel 1; lo que ya había pintado (S.cur.rounds, de 0 a 5) se conserva como piso de la tinta (paintedOf).
+  S.cur.prog ??= {};
   if (!sectionById(S.cur.sec)) S.cur.sec = SECTIONS[0].id;
   return S.cur;
 }
@@ -36,7 +44,7 @@ function place() {
     skip(s.id);
   }
 }
-function skip(id) { const c = S.cur; c.done[id] ??= Date.now(); c.skipped[id] = true; c.rounds[id] = ROUNDS; }
+function skip(id) { const c = S.cur; c.done[id] ??= Date.now(); c.skipped[id] = true; c.rounds[id] = OLD_ROUNDS; (c.prog ??= {})[id] = UNIT_ROUNDS; }
 // Prueba «Ya sé esto»: en la etapa 0 cubre todo lo que queda de la etapa (para quien ya lee kana); después, la sección.
 export const testScope = (secId = cur().sec) => {
   const s = sectionById(secId);
@@ -60,8 +68,12 @@ export function passTest(secId, right, total) {
   return { ok, secs, next: null };
 }
 export const curSection = () => sectionById(cur().sec);
-export const roundsOf = id => cur().rounds[id] || 0;
 export const isDone = id => !!cur().done[id];
+// Rondas que contaron en la sección, nivel actual (1 a LEVELS) y rondas que contaron dentro de ese nivel
+export const roundsOf = id => isDone(id) ? UNIT_ROUNDS : Math.min(UNIT_ROUNDS, cur().prog[id] || 0);
+export const levelsDone = id => Math.floor(roundsOf(id) / ROUNDS_PER_LEVEL);
+export const levelOf = id => Math.min(LEVELS, levelsDone(id) + 1);
+export const levelRounds = id => isDone(id) ? ROUNDS_PER_LEVEL : roundsOf(id) % ROUNDS_PER_LEVEL;
 
 // Una palabra de la sección entra al diario la primera vez que aparece en una ronda
 export function touchWord(id, sec) {
@@ -71,52 +83,91 @@ export function touchWord(id, sec) {
 }
 
 // ---------- Armar la ronda ----------
-// Pasos: { t: 'intro' } · { t: 'word', id, review? } · { t: 'phrase', id } · { t: 'kanji', k, ask: 'meaning' | 'read' }
-export function planRound(k, secId = cur().sec, rnd = Math.random) {
-  const s = sectionById(secId);
+// Pasos: { t: 'intro' } · { t: 'word', id, review?, lv } · { t: 'phrase', id } · { t: 'kanji', k, ask: 'meaning' | 'read' } · { t: 'talk' }
+// Cada nivel cambia la mezcla (docs/PROGRESION.md §3): 1 palabras nuevas · 2 frases cortas · 3 más frases ·
+// 4 la situación con diálogo · 5 producción con un 30 % de secciones anteriores. Los 2 ejercicios del kanji de la
+// criatura siguen en todos los niveles. ROUND_SIZE ejercicios por ronda, sin contar la apertura.
+// Letras: w palabra · p frase · K/R kanji de la criatura (significado/lectura) · v repaso · t situación · o anteriores.
+// Si ROUND_SIZE es mayor que el patrón, el patrón se repite; si LEVELS pasa de 5, los niveles extra usan el último.
+export const PLANS = {
+  1: 'w w w K w w p w R w w v p w v',
+  2: 'w p w K p w p R p w v p w v p',
+  3: 'p w K p p w p R w p v p w v p',
+  4: 't p w K p p w R p p w v p v p',
+  5: 'p w K p w p R w p w p w p w p', // aquí se reparten los pasos «o» según PRIOR_MIX (planOf)
+};
+const LAST = Math.max(...Object.keys(PLANS).map(Number));
+// Pasos de un nivel: el patrón al largo ROUND_SIZE y, en el último nivel, PRIOR_MIX de la ronda con secciones anteriores
+export function planOf(lv) {
+  const base = PLANS[Math.min(lv, LAST)].split(' '), out = Array.from({ length: ROUND_SIZE }, (_, i) => base[i % base.length]);
+  if (lv >= LAST) {
+    const n = Math.round(ROUND_SIZE * PRIOR_MIX), free = out.map((c, i) => c === 'K' || c === 'R' ? -1 : i).filter(i => i >= 0);
+    for (let j = 0; j < n && free.length; j++) out[free[Math.min(free.length - 1, Math.floor((j + .5) * free.length / n))]] = 'o';
+  }
+  return out;
+}
+export function planRound(k, secId = cur().sec, rnd = Math.random, level = levelOf(secId)) {
+  const s = sectionById(secId), lv = level >= LEVELS ? LAST : Math.max(1, level); // el último nivel siempre es el de producción
   const box = id => S.lex[id]?.box ?? -1;
   // Primero lo nuevo y lo más flojo; en empate, al azar
   const words = shuffle(s.words, rnd).sort((a, b) => box(a) - box(b));
-  const w = i => ({ t: 'word', id: words[i % words.length] });
+  let wi = 0, pi = 0, vi = 0, oi = 0;
+  const w = () => ({ t: 'word', id: words[wi++ % words.length], lv });
   const seen = id => S.phr[id]?.n || 0;
   const phrases = shuffle(s.phrases, rnd).sort((a, b) => seen(a) - seen(b));
-  const p = i => ({ t: 'phrase', id: phrases[i % phrases.length] });
+  const p = () => phrases.length ? { t: 'phrase', id: phrases[pi++ % phrases.length] } : w();
   // Repaso: palabras vencidas de otras secciones; si no hay, kanji vencidos de la colección; si no, más de la sección
   const own = new Set(s.words);
   const dueW = lexDue().filter(id => !own.has(id) && WORD[id]);
   const dueK = Object.keys(S.srs).filter(x => x !== k && KANJI[x] && S.srs[x].due <= Date.now());
-  const rev = i => dueW[i] ? { t: 'word', id: dueW[i], review: true } : dueK[i] ? { t: 'kanji', k: dueK[i], ask: 'meaning', review: true } : w(6 + i);
-  const kan = ask => KANJI[k] ? { t: 'kanji', k, ask } : w(7);
-  // La situación con diálogo de la sección (si tiene) ocupa el lugar de una palabra
-  const talk = TALKS[secId] ? { t: 'talk' } : w(3);
-  return [{ t: 'intro' }, w(0), w(1), w(2), kan('meaning'), talk, p(0), w(4), kan('read'), rev(0), rev(1), p(1)];
+  const v = () => { const i = vi++; return dueW[i] ? { t: 'word', id: dueW[i], review: true, lv } : dueK[i - dueW.length] ? { t: 'kanji', k: dueK[i - dueW.length], ask: 'meaning', review: true } : w(); };
+  // Nivel 5: palabras y frases de las secciones anteriores (lo más flojo primero), intercaladas
+  const idx = SECTIONS.indexOf(s), before = SECTIONS.slice(0, Math.max(0, idx));
+  const oldW = shuffle([...new Set(before.flatMap(x => x.words))].filter(id => WORD[id] && !own.has(id)), rnd).sort((a, b) => box(a) - box(b));
+  const oldP = shuffle([...new Set(before.flatMap(x => x.phrases))], rnd).sort((a, b) => seen(a) - seen(b));
+  const o = () => { const i = oi++, ph = i % 2 ? oldP[i >> 1] : null, id = i % 2 ? null : oldW[i >> 1];
+    return ph ? { t: 'phrase', id: ph, review: true } : id ? { t: 'word', id, review: true, lv } : v(); };
+  const kan = ask => KANJI[k] ? { t: 'kanji', k, ask } : w();
+  // La situación con diálogo de la sección (si tiene); si no, una frase
+  const talk = () => TALKS[secId] ? { t: 'talk' } : p();
+  const make = { w, p, v, o, t: talk, K: () => kan('meaning'), R: () => kan('read') };
+  return [{ t: 'intro' }, ...planOf(lv).map(c => make[c]())];
 }
 
 // ---------- Cerrar la ronda ----------
-// Devuelve { counted, rounds, completed, next } y avanza la sección si se completa.
+// Devuelve { counted, level, rounds, levelUp, completed, next, prizes } y avanza la sección si se completa.
+// rounds = rondas que contaron dentro del nivel; levelUp = esta ronda cerró un nivel (y pintó una parte del kanji).
 export function endRound(secId, right, total) {
   const c = cur(), counted = total > 0 && right / total >= PASS;
-  if (counted && !c.done[secId]) c.rounds[secId] = Math.min(ROUNDS, (c.rounds[secId] || 0) + 1);
+  let levelUp = false;
+  if (counted && !c.done[secId]) {
+    c.prog[secId] = Math.min(UNIT_ROUNDS, (c.prog[secId] || 0) + 1);
+    levelUp = c.prog[secId] % ROUNDS_PER_LEVEL === 0;
+  }
   let completed = false, next = null;
-  if (counted && !c.done[secId] && c.rounds[secId] >= ROUNDS) {
-    c.done[secId] = Date.now(); completed = true;
+  if (counted && !c.done[secId] && c.prog[secId] >= UNIT_ROUNDS) {
+    c.done[secId] = Date.now(); completed = true; c.rounds[secId] = OLD_ROUNDS;
     next = nextSection(secId);
     if (next && c.sec === secId) c.sec = next.id;
     // El premio queda pintado; despierta ahora o más adelante, cuando se domine su palabra (checkPrizes)
     if (sectionById(secId).reward && !c.skipped[secId]) c.got[secId] ??= 'asleep';
   }
-  return { counted, rounds: c.rounds[secId] || 0, completed, next, prizes: checkPrizes() };
+  const lr = (c.prog[secId] || 0) % ROUNDS_PER_LEVEL;
+  return { counted, level: completed || c.done[secId] ? LEVELS : levelOf(secId) - (levelUp ? 1 : 0), rounds: levelUp || c.done[secId] ? ROUNDS_PER_LEVEL : lr,
+    levelUp, completed, next, prizes: checkPrizes() };
 }
 
 // ---------- Premio de sección: un kanji que se pinta con tinta (docs/CURRICULO.md §5) ----------
-// Cada entrenamiento que cuenta pinta una parte de sus trazos reales (KanjiVG). Con la sección completa, el kanji
+// Cada nivel completo pinta una parte de sus trazos reales (KanjiVG; P-04). Con la sección completa, el kanji
 // queda pintado y «dormido» hasta que su palabra llega a la caja WAKE (en la etapa 0, los huevos piden más).
 export const WAKE = { e0: 3, other: 2 };
 export const PRIZE_INK = 30; // si el jugador ya tenía esa criatura
 export const strokesOf = k => STROKES[k]?.length || 5;
-export const paintedOf = (secId, rounds = roundsOf(secId)) => {
+// Partes pintadas: los niveles completos, o lo que una partida de antes de P-04 ya tenía pintado (S.cur.rounds)
+export const partsOf = secId => isDone(secId) ? LEVELS : Math.max(levelsDone(secId), Math.min(LEVELS, cur().rounds[secId] || 0));
+export const paintedOf = (secId, parts = partsOf(secId)) => {
   const s = sectionById(secId); if (!s?.reward) return 0;
-  return Math.round(strokesOf(s.reward) * Math.min(rounds, ROUNDS) / ROUNDS);
+  return Math.round(strokesOf(s.reward) * Math.min(parts, LEVELS) / LEVELS);
 };
 export const prizeState = secId => cur().got[secId] || null; // null · 'asleep' · 'alive' · 'ink' · 'gate'
 export const wakeBox = s => s.stage === 'e0' ? WAKE.e0 : WAKE.other;
@@ -147,7 +198,7 @@ export function inkSVG(k, done, fresh = 0) {
 // Frase: ordenar las fichas. Sirve para PHRASES y para las frases del currículo (EXTRA).
 function phraseExercise(ph, body, done) {
   const toks = jaTokens(ph.ja, ph.ids), answer = toks.map(x => x.tok);
-  const extra = shuffle(['は', 'が', 'を', 'に', 'の', 'も'].filter(x => !answer.includes(x))).slice(0, 2).map(tok => ({ tok, w: null }));
+  const extra = extraTiles(toks);
   const tiles = shuffle([...toks, ...extra]).map(x => ({ v: x.tok, html: x.w ? wordHTML(x.w, x.tok) : kanaHTML(x.tok, { particle: true }) }));
   body.innerHTML = `<p class="hint">${t('dojo.order')}</p><div class="qm sm">«${tr(ph)}»</div><div class="asm-row" aria-live="polite"></div>
     <div class="asm-bank">${tiles.map((x, i) => `<button class="asm-t" data-i="${i}">${x.html}</button>`).join('')}</div>
@@ -198,7 +249,9 @@ export function talkExercise(d, body, done) {
 
 // Kanji de la criatura: qué significa, o cómo se lee su lectura principal
 function kanjiExercise(k, ask, body, done) {
-  const pool = shuffle(Object.keys(KANJI).filter(x => x !== k && !KANJI[x].recipes?.some(r => r.some(p => !KANJI[p]))));
+  // Distractores (P-02): primero kanji ya enseñados o de la unidad actual, que son los que de verdad se confunden
+  const c0 = cur(), taught = new Set([...Object.keys(S.srs), ...SECTIONS.filter(x => c0.done[x.id] || x.id === c0.sec).flatMap(x => x.kanji)]), all = Object.keys(KANJI).filter(x => x !== k && !KANJI[x].recipes?.some(r => r.some(p => !KANJI[p])));
+  const pool = [...shuffle(all.filter(x => taught.has(x))), ...shuffle(all.filter(x => !taught.has(x)))];
   const val = x => ask === 'read' ? mainRead(x) : KANJI[x].m;
   const correct = val(k), opts = shuffle([correct, ...[...new Set(pool.map(val))].filter(v => v && v !== correct).slice(0, 3)]);
   body.innerHTML = `<div class="qw">${k}</div><p class="hint">${t(ask === 'read' ? 'round.kRead' : 'round.kMeaning')}</p>
@@ -230,7 +283,10 @@ export function roomSVG(h = 260) {
 // ---------- Jugar una ronda ----------
 // Resuelve { right, total, kanjiOk } o null si el jugador sale. Un error no corta la ronda: el paso vuelve al final una vez.
 export function runRound(c, root, { test = false } = {}) {
-  const s = curSection(), steps = test ? planTest(s.id) : planRound(c.k, s.id);
+  const s = curSection(), steps = test ? planTest(s.id) : planRound(c.k, s.id), lv = test ? LEVELS : levelOf(s.id);
+  // Ayudas del nivel (furigana y romaji, docs/PROGRESION.md §3); en la etapa 0 el romaji sigue su regla por kana.
+  // La prueba «Ya sé esto» queda como antes, con todas las ayudas (su cambio es P-06).
+  setAid(test ? 0 : s.stage === 'e0' ? 1 : lv);
   return new Promise(resolve => {
     const wrap = document.createElement('div');
     wrap.className = 'game round rd-lesson';
@@ -251,7 +307,7 @@ export function runRound(c, root, { test = false } = {}) {
     };
     const queue = steps.map((st, i) => ({ ...st, i })), retried = new Set();
     let right = 0, total = 0, kanjiOk = 0, pos = 0; const used = new Set(), use = id => { touchWord(id, s.id); used.add(id); }; // pos = pasos terminados (acertados, o fallados por segunda vez)
-    const end = res => { wrap.classList.add('out'); setTimeout(() => wrap.remove(), 250); resolve(res); };
+    const end = res => { setAid(0); wrap.classList.add('out'); setTimeout(() => wrap.remove(), 250); resolve(res); };
     wrap.querySelector('.x').onclick = () => end(null);
     const paint = () => drops.forEach((d, i) => { d.classList.toggle('on', i < pos); d.classList.toggle('now', i === pos); });
     const next = () => {
@@ -268,14 +324,14 @@ export function runRound(c, root, { test = false } = {}) {
       };
       if (st.t === 'intro') {
         say(tr(s.intro));
-        body.innerHTML = `${s.reward ? `<div class="rd-goal"><span class="rd-ink-box">${inkSVG(s.reward, paintedOf(s.id))}</span><span><b>${tr(s.title)} · ${t('book.progress', { n: Math.min(ROUNDS, roundsOf(s.id) + 1), total: ROUNDS })}</b><small>${t('round.goal')}</small></span></div>` : ''}<button class="btn ok wide">${t('round.start')}</button>
+        body.innerHTML = `${s.reward ? `<div class="rd-goal"><span class="rd-ink-box">${inkSVG(s.reward, paintedOf(s.id))}</span><span><b>${tr(s.title)} · ${t('book.level', { l: levelOf(s.id), total: LEVELS })}</b><small>${t('round.ofLevel', { n: Math.min(ROUNDS_PER_LEVEL, levelRounds(s.id) + 1), total: ROUNDS_PER_LEVEL })}. ${t('round.goal')}</small></span></div>` : ''}<button class="btn ok wide">${t('round.start')}</button>
           ${isDone(s.id) ? '' : `<button class="link rd-skip">${t(s.stage === 'e0' ? 'round.skipKana' : 'round.skip')}</button>`}`;
         body.querySelector('.rd-skip') && (body.querySelector('.rd-skip').onclick = () => end({ skipTest: true }));
         return body.querySelector('.btn').onclick = () => { pos = 0; next(); };
       }
       if (st.t === 'word') {
         use(st.id); say(t(st.review ? 'round.sayReview' : 'round.sayWord'));
-        return wordExercise(st.id, body, ok => { gradeWord(st.id, ok); after(ok); });
+        return wordExercise(st.id, body, ok => { gradeWord(st.id, ok); after(ok); }, LEVEL_TYPES[st.lv] || {});
       }
       if (st.t === 'phrase') {
         const ph = phraseById(st.id); say(t('round.sayPhrase'));
