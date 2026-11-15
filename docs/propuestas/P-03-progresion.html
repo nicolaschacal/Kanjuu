@@ -1,0 +1,1015 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Propuesta P-03 · Progresión de la unidad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Yuji+Syuku&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/style.css">
+<link rel="stylesheet" href="../../css/ui.css">
+<link rel="stylesheet" href="../../css/art.css">
+<style>
+/* Propuesta P-03 (docs/PROGRESION.md, rama sprint-04/P-00-progresion). Solo maqueta: no toca el juego.
+   Estilos vigentes de D-01 (#37): sin líneas negras ni sombra negra corrida, botones redondeados. Prefijo p3-. */
+html, body { height: auto; background: #0E0C1C }
+body { padding: 0 0 40px; user-select: auto; -webkit-user-select: auto }
+.pp { max-width: 390px; margin: 0 auto; padding: 16px 16px 0; color: var(--paper) }
+.pp h1 { font-size: 19px; margin: 0 0 4px; color: var(--paper) }
+.pp > p { font-size: 13px; color: var(--muted-d); line-height: 1.45 }
+.pp-opts { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 0 }
+.pp-sw { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px 0 8px; border-radius: 22px; background: #F6EBD014; font-size: 13px; font-weight: 700; color: var(--paper); cursor: pointer }
+.pp-dec { margin: 12px 0 0; background: #F6EBD00F; border-radius: 16px; padding: 0 14px }
+.pp-dec summary { min-height: 44px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; color: var(--gold); cursor: pointer }
+.pp-dec summary .ic { width: 18px; height: 18px }
+.pp-dec ol { margin: 0 0 12px 18px; padding: 0 }
+.pp-dec li { font-size: 12.5px; line-height: 1.45; color: #E9DCC0; margin: 0 0 6px }
+.pp-dec li b { color: var(--paper) }
+.pp-nav { display: flex; gap: 8px; overflow-x: auto; padding: 12px 0 8px; scrollbar-width: none }
+.pp-nav::-webkit-scrollbar { display: none }
+.pp-nav button { flex: none; min-height: 44px; border: 2px solid #F6EBD033; color: var(--paper); border-radius: 22px; padding: 0 14px; font-size: 13px; font-weight: 700 }
+.pp-nav button.on { background: var(--paper); color: var(--line); border-color: var(--paper) }
+.pp-sub { display: flex; gap: 8px; overflow-x: auto; padding: 0 0 12px; scrollbar-width: none }
+.pp-sub:empty { display: none }
+.pp-sub button { flex: none; min-height: 44px; padding: 0 14px; border-radius: 22px; background: #F6EBD014; color: var(--muted-d); font-size: 12.5px; font-weight: 700 }
+.pp-sub button.on { background: var(--gold); color: var(--line) }
+.phone { position: relative; width: 390px; max-width: 100%; height: 844px; margin: 0 auto; background: var(--bg); overflow: hidden; border-radius: 28px; color: var(--line) }
+.notes { max-width: 390px; margin: 16px auto 0; padding: 16px; background: #1E1A38; border-radius: 20px; color: var(--paper) }
+.notes h2 { font-size: 14px; margin: 0 0 8px; color: var(--gold) }
+.notes h3 { font-family: var(--f-title); font-size: 13px; margin: 12px 0 6px; color: var(--paper) }
+.notes li { font-size: 13px; line-height: 1.45; color: #E9DCC0; margin: 0 0 6px 16px }
+.notes .spec { font-size: 12.5px; color: var(--muted-d); margin: 8px 0 0 }
+.notes .dec { margin-top: 12px; padding: 10px 12px; border-radius: 14px; background: #F2B5441F }
+.notes .dec h3 { margin-top: 0; color: var(--gold) }
+
+/* Furigana (kanji) y romaji (kana): se apagan con los interruptores de arriba */
+ruby.fg rt { font-family: var(--f-jp); font-size: .46em; font-weight: 700; opacity: .72; letter-spacing: 0 }
+body.no-fg ruby.fg rt, .nofg ruby.fg rt { display: none }
+body.no-kr ruby.kr rt, body.no-kr .kr-line { display: none }
+.jp { font-family: var(--f-jp); font-weight: 700 }
+.btn .ic { display: inline-block; vertical-align: -5px; margin-right: 6px; width: 20px; height: 20px }
+.art svg { width: 100%; height: 100% }
+.p3-toast { position: absolute; left: 50%; bottom: 112px; z-index: 20; transform: translateX(-50%); max-width: 320px; padding: 10px 16px; border-radius: 20px; background: var(--line); color: var(--paper); font-size: 13px; font-weight: 700; text-align: center; box-shadow: var(--sh-d); animation: fade .2s }
+
+/* Tinta: trazos reales de KanjiVG (mismas clases que js/round.js) + parte resaltada */
+.rd-ink .h path { fill: none; stroke: var(--red); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round }
+.rd-ink .p path { fill: none; stroke: #E8452C66; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round }
+
+/* ---------- Lección (marco de js/round.js con escena más baja) ---------- */
+.p3-run { position: absolute; inset: 0; display: flex; flex-direction: column; background: var(--paper); color: var(--line) }
+.p3-run .rd-scene { height: 176px }
+.p3-run .rd-x { width: 44px; height: 44px; left: 8px; top: 8px; display: grid; place-items: center; border-radius: 22px }
+.p3-run .rd-x .ic { width: 20px; height: 20px }
+.p3-run .rd-drops { left: 64px; right: 16px; top: 26px }
+.p3-run .rd-me { width: 96px; height: 96px; left: 12px; bottom: 4px }
+.p3-run .rd-npc { width: 92px; height: 92px; right: 12px; bottom: 4px }
+.p3-run .rd-bub { left: 116px; right: 16px; top: 56px }
+.p3-run .rd-scene.talk .rd-bub { left: 116px; right: 112px; border-radius: 18px 18px 4px 18px }
+.p3-sec { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 40px; padding: 8px 16px 0 }
+.p3-sec > span { font-size: 11.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--muted) }
+.p3-sec em { font-style: normal; font-size: 11.5px; font-weight: 800; padding: 4px 10px; border-radius: 12px; background: #1A12200D; color: var(--line); white-space: nowrap }
+.p3-body { flex: 1; min-height: 0; padding: 8px 16px 16px !important; align-items: stretch !important }
+.p3-body.lock { pointer-events: none }
+.p3-body .hint { font-size: 16px; font-weight: 700; margin: 4px 0 12px }
+.p3-foot { flex: none; display: grid; gap: 8px; padding: 12px 16px 16px; background: var(--paper); box-shadow: 0 -1px 0 #1A12200F }
+.p3-foot .btn.wide { margin: 0 }
+.p3-foot[hidden] { display: none }
+
+/* Paso actual: anillo rojo tenue en vez del contorno oscuro de hoy */
+.p3-run .rd-drops i.now { box-shadow: 0 0 0 2px #E8452C99 }
+/* Panel de acierto / error */
+.p3-res { position: absolute; left: 0; right: 0; bottom: 0; z-index: 6; max-height: 72%; overflow-y: auto; padding: 16px; border-radius: 24px 24px 0 0; box-shadow: 0 -8px 24px rgba(26, 18, 32, .14); animation: p3-up .28s cubic-bezier(.2, 1.2, .4, 1) }
+.p3-res.ok { background: #E6F4DE } .p3-res.no { background: #FBEAE3 }
+.p3-rh { display: flex; align-items: center; gap: 12px; margin: 0 0 8px }
+.p3-rh i { width: 40px; height: 40px; flex: none; border-radius: 20px; display: grid; place-items: center; background: var(--green); color: #fff }
+.p3-res.no .p3-rh i { background: var(--red) }
+.p3-rh b { font-family: var(--f-title); font-size: 19px; font-weight: 800; color: #2F7A25 }
+.p3-res.no .p3-rh b { color: #B8321F }
+.p3-res .btn.wide { margin-top: 12px }
+.p3-res .fx { margin: 4px 0 0; box-shadow: none }
+.p3-ans { margin: 0; font-size: 14px; line-height: 1.45 }
+.p3-ans .jp { display: block; font-size: 20px; line-height: 2 }
+@keyframes p3-up { from { transform: translateY(60px); opacity: 0 } }
+
+/* Fichas */
+.p3-line { width: 100%; min-height: 116px; margin: 0 0 16px; padding: 6px 2px; display: flex; flex-wrap: wrap; align-content: flex-start; align-items: center; gap: 8px 6px; background: repeating-linear-gradient(transparent 0 56px, #1A12201A 56px 58px) }
+.p3-pun { font-family: var(--f-ui); font-size: 22px; font-weight: 800; color: var(--muted); padding: 0 2px }
+.asm-t { line-height: 1.35; padding: 6px 12px }
+.asm-t.es { font-family: var(--f-ui); font-size: 17px; font-weight: 700 }
+.asm-t.pt { background: #EEE6FA }
+.asm-t.used { background: #1A12200D; box-shadow: none; color: transparent }
+.asm-t.used * { visibility: hidden }
+.p3-src { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; padding: 10px 12px; border-radius: 18px; background: var(--paper3); box-shadow: var(--sh) }
+.p3-src .jp { flex: 1; font-size: 21px; line-height: 2; margin: 0 }
+.p3-spk-s { width: 44px; height: 44px; flex: none; border-radius: 22px; background: var(--paper2); color: var(--red); display: grid; place-items: center }
+
+/* Emparejar */
+.p3-pairs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100% }
+.p3-pc { min-height: 60px; border-radius: 18px; background: var(--paper3); border: var(--b); box-shadow: var(--sh); font-family: var(--f-jp); font-weight: 900; font-size: 24px; line-height: 1.25; color: var(--line); transition: background .15s, opacity .2s }
+.p3-pc.r { font-size: 20px }
+.p3-pc.p3-on { background: #FFF3C9; box-shadow: inset 0 0 0 3px var(--gold), var(--sh) }
+.p3-pc.ok { background: #DDF2D6; box-shadow: none; color: #2F7A25; opacity: .6 }
+.p3-pc.bad { background: #F9DED6; animation: shake .3s }
+.p3-pstat { margin: 14px 0 0; text-align: center; font-size: 13px; font-weight: 700; color: var(--muted) }
+.p3-mtab { display: grid; grid-template-columns: auto auto 1fr; gap: 4px 12px; align-items: baseline; margin: 4px 0 0; font-size: 13.5px }
+.p3-mtab b { font-family: var(--f-jp); font-size: 18px }
+
+/* Escuchar */
+.p3-say { display: flex; gap: 16px; justify-content: center; align-items: flex-end; margin: 4px 0 16px }
+.p3-spk { width: 104px; height: 104px; border-radius: 52px; background: var(--paper3); color: var(--red); box-shadow: var(--sh); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 12px; font-weight: 800 }
+.p3-spk .ic { width: 40px; height: 40px }
+.p3-spk.slow { width: 72px; height: 72px; color: var(--line) }
+.p3-spk.slow .ic { width: 26px; height: 26px }
+.p3-spk span { color: var(--line) }
+
+/* Completar el hueco */
+.p3-gapq { margin: 6px 0 22px; text-align: center; font-family: var(--f-jp); font-size: 22px; font-weight: 700; line-height: 2.3 }
+.p3-gap { display: inline-grid; place-items: center; min-width: 48px; height: 48px; margin: 0 3px; padding: 0 8px; vertical-align: middle; line-height: 1; border-radius: 14px; background: #1A12200A; box-shadow: inset 0 -3px 0 #1A122026; color: var(--red) }
+.p3-gap.fill { background: #FFF3C9; box-shadow: inset 0 -3px 0 var(--gold) }
+.p3-opts4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100% }
+.p3-opts4 .asm-t { width: 100%; padding: 6px 0 }
+.asm-t.p3-on, .opt.p3-on { box-shadow: inset 0 0 0 3px var(--gold), var(--sh) !important; background: #FFF3C9 }
+.p3-step { display: inline-flex; gap: 6px; align-items: center; font-size: 12px; font-weight: 800; color: var(--muted); margin: 0 auto 8px }
+.p3-step i { width: 22px; height: 6px; border-radius: 3px; background: #1A12201A }
+.p3-step i.on { background: var(--red) }
+
+/* Teclado kana */
+.p3-kw { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 0 0 10px; padding: 8px 14px; border-radius: 18px; background: var(--paper3); box-shadow: var(--sh) }
+.p3-kw b { font-family: var(--f-jp); font-size: 38px; font-weight: 900; line-height: 1.3 }
+.p3-kw small { font-size: 13px; color: var(--muted); font-weight: 700 }
+.p3-type { display: flex; align-items: center; justify-content: center; min-height: 60px; margin: 0 0 12px; border-radius: 18px; background: #FFFDF6; box-shadow: inset 0 0 0 2px #1A12201A; font-family: var(--f-jp); font-size: 30px; font-weight: 700; letter-spacing: .04em }
+.p3-type .ph { font-family: var(--f-ui); font-size: 14px; font-weight: 600; color: var(--muted); letter-spacing: 0 }
+.p3-caret { width: 2px; height: 32px; margin-left: 3px; border-radius: 1px; background: var(--red); animation: p3-blink 1s steps(1) infinite }
+@keyframes p3-blink { 50% { opacity: 0 } }
+.p3-kb { display: grid; gap: 6px }
+.p3-krow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px }
+.p3-k { min-height: 48px; border-radius: 18px; background: var(--paper2); color: var(--line); font-family: var(--f-jp); font-weight: 900; font-size: 20px; line-height: 1.1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px }
+.p3-k small { font-family: var(--f-ui); font-size: 10px; font-weight: 700; opacity: .65 }
+.p3-k.on { background: var(--line); color: var(--paper) }
+.p3-k.fn { background: #1A12200D; font-size: 22px }
+/* ゛ y ゜ se dibujan arriba a la derecha de su caja tipográfica: se corren al centro de la tecla */
+.p3-k.fn .mk { display: block; line-height: 1; font-size: 28px; transform: translate(.32em, .25em) }
+.p3-k .ic { width: 22px; height: 22px }
+.p3-kstrip .p3-k { min-height: 56px; background: var(--paper3); box-shadow: var(--sh); font-size: 24px }
+.p3-kstrip { margin-bottom: 4px }
+
+/* Kanji parecido y ayuda del KANJŪ */
+.p3-body .opts { gap: 10px }
+.p3-body .opt { padding: 10px; line-height: 1.4 }
+.p3-help { display: grid; grid-template-columns: 72px 1fr; gap: 12px; align-items: center; margin: 0 0 10px; padding: 10px 12px; border-radius: 18px; background: var(--paper3) }
+.p3-help .art { width: 72px; height: 72px }
+.p3-help b { display: block; font-family: var(--f-title); font-size: 16px }
+.p3-help small { font-size: 13px; color: var(--muted); line-height: 1.4 }
+.p3-cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 10px }
+.p3-cmp figure { margin: 0; display: grid; justify-items: center; gap: 4px; padding: 10px 8px; border-radius: 16px; background: var(--paper3) }
+.p3-cmp .rd-ink-box { width: 80px; height: 80px }
+.p3-cmp figcaption { font-size: 12.5px; font-weight: 700 }
+.p3-cmp figure.me { box-shadow: inset 0 0 0 2px #5DB84F88 }
+.p3-res .fx-n { margin-top: 10px }
+
+/* Presentación de un KANJŪ */
+.p3-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 0 0 12px }
+.p3-steps span { display: grid; gap: 4px; font-size: 11px; font-weight: 800; color: var(--muted); text-align: center }
+.p3-steps span::before { content: ''; height: 6px; border-radius: 3px; background: #1A12201A }
+.p3-steps span.on { color: var(--line) } .p3-steps span.on::before { background: var(--red) }
+.p3-steps span.done::before { background: var(--green) }
+.p3-meet { display: grid; gap: 12px }
+.p3-mtop { display: grid; grid-template-columns: 112px 1fr; gap: 14px; align-items: center }
+.p3-big { width: 112px; height: 112px; border-radius: 24px; background: radial-gradient(circle at 50% 40%, #FFFDF6, #EADBB9) }
+.p3-bk { display: flex; align-items: baseline; gap: 10px }
+.p3-bk b { font-family: var(--f-jp); font-size: 48px; font-weight: 900; line-height: 1 }
+.p3-bk span { font-family: var(--f-title); font-size: 18px; font-weight: 800 }
+.p3-reads { display: grid; gap: 6px; margin-top: 10px }
+.p3-read { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border-radius: 22px; background: var(--paper3); box-shadow: var(--sh); text-align: left; color: var(--line) }
+.p3-read small { font-size: 11px; font-weight: 800; color: var(--muted); min-width: 34px }
+.p3-read .jp { flex: 1; font-size: 18px }
+.p3-read .ic { width: 18px; height: 18px; color: var(--red) }
+.p3-read.main .jp { font-size: 20px }
+.p3-recipe { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 6px; padding: 10px; border-radius: 20px; background: var(--paper3); box-shadow: var(--sh) }
+.p3-recipe > i { font-style: normal; font-family: var(--f-title); font-weight: 800; font-size: 18px; color: var(--muted) }
+.p3-part { display: grid; justify-items: center; gap: 2px; text-align: center; min-width: 0 }
+.p3-part .art { width: 56px; height: 56px }
+.p3-part b { font-family: var(--f-jp); font-size: 18px; font-weight: 900; line-height: 1.1 }
+.p3-part small { font-size: 10.5px; color: var(--muted); line-height: 1.25 }
+.p3-part em { font-style: normal; display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 800; color: #2F7A25 }
+.p3-part em .ic { width: 12px; height: 12px }
+.p3-part.res .k { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; background: #FFF3C9; font-family: var(--f-jp); font-size: 34px; font-weight: 900 }
+.p3-mn { display: flex; gap: 8px; align-items: flex-start; margin: 0; padding: 10px 12px; border-radius: 16px; background: #F2B54426; font-size: 13.5px; line-height: 1.45 }
+.p3-mn .ic { width: 18px; height: 18px; flex: none; margin-top: 1px }
+.p3-wc { margin: 0 0 12px; gap: 4px }
+.p3-wk { font-family: var(--f-jp); font-size: 40px; font-weight: 900; line-height: 1.7 }
+.p3-sent { font-size: 24px; line-height: 2.1; margin: 0 }
+.p3-rom { font-size: 13px; font-weight: 700; color: var(--muted); letter-spacing: .02em }
+.p3-wc b { font-family: var(--f-title); font-size: 17px }
+.p3-wc .btn { margin-top: 8px; min-height: 44px }
+
+/* ---------- Mapa y hojas sobre el santuario ---------- */
+.p3-world { position: absolute; inset: 0 }
+.p3-world svg { width: 100%; height: 100% }
+.p3-panel { position: absolute; inset: 0; display: flex; padding: 14px 12px 12px; background: #0B091640 }
+.p3-panel .pn-card { position: relative }
+.p3-hic { width: 44px; height: 44px; flex: none; border-radius: 14px; background: var(--line); color: var(--paper); display: grid; place-items: center }
+.p3-units { flex: none; display: flex; gap: 8px; overflow-x: auto; padding: 10px 14px; scrollbar-width: none; box-shadow: 0 1px 0 #1A12200F }
+.p3-units::-webkit-scrollbar { display: none }
+.p3-unit { flex: none; height: 44px; padding: 0 14px; border-radius: 22px; background: var(--paper2); color: var(--muted); display: flex; align-items: center; gap: 6px; font-family: var(--f-title); font-size: 14px; font-weight: 800 }
+.p3-unit .ic { width: 16px; height: 16px }
+.p3-unit.on { background: var(--red); color: #FFF6E3 }
+.p3-unit.here { box-shadow: inset 0 0 0 2px var(--gold) }
+.p3-h { font-family: var(--f-title); font-size: 24px; font-weight: 800; letter-spacing: -.01em; margin: 0 }
+.p3-cando { display: block; margin: 4px 0 0; font-size: 13px; color: var(--muted); line-height: 1.4 }
+.p3-hero { display: grid; grid-template-columns: 112px 1fr; gap: 14px; align-items: center; margin: 14px 0 10px; padding: 12px; border-radius: 20px; background: var(--paper3); box-shadow: var(--sh) }
+.p3-hero .rd-ink-box { width: 112px; height: 112px }
+.p3-hero b { display: block; font-family: var(--f-title); font-size: 15px }
+.p3-hero small { display: block; font-size: 12.5px; color: var(--muted); line-height: 1.4 }
+.p3-parts { display: flex; gap: 4px; margin: 8px 0 0 }
+.p3-parts i { flex: 1; height: 8px; border-radius: 4px; background: #1A12201A }
+.p3-parts i.on { background: var(--line) }
+.p3-parts i.now { background: #E8452C66 }
+.p3-cast { display: flex; gap: 8px; margin: 10px 0 0 }
+.p3-cast span { display: grid; justify-items: center; width: 52px; font-size: 10.5px; font-weight: 800; color: var(--muted); text-align: center; line-height: 1.2 }
+.p3-cast .art, .p3-cast .rd-ink-box { width: 44px; height: 44px; border-radius: 12px }
+.p3-cast .art { background: #F6EBD0 }
+.p3-guide { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; margin: 0 0 16px; padding: 10px 12px; border-radius: 20px; background: #FFF3C9; box-shadow: var(--sh); text-align: left; color: var(--line) }
+.p3-guide .art { width: 48px; height: 48px; flex: none }
+.p3-guide span:nth-child(2) { flex: 1; min-width: 0 }
+.p3-guide b { display: block; font-family: var(--f-title); font-size: 15px }
+.p3-guide small { font-size: 12px; color: var(--muted); line-height: 1.35 }
+.p3-guide > .ic { color: var(--muted); width: 18px; height: 18px }
+.p3-lvh4 { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 10px; font-family: var(--f-title); font-size: 15px; font-weight: 800 }
+.p3-lvh4 small { font-family: var(--f-ui); font-size: 12px; font-weight: 700; color: var(--muted) }
+.p3-lvs { position: relative; display: grid; gap: 10px }
+.p3-lvs::before { content: ''; position: absolute; left: 34.5px; top: 30px; bottom: 30px; width: 3px; border-radius: 2px; background: #1A122014 }
+.p3-lv { position: relative; border-radius: 20px; background: var(--paper3); box-shadow: var(--sh) }
+.p3-lv.cur { box-shadow: inset 0 0 0 2px #E8452C66, var(--sh) }
+.p3-lv.lock { background: #FFFDF6B0; box-shadow: none }
+.p3-lvh { display: grid; grid-template-columns: 48px 1fr 44px; gap: 12px; align-items: center; width: 100%; min-height: 72px; padding: 12px; text-align: left; color: var(--line) }
+.p3-med { width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; font-family: var(--f-title); font-size: 18px; font-weight: 800; background: var(--paper2); color: var(--muted) }
+.p3-med .ic { width: 22px; height: 22px }
+.p3-lv.done .p3-med { background: var(--green); color: #fff }
+.p3-lv.cur .p3-med { background: var(--red); color: #FFF6E3 }
+.p3-lvt { min-width: 0 }
+.p3-lvt b { display: block; font-family: var(--f-title); font-size: 15px; font-weight: 800 }
+.p3-lvt small { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); font-weight: 600 }
+.p3-rd { display: inline-flex; gap: 4px }
+.p3-rd i { width: 8px; height: 8px; border-radius: 4px; background: #1A12201F }
+.p3-rd i.on { background: var(--green) }
+.p3-lv.cur .p3-rd i.on { background: var(--red) }
+.p3-lv.lock .p3-lvt, .p3-lv.lock .p3-mini { opacity: .6 }
+.p3-mini { width: 44px; height: 44px; border-radius: 12px; background: #FFFDF6 radial-gradient(#E9DCC0 1px, transparent 1px); background-size: 8px 8px; box-shadow: inset 0 0 0 2px #1A12200F }
+.p3-lvb { padding: 0 12px 14px 72px }
+.p3-lvb p { margin: 0 0 8px; font-size: 13px; line-height: 1.45 }
+.p3-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px }
+.p3-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 12px; background: #4AA3E822; font-size: 11.5px; font-weight: 800 }
+.p3-chip .ic { width: 13px; height: 13px }
+.p3-exs { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px }
+.p3-ex { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 12px; border-radius: 22px; background: var(--paper2); color: var(--line); font-size: 12.5px; font-weight: 700 }
+.p3-ex .ic { width: 15px; height: 15px; color: var(--muted) }
+.p3-ex sup { color: var(--red); font-weight: 800 }
+.p3-lvb .btn.wide { margin-top: 2px }
+.p3-lockt { display: flex; gap: 6px; align-items: center; font-size: 12.5px; color: var(--muted); font-weight: 700 }
+.p3-lockt .ic { width: 15px; height: 15px }
+.p3-jump { margin: 0 0 16px; padding: 14px; border-radius: 20px; background: var(--line); color: var(--paper) }
+.p3-jump .row { display: flex; gap: 12px; align-items: center }
+.p3-jump .row > i { width: 44px; height: 44px; flex: none; border-radius: 14px; background: var(--gold); color: var(--line); display: grid; place-items: center }
+.p3-jump b { display: block; font-family: var(--f-title); font-size: 16px }
+.p3-jump small { font-size: 12.5px; color: var(--muted-d); line-height: 1.4 }
+.p3-jump .btn.wide { margin-top: 12px }
+.p3-foot-note { margin: 14px 0 0; font-size: 11.5px; color: var(--muted); text-align: center }
+
+/* ---------- Guía de la unidad ---------- */
+.p3-panel .pn-tabs button { min-height: 44px }
+.p3-host { display: grid; grid-template-columns: 84px 1fr; gap: 10px; align-items: end; margin: 6px 0 14px }
+.p3-host .art { width: 84px; height: 84px }
+.p3-hb { position: relative; padding: 10px 12px; border-radius: 18px 18px 18px 4px; background: var(--paper3); box-shadow: var(--sh) }
+.p3-hb .who { font-size: 11px; font-weight: 800; color: #4A3A8C; letter-spacing: .06em }
+.p3-hb p { margin: 0; font-size: 14px; font-weight: 700; line-height: 1.4 }
+.p3-h4 { margin: 0 0 10px; font-family: var(--f-title); font-size: 15px; font-weight: 800 }
+.p3-panel .dy-p { padding-right: 60px }
+.p3-panel .dy-p .jp { font-size: 19px; line-height: 2.1 }
+.p3-panel .say-l { width: 44px; height: 44px; top: 50%; transform: translateY(-50%); right: 8px; border: 0; background: var(--paper2); color: var(--red) }
+.p3-gh { font-family: var(--f-title); font-size: 21px; font-weight: 800; margin: 0 0 6px; line-height: 1.25 }
+.p3-gh .jp { font-weight: 900 }
+.p3-gp { font-size: 14px; line-height: 1.5; margin: 0 0 12px }
+.p3-form { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 14px }
+.p3-form span { padding: 6px 10px; border-radius: 12px; background: var(--paper3); box-shadow: var(--sh); font-family: var(--f-jp); font-size: 18px; font-weight: 900; line-height: 1.2 }
+.p3-form span.v { background: #FFF3C9; font-family: var(--f-ui); font-size: 13px; font-weight: 800; padding: 9px 10px }
+.p3-form span.e { background: #E6F4DE; font-family: var(--f-ui); font-size: 13px; font-weight: 800; padding: 9px 10px }
+.p3-form i { font-style: normal; font-weight: 800; color: var(--muted) }
+.p3-tbl { display: grid; gap: 6px; margin: 0 0 14px; padding: 10px 12px; border-radius: 16px; background: var(--paper3) }
+.p3-tbl div { display: grid; grid-template-columns: 1fr 24px 1fr; align-items: center; font-family: var(--f-jp); font-size: 19px; font-weight: 700; line-height: 1.9 }
+.p3-tbl .ic { width: 18px; height: 18px; color: var(--muted) }
+.p3-tbl em { font-style: normal; color: var(--red) }
+.p3-tbl small { font-family: var(--f-ui); font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .05em }
+.p3-pages { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 14px 0 0 }
+.p3-pages .btn { margin: 0; min-height: 44px }
+.p3-pages .dots { display: flex; gap: 6px } .p3-pages .dots i { width: 8px; height: 8px; border-radius: 4px; background: #1A12201F } .p3-pages .dots i.on { background: var(--red) }
+.p3-kc { display: grid; grid-template-columns: 52px 1fr; gap: 12px; margin: 0 0 10px; padding: 12px; border-radius: 20px; background: var(--paper3); box-shadow: var(--sh) }
+.p3-kc .art { width: 52px; height: 52px }
+.p3-kc .t { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap }
+.p3-kc .t b { font-family: var(--f-jp); font-size: 32px; font-weight: 900; line-height: 1.1 }
+.p3-kc .t span { font-family: var(--f-title); font-size: 15px; font-weight: 800 }
+.p3-kc .t em { font-style: normal; font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 10px; background: #FFF3C9 }
+.p3-kr { display: flex; flex-wrap: wrap; gap: 6px 4px; margin: 8px 0 }
+.p3-kr button { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 10px; border-radius: 22px; background: var(--paper2); color: var(--line); font-family: var(--f-jp); font-size: 15px; font-weight: 700 }
+.p3-kr button small { font-size: 11px; color: var(--muted) }
+.p3-kr button.main { background: #FFF3C9 }
+.p3-kr .ic { width: 14px; height: 14px; color: var(--red) }
+.p3-kc p { margin: 0; font-size: 12.5px; line-height: 1.4; color: var(--muted) }
+.p3-gfoot { flex: none; padding: 12px 16px 16px; box-shadow: 0 -1px 0 #1A12200F }
+.p3-gfoot .btn.wide { margin: 0 }
+
+/* ---------- Saltar aquí ---------- */
+.p3-jtop { position: relative; flex: none; padding: 64px 20px 22px; color: var(--paper); background: radial-gradient(90% 80% at 50% 20%, #3A2E66 0%, #16132A 75%) }
+.p3-jtop .rd-x { position: absolute; left: 8px; top: 8px; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 22px; background: #FFF6E3D0; border: 2px solid rgba(26, 18, 32, .10); color: var(--line) }
+.p3-jtop .rd-x .ic { width: 20px; height: 20px }
+.p3-jtop h2 { font-family: var(--f-title); font-size: 26px; font-weight: 800; margin: 0 0 6px }
+.p3-jtop p { margin: 0; font-size: 13.5px; color: var(--muted-d); line-height: 1.45 }
+.p3-rules { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px }
+.p3-rules li { display: flex; gap: 12px; align-items: flex-start; padding: 12px; border-radius: 18px; background: var(--paper3); box-shadow: var(--sh) }
+.p3-rules li > i { width: 40px; height: 40px; flex: none; border-radius: 12px; background: var(--line); color: var(--paper); display: grid; place-items: center }
+.p3-rules li > i .ic { width: 20px; height: 20px }
+.p3-rules b { display: block; font-size: 14px }
+.p3-rules small { display: block; font-size: 12.5px; color: var(--muted); line-height: 1.4; margin-top: 2px }
+.p3-skp { display: flex; gap: 8px; margin: 8px 0 0 }
+.p3-skp span { display: grid; justify-items: center; gap: 3px; font-size: 10.5px; font-weight: 800; color: var(--muted); text-align: center }
+.p3-skp .rd-ink-box { width: 44px; height: 44px; border-radius: 12px }
+.p3-skp .rd-inkk { font-size: 18px }
+.p3-errs { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .04em }
+.p3-errs i { width: 22px; height: 22px; border-radius: 11px; display: grid; place-items: center; background: #1A12200D }
+.p3-errs i.on { background: var(--red); color: #FFF6E3 }
+.p3-errs i .ic { width: 13px; height: 13px }
+.p3-end { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 56px 20px 20px; text-align: center; color: var(--paper); background: radial-gradient(80% 50% at 50% 28%, #3A2E66 0%, #16132A 70%) }
+.p3-end h2 { font-family: var(--f-title); font-size: 26px; font-weight: 800; margin: 6px 0 4px }
+.p3-end > p { margin: 0; font-size: 14px; color: var(--muted-d); line-height: 1.45 }
+.p3-seal { width: 88px; height: 88px; margin: 18px auto 6px; border-radius: 28px; display: grid; place-items: center; background: var(--gold); color: var(--line) }
+.p3-seal .ic { width: 44px; height: 44px }
+.p3-seal.no { background: #F6EBD01F; color: var(--paper) }
+.p3-endc { margin: 18px 0 0; padding: 14px; border-radius: 20px; background: var(--paper); color: var(--line); text-align: left }
+.p3-endc .bk-pages { margin-top: 10px; grid-template-columns: repeat(4, 1fr); gap: 6px }
+.p3-endc .bk-page { padding: 6px; box-shadow: none; background: var(--paper3) }
+.p3-endc .bk-page b { font-size: 12px; margin-top: 4px }
+.p3-endc .bk-page small { font-size: 10px; line-height: 1.2; display: block }
+.p3-endc .rd-inkk { font-size: 22px }
+.p3-endc p { margin: 0; font-size: 13.5px; line-height: 1.45 }
+.p3-endc .row { display: flex; gap: 10px; align-items: flex-start }
+.p3-endc .row .ic { width: 22px; height: 22px; flex: none; color: var(--green) }
+.p3-acts { margin-top: auto; display: grid; gap: 10px }
+.p3-end .btn.wide { margin: 0 }
+
+@media (prefers-reduced-motion: reduce) {
+  .p3-res, .p3-toast { animation: none }
+  .p3-pc.bad { animation: none }
+  .p3-caret { animation: none }
+}
+</style>
+</head>
+<body>
+<div class="pp">
+  <h1>Propuesta P-03 · Progresión de la unidad</h1>
+  <p>Maqueta de <b>docs/PROGRESION.md</b> con la unidad real <b>2.10 · Pedir permiso</b> (elenco 入 · 出 · 休, premio 休). Entrenas con tu KANJŪ <b>木</b>, que además es parte de 休. Todo se toca: elige, comprueba y avanza. Estilo vigente de D-01: sin líneas negras ni sombra negra corrida.</p>
+  <div class="pp-opts">
+    <label class="pp-sw"><input type="checkbox" class="sw" id="swFg" checked> Furigana</label>
+    <label class="pp-sw"><input type="checkbox" class="sw" id="swKr" checked> Romaji (nivel 1)</label>
+  </div>
+  <details class="pp-dec" id="dec"></details>
+  <nav class="pp-nav" id="nav"></nav>
+  <div class="pp-sub" id="sub"></div>
+</div>
+<div class="phone" id="phone"></div>
+<div class="notes" id="notes"></div>
+
+<script type="module">
+import { creatureSVG } from '../../js/creature.js';
+import { ic } from '../../js/icons.js';
+import { STROKES } from '../../js/strokes.js';
+
+const $ = s => document.querySelector(s);
+const art = k => creatureSVG(k);
+const TRAINER = '木';
+// Íconos nuevos que pide la propuesta (mismo formato que js/icons.js): «lento» (caracol) y «borrar»
+const LOCAL = {
+  slow: '<path d="M3 18h15.5a2.5 2.5 0 0 0 2.5-2.5V11"/><path d="m19 11-1.2-3.2M21 11l1-3.2"/><circle cx="11" cy="12.5" r="5.5"/><path d="M11 12.5a2 2 0 1 1 2-2"/>',
+  back: '<path d="M8.5 5H20a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H8.5L2.5 12z"/><path d="m11.5 9 6 6M17.5 9l-6 6"/>',
+};
+const ic2 = n => LOCAL[n] ? `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${LOCAL[n]}</svg>` : ic(n);
+
+// Japonés: [kanji:lectura] lleva furigana; el resto va tal cual
+const J = s => s.replace(/\[([^:\]]+):([^\]]+)\]/g, '<ruby class="fg">$1<rt>$2</rt></ruby>');
+const plain = s => s.replace(/\[([^:\]]+):[^\]]+\]/g, '$1');
+const R = (kana, rom) => `<ruby class="kr">${kana}<rt>${rom}</rt></ruby>`;
+
+// Las 5 frases de la unidad (Genki, lección 6)
+const PH = [
+  { ja: 'へやに[入:はい]ってもいいですか。', es: '¿Puedo entrar al cuarto?' },
+  { ja: 'テレビをみてもいいですか。', es: '¿Puedo ver la tele?' },
+  { ja: 'すこし[休:やす]んでもいいですか。', es: '¿Puedo descansar un poco?', say: '少し休んでもいいですか。' },
+  { ja: 'はい、いいですよ。', es: 'Sí, claro.' },
+  { ja: 'ここに[入:はい]ってはいけません。', es: 'No se puede entrar aquí.' },
+];
+const sayOf = p => p.say || plain(p.ja);
+
+// ---------- Voz japonesa ----------
+let jaVoice = null;
+const loadV = () => { try { jaVoice = speechSynthesis.getVoices().find(v => /^ja/i.test(v.lang)) || null; } catch {} };
+try { loadV(); speechSynthesis.onvoiceschanged = loadV; } catch {}
+function speak(text, rate = .9, tapped = false) {
+  try {
+    const u = new SpeechSynthesisUtterance(text); u.lang = 'ja-JP'; if (jaVoice) u.voice = jaVoice; u.rate = rate;
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+    if (!jaVoice && tapped) toast('Este navegador no tiene voz japonesa. En el juego, sin voz, este botón no aparece.');
+  } catch { if (tapped) toast('Este navegador no puede hablar.'); }
+}
+function toast(msg) {
+  $('#phone .p3-toast')?.remove();
+  const t = document.createElement('div'); t.className = 'p3-toast'; t.textContent = msg; $('#phone').append(t);
+  setTimeout(() => t.remove(), 2600);
+}
+
+// ---------- Tinta (trazos reales de KanjiVG) ----------
+// done: trazos en tinta · [hiA, hiB): trazos resaltados (cls 'h' rojo, 'p' rojo tenue) · el resto, guía tenue
+function ink(k, done = 0, hi = [], cls = 'h') {
+  const st = STROKES[k];
+  return `<svg class="rd-ink" viewBox="0 0 109 109" role="img" aria-label="${k}"><g class="g">${st.map(d => `<path d="${d}"/>`).join('')}</g>
+    <g class="d">${st.slice(0, done).map(d => `<path d="${d}"/>`).join('')}</g>
+    <g class="${cls}">${hi.map(i => `<path d="${st[i]}"/>`).join('')}</g></svg>`;
+}
+const PRIZE = '休', NS = STROKES[PRIZE].length; // 6 trazos
+const painted = lv => Math.round(NS * lv / 5);   // tinta por nivel: 5 partes
+const partOf = lv => Array.from({ length: painted(lv) - painted(lv - 1) }, (_, i) => painted(lv - 1) + i);
+
+// ---------- Salón de entrenamiento (copia de roomSVG de js/round.js, más bajo) ----------
+function roomSVG(h = 176) {
+  return `<svg class="rd-room" viewBox="0 0 390 ${h}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <rect width="390" height="${h}" class="wall"/>
+    <g class="ribs" stroke-width="3">${[0, 1, 2, 3, 4].map(i => `<line x1="${i * 98}" y1="0" x2="${i * 98}" y2="${h * .68}"/>`).join('')}<line x1="0" y1="${h * .34}" x2="390" y2="${h * .34}"/></g>
+    <rect y="${h * .68}" width="390" height="${h * .32}" class="mat"/>
+    <g class="mat-l" stroke-width="2.5">${[0, 1, 2, 3].map(i => `<line x1="${i * 130}" y1="${h * .68}" x2="${i * 130 + 40}" y2="${h}"/>`).join('')}</g>
+    <rect y="${h * .68 - 4}" width="390" height="6" class="sill"/></svg>`;
+}
+// Santuario de fondo para las hojas (papel recortado)
+function worldSVG() {
+  return `<svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFB38A"/><stop offset=".45" stop-color="#FFD9A0"/><stop offset=".62" stop-color="#CFE6B0"/></linearGradient></defs>
+    <rect width="390" height="844" fill="url(#sky)"/><circle cx="300" cy="150" r="42" fill="#FFF3C4"/>
+    <path d="M-40 470 Q90 360 230 450 T470 430 V844 H-40z" fill="#93C47D"/><path d="M-40 540 Q140 450 300 520 T470 500 V844 H-40z" fill="#7DB36A"/>
+    <path d="M-40 620 Q170 560 470 610 V844 H-40z" fill="#9FD37F"/>
+    <g fill="#E8452C"><rect x="150" y="430" width="90" height="10" rx="4"/><rect x="160" y="448" width="70" height="6"/><rect x="166" y="440" width="8" height="70"/><rect x="216" y="440" width="8" height="70"/></g></svg>`;
+}
+
+// ---------- Marco de la lección ----------
+const SAY_OK = '¡Eso es!', SAY_MISS = 'No pasa nada, la repasamos luego.';
+function lesson(v, { lv, rd = 2, pos = 5, type, say, body, foot = 'Comprobar', sec, kAt = [4, 10], right }) {
+  v.innerHTML = `<div class="p3-run">
+    <div class="rd-scene">${roomSVG()}<button class="rd-x" aria-label="Salir" data-go="map">${ic('x')}</button>
+      <div class="rd-drops">${Array.from({ length: 15 }, (_, i) => `<i class="${kAt.includes(i) ? 'k' : ''}${i < pos ? ' on' : ''}${i === pos ? ' now' : ''}"></i>`).join('')}</div>
+      <div class="rd-bub"><span class="who">${TRAINER}</span><p>${say}</p></div>
+      <span class="rd-me">${art(TRAINER)}</span><span class="rd-npc"></span></div>
+    <div class="p3-sec"><span>${sec ?? `Nivel ${lv} · ronda ${rd} de 3`}</span>${right ?? `<em>${type}</em>`}</div>
+    <div class="game-body rd-low p3-body">${body}</div>
+    ${foot ? `<div class="p3-foot"><button class="btn ok wide" id="check" ${foot === 'Comprobar' ? 'disabled' : ''}>${foot}</button></div>` : ''}
+  </div>`;
+  return v.querySelector('.p3-run');
+}
+function bub(run, txt, who = TRAINER) {
+  const b = run.querySelector('.rd-bub');
+  b.querySelector('.who').textContent = who; b.querySelector('p').innerHTML = txt;
+  b.classList.toggle('npc', who !== TRAINER); b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
+}
+// Panel de acierto o error. Acierto → «Seguir»; error → «Entendido» (como fixPanel de js/feedback.js)
+function res(run, ok, { html = '', onBtn, title, say }) {
+  run.querySelector('.p3-body').classList.add('lock');
+  const f = run.querySelector('.p3-foot'); if (f) f.hidden = true;
+  bub(run, say || (ok ? SAY_OK : SAY_MISS));
+  run.querySelector('.rd-me')?.classList.toggle('happy', ok);
+  const d = document.createElement('div');
+  d.className = `p3-res ${ok ? 'ok' : 'no'}`;
+  d.setAttribute('role', 'status');
+  d.innerHTML = `<div class="p3-rh"><i>${ic(ok ? 'check' : 'x')}</i><b>${title || (ok ? '¡Bien!' : 'Casi. Mira la diferencia')}</b></div>${html}
+    <button class="btn ok wide">${ok ? 'Seguir' : 'Entendido'}</button>`;
+  run.append(d);
+  d.querySelector('.btn').onclick = onBtn;
+}
+// Filas «Tu respuesta / Correcta» (clases fx-* de A-12)
+const fxRows = (given, need, html, note) => `<div class="fx"><p class="fx-h">Tu respuesta</p><div class="fx-row mine">${given.length ? given.map((t, i) => `<span class="fx-t${t === need[i] ? '' : ' bad'}">${html(t)}</span>`).join('') : '<span class="fx-t bad">—</span>'}</div>
+  <p class="fx-h">Correcta</p><div class="fx-row need">${need.map((t, i) => `<span class="fx-t${given[i] === t ? '' : ' bad'}">${html(t)}</span>`).join('')}</div>
+  ${note ? `<p class="fx-n">${ic('bulb')}<span>${note}</span></p>` : ''}</div>`;
+
+// Banco de fichas: items [{ v, html, cls }]; al comprobar, onCheck(given, ok)
+function bank(run, items, answer, onCheck) {
+  const line = run.querySelector('.p3-line'), end = line.querySelector('.p3-close'), bk = run.querySelector('.asm-bank'), btn = run.querySelector('#check');
+  const picked = [];
+  bk.innerHTML = items.map((x, i) => `<button class="asm-t ${x.cls || ''}" data-i="${i}">${x.html}</button>`).join('');
+  const render = () => {
+    line.querySelectorAll('.asm-t').forEach(b => b.remove());
+    picked.forEach((i, j) => {
+      const b = document.createElement('button'); b.className = `asm-t ${items[i].cls || ''}`; b.innerHTML = items[i].html;
+      b.onclick = () => { picked.splice(j, 1); render(); };
+      end ? line.insertBefore(b, end) : line.append(b);
+    });
+    bk.querySelectorAll('.asm-t').forEach(b => { const u = picked.includes(+b.dataset.i); b.classList.toggle('used', u); b.setAttribute('aria-hidden', u); });
+    btn.disabled = !picked.length;
+  };
+  bk.querySelectorAll('.asm-t').forEach(b => b.onclick = () => { if (!picked.includes(+b.dataset.i)) { picked.push(+b.dataset.i); navigator.vibrate?.(5); render(); } });
+  btn.onclick = () => { const g = picked.map(i => items[i].v); onCheck(g, g.join(' ') === answer.join(' ')); };
+  render();
+}
+const tok = (v, cls = '') => ({ v: plain(v), html: J(v), cls });
+
+// ======================================================================
+// 1 · Mapa de niveles en el cuaderno
+// ======================================================================
+const LV = [
+  { t: 'Presentación y palabras', what: 'Los KANJŪ de la unidad se presentan (dibujo, componentes, significado, lectura) y llegan las palabras nuevas: escuchar, emparejar, kanji ↔ lectura.', help: ['Furigana', 'Romaji'], ex: [['intro', 'Presentación'], ['pairs', 'Emparejar']] },
+  { t: 'Palabras en frases', what: 'Las mismas palabras en frases cortas. Traducir japonés → español con banco de palabras.', help: ['Furigana'], ex: [['jaes', 'Japonés → español'], ['similar', 'Kanji parecido', 1]] },
+  { t: 'Gramática', what: 'La gramática de la unidad: 〜てもいいですか y 〜てはいけません. Traducir español → japonés con banco.', help: ['Furigana que se apaga por kanji'], ex: [['esja', 'Español → japonés'], ['kana', 'Escribir la lectura', 1]] },
+  { t: 'Escuchar y completar', what: 'Escuchar y armar lo que oíste, completar el hueco y la situación con diálogo.', help: ['Sin traducción a la vista'], ex: [['listen', 'Escuchar y armar'], ['gap', 'Completar el hueco']] },
+  { t: 'Producción', what: 'Frases enteras sin ayudas, con un 30 % de las unidades anteriores.', help: ['Sin ayudas'], ex: [] },
+];
+const MAPST = { cur: { done: 2, r: 1, here: '2.10' }, start: { done: 0, r: 0, here: '2.10' }, ahead: { done: 0, r: 0, here: '2.7', lock: true } };
+let openLv = null;
+function map(v, st = 'cur') {
+  const S = MAPST[st], curLv = S.lock ? 0 : S.done + 1;
+  if (openLv === null || openLv > 5) openLv = curLv;
+  const units = S.lock ? [['2.7', 'here'], ['2.8', 'lock'], ['2.9', 'lock'], ['2.10', 'on'], ['2.11', 'lock']] : [['2.8', 'ok'], ['2.9', 'ok'], ['2.10', 'on'], ['2.11', 'lock']];
+  const lvRow = (L, i) => {
+    const n = i + 1, state = S.lock ? 'lock' : n <= S.done ? 'done' : n === curLv ? 'cur' : 'lock', r = state === 'done' ? 3 : state === 'cur' ? S.r : 0;
+    const open = openLv === n;
+    const mini = state === 'done' ? ink(PRIZE, painted(n)) : state === 'cur' ? ink(PRIZE, painted(n - 1), partOf(n), 'p') : ink(PRIZE, 0);
+    const act = state === 'cur' ? `<button class="btn ok wide" data-go="${n === 1 ? 'intro' : L.ex[0]?.[0] || 'esja'}">${ic('right')}Empezar ronda ${S.r + 1} de 3</button>`
+      : state === 'done' ? `<button class="btn ghost wide" data-go="${L.ex[0][0]}">${ic('refresh')}Repasar</button>`
+      : `<p class="p3-lockt">${ic('lock')}${S.lock ? 'Se abre al llegar a la unidad o al saltar aquí.' : `Se abre al terminar el nivel ${n - 1}.`}</p>`;
+    return `<div class="p3-lv ${state}">
+      <button class="p3-lvh" data-lv="${n}" aria-expanded="${open}"><span class="p3-med">${state === 'done' ? ic('check') : state === 'lock' && S.lock ? ic('lock') : n}</span>
+        <span class="p3-lvt"><b>Nivel ${n} · ${L.t}</b><small><span class="p3-rd">${[0, 1, 2].map(k => `<i class="${k < r ? 'on' : ''}"></i>`).join('')}</span>${state === 'done' ? '3 de 3 rondas' : state === 'cur' ? `ronda ${S.r + 1} de 3` : '3 rondas · 15 ejercicios'}</small></span>
+        <span class="p3-mini" aria-hidden="true">${mini}</span></button>
+      ${open ? `<div class="p3-lvb"><p>${L.what}</p>
+        <div class="p3-chips">${L.help.map(h => `<span class="p3-chip">${ic(h.startsWith('Sin') ? 'eye' : 'kana')}${h}</span>`).join('')}</div>
+        ${L.ex.length ? `<div class="p3-exs">${L.ex.map(([id, t, prov]) => `<button class="p3-ex" data-go="${id}">${ic('right')}${t}${prov ? '<sup>*</sup>' : ''}</button>`).join('')}</div>` : ''}
+        ${act}</div>` : ''}
+    </div>`;
+  };
+  v.innerHTML = `<div class="p3-world">${worldSVG()}</div>
+  <div class="p3-panel"><div class="pn-card">
+    <div class="pn-head"><span class="p3-hic">${ic('book')}</span><span class="pn-title">Cuaderno</span><button class="pn-x" aria-label="Cerrar">${ic('x')}</button></div>
+    <div class="p3-units" role="tablist">${units.map(([u, s]) => `<button class="p3-unit ${s === 'on' ? 'on' : ''} ${s === 'here' ? 'here' : ''}" role="tab" aria-selected="${s === 'on'}" data-unit="${u}">${s === 'ok' ? ic('check') : s === 'lock' ? ic('lock') : ''}${u}</button>`).join('')}</div>
+    <div class="pn-body view"><div>
+      <p class="eyebrow">Etapa 2 · Vida diaria</p>
+      <h2 class="p3-h">2.10 · Pedir permiso</h2>
+      <span class="p3-cando">Puedo pedir permiso y decir lo que no se puede.</span>
+      <div class="p3-hero"><span class="rd-ink-box">${ink(PRIZE, painted(S.done), S.lock ? [] : partOf(curLv), 'p')}</span>
+        <div><b>${S.lock ? 'Una página en blanco' : `${S.done} de 5 partes pintadas`}</b><small>${S.lock ? 'La tinta de 休 se pinta un poco con cada nivel que terminas.' : 'Cada nivel que terminas pinta una parte de 休. Lo que sigue, en rojo tenue.'}</small>
+          <div class="p3-parts">${[1, 2, 3, 4, 5].map(n => `<i class="${n <= S.done ? 'on' : n === curLv ? 'now' : ''}"></i>`).join('')}</div>
+          <div class="p3-cast"><span><span class="art">${art('入')}</span>入</span><span><span class="art">${art('出')}</span>出</span><span><span class="rd-ink-box">${ink(PRIZE, painted(S.done))}</span>premio</span></div></div></div>
+      ${S.lock ? `<div class="p3-jump"><div class="row"><i>${ic('key')}</i><div><b>¿Ya sabes lo de antes?</b><small>Estás en 2.7 · Mi casa. Con una prueba de 15 ejercicios empiezas aquí.</small></div></div>
+        <button class="btn ok wide" data-go="jump:entry">Saltar aquí</button></div>` : ''}
+      <button class="p3-guide" data-go="guide"><span class="art">${art('入')}</span><span><b>Guía de la unidad</b><small>Frases clave con audio, la gramática en 2 pantallas y los kanji. Te la presenta 入. Opcional.</small></span>${ic('right')}</button>
+      <h4 class="p3-lvh4">Niveles <small>5 niveles · 3 rondas cada uno</small></h4>
+      <div class="p3-lvs">${LV.map(lvRow).join('')}</div>
+      <p class="p3-foot-note">* Nivel propuesto: ver «Para decidir».</p>
+    </div></div>
+  </div></div>`;
+  v.querySelectorAll('[data-lv]').forEach(b => b.onclick = () => { const n = +b.dataset.lv; openLv = openLv === n ? 0 : n; const sc = v.querySelector('.pn-body').scrollTop; map(v, st); v.querySelector('.pn-body').scrollTop = sc; });
+  v.querySelectorAll('[data-unit]').forEach(b => b.onclick = () => b.dataset.unit !== '2.10' && toast('En la maqueta solo está la unidad 2.10.'));
+  v.querySelector('.pn-x').onclick = () => toast('Cierra la hoja y vuelves al santuario.');
+}
+
+// ======================================================================
+// 2 · Presentación de un KANJŪ
+// ======================================================================
+function intro(v, st = 'k') {
+  const steps = `<div class="p3-steps">${[['k', 'El KANJŪ'], ['w', 'La palabra'], ['f', 'La frase']].map(([id, t], i, a) => `<span class="${id === st ? 'on' : a.findIndex(x => x[0] === st) > i ? 'done' : ''}">${t}</span>`).join('')}</div>`;
+  let body, say;
+  if (st === 'k') {
+    say = '¡Te presento a 休! Lo formamos 人 y yo, 木.';
+    body = `${steps}<div class="p3-meet">
+      <div class="p3-mtop"><span class="art p3-big">${art('休')}</span>
+        <div><div class="p3-bk"><b>休</b><span>descansar</span></div>
+          <div class="p3-reads"><button class="p3-read main" data-say="やすむ"><small>${J('[訓:くん]')}</small><span class="jp">やす(む)</span>${ic('sound')}</button>
+            <button class="p3-read" data-say="キュウ"><small>${J('[音:おん]')}</small><span class="jp">キュウ</span>${ic('sound')}</button></div></div></div>
+      <div class="p3-recipe">
+        <span class="p3-part"><span class="art">${art('人')}</span><b>人</b><small>persona · a la izquierda, así: 亻</small><em>${ic('check')}ya lo conoces</em></span><i>+</i>
+        <span class="p3-part"><span class="art">${art('木')}</span><b>木</b><small>árbol</small><em>${ic('check')}ya lo conoces</em></span><i>=</i>
+        <span class="p3-part res"><span class="k">休</span><small>descansar</small></span></div>
+      <p class="p3-mn">${ic('bulb')}<span>Una persona apoyada en un árbol: descansa.</span></p></div>`;
+  } else if (st === 'w') {
+    say = 'Ahora, la palabra. ¡Ya puedes leerla con kanji!';
+    body = `${steps}<div class="wcard p3-wc"><span class="p3-wk">${J('[休:やす]みます')}</span><span class="p3-rom kr-line">yasumimasu</span><b>descansar</b><small>Forma educada (〜ます) de 休む.</small>
+      <button class="btn ghost" data-say="休みます">${ic('sound')}Escuchar</button></div>
+      <p class="p3-mn">${ic('eye')}<span>Desde esta unidad, 休 se escribe con kanji en todas sus palabras, tengas o no la criatura.</span></p>`;
+  } else {
+    say = 'Y ahora, en una frase.';
+    body = `${steps}<div class="wcard p3-wc"><p class="p3-sent jp">${J(PH[2].ja)}</p><span class="p3-rom kr-line">sukoshi yasunde mo ii desu ka</span><b>${PH[2].es}</b>
+      <button class="btn ghost" data-say="${PH[2].say}">${ic('sound')}Escuchar</button></div>
+      <p class="p3-mn">${ic('bulb')}<span>すこし va en kana porque su kanji todavía no se enseña. Lo mismo pasa con へや y みます.</span></p>`;
+  }
+  const run = lesson(v, { lv: 1, rd: 1, pos: 0, type: 'Presentación', say, body, foot: 'Seguir', kAt: [6, 12] });
+  run.querySelector('#check').onclick = () => st === 'k' ? show('intro', 'w') : st === 'w' ? show('intro', 'f') : show('pairs');
+}
+
+// ======================================================================
+// 3 · Emparejar pares
+// ======================================================================
+function pairs(v) {
+  const L = ['入る', '出る', '休む', '人', '木'], RR = [['やすむ', 'yasumu', 2], ['き', 'ki', 4], ['はいる', 'hairu', 0], ['ひと', 'hito', 3], ['でる', 'deru', 1]];
+  const ES = ['entrar', 'salir', 'descansar', 'persona', 'árbol'];
+  const body = `<p class="hint">Toca los pares: cada kanji con su lectura</p>
+    <div class="p3-pairs">${L.map((k, i) => `<button class="p3-pc" data-l="${i}">${k}</button><button class="p3-pc r" data-r="${RR[i][2]}">${R(RR[i][0], RR[i][1])}</button>`).join('')}</div>
+    <p class="p3-pstat" id="pst">0 de 5 pares</p>`;
+  const run = lesson(v, { lv: 1, rd: 1, pos: 3, type: 'Emparejar', say: '¿Me ayudas a juntar cada kanji con cómo se lee?', body, foot: null, kAt: [6, 12] });
+  let selL = null, selR = null, got = 0, miss = 0;
+  const btnL = i => run.querySelector(`[data-l="${i}"]`), btnR = i => run.querySelector(`[data-r="${i}"]`);
+  const tryPair = () => {
+    if (selL === null || selR === null) return;
+    const a = btnL(selL), b = btnR(selR);
+    if (selL === selR) {
+      [a, b].forEach(x => { x.classList.remove('p3-on'); x.classList.add('ok'); x.disabled = true; });
+      speak(RR.find(r => r[2] === selL)[0]); got++;
+      run.querySelector('#pst').textContent = `${got} de 5 pares`;
+      if (got === 5) setTimeout(() => res(run, true, { html: `<div class="p3-mtab">${L.map((k, i) => `<b>${k}</b><span class="jp">${RR.find(r => r[2] === i)[0]}</span><span>${ES[i]}</span>`).join('')}</div>${miss ? `<p class="p3-ans" style="margin-top:8px;color:var(--muted)">${miss} par${miss > 1 ? 'es' : ''} equivocado${miss > 1 ? 's' : ''} en el camino.</p>` : ''}`, onBtn: () => show('jaes') }), 400);
+    } else {
+      miss++; bub(run, '¡Uy! Ese par no va.');
+      [a, b].forEach(x => { x.classList.remove('p3-on', 'bad'); void x.offsetWidth; x.classList.add('bad'); });
+      setTimeout(() => [a, b].forEach(x => x.classList.remove('bad')), 400);
+    }
+    selL = selR = null;
+  };
+  run.querySelectorAll('[data-l]').forEach(b => b.onclick = () => { run.querySelectorAll('[data-l]').forEach(x => x.classList.remove('p3-on')); selL = +b.dataset.l; b.classList.add('p3-on'); tryPair(); });
+  run.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { run.querySelectorAll('[data-r]').forEach(x => x.classList.remove('p3-on')); selR = +b.dataset.r; b.classList.add('p3-on'); tryPair(); });
+}
+
+// ======================================================================
+// 4 · Japonés → español
+// ======================================================================
+function jaes(v) {
+  const body = `<p class="hint">¿Qué significa?</p>
+    <div class="p3-src"><button class="p3-spk-s" data-say="${plain(PH[0].ja)}" aria-label="Escuchar">${ic('sound')}</button><p class="jp">${J(PH[0].ja)}</p></div>
+    <div class="p3-line"><span class="p3-pun">¿</span><span class="p3-pun p3-close">?</span></div><div class="asm-bank"></div>`;
+  const run = lesson(v, { lv: 2, rd: 2, pos: 6, type: 'Japonés → español', say: 'Tradúcela: ¿qué estoy preguntando?', body });
+  const W = ['puedo', 'salir', 'entrar', 'del', 'al', 'ver', 'cuarto', 'no'];
+  const ans = ['puedo', 'entrar', 'al', 'cuarto'];
+  bank(run, W.map(w => ({ v: w, html: w, cls: 'es' })), ans, (g, ok) => res(run, ok, {
+    html: ok ? `<p class="p3-ans"><span class="jp">${J(PH[0].ja)}</span>${PH[0].es}</p>` : fxRows(g, ans, x => x, '入ります es «entrar». Salir sería 出ます.'),
+    onBtn: () => ok ? show('esja') : show('jaes'),
+  }));
+}
+
+// ======================================================================
+// 5 · Español → japonés (mejora: 3 a 5 fichas de más plausibles)
+// ======================================================================
+function esja(v) {
+  const body = `<p class="hint">Escríbelo en japonés</p><div class="qm sm">«${PH[1].es}»</div>
+    <div class="p3-line"></div><div class="asm-bank"></div>`;
+  const run = lesson(v, { lv: 3, rd: 2, pos: 7, type: 'Español → japonés', say: 'Quiero ver la tele… ¿cómo lo pido?', body });
+  const items = [tok('いい'), tok('に', 'pt'), tok('テレビ'), tok('みて'), tok('が', 'pt'), tok('です'), tok('入って'), tok('を', 'pt'), tok('か', 'pt'), tok('いけません'), tok('も', 'pt')];
+  const ans = ['テレビ', 'を', 'みて', 'も', 'いい', 'です', 'か'];
+  const html = x => items.find(y => y.v === x)?.html || x;
+  bank(run, items, ans, (g, ok) => res(run, ok, {
+    html: ok ? `<p class="p3-ans"><span class="jp">${J(PH[1].ja)}</span>${PH[1].es}</p>` : fxRows(g, ans, html, 'Para pedir permiso: verbo en forma て + もいいですか. Con 〜てはいけません dices que no se puede.'),
+    onBtn: () => ok ? show('listen') : show('esja'),
+  }));
+}
+
+// ======================================================================
+// 6 · Escuchar y armar
+// ======================================================================
+function listen(v) {
+  const body = `<p class="hint">Escucha y arma lo que oíste</p>
+    <div class="p3-say"><button class="p3-spk" data-say="${PH[2].say}" aria-label="Escuchar">${ic('sound')}<span>Escuchar</span></button>
+      <button class="p3-spk slow" data-say="${PH[2].say}" data-rate=".55" aria-label="Escuchar lento">${ic2('slow')}<span>Lento</span></button></div>
+    <div class="p3-line"></div><div class="asm-bank"></div>`;
+  const run = lesson(v, { lv: 4, rd: 1, pos: 8, type: 'Escuchar y armar', say: 'Escucha bien. Sin mirar, ¿qué dije?', body });
+  const items = [tok('[休:やす]みます'), tok('も', 'pt'), tok('すこし'), tok('は', 'pt'), tok('です'), tok('[休:やす]んで'), tok('を', 'pt'), tok('いい'), tok('[入:はい]って'), tok('か', 'pt')];
+  const ans = ['すこし', '休んで', 'も', 'いい', 'です', 'か'];
+  const html = x => items.find(y => y.v === x)?.html || x;
+  bank(run, items, ans, (g, ok) => { speak(PH[2].say); res(run, ok, {
+    html: ok ? `<p class="p3-ans"><span class="jp">${J(PH[2].ja)}</span>${PH[2].es}</p>` : fxRows(g, ans, html, '休みます en forma て es 休んで. Escúchala otra vez en lento.') + `<p class="p3-ans" style="margin-top:8px">${PH[2].es}</p>`,
+    onBtn: () => ok ? show('gap') : show('listen'),
+  }); });
+}
+
+// ======================================================================
+// 7 · Completar el hueco
+// ======================================================================
+function gap(v, st = 'a') {
+  const D = st === 'a'
+    ? { pre: 'へや', post: '[入:はい]ってもいいですか。', opts: ['を', 'に', 'で', 'が'], right: 'に', full: PH[0], cls: 'pt', note: 'Con 入ります, el lugar al que entras va con に.' }
+    : { pre: '[休:やす]ん', post: 'もいいですか。', opts: ['て', 'だ', 'で', 'に'], right: 'で', full: { ja: '[休:やす]んでもいいですか。', es: '¿Puedo descansar?' }, cls: '', note: 'La forma て de 休みます es 休んで: み se vuelve んで.' };
+  const body = `<span class="p3-step">${st === 'a' ? '<i class="on"></i><i></i>' : '<i class="on"></i><i class="on"></i>'}${st === 'a' ? '1' : '2'} de 2</span>
+    <p class="hint">${st === 'a' ? 'Completa con la partícula que falta' : 'Completa la forma del verbo'}</p>
+    <p class="p3-gapq">${J(D.pre)}<span class="p3-gap" id="gap" aria-label="hueco">＿</span>${J(D.post)}</p>
+    <div class="p3-opts4">${D.opts.map(o => `<button class="asm-t ${D.cls}" data-v="${o}">${o}</button>`).join('')}</div>`;
+  const run = lesson(v, { lv: 4, rd: 1, pos: st === 'a' ? 9 : 10, type: 'Completar el hueco', say: st === 'a' ? 'Falta una partícula. ¿Cuál va?' : 'Ahora falta un pedacito del verbo.', body });
+  let sel = null; const btn = run.querySelector('#check'), g = run.querySelector('#gap');
+  run.querySelectorAll('.p3-opts4 .asm-t').forEach(b => b.onclick = () => {
+    run.querySelectorAll('.p3-opts4 .asm-t').forEach(x => x.classList.remove('p3-on')); b.classList.add('p3-on');
+    sel = b.dataset.v; g.textContent = sel; g.classList.add('fill'); btn.disabled = false;
+  });
+  btn.onclick = () => { const ok = sel === D.right; speak(plain(D.full.ja)); res(run, ok, {
+    html: ok ? `<p class="p3-ans"><span class="jp">${J(D.full.ja)}</span>${D.full.es}</p>`
+      : fxRows([sel], [D.right], x => x, D.note) + `<p class="p3-ans" style="margin-top:8px"><span class="jp">${J(D.full.ja)}</span>${D.full.es}</p>`,
+    onBtn: () => ok ? (st === 'a' ? show('gap', 'b') : show('kana')) : show('gap', st),
+  }); };
+}
+
+// ======================================================================
+// 8 · Escribir la lectura con teclado de fichas kana
+// ======================================================================
+const KR = { あ: 'あいうえお', か: 'かきくけこ', さ: 'さしすせそ', た: 'たちつてと', な: 'なにぬねの', は: 'はひふへほ', ま: 'まみむめも', や: 'やゆよ', ら: 'らりるれろ', わ: 'わをー' };
+const ROM = { あ: 'a', い: 'i', う: 'u', え: 'e', お: 'o', か: 'ka', き: 'ki', く: 'ku', け: 'ke', こ: 'ko', さ: 'sa', し: 'shi', す: 'su', せ: 'se', そ: 'so', た: 'ta', ち: 'chi', つ: 'tsu', て: 'te', と: 'to', な: 'na', に: 'ni', ぬ: 'nu', ね: 'ne', の: 'no', は: 'ha', ひ: 'hi', ふ: 'fu', へ: 'he', ほ: 'ho', ま: 'ma', み: 'mi', む: 'mu', め: 'me', も: 'mo', や: 'ya', ゆ: 'yu', よ: 'yo', ら: 'ra', り: 'ri', る: 'ru', れ: 're', ろ: 'ro', わ: 'wa', を: 'o', ー: '—', ん: 'n' };
+const DAK = Object.fromEntries([...'かきくけこさしすせそたちつてとはひふへほ'].map((c, i) => [c, 'がぎぐげござじずぜぞだぢづでどばびぶべぼ'[i]]));
+const HAN = Object.fromEntries([...'はひふへほ'].map((c, i) => [c, 'ぱぴぷぺぽ'[i]]));
+const SMALL = Object.fromEntries([...'あいうえおつやゆよ'].map((c, i) => [c, 'ぁぃぅぇぉっゃゅょ'[i]]));
+const flip = (m, c) => m[c] || Object.keys(m).find(k => m[k] === c) || c;
+function kana(v, st = 'a') {
+  const D = st === 'a' ? { w: '休み', m: 'descanso', a: 'やすみ' } : { w: '入ります', m: 'entrar', a: 'はいります' };
+  let row = 'あ', typed = '';
+  const keys = () => {
+    const strip = [...KR[row]];
+    return `<div class="p3-krow p3-kstrip">${strip.map(c => `<button class="p3-k" data-c="${c}">${c}${ROM[c] ? `<small class="kr-line">${ROM[c]}</small>` : ''}</button>`).join('')}</div>
+      <div class="p3-krow">${'あかさたな'.split('').map(r => `<button class="p3-k ${r === row ? 'on' : ''}" data-row="${r}" aria-label="fila ${r}">${r}</button>`).join('')}</div>
+      <div class="p3-krow">${'はまやらわ'.split('').map(r => `<button class="p3-k ${r === row ? 'on' : ''}" data-row="${r}" aria-label="fila ${r}">${r}</button>`).join('')}</div>
+      <div class="p3-krow"><button class="p3-k fn" data-fn="dak" aria-label="dakuten"><span class="mk">゛</span></button><button class="p3-k fn" data-fn="han" aria-label="handakuten"><span class="mk">゜</span></button><button class="p3-k fn" data-fn="small" aria-label="pequeño">小</button><button class="p3-k" data-c="ん">ん<small class="kr-line">n</small></button><button class="p3-k fn" data-fn="del" aria-label="borrar">${ic2('back')}</button></div>`;
+  };
+  const body = `<span class="p3-step">${st === 'a' ? '<i class="on"></i><i></i>' : '<i class="on"></i><i class="on"></i>'}${st === 'a' ? '1' : '2'} de 2</span>
+    <p class="hint">Escribe cómo se lee</p>
+    <div class="p3-kw nofg"><b>${D.w}</b><small>${D.m}</small></div>
+    <div class="p3-type" id="typed" aria-live="polite"></div>
+    <div class="p3-kb" id="kb"></div>`;
+  const run = lesson(v, { lv: 3, rd: 3, pos: 11, type: 'Escribir la lectura', say: '¿Cómo se lee? Escríbelo con las fichas.', body });
+  const btn = run.querySelector('#check');
+  const draw = () => {
+    run.querySelector('#typed').innerHTML = typed ? `<span>${typed}</span><i class="p3-caret"></i>` : `<span class="ph">Toca una fila y luego el kana</span>`;
+    btn.disabled = !typed;
+    const kb = run.querySelector('#kb'); kb.innerHTML = keys();
+    kb.querySelectorAll('[data-row]').forEach(b => b.onclick = () => { row = b.dataset.row; draw(); });
+    kb.querySelectorAll('[data-c]').forEach(b => b.onclick = () => { typed += b.dataset.c; navigator.vibrate?.(5); draw(); });
+    kb.querySelectorAll('[data-fn]').forEach(b => b.onclick = () => {
+      const f = b.dataset.fn, last = typed.slice(-1);
+      if (f === 'del') typed = typed.slice(0, -1);
+      else if (last) typed = typed.slice(0, -1) + flip(f === 'dak' ? DAK : f === 'han' ? HAN : SMALL, last);
+      draw();
+    });
+  };
+  draw();
+  btn.onclick = () => { const ok = typed === D.a; speak(D.a); res(run, ok, {
+    html: ok ? `<p class="p3-ans"><span class="jp">${st === 'a' ? J('[休:やす]み') : J('[入:はい]ります')}</span>${D.a} · ${D.m}</p>`
+      : fxRows([...typed], [...D.a], x => x, st === 'a' ? '休 se lee やす en 休みます y en 休み.' : '入 se lee はい en 入ります.'),
+    onBtn: () => ok ? (st === 'a' ? show('kana', 'b') : show('similar')) : show('kana', st),
+  }); };
+}
+
+// ======================================================================
+// 9 · Kanji parecido, con la ayuda del KANJŪ al fallar
+// ======================================================================
+const KM = { 人: 'persona', 入: 'entrar', 八: 'ocho', 大: 'grande' };
+const CMP = {
+  人: { a: [0], b: [1], t: 'En 入 el trazo largo es el de la derecha y empieza arriba. En 人, el largo es el de la izquierda.' },
+  八: { a: [0, 1], b: [0, 1], t: 'En 八 los dos trazos no se tocan. En 入 se juntan arriba, en punta.' },
+  大: { a: [0], b: [], t: '大 tiene una raya horizontal: los brazos abiertos. 入 no la tiene.' },
+};
+function similar(v) {
+  const body = `<p class="hint">Toca el kanji de <b>«entrar»</b></p><div class="qm sm nofg"><span class="jp">はい(る)</span></div>
+    <div class="opts">${['人', '八', '入', '大'].map(k => `<button class="opt" data-k="${k}">${k}</button>`).join('')}</div>`;
+  const run = lesson(v, { lv: 2, rd: 2, pos: 4, type: 'Kanji parecido', say: 'Estos kanji se parecen mucho… ¿cuál es «entrar»?', body });
+  let sel = null; const btn = run.querySelector('#check');
+  run.querySelectorAll('.opt').forEach(b => b.onclick = () => { run.querySelectorAll('.opt').forEach(x => x.classList.remove('p3-on')); b.classList.add('p3-on'); sel = b.dataset.k; btn.disabled = false; });
+  btn.onclick = () => {
+    const ok = sel === '入'; speak('はいる');
+    run.querySelectorAll('.opt').forEach(x => x.classList.toggle('right', x.dataset.k === '入'));
+    if (!ok) run.querySelector(`.opt[data-k="${sel}"]`).classList.add('wrong');
+    if (ok) return res(run, true, { html: `<p class="p3-ans"><span class="jp">入 · はい(る)</span>entrar</p>`, onBtn: () => show('guide') });
+    // El KANJŪ 入 aparece en la escena y en el panel con su pista visual (§2b.4)
+    const sc = run.querySelector('.rd-scene'); sc.classList.add('talk'); sc.querySelector('.rd-npc').innerHTML = art('入');
+    const c = CMP[sel];
+    res(run, false, { title: 'Ese no es 入', html: `<div class="p3-help"><span class="art">${art('入')}</span><div><b>入 · entrar</b><small>Una entrada en punta, abierta: por ahí se entra.</small></div></div>
+      <div class="p3-cmp"><figure><span class="rd-ink-box">${ink(sel, STROKES[sel].length, c.a)}</span><figcaption>${sel} · ${KM[sel]}</figcaption></figure>
+        <figure class="me"><span class="rd-ink-box">${ink('入', 2, c.b)}</span><figcaption>入 · entrar</figcaption></figure></div>
+      <p class="fx-n">${ic('bulb')}<span>${c.t}</span></p>`, onBtn: () => show('similar') });
+    bub(run, '¡Ese no soy yo! Mírame bien.', '入');
+  };
+}
+
+// ======================================================================
+// 10 · Guía de la unidad
+// ======================================================================
+function guide(v, st = 'frases') {
+  const tab = st.startsWith('g') ? 'gram' : st;
+  let html;
+  if (tab === 'frases') {
+    html = `<p class="eyebrow">Guía · 2.10 Pedir permiso</p>
+      <div class="p3-host"><span class="art">${art('入')}</span><div class="p3-hb"><span class="who">入</span><p>¡Hola! Soy 入. En esta unidad vas a pedir permiso. Toca una frase para oírla.</p></div></div>
+      <h4 class="p3-h4">Frases clave</h4>
+      ${PH.map(p => `<div class="dy-p"><p class="jp">${J(p.ja)}</p><p class="es">${p.es}</p><button class="say-l" data-say="${sayOf(p)}" aria-label="Escuchar">${ic('sound')}</button></div>`).join('')}`;
+  } else if (st === 'g1' || st === 'gram') {
+    html = `<p class="eyebrow">Gramática · 1 de 2</p><h3 class="p3-gh">Pedir permiso: <span class="jp">〜てもいいですか</span></h3>
+      <p class="p3-gp">Para preguntar si puedes hacer algo, pon el verbo en forma て y agrega もいいですか.</p>
+      <div class="p3-form"><span class="v">verbo en forma て</span><i>+</i><span>もいいですか</span><i>=</i><span class="e">¿Puedo…?</span></div>
+      <div class="p3-tbl"><div><small>〜ます</small><span></span><small>forma て</small></div>
+        <div><span>${J('[入:はい]ります')}</span>${ic('right')}<span>${J('[入:はい]')}<em>って</em></span></div>
+        <div><span>みます</span>${ic('right')}<span>み<em>て</em></span></div>
+        <div><span>${J('[休:やす]みます')}</span>${ic('right')}<span>${J('[休:やす]')}<em>んで</em></span></div></div>
+      ${[PH[0], PH[3]].map(p => `<div class="dy-p"><p class="jp">${J(p.ja)}</p><p class="es">${p.es}</p><button class="say-l" data-say="${sayOf(p)}" aria-label="Escuchar">${ic('sound')}</button></div>`).join('')}
+      <div class="p3-pages"><span></span><span class="dots"><i class="on"></i><i></i></span><button class="btn ok" data-go="guide:g2">Siguiente${ic('right')}</button></div>`;
+  } else if (st === 'g2') {
+    html = `<p class="eyebrow">Gramática · 2 de 2</p><h3 class="p3-gh">Decir que no se puede: <span class="jp">〜てはいけません</span></h3>
+      <p class="p3-gp">Con la forma て + はいけません dices que algo no se puede hacer. Aquí は es partícula y se lee «wa».</p>
+      <div class="p3-form"><span class="v">verbo en forma て</span><i>+</i><span>${R('は', 'wa')}</span><span>いけません</span><i>=</i><span class="e">No se puede…</span></div>
+      <div class="dy-p"><p class="jp">${J(PH[4].ja)}</p><p class="es">${PH[4].es}</p><button class="say-l" data-say="${sayOf(PH[4])}" aria-label="Escuchar">${ic('sound')}</button></div>
+      <p class="p3-mn">${ic('bulb')}<span>Compara: <b class="jp">${J('[入:はい]ってもいいですか')}</b> pide permiso; <b class="jp">${J('[入:はい]ってはいけません')}</b> dice que no se puede.</span></p>
+      <div class="p3-pages"><button class="btn ghost" data-go="guide:g1">${ic('left')}Anterior</button><span class="dots"><i></i><i class="on"></i></span><button class="btn ok" data-go="guide:kanji">Kanji${ic('right')}</button></div>`;
+  } else {
+    const K = [
+      ['入', 'entrar', [['はい(る)', 'はいる', '訓', 1], ['い(れる)', 'いれる', '訓'], ['ニュウ', 'ニュウ', '音']], 'Una entrada en punta, abierta: por ahí se entra.'],
+      ['出', 'salir', [['で(る)', 'でる', '訓', 1], ['だ(す)', 'だす', '訓'], ['シュツ', 'シュツ', '音']], 'Un brote que sale de la maceta.'],
+      ['休', 'descansar', [['やす(む)', 'やすむ', '訓', 1], ['キュウ', 'キュウ', '音']], 'Una persona apoyada en un árbol: descansa. 人 (a la izquierda, 亻) + 木.', 1],
+    ];
+    html = `<p class="eyebrow">Los KANJŪ de la unidad</p><h3 class="p3-gh">Kanji y lecturas</h3>
+      ${K.map(([k, m, rs, mn, prize]) => `<div class="p3-kc"><span class="art">${art(k)}</span><div><div class="t"><b>${k}</b><span>${m}</span>${prize ? '<em>premio</em>' : ''}</div>
+        <div class="p3-kr">${rs.map(([r, s, t, main]) => `<button class="${main ? 'main' : ''}" data-say="${s}"><small>${J(t === '訓' ? '[訓:くん]' : '[音:おん]')}</small>${r}${ic('sound')}</button>`).join('')}</div><p>${mn}</p></div></div>`).join('')}`;
+  }
+  v.innerHTML = `<div class="p3-world">${worldSVG()}</div>
+  <div class="p3-panel"><div class="pn-card">
+    <div class="pn-head"><div class="pn-tabs" role="tablist">${[['frases', 'list', 'Frases'], ['gram', 'pen', 'Gramática'], ['kanji', 'kana', 'Kanji']].map(([id, i, t]) => `<button class="${tab === id ? 'on' : ''}" role="tab" aria-selected="${tab === id}" data-go="guide:${id === 'gram' ? 'g1' : id}">${ic(i)}<span>${t}</span></button>`).join('')}</div>
+      <button class="pn-x" aria-label="Cerrar" data-go="map">${ic('x')}</button></div>
+    <div class="pn-body view"><div>${html}</div></div>
+    <div class="p3-gfoot"><button class="btn ok wide" data-go="map">Listo</button></div>
+  </div></div>`;
+  // Un solo botón bermellón por vista: en gramática, «Siguiente» manda; «Listo» pasa a secundario
+  if (tab === 'gram') v.querySelector('.p3-gfoot .btn').classList.replace('ok', 'ghost');
+}
+
+// ======================================================================
+// 11 · Prueba «Saltar aquí»
+// ======================================================================
+let errs = 1;
+function jump(v, st = 'entry') {
+  if (st === 'entry') {
+    errs = 1;
+    v.innerHTML = `<div class="p3-run">
+      <div class="p3-jtop"><button class="rd-x" aria-label="Salir" data-go="map:ahead">${ic('x')}</button><p class="eyebrow" style="color:var(--gold)">Saltar aquí</p>
+        <h2>2.10 · Pedir permiso</h2><p>Demuestra lo que ya sabes de las unidades anteriores y empieza aquí.</p></div>
+      <div class="game-body rd-low p3-body" style="padding-top:16px!important"><ul class="p3-rules">
+        <li><i>${ic('list')}</i><span><b>15 ejercicios de producción</b><small>Armar y escribir frases sin ayudas, de todo lo anterior.</small></span></li>
+        <li><i>${ic('target')}</i><span><b>Apruebas con hasta 3 errores</b><small>Al cuarto error, la prueba termina.</small></span></li>
+        <li><i>${ic('refresh')}</i><span><b>Si no apruebas, no pierdes nada</b><small>Sigues en 2.7 · Mi casa, donde estabas, y puedes reintentarla cuando quieras.</small></span></li>
+        <li><i>${ic('lock')}</i><span><b>Las unidades que saltas no entregan su KANJŪ</b><small>2.7, 2.8 y 2.9 quedan como saltadas en el cuaderno.</small>
+          <span class="p3-skp">${['2.7', '2.8', '2.9'].map(u => `<span><span class="rd-ink-box"><span class="rd-inkk q">？</span></span>${u}</span>`).join('')}</span></span></li>
+      </ul></div>
+      <div class="p3-foot"><button class="btn ok wide" data-go="jump:test">Empezar prueba</button><button class="btn ghost wide" data-go="map:ahead">Ahora no</button></div></div>`;
+    return;
+  }
+  if (st === 'test') {
+    const marksOf = n => `<span class="p3-errs" aria-label="Errores: ${Math.min(n, 3)} de 3">Errores ${[0, 1, 2].map(i => `<i class="${i < n ? 'on' : ''}">${i < n ? ic('x') : ''}</i>`).join('')}</span>`;
+    const marks = marksOf(errs);
+    const body = `<p class="hint">Escríbelo en japonés</p><div class="qm sm">«Voy a pedir ramen.»</div><div class="p3-line"></div><div class="asm-bank"></div>`;
+    const run = lesson(v, { pos: 5, kAt: [], sec: 'Prueba · 6 de 15', right: marks, say: 'Esta vez, sin ayudas. ¡Tú puedes!', body });
+    const items = [tok('を', 'pt'), tok('します'), tok('は', 'pt'), tok('ラーメン'), tok('あります'), tok('に', 'pt'), tok('が', 'pt')];
+    const ans = ['ラーメン', 'に', 'します'];
+    bank(run, items, ans, (g, ok) => {
+      if (!ok) { errs++; run.querySelector('.p3-errs').outerHTML = marksOf(errs); }
+      res(run, ok, { say: ok ? null : errs > 3 ? 'Esta vez no alcanzó. ¡No pasa nada!' : 'Sigue: todavía tienes margen.',
+        title: ok ? '¡Bien!' : errs > 3 ? 'Cuarto error' : `Error ${errs} de 3`,
+        html: ok ? `<p class="p3-ans"><span class="jp">ラーメンにします。</span>Voy a pedir ramen.</p>` : fxRows(g, ans, x => x, 'Para decir lo que eliges: algo + にします.'),
+        onBtn: () => ok ? show('jump', 'pass') : errs > 3 ? show('jump', 'fail') : show('jump', 'test'),
+      });
+    });
+    return;
+  }
+  const pass = st === 'pass';
+  v.innerHTML = `<div class="p3-end">${pass
+    ? `<p class="eyebrow" style="color:var(--gold)">Saltar aquí · 2.10</p><span class="p3-seal">${ic('trophy')}</span><h2>¡Prueba aprobada!</h2><p>13 de 15 · 2 errores. Empiezas en 2.10 · Pedir permiso, nivel 1.</p>
+      <div class="p3-endc"><p><b>Tu cuaderno</b></p><div class="bk-pages">${['2.7', '2.8', '2.9'].map(u => `<div class="bk-page"><span class="rd-ink-box"><span class="rd-inkk q">？</span></span><b>${u}</b><small>Saltada · sin KANJŪ</small></div>`).join('')}
+        <div class="bk-page cur"><span class="rd-ink-box">${ink(PRIZE, 0)}</span><b>2.10</b><small>Empiezas aquí</small></div></div></div>
+      <div class="p3-acts"><button class="btn ok wide" data-go="map:start">Ir a 2.10</button></div>`
+    : `<p class="eyebrow" style="color:var(--gold)">Saltar aquí · 2.10</p><span class="p3-seal no">${ic('refresh')}</span><h2>Esta vez no</h2><p>Tuviste 4 errores; el margen es de 3.</p>
+      <div class="p3-endc"><div class="row">${ic('check')}<p><b>No perdiste nada.</b> Sigues en 2.7 · Mi casa, donde estabas, con tus rondas y tu tinta igual que antes. Puedes reintentarla cuando quieras.</p></div></div>
+      <div class="p3-acts"><button class="btn ok wide" data-go="map:ahead">Seguir en 2.7</button><button class="btn ghost wide" data-go="jump:entry">${ic('refresh')}Reintentar</button></div>`}</div>`;
+}
+
+// ======================================================================
+// Pestañas, estados y notas
+// ======================================================================
+const GENERAL = [
+  '<b>Botón «Comprobar»</b> nuevo en los ejercicios de armar, hueco, teclado y elegir (hoy la ronda comprueba sola al poner la última ficha). Emparejar y la presentación no lo llevan.',
+  '<b>Escena de la lección más baja</b> en la ronda (176 px; hoy 200 a 260 px) para que entren el teclado kana y los pares sin desplazar.',
+  '<b>Barra de 15 gotas</b> (15 ejercicios por ronda, §3; hoy 11).',
+  '<b>Íconos nuevos</b> para js/icons.js: «lento» (caracol) y «borrar» (tecla de retroceso).',
+];
+const SCREENS = [
+  { id: 'map', label: '1 · Mapa', fn: map, states: [['cur', 'Cursando · nivel 3'], ['start', 'Recién llegado'], ['ahead', 'Más adelante · Saltar aquí']], notes: {
+    see: ['El cuaderno se abre como hoja con pestañas sobre el santuario. Arriba, una pestaña por unidad; la de 2.10 está abierta.',
+      'Debajo del título, la tinta de 休 con trazos reales: 5 partes, una por nivel (2 de 5 pintadas en el estado «Cursando»). La parte del nivel en curso se ve en rojo tenue. Al lado, el elenco 入 · 出 · 休.',
+      'La tarjeta «Guía» abre la guía de la unidad. Los 5 niveles muestran qué se practica, sus ayudas y sus 3 rondas. El nivel en curso viene abierto, con ejemplos tocables de sus ejercicios.',
+      'En «Más adelante», la unidad está cerrada y aparece «Saltar aquí» con la prueba.'],
+    spec: '§3 (niveles, ayudas, 3 rondas, tinta por nivel) · §2b.1 (elenco) · §7 (tarjeta Guía) · §8 (Saltar aquí)',
+    decide: ['En qué nivel entran «Kanji parecido» y «Escribir la lectura»: §4 no lo dice. Propuesta: Kanji parecido en el nivel 2 y Escribir la lectura en el nivel 3 (los marcados con *).',
+      '¿El premio sigue «escondido» como en A-02? Con §2b.2, 休 se presenta en el nivel 1, así que la sorpresa se pierde. Propuesta: se muestra desde el principio y la tinta marca el avance.',
+      'Los nombres cortos de los niveles («Presentación y palabras», «Palabras en frases», «Gramática», «Escuchar y completar», «Producción») son propuesta.',
+      '¿Se puede repetir un nivel terminado? Propuesta: sí, con «Repasar», sin pintar más tinta.'] } },
+  { id: 'intro', label: '2 · Presentación', fn: intro, states: [['k', '1 · El KANJŪ'], ['w', '2 · La palabra'], ['f', '3 · La frase']], notes: {
+    see: ['Primero se presenta el KANJŪ 休: su dibujo, su significado, sus lecturas exactas (訓 やす(む), 音 キュウ; cada una se oye) y su receta con las criaturas reales 人 + 木, que ya conoces. La mnemotecnia va abajo.',
+      'Tu KANJŪ (木) habla en el globo: es parte de 休.',
+      'Después llega la palabra (休みます, con furigana y romaji del nivel 1) y luego la frase (すこし休んでもいいですか). No hay nada que comprobar: el botón dice «Seguir».'],
+    spec: '§2b.2 (KANJŪ → palabra → frase) · §2b.3 (componentes antes) · §3 nivel 1 (furigana y romaji) · §5 (kanji desde que se enseña) · docs/LECTURAS.md',
+    decide: ['¿Se muestran las dos lecturas desde el primer encuentro, o solo la principal (やす(む)) hasta maestría 3? Propuesta: las dos, con la principal más grande.'] } },
+  { id: 'pairs', label: '3 · Emparejar', fn: pairs, notes: {
+    see: ['5 kanji con 5 lecturas. Tocas uno de cada lado; si es par, los dos se ponen verdes y suena la lectura. Si no, tiemblan y se sueltan.',
+      'Solo kanji ya enseñados: 入, 出 y 休 de esta unidad, 人 (1.1) y 木 (1.6). Van sin furigana: si no, el ejercicio se resolvería solo. El romaji va debajo de la lectura (nivel 1) y se apaga con su interruptor.',
+      'Se resuelve solo al completar los 5 pares: no lleva «Comprobar». Al final, una tabla con los 5 significados.'],
+    spec: '§4 Emparejar pares · §3 nivel 1',
+    decide: ['¿Un par equivocado cuenta como fallo del primer intento (§6)? Propuesta: el ejercicio cuenta como acertado si no hubo errores, y como fallado si hubo uno o más.',
+      'Los verbos usan la forma de diccionario (入る, 出る, 休む), pero el vocabulario de la unidad está en forma 〜ます (入ります…). ¿Cuál se usa en Emparejar?'] } },
+  { id: 'jaes', label: '4 · Japonés → español', fn: jaes, notes: {
+    see: ['La frase en japonés real con furigana (nivel 2) y un botón para oírla. La traducción se arma con fichas en español entre ¿ y ?, que ya están puestos.',
+      'Las fichas de más son plausibles: «salir» y «ver» (verbos de la unidad), «del» y «no».',
+      'Al comprobar: panel verde con la frase y su traducción, o panel rojo con «Tu respuesta / Correcta» y una pista. «Entendido» vuelve a poner el ejercicio, que en el juego vuelve al final de la ronda.'],
+    spec: '§4 Japonés → español · §4 distractores · §3 nivel 2 · §6 (el fallado vuelve al final)',
+    decide: ['¿Se aceptan traducciones alternativas («¿Puedo pasar al cuarto?»)? Con banco de fichas hay una sola forma de armarla; propuesta: una sola respuesta por frase y fichas que no den lugar a otra correcta.'] } },
+  { id: 'esja', label: '5 · Español → japonés', fn: esja, notes: {
+    see: ['Se arma «¿Puedo ver la tele?» con fichas japonesas. Hay 4 fichas de más plausibles de la unidad: に, が, 入って y いけません (ninguna arma otra frase correcta).',
+      'Las partículas llevan un fondo lila suave para distinguirlas (como la postal de A-02).',
+      '入って va sin furigana porque, en este ejemplo, ya dominas 入: es la «furigana que se apaga por kanji» del nivel 3. へや y みて van en kana porque 部, 屋 y 見 todavía no se enseñan (見 llega en la 2.12).'],
+    spec: '§4 Español → japonés (mejora: 3 a 5 fichas de más plausibles) · §3 nivel 3 · §5',
+    decide: ['¿Las partículas llevan color propio? Lo proponía A-02 en la postal, pero hoy en el juego no está.'] } },
+  { id: 'listen', label: '6 · Escuchar y armar', fn: listen, notes: {
+    see: ['La frase no se ve: se oye con el botón grande (velocidad normal) o con «Lento». En el juego suena sola al entrar; en la maqueta suena al tocar.',
+      'Usa speechSynthesis con voz ja-JP. Sin traducción a la vista (nivel 4): la traducción aparece recién al comprobar.',
+      'Fichas de más: 休みます (otra forma del mismo verbo), は, を y 入って.'],
+    spec: '§4 Escuchar y armar · §3 nivel 4',
+    decide: ['El botón «Lento» (velocidad 0,55) no está en PROGRESION.md: ¿se agrega?',
+      'Si el teléfono no tiene voz japonesa, ¿se salta el ejercicio (como hoy con canSpeak) o se cambia por Japonés → español? Propuesta: se cambia por Japonés → español.'] } },
+  { id: 'gap', label: '7 · Completar el hueco', fn: gap, states: [['a', '1 · Partícula'], ['b', '2 · Forma del verbo']], notes: {
+    see: ['Dos huecos seguidos: una partícula (へや＿入ってもいいですか → に; opciones を, に, で, が, para que no haya otra correcta) y una forma del verbo (休ん＿もいいですか → で).',
+      'Cuatro opciones del mismo tipo. La elegida se ve dentro del hueco antes de comprobar.',
+      'Al fallar, la pista explica la regla corta y muestra la frase completa con su traducción.'],
+    spec: '§4 Completar el hueco · §3 nivel 4',
+    decide: [] } },
+  { id: 'kana', label: '8 · Teclado kana', fn: kana, states: [['a', '1 · 休み'], ['b', '2 · 入ります']], notes: {
+    see: ['Un teclado propio de fichas, sin el teclado del teléfono: tocas una fila (あかさたな / はまやらわ) y arriba aparecen sus kana grandes. También tiene ゛ ゜, 小 (っ ゃ…), ん, ー y borrar.',
+      'La palabra se muestra sin furigana: la furigana sería la respuesta. Con el romaji prendido, cada kana de la fila lo lleva debajo.',
+      'Primero 休み (やすみ) y después 入ります (はいります).'],
+    spec: '§4 Escribir la lectura · §2b.5 (escalera: leerlo)',
+    decide: ['¿Teclado completo por filas, que sirve para cualquier palabra, o solo fichas con los kana de la respuesta y algunos de más, que es más fácil al principio? Propuesta: el completo, y las fichas sueltas en la etapa 0.'] } },
+  { id: 'similar', label: '9 · Kanji parecido', fn: similar, notes: {
+    see: ['Elegir 入 entre 人 / 八 / 入 / 大, con su significado y su lectura como pista.',
+      'Si fallas, el KANJŪ 入 entra a la escena («¡Ese no soy yo!») y en el panel aparece con su mnemotecnia y la comparación de trazos reales: en rojo, el trazo que marca la diferencia.',
+      'Cada error tiene su explicación: 人 (cuál trazo es el largo), 八 (los trazos no se tocan) y 大 (la raya horizontal).'],
+    spec: '§4 Kanji parecido · §2b.4 (el kanji vuelve en forma de criatura cuando fallas) · §2b.5',
+    decide: [] } },
+  { id: 'guide', label: '10 · Guía', fn: guide, states: [['frases', 'Frases'], ['g1', 'Gramática 1'], ['g2', 'Gramática 2'], ['kanji', 'Kanji']], notes: {
+    see: ['Una hoja con pestañas: Frases, Gramática y Kanji. Es opcional y se abre desde la tarjeta del cuaderno.',
+      'Frases: la presenta 入, con las 5 frases clave, su furigana, su traducción y un botón para oír cada una.',
+      'Gramática en 2 pantallas: 〜てもいいですか (con la forma て de 入ります, みます y 休みます) y 〜てはいけません. Kanji: 入, 出 y 休 con todas sus lecturas exactas (la principal resaltada) y su mnemotecnia.'],
+    spec: '§7 Guía de la unidad · §2b.1 (la presenta el elenco)',
+    decide: ['¿Quién presenta la guía? §7 dice «tu KANJŪ» y §2b.1, el elenco de la unidad. Propuesta: el primer KANJŪ del elenco (入).',
+      '¿Opcional u obligatoria la primera vez? Es la pregunta 4 de PROGRESION.md; la maqueta la muestra opcional.'] } },
+  { id: 'jump', label: '11 · Saltar aquí', fn: jump, states: [['entry', 'Entrada'], ['test', 'Ejercicio'], ['pass', 'Aprobada'], ['fail', 'No aprobada']], notes: {
+    see: ['Entrada: 15 ejercicios de producción, se aprueba con hasta 3 errores, si no apruebas sigues donde estabas sin perder nada, y las unidades saltadas (2.7, 2.8 y 2.9) no entregan su KANJŪ.',
+      'Ejercicio: el mismo marco de la ronda, sin ayudas. Arriba a la derecha, el contador de errores (no son corazones: no bloquean jugar). Falla para ver cómo sube; al cuarto error se ve el final «No aprobada».',
+      'El ejemplo usa una frase real de 2.9 (ラーメン に します · «Voy a pedir ramen.»), porque la prueba es sobre lo anterior a 2.10.',
+      'Aprobada: las páginas saltadas quedan sin KANJŪ y empiezas en 2.10. No aprobada: sigues en 2.7 y puedes reintentarla.'],
+    spec: '§8 Saltar · §6 (sin corazones ni energía)',
+    decide: ['¿La prueba se corta al cuarto error o se juegan los 15 ejercicios? Propuesta: se corta, para no hacer jugar ejercicios que ya no cambian el resultado.',
+      'La prueba para saltar la etapa (20 ejercicios, §8) usaría estas mismas pantallas con otros textos. ¿Hace falta una maqueta aparte?',
+      '¿Los kanji de las unidades saltadas cuentan como «enseñados» para showsKanji (§5)? Si no, después de saltar, las palabras de 2.7 a 2.9 se verían en kana.'] } },
+];
+
+function nav(cur) {
+  $('#nav').innerHTML = SCREENS.map(s => `<button data-s="${s.id}" class="${s.id === cur ? 'on' : ''}">${s.label}</button>`).join('');
+  $('#nav').querySelectorAll('button').forEach(b => b.onclick = () => show(b.dataset.s));
+  $('#nav .on')?.scrollIntoView({ block: 'nearest', inline: 'center' });
+}
+function show(id, st) {
+  const S = SCREENS.find(s => s.id === id) || SCREENS[0];
+  st = st || S.states?.[0][0];
+  openLv = null;
+  try { speechSynthesis.cancel(); } catch {}
+  nav(S.id);
+  $('#sub').innerHTML = S.states ? S.states.map(([k, l]) => `<button data-st="${k}" class="${k === st ? 'on' : ''}">${l}</button>`).join('') : '';
+  $('#sub').querySelectorAll('button').forEach(b => b.onclick = () => show(S.id, b.dataset.st));
+  S.fn($('#phone'), st);
+  const n = S.notes;
+  $('#notes').innerHTML = `<h2>Notas · ${S.label}</h2><h3>Qué ve el jugador</h3><ul>${n.see.map(x => `<li>${x}</li>`).join('')}</ul>
+    <p class="spec"><b>Cumple:</b> ${n.spec}</p>
+    ${n.decide.length ? `<div class="dec"><h3>Para decidir</h3><ul>${n.decide.map(x => `<li>${x}</li>`).join('')}</ul></div>` : ''}`;
+  try { history.replaceState(null, '', `?p=${S.id}${st ? `&s=${st}` : ''}`); } catch {}
+}
+
+// Todo lo «Para decidir» junto, para el pull request
+const ALL = [...GENERAL.map(x => ['General', x]), ...SCREENS.flatMap(s => s.notes.decide.map(d => [s.label, d]))];
+$('#dec').innerHTML = `<summary>${ic('question')}Para decidir (${ALL.length})</summary><ol>${ALL.map(([l, d]) => `<li><b>${l}:</b> ${d}</li>`).join('')}</ol>`;
+
+// Toques globales: audio y navegación
+$('#phone').addEventListener('click', e => {
+  const s = e.target.closest('[data-say]'); if (s) { speak(s.dataset.say, +(s.dataset.rate || .9), true); return; }
+  const g = e.target.closest('[data-go]'); if (g) { const [id, st] = g.dataset.go.split(':'); show(id, st); }
+});
+const fg = $('#swFg'), kr = $('#swKr');
+fg.onchange = () => document.body.classList.toggle('no-fg', !fg.checked);
+kr.onchange = () => document.body.classList.toggle('no-kr', !kr.checked);
+
+const q = new URLSearchParams(location.search);
+show(q.get('p') || 'map', q.get('s') || undefined);
+</script>
+</body>
+</html>
