@@ -1,4 +1,9 @@
 {
+ "egg.hint": "Toca el huevo y dibuja su kanji 3 veces para que nazca",
+ "egg.place": "Colócalo en la isla, tócalo y dibuja su kanji 3 veces para que nazca.",
+ "egg.reborn": "Un huevo apareció en el santuario. Tócalo y dibuja su kanji 3 veces.",
+ "egg.crack": "¡Se agrietó! {n} de {total}",
+ "egg.again": "Casi. Dibújalo otra vez para agrietar el huevo",
  "hud.clock": "Momento del día y clima",
  "hud.phase.morning": "Mañana",
  "hud.phase.afternoon": "Tarde",

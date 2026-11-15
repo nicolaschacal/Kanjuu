@@ -78,7 +78,7 @@ export function openCreature(id) {
   if (S.items.scroll) $('#scroll', m).onclick = () => { S.items.scroll--; const up = giveExp(c, 60); m.close(); go(); toast(`${c.k} absorbió el pergamino${up ? ` · ¡Nivel ${c.lv}!` : ''}`); setTimeout(() => openCreature(id), 260); };
   $('#reborn', m).onclick = () => {
     if (!confirm(`${c.k} volverá a ser un huevo de su raíz y ganará +25% EXP para siempre. ¿Renacer?`)) return;
-    rebirth(c); m.close(); ui.tab = 'home'; go(); toast('Un huevo apareció en el santuario. Tócalo 3 veces.');
+    rebirth(c); m.close(); ui.tab = 'home'; go(); toast(t('egg.reborn'));
   };
   m.querySelectorAll('[data-evo]').forEach(b => b.onclick = () => { m.close(); evolveFX(c, b.dataset.evo); });
   m.querySelectorAll('[data-eq]').forEach(b => b.onclick = () => {
