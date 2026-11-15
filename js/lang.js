@@ -104,11 +104,11 @@ export const LEX = [
   { id: 'kinyoubi', kana: 'きんようび', kanji: '金曜日', es: 'viernes', en: "Friday", sit: 'hill', kind: 'n' },
   // Etapa 1 del currículo (P-07: etapa 1 completa)
   { id: 'sai', kana: 'さい', kanji: '歳', es: 'años de edad (〜さい)', en: 'years old (〜さい)', sit: 'hill', kind: 'n' },
-  { id: 'yo', kana: 'よ', kanji: '四', es: 'cuatro (en よじ: las cuatro)', en: 'four (in よじ: four o’clock)', sit: 'hill', kind: 'num' },
+  { id: 'yo', kana: 'よ', kanji: '四', es: 'cuatro (en よじ y よにん)', en: 'four (in よじ: four o’clock)', sit: 'hill', kind: 'num' },
   { id: 'shichi', kana: 'しち', kanji: '七', es: 'siete (en しちじ: las siete)', en: 'seven (in しちじ: seven o’clock)', sit: 'hill', kind: 'num' },
   { id: 'ku', kana: 'く', kanji: '九', es: 'nueve (en くじ: las nueve)', en: 'nine (in くじ: nine o’clock)', sit: 'hill', kind: 'num' },
   { id: 'fun', kana: 'ふん', kanji: '分', es: 'minutos (con 2, 5, 7, 9: に ふん · ご ふん)', en: 'minutes (after 2, 5, 7, 9: に ふん · ご ふん)', sit: 'hill', kind: 'n' },
-  { id: 'pun', kana: 'ぷん', kanji: '分', es: 'minutos (con 3, 4 y なん: さん ぷん · なん ぷん)', en: 'minutes (after 3, 4 and なん: さん ぷん · なん ぷん)', sit: 'hill', kind: 'n' },
+  { id: 'pun', kana: 'ぷん', kanji: '分', es: 'minutos (con 1, 3, 4, 6, 8, 10 y なん: いっぷん · さんぷん · なんぷん)', en: 'minutes (after 3, 4 and なん: さん ぷん · なん ぷん)', sit: 'hill', kind: 'n' },
   { id: 'goro', kana: 'ごろ', kanji: null, es: 'alrededor de (una hora)', en: 'around (a time)', sit: 'hill', kind: 'expr' },
   { id: 'konban', kana: 'こんばん', kanji: '今晩', es: 'esta noche', en: 'tonight', sit: 'hill', kind: 'n' },
   { id: 'tokei', kana: 'とけい', kanji: '時計', es: 'reloj', en: 'clock · watch', sit: 'hill', kind: 'n' },
@@ -168,7 +168,7 @@ export const LEX = [
   { id: 'oneesan', kana: 'おねえさん', kanji: 'お姉さん', es: 'hermana mayor (la de otra persona)', en: 'older sister (someone else’s)', sit: 'valley', kind: 'n' },
   { id: 'kyoudai', kana: 'きょうだい', kanji: '兄弟', es: 'hermanos', en: 'siblings', sit: 'valley', kind: 'n' },
   { id: 'hitori', kana: 'ひとり', kanji: '一人', es: 'una persona · solo', en: 'one person · alone', sit: 'valley', kind: 'n' },
-  { id: 'nin', kana: 'にん', kanji: '人', es: 'personas (contador: さん にん · なん にん)', en: 'people (counter: さん にん · なん にん)', sit: 'valley', kind: 'n' },
+  { id: 'nin', kana: 'にん', kanji: '人', es: 'personas (contador desde 3: さん にん · なん にん; 1 y 2 son ひとり y ふたり)', en: 'people (counter: さん にん · なん にん)', sit: 'valley', kind: 'n' },
   { id: 'akachan', kana: 'あかちゃん', kanji: '赤ちゃん', es: 'bebé', en: 'baby', sit: 'valley', kind: 'n' },
   // Etapa 3 del currículo
   { id: 'koto', kana: 'こと', kanji: '事', es: 'cosa · hecho (〜た こと が ある)', en: "thing · fact (〜た こと が ある)", sit: 'valley', kind: 'n' },
@@ -461,7 +461,7 @@ export const LEX = [
   { id: 'kutsu', kana: 'くつ', kanji: '靴', es: 'zapatos', en: 'shoes', sit: 'shrine', kind: 'n' },
   { id: 'sorekara', kana: 'それから', kanji: null, es: 'después · y luego', en: 'and then', sit: 'shrine', kind: 'expr' },
   // Etapa 1 del currículo (P-07: etapa 1 completa)
-  { id: 'yoku', kana: 'よく', kanji: null, es: 'a menudo · seguido', en: 'often', sit: 'shrine', kind: 'expr' },
+  { id: 'yoku', kana: 'よく', kanji: null, es: 'a menudo · con frecuencia', en: 'often', sit: 'shrine', kind: 'expr' },
   { id: 'tokidoki', kana: 'ときどき', kanji: '時々', es: 'a veces', en: 'sometimes', sit: 'shrine', kind: 'expr' },
   { id: 'zenzen', kana: 'ぜんぜん', kanji: '全然', es: 'nada · nunca (con 〜ません)', en: 'not at all (with 〜ません)', sit: 'shrine', kind: 'expr' },
   { id: 'yasumi', kana: 'やすみ', kanji: '休み', es: 'descanso · día libre', en: 'rest · day off', sit: 'shrine', kind: 'n' },

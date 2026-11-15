@@ -69,7 +69,7 @@ export const EXTRA = [
   { id: 'c_sai', ja: 'わたし は に じゅう ご さい です', ids: ['watashi', 'ni', 'juu', 'go', 'sai'], pat: 'desu', es: 'Tengo veinticinco años.', en: 'I am twenty-five years old.' },
   { id: 'c_kaishain', ja: 'わたし は かいしゃいん です', ids: ['watashi', 'kaishain'], pat: 'desu', es: 'Soy empleado de oficina.', en: 'I am an office worker.' },
   { id: 'c_anata', ja: 'あなた は いしゃ です か', ids: ['anata', 'isha'], pat: 'ka', es: '¿Eres médico?', en: 'Are you a doctor?' },
-  { id: 'c_kinihon', ja: 'これ は にほん の き です', ids: ['kore', 'nihon', 'ki'], pat: 'no', es: 'Este es un árbol de Japón.', en: 'This is a tree from Japan.' },
+  { id: 'c_kinihon', ja: 'これ は き です', ids: ['kore', 'ki'], pat: 'desu', es: 'Esto es un árbol.', en: 'This is a tree.' },
   // 1.2
   { id: 'c_nansai', ja: 'たなか さん は なん さい です か', ids: ['tanaka', 'san', 'nan', 'sai'], pat: 'ka', es: '¿Cuántos años tiene el señor Tanaka?', en: 'How old is Mr. Tanaka?' },
   { id: 'c_kono', ja: 'この かさ は たなか さん の です', ids: ['kono', 'kasa', 'tanaka', 'san'], pat: 'no', es: 'Este paraguas es del señor Tanaka.', en: "This umbrella is Mr. Tanaka's." },
@@ -84,7 +84,7 @@ export const EXTRA = [
   // 1.3
   { id: 'c_yoji', ja: 'いま よ じ です', ids: ['ima', 'yo', 'ji'], pat: 'jikan', es: 'Ahora son las cuatro.', en: "It is four o'clock now." },
   { id: 'c_fun', ja: 'いま じゅう じ ご ふん です', ids: ['ima', 'juu', 'ji', 'go', 'fun'], pat: 'jikan', es: 'Ahora son las diez y cinco.', en: 'It is five past ten now.' },
-  { id: 'c_nanpun', ja: 'いま なん じ なん ぷん です か', ids: ['ima', 'nan', 'ji', 'pun'], pat: 'ka', es: '¿Qué hora es exactamente? (¿Qué hora y qué minuto?)', en: 'What time is it exactly?' },
+  { id: 'c_nanpun', ja: 'いま なん じ なん ぷん です か', ids: ['ima', 'nan', 'ji', 'pun'], pat: 'ka', es: '¿Qué hora es? (con minutos)', en: 'What time is it exactly?' },
   { id: 'c_kuji', ja: 'じゅぎょう は く じ から じゅう に じ まで です', ids: ['jugyou', 'ku', 'ji', 'juu', 'ni'], pat: 'jikan', es: 'La clase es de nueve a doce.', en: "Class is from nine to twelve o'clock." },
   { id: 'c_shichiji', ja: 'こんばん しち じ に ごはん を たべます', ids: ['konban', 'shichi', 'ji', 'gohan', 'tabemasu'], pat: 'jikan', es: 'Esta noche como a las siete.', en: "Tonight I eat at seven o'clock." },
   { id: 'c_goro', ja: 'きょう は ろく じ ごろ ごはん を たべます', ids: ['kyou', 'roku', 'ji', 'goro', 'gohan', 'tabemasu'], pat: 'masu', es: 'Hoy como alrededor de las seis.', en: 'Today I eat around six.' },
@@ -353,7 +353,7 @@ export const SECTIONS = [
     intro: T('¿Qué hora es? No quiero llegar tarde a entrenar.', "What time is it? I don't want to be late for training."),
     words: ['ima', 'ji', 'han', 'gozen', 'gogo', 'kyou', 'ashita', 'nan', 'yo', 'shichi', 'ku', 'fun', 'pun', 'goro', 'konban', 'jugyou', 'tokei'],
     phrases: ['p_nanji', 'p_sanji', 'p_hachijihan', 'c_gogo', 'c_yoji', 'c_fun', 'c_nanpun', 'c_kuji', 'c_shichiji', 'c_goro', 'c_tokei'], pats: ['jikan'],
-    kanji: ['時', '半', '二', '三', '四', '五', '六', '七', '八', '九', '十'], reward: '時', rewardWord: 'ji', rival: ['半', '分', '午'] },
+    kanji: ['時', '半', '二', '三', '四', '五', '八', '六', '七', '九', '十'], reward: '時', rewardWord: 'ji', rival: ['半', '分', '午'] },
   { id: '1.4', stage: 'e1', title: T('Precios en el mercado', 'Prices at the market'), cando: T('Puedo preguntar un precio', 'I can ask a price'),
     intro: T('¡Cuántos puestos! ¿Cuánto cuesta cada cosa?', 'So many stalls! How much is each thing?'),
     words: ['ikura', 'en', 'hyaku', 'sen', 'man', 'mise', 'okane', 'kudasai', 'byaku', 'zen', 'hitotsu', 'futatsu', 'mittsu', 'ikutsu', 'zenbu', 'ringo', 'mikan', 'kudamono', 'ichiba', 'urimasu'],
