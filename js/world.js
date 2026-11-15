@@ -39,7 +39,8 @@ export function buyIsland() {
 }
 export const COLS = 6, BASE_ROWS = 3; // (compatibilidad: el tamaño real está en S.cols/S.rows)
 export const ROW_COSTS = [], ROW_RANK = [];
-export const STORE_COSTS = [40, 90, 160, 260];
+// Almacén de KANJŪ: empieza en 50 y se amplía de a 10 con tinta hasta 100 (decidido por Nicolás el 14/11/2026)
+export const STORE_BASE = 50, STORE_STEP = 10, STORE_COSTS = [60, 120, 200, 300, 450];
 export const PROD_CAP_H = 6; // la producción se acumula hasta 6 h: nunca se pierde, solo se llena
 
 // Objetos colocables. kind: prod (genera tinta), aura (afecta vecinos), global (afecta todo)
@@ -317,7 +318,10 @@ export function awaken(c) {
 
 // Migra partidas anteriores al sistema de grilla
 export function initWorld() {
-  S.rows ??= BASE_ROWS; S.objs ??= []; S.storeCap ??= 10; S.tickets ??= 1; S.pity ??= 0;
+  S.rows ??= BASE_ROWS; S.objs ??= []; S.storeCap ??= STORE_BASE;
+  // Partidas con el almacén viejo (10 + 5 por ampliación, máx. 30): pasan a 50 y conservan las ampliaciones pagadas (de a 10)
+  if (!S.storeV) { if (S.storeCap < STORE_BASE) S.storeCap = Math.min(STORE_BASE + STORE_COSTS.length * STORE_STEP, STORE_BASE + Math.round((S.storeCap - 10) / 5) * STORE_STEP); S.storeV = 1; }
+  S.tickets ??= 1; S.pity ??= 0;
   S.rank ??= { lv: 1, xp: 0 }; S.login ??= { day: 0, last: '' }; S.tiles ??= {};
   S.gate = (S.gate || []).map(g => typeof g === 'string' ? { k: g } : g);
   if (S.deco?.length) { S.deco.forEach(t => OBJS[t] && newObj(t)); }
