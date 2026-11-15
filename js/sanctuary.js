@@ -11,7 +11,7 @@ import { openAISettings, aiStatus } from './ai.js';
 import { startTutorial, emit } from './tutorial.js';
 import { ISLANDS, island, buyIsland, objCap, shownObjs, harmony, harmonyMult, monCap, shownMons, monFits, slot, syncGrid, COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld, CATS, objEff, GROUNDS, paintTile, raiseTile, rampTile, cascadeTile, raining } from './world.js';
 import { $, buzz, home, owned, ui, go, hud, toast, modal, floatText, covered } from './main.js';
-import { openCreature } from './sheet.js';
+import { openCreature, petChallenge } from './sheet.js';
 import { allDue, openDojo, acadCtx } from './dojo.js';
 import { openDiary } from './diary.js';
 import { pathReady } from './path.js';
@@ -288,10 +288,11 @@ function bindFocus(stg, c) {
   $('#fcX', stg).onclick = () => { focusId = null; setFocus(null); go(); };
   $('#fcTrain', stg).onclick = () => openTraining(c, { close() {} });
   $('#fcSheet', stg).onclick = () => openCreature(c.id);
-  $('#fcPet', stg).onclick = () => {
-    c.mood = Math.min(1, c.mood + .12); c.bond = (c.bond || 0) + 1; bump('pet'); giveExp(c, 1); emit('pet');
-    poke(c.id); emoteAt(c.id, '♥'); buzz(6); save();
-    stg.querySelector('.fc-bars .b i').style.width = c.mood * 100 + '%';
+  $('#fcPet', stg).onclick = async () => {
+    buzz(6);
+    if (!await petChallenge(c)) return;
+    poke(c.id); emoteAt(c.id, '♥');
+    const bar = stg.querySelector('.fc-bars .b i'); if (bar) bar.style.width = c.mood * 100 + '%';
   };
 }
 export const unfocus = () => { if (focusId) { focusId = null; setFocus(null); } };

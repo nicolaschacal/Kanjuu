@@ -61,10 +61,10 @@ export function openCreature(id) {
 
   $('#bookCard', m) && ($('#bookCard', m).onclick = () => { buzz(5); openBook(modal, c); });
   bindAICard(m, c, () => { go(); openCreature(c.id); });
-  $('#pet', m).onclick = e => {
-    c.mood = Math.min(1, c.mood + .12); c.bond++; bump('pet'); giveExp(c, 1); emit('pet');
-    floatText(e.currentTarget, '♥', 'heart'); buzz(6);
-    const a = $('#pet', m); a.classList.remove('squish'); void a.offsetWidth; a.classList.add('squish'); hud();
+  $('#pet', m).onclick = async () => {
+    buzz(6);
+    if (!await petChallenge(c)) return;
+    const a = $('#pet', m); floatText(a, '♥', 'heart'); a.classList.remove('squish'); void a.offsetWidth; a.classList.add('squish'); hud();
   };
   $('#snack', m).onclick = () => { S.ink -= 5; c.mood = 1; c.bond += 3; const up = giveExp(c, 8); m.close(); toast(`${c.k} disfrutó el mochi ${up ? '· ¡Subió de nivel!' : ''}`); go(); setTimeout(() => openCreature(id), 260); };
   $('#train', m).onclick = () => openTraining(c, m);
@@ -103,6 +103,18 @@ export function evoCard(c, t) {
     <div class="evo-b"><b>${known ? KANJI[t].m : 'Por descubrir'}</b><small class="evo-r">${c.k} + ${others.join(' + ')}</small>
     <span class="evo-q">${q(c.lv >= need, `Nv ${need}`)}${q(learned, `知 ${Math.min(mastery(c.k), gate)}/${gate}`)}${missing.length ? q(false, `Conoce ${missing.join(' ')}`) : ''}${piece ? q(pieceOk, `Pieza ${piece}`) : ''}</span></div>
   </button>`;
+}
+// Mimar (pedido de Nicolás): en vez de un toque, un desafío corto de su kanji. Se turnan dibujarlo (Trazo),
+// sus lecturas y armarlo con sus piezas (si tiene receta). Si lo superas, se pone feliz como antes.
+export async function petChallenge(c) {
+  const types = ['trace', 'bubbles', 'parts'].filter(g => (g !== 'trace' || STROKES[c.k]?.length) && (g !== 'parts' || hasParts(c.k)));
+  const g = types[(c.petN || 0) % types.length]; c.petN = (c.petN || 0) + 1;
+  const stars = await play(g, c.k, mastery(c.k), $('#layer'));
+  if (stars < 0) return false;
+  if (stars === 0) { toast(t('pet.again', { k: c.k })); save(); return false; }
+  c.mood = Math.min(1, c.mood + .12); c.bond = (c.bond || 0) + 1; bump('pet'); giveExp(c, 1); emit('pet'); save();
+  toast(t('pet.done', { k: c.k }));
+  return true;
 }
 // Entrenar: abre directo la lección de la sección actual (docs/CURRICULO.md). Los juegos del kanji quedan
 // dentro de la lección (2 ejercicios) y como práctica libre desde el resultado (openPractice).
