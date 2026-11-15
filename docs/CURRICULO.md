@@ -151,14 +151,14 @@ Las palabras concretas de cada sección se cargan en `js/curriculum.js` etapa po
 
 | # | Situación | Gramática | Kanji nuevos | Recompensa |
 |---|---|---|---|---|
-| 1.1 | De dónde soy | X は Y です, の, 〜じん | 私 人 日 本 国 | 本 |
+| 1.1 | De dónde soy | X は Y です, の, 〜じん | 私 人 日 木 本 国 | 本 |
 | 1.2 | ¿Qué es esto? | これ / それ / あれ, 何ですか | 何 口 目 | 口 |
-| 1.3 | Decir la hora | 〜時, 〜分, 何時 | 時 分 半 二–十 | 時 |
+| 1.3 | Decir la hora | 〜時, 〜分, 何時 | 時 半 二–十 (八 antes que 六) | 時 |
 | 1.4 | Precios en el mercado | いくら, 百 / 千 / 万 | 百 千 万 円 | 円 |
 | 1.5 | Comer y beber | 〜ます, を | 食 飲 水 | 食 |
-| 1.6 | Los días de la semana | 〜曜日, に (tiempo) | 月 火 木 金 土 曜 | — |
+| 1.6 | Los días de la semana | 〜曜日, に (tiempo) | 月 火 金 土 曜 | — |
 | 1.7 | Ir y volver | 行きます / 来ます / 帰ります, へ, で | 行 来 帰 車 | 車 |
-| 1.8 | Lo que me gusta | 〜が 好きです, adjetivos básicos | 好 大 小 | 好 |
+| 1.8 | Lo que me gusta | 〜が 好きです, adjetivos básicos | 女 子 好 大 小 | 好 |
 | 1.9 | Mi familia | 〜が います, お〜さん | 父 母 兄 弟 姉 妹 | 弟 o 妹 |
 | 1.10 | ¿Dónde está? | あります / います, に (lugar) | 上 下 中 前 後 | 中 |
 
