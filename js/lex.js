@@ -5,6 +5,7 @@ import { SRS_HOURS, REGIONS, WORDS } from './data.js';
 import { S, bump } from './state.js';
 import { lang } from './i18n.js';
 import { kanaHTML, helpOn } from './help.js';
+import { SECTIONS } from './curriculum.js';
 
 export const WORD = Object.fromEntries(LEX.map(w => [w.id, w]));
 // Textos de lang.js: { es, en } (o una palabra con sus campos es/en)
@@ -92,7 +93,20 @@ export const canDo = sit => { const n = sitWords(sit).length; return n > 0 && si
 // ---------- Mostrar ----------
 const KANJI_RX = /[㐀-鿿々]/;
 // La palabra va en kana hasta que el jugador tiene todos los kanji de su forma escrita
-export const showsKanji = w => !!w.kanji && [...w.kanji].filter(c => KANJI_RX.test(c) && c !== '々').every(c => S.dex[c]?.owned);
+// Kanji enseñados (P-01, docs/PROGRESION.md §5): una palabra se escribe con kanji desde la unidad que lo enseña,
+// tenga o no el jugador la criatura. Cuentan los kanji de las unidades cursadas (completas, salteadas o la actual),
+// los que ya están en el repaso (S.srs) y los de las criaturas propias.
+let taughtKey = null, taughtSet = new Set();
+export function taughtKanji() {
+  const c = S.cur, key = `${c?.sec}|${c ? Object.keys(c.done || {}).length : 0}|${Object.keys(S.srs || {}).length}`;
+  if (key === taughtKey) return taughtSet;
+  const set = new Set(Object.keys(S.srs || {}));
+  if (c) for (const s of SECTIONS) if (c.done?.[s.id] || s.id === c.sec) s.kanji.forEach(k => set.add(k));
+  taughtKey = key; taughtSet = set;
+  return set;
+}
+export const kanjiTaught = c => taughtKanji().has(c) || !!S.dex[c]?.owned;
+export const showsKanji = w => !!w.kanji && [...w.kanji].filter(c => KANJI_RX.test(c) && c !== '々').every(kanjiTaught);
 // form: la ficha tal como aparece en la frase (un verbo puede venir en ました o ません); por defecto, la forma del diario
 export function wordHTML(w, form = w.kana) {
   if (!showsKanji(w)) return kanaHTML(form);
