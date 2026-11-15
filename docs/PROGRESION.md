@@ -2,7 +2,9 @@
 
 Pedido por Nicolás el 14 de noviembre de 2026: «Quiero que te bases en cómo lo hace Duolingo. Yo aprendí con ellos. Hubo una progresión de aprendizaje real».
 
-Esto es una **propuesta de especificación**. No cambia código. Se toma de Duolingo la **progresión pedagógica** (cantidad, orden, repetición, dificultad que sube, guía por unidad, saltar con prueba), no su aspecto visual: el entrenamiento sigue siendo con tu KANJŪ, en el santuario, con el kanji que se pinta con tinta.
+Y el 14 de noviembre, más tarde: «Quiero una experiencia de aprendizaje tan profunda y real como la de Duolingo, pero que no sea igual. Somos Kanjū, no Duolingo. Nos enfocamos en los KANJŪ y en sus kanji: ese es el diferenciador. Pero usamos un modelo educativo que sabemos que funciona».
+
+Esto es la especificación. Se toma de Duolingo la **progresión pedagógica** (cantidad, orden, repetición, dificultad que sube, guía por unidad, saltar con prueba), no su aspecto ni su identidad: el entrenamiento sigue siendo con tu KANJŪ, en el santuario, con el kanji que se pinta con tinta. Lo que Duolingo no tiene —criaturas que *son* kanji— es el centro (ver §2b).
 
 ---
 
@@ -32,6 +34,25 @@ Nicolás llegó a la etapa 4 «con los ojos cerrados» sin dominar el N5. Causas
 6. **«Saltar aquí»:** una prueba corta y exigente para saltar a una unidad o a la siguiente sección. Si no se aprueba, se sigue donde se estaba, sin perder nada.
 7. **Repaso personalizado** con lo que más cuesta.
 
+## 2b. Lo que nos diferencia: los KANJŪ y sus kanji
+
+Duolingo enseña kanji de costado: aparecen dentro de palabras y casi no se explican. En Kanjū **el kanji es el protagonista** y cada uno es una criatura. Para eso se combinan dos modelos con evidencia:
+
+| Pista | Modelo | Qué se toma |
+|---|---|---|
+| Idioma (palabras, gramática, frases) | Duolingo: unidades por situación, repetición con dificultad creciente, producción al final, guía, saltar con prueba | §3 a §8 |
+| Kanji | Componentes → kanji → vocabulario, con repetición espaciada (el orden de WaniKani y del método de Heisig; el de *Kanji Look and Learn* para la imagen mnemotécnica) | Lo que ya son las fusiones del juego: raíz → con componente → combinación, verificadas con KanjiVG (`docs/NIVELES.md`) |
+
+**Cómo se ve en una unidad:**
+1. **Cada unidad tiene su elenco:** los 3 a 6 kanji nuevos de la unidad son KANJŪ. La guía de la unidad la presentan ellos, y la criatura de premio es uno de ellos.
+2. **Antes de leer un kanji en una palabra, su KANJŪ se presenta:** su dibujo (que es mnemotécnico: 木→林→森), su significado, su lectura y, si es una fusión, sus componentes («人 + 木 = 休: una persona descansando junto a un árbol»). Después llega la palabra (休みます) y después la frase.
+3. **Los componentes se enseñan antes que el kanji compuesto.** El orden de los kanji de cada unidad respeta las recetas: no se presenta 休 antes que 人 y 木.
+4. **El kanji vuelve en forma de criatura cuando fallas:** la ayuda de un error de kanji muestra al KANJŪ y su pista visual, no solo el texto.
+5. **El kanji tiene su propia escalera de dominio** (`S.srs`, ya existe): reconocer el significado → leerlo → reconocerlo en una palabra nueva → elegirlo entre kanji parecidos → escribirlo con trazos. Esa escalera es la que sube el nivel de la criatura cuando entrenas con ella.
+6. **Lo aprendido sigue en el juego:** los kanji de la unidad aparecen en los viajes, el diario, la Arena y el laboratorio. La fusión del laboratorio es repaso de componentes.
+
+Así el jugador sale de cada unidad sabiendo decir algo (Duolingo) **y** sabiendo leer y reconocer los kanji de esa unidad por dentro (Kanjū).
+
 ## 3. La nueva estructura en Kanjuu
 
 Se mantienen los nombres del juego: **etapa** (lo que en Duolingo es una sección) → **unidad** (lo que hoy llamamos sección, por ejemplo 1.3) → **nivel** → **ronda**.
@@ -50,7 +71,7 @@ Las unidades actuales se conservan como esqueleto y se reparten: las etapas 1 a 
 
 | Nivel | Qué se practica | Ayudas |
 |---|---|---|
-| 1 | Palabras nuevas: escuchar, emparejar con su significado, kanji emparejado con su lectura | Furigana y romaji |
+| 1 | Presentación de los KANJŪ de la unidad (dibujo, componentes, significado, lectura) y palabras nuevas: escuchar, emparejar, kanji ↔ lectura | Furigana y romaji |
 | 2 | Las mismas palabras en frases cortas; traducir japonés → español con banco de palabras | Furigana |
 | 3 | Gramática de la unidad; traducir español → japonés con banco | Furigana que se apaga por kanji |
 | 4 | Escuchar y armar lo que oíste; completar el hueco; la situación con diálogo | Sin traducción a la vista |
@@ -71,6 +92,8 @@ Las unidades actuales se conservan como esqueleto y se reparten: las etapas 1 a 
 | Completar el hueco | Falta una partícula o una forma del verbo | Sí |
 | Escribir la lectura | Se escribe en kana con un teclado de fichas kana (sin depender del teclado japonés del teléfono) | Sí |
 | Kanji parecido | Elegir entre 人 / 入 / 大, o 土 / 士 | Sí |
+| Armar el kanji | Elegir sus componentes (como una fusión del laboratorio) | Mejora (ya existe «ensamblar» en `GAMES`) |
+| Kanji en palabra nueva | Leer una palabra no vista que usa kanji ya conocidos (日 + 本 → 日本) | Sí |
 | Situación | Lo que ya existe (`talkExercise`) | No |
 | Trazo | Lo que ya existe (`js/strokes.js`) | No |
 
@@ -120,6 +143,10 @@ Guardado compatible: `S.cur` gana campos con `??=` (`level`, `rounds` por nivel)
 | P-07 · P-08 · P-09 | Contenido: etapa 1 completa (~250 palabras), etapa 2 hasta el N5 (~800), etapas 3 y 4 hasta el N4 (~1500). Revisado por Claude con frases de manual | contenido |
 
 P-01 y P-02 se notan enseguida y no necesitan diseño nuevo: se pueden hacer primero.
+
+## Valores provisorios
+
+Nicolás pidió el 14 de noviembre de 2026 «preparar todo» y avanzar. Para no frenar, se arranca con los valores propuestos en este documento: etapa → unidad → nivel → ronda; 3 rondas por nivel; saltar con hasta 3 errores; guía opcional; P-01 y P-02 primero. **Cada uno se puede cambiar** respondiendo en el pull request; están juntos en `js/curriculum.js` (`ROUNDS_PER_LEVEL`, `JUMP_ERRORS`) para que cambiarlos sea una línea.
 
 ## Necesita tu decisión
 
