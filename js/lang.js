@@ -151,6 +151,19 @@ export const LEX = [
   { id: 'fumimasu', kana: 'ふみます', kanji: '踏みます', te: 'ふんで', tek: '踏んで', dict: 'ふむ', dictk: '踏む', pass: 'ふまれます', passk: '踏まれます', es: 'pisar', en: "to step on", sit: 'hill', kind: 'v' },
   { id: 'saifu', kana: 'さいふ', kanji: '財布', es: 'billetera', en: "wallet", sit: 'hill', kind: 'n' },
 
+  // Etapa 2 del currículo (P-08c: 2.14 y 2.16)
+  { id: 'juppun', kana: 'じゅっぷん', kanji: '十分', es: 'diez minutos (さん じゅっぷん: treinta minutos)', en: 'ten minutes (さん じゅっぷん: thirty minutes)', sit: 'hill', kind: 'n' },
+  { id: 'shuu', kana: 'しゅう', kanji: '週', es: 'semana (しゅう に: por semana)', en: 'week (しゅう に: per week)', sit: 'hill', kind: 'n' },
+  { id: 'ikkai', kana: 'いっかい', kanji: '一回', es: 'una vez', en: 'once', sit: 'hill', kind: 'num' },
+  { id: 'kaikazu', kana: 'かい', kanji: '回', es: 'veces (に かい: dos veces)', en: 'times (に かい: twice)', sit: 'hill', kind: 'n' },
+  { id: 'yottsu', kana: 'よっつ', kanji: '四つ', es: 'cuatro (cosas)', en: 'four (things)', sit: 'hill', kind: 'num' },
+  { id: 'itsutsu', kana: 'いつつ', kanji: '五つ', es: 'cinco (cosas)', en: 'five (things)', sit: 'hill', kind: 'num' },
+  { id: 'ikko', kana: 'いっこ', kanji: '一個', es: 'uno (cosa pequeña: un pastel, una manzana)', en: 'one (small item)', sit: 'hill', kind: 'num' },
+  { id: 'ko', kana: 'こ', kanji: '個', es: 'contador de cosas pequeñas (さん こ: tres)', en: 'counter for small items (さん こ: three)', sit: 'hill', kind: 'n' },
+  { id: 'mai', kana: 'まい', kanji: '枚', es: 'contador de cosas planas: hojas, platos, boletos (に まい: dos)', en: 'counter for flat things: sheets, plates, tickets (に まい: two)', sit: 'hill', kind: 'n' },
+  { id: 'ippon', kana: 'いっぽん', kanji: '一本', es: 'uno (cosa larga: una botella, una vela)', en: 'one (long item: a bottle, a candle)', sit: 'hill', kind: 'num' },
+  { id: 'honkazu', kana: 'ほん', kanji: '本', es: 'contador de cosas largas (に ほん · ご ほん: dos · cinco)', en: 'counter for long things (に ほん · ご ほん: two · five)', sit: 'hill', kind: 'n' },
+  { id: 'bon', kana: 'ぼん', kanji: '本', es: 'contador de cosas largas tras さん y なん (さん ぼん: tres)', en: 'counter for long things after さん and なん (さん ぼん: three)', sit: 'hill', kind: 'n' },
   // ── valley · Familia y personas ──
   { id: 'kazoku', kana: 'かぞく', kanji: '家族', es: 'familia', en: 'family', sit: 'valley', kind: 'n' },
   { id: 'chichi', kana: 'ちち', kanji: '父', es: 'mi padre', en: 'my father', sit: 'valley', kind: 'n' },
@@ -208,6 +221,17 @@ export const LEX = [
   { id: 'hajimemasu', kana: 'はじめます', kanji: '始めます', te: 'はじめて', tek: '始めて', dict: 'はじめる', dictk: '始める', es: 'empezar (algo)', en: "to begin (something)", sit: 'valley', kind: 'v' },
   { id: 'owarimasu', kana: 'おわります', kanji: '終わります', te: 'おわって', tek: '終わって', dict: 'おわる', dictk: '終わる', es: 'terminar', en: "to end", sit: 'valley', kind: 'v' },
 
+  // Etapa 2 del currículo (P-08c: 2.13)
+  { id: 'meishi', kana: 'めいし', kanji: '名刺', es: 'tarjeta de presentación', en: 'business card', sit: 'valley', kind: 'n' },
+  { id: 'shoukai', kana: 'しょうかい', kanji: '紹介', es: 'presentación (しょうかい します: presentar a alguien)', en: 'introduction (しょうかい します: to introduce someone)', sit: 'valley', kind: 'n' },
+  { id: 'ryuugakusei', kana: 'りゅうがくせい', kanji: '留学生', es: 'estudiante extranjero · de intercambio', en: 'international student', sit: 'valley', kind: 'n' },
+  { id: 'kurasumeito', kana: 'クラスメート', kanji: null, es: 'compañero de clase', en: 'classmate', sit: 'valley', kind: 'n' },
+  { id: 'douryou', kana: 'どうりょう', kanji: '同僚', es: 'compañero de trabajo', en: 'coworker', sit: 'valley', kind: 'n' },
+  { id: 'senpai', kana: 'せんぱい', kanji: '先輩', es: 'senpai (compañero con más antigüedad en la escuela o el trabajo)', en: 'senpai (someone senior at school or work)', sit: 'valley', kind: 'n' },
+  { id: 'minna', kana: 'みんな', kanji: null, es: 'todos (みんな で: todos juntos)', en: 'everyone (みんな で: all together)', sit: 'valley', kind: 'n' },
+  { id: 'shinsetsu', kana: 'しんせつ', kanji: '親切', es: 'amable · atento (con los demás)', en: 'kind · helpful', sit: 'valley', kind: 'adj' },
+  { id: 'yasashii', kana: 'やさしい', kanji: '優しい', es: 'cariñoso · bueno (de carácter)', en: 'gentle · kind-hearted', sit: 'valley', kind: 'adj' },
+  { id: 'se', kana: 'せ', kanji: '背', es: 'estatura (せ が たかい: ser alto)', en: 'height (せ が たかい: to be tall)', sit: 'valley', kind: 'n' },
   // ── spring · Comida y gustos ──
   { id: 'gohan', kana: 'ごはん', kanji: 'ご飯', es: 'arroz cocido · comida', en: 'cooked rice · meal', sit: 'spring', kind: 'n' },
   { id: 'tabemasu', kana: 'たべます', kanji: '食べます', te: 'たべて', tek: '食べて', dict: 'たべる', dictk: '食べる', pot: 'たべられます', potk: '食べられます', caus: 'たべさせます', causk: '食べさせます', es: 'comer', en: 'to eat', sit: 'spring', kind: 'v' },
@@ -283,6 +307,19 @@ export const LEX = [
   // Etapa 4 del currículo
   { id: 'ryouri', kana: 'りょうり', kanji: '料理', es: 'cocina · plato', en: "cooking · dish", sit: 'spring', kind: 'n' },
 
+  // Etapa 2 del currículo (P-08c: 2.15)
+  { id: 'ryokucha', kana: 'りょくちゃ', kanji: '緑茶', es: 'té verde', en: 'green tea', sit: 'spring', kind: 'n' },
+  { id: 'koucha', kana: 'こうちゃ', kanji: '紅茶', es: 'té negro', en: 'black tea', sit: 'spring', kind: 'n' },
+  { id: 'bentou', kana: 'べんとう', kanji: '弁当', es: 'bentō (comida en caja)', en: 'bento (boxed meal)', sit: 'spring', kind: 'n' },
+  { id: 'karee', kana: 'カレー', kanji: null, es: 'curry', en: 'curry', sit: 'spring', kind: 'n' },
+  { id: 'tenpura', kana: 'てんぷら', kanji: '天ぷら', es: 'tempura (fritura japonesa)', en: 'tempura', sit: 'spring', kind: 'n' },
+  { id: 'soba', kana: 'そば', kanji: null, es: 'soba (fideos de alforfón)', en: 'soba (buckwheat noodles)', sit: 'spring', kind: 'n' },
+  { id: 'udon', kana: 'うどん', kanji: null, es: 'udon (fideos gruesos de trigo)', en: 'udon (thick wheat noodles)', sit: 'spring', kind: 'n' },
+  { id: 'sarada', kana: 'サラダ', kanji: null, es: 'ensalada', en: 'salad', sit: 'spring', kind: 'n' },
+  { id: 'mazui', kana: 'まずい', kanji: null, es: 'feo (de sabor) · que sabe mal', en: 'bad-tasting', sit: 'spring', kind: 'adj' },
+  { id: 'nigai', kana: 'にがい', kanji: '苦い', es: 'amargo', en: 'bitter', sit: 'spring', kind: 'adj' },
+  { id: 'sukimasu', kana: 'すきます', kanji: '空きます', te: 'すいて', tek: '空いて', dict: 'すく', dictk: '空く', es: 'vaciarse (おなか が すきました: tengo hambre)', en: 'to become empty (おなか が すきました: I am hungry)', sit: 'spring', kind: 'v' },
+  { id: 'ippai', kana: 'いっぱい', kanji: null, es: 'lleno (おなか が いっぱい: estar satisfecho)', en: 'full (おなか が いっぱい: to be full)', sit: 'spring', kind: 'expr' },
   // ── post · Compras y ciudad ──
   { id: 'kore', kana: 'これ', kanji: null, es: 'esto', en: 'this', sit: 'post', kind: 'n' },
   { id: 'ikura', kana: 'いくら', kanji: null, es: 'cuánto cuesta', en: 'how much', sit: 'post', kind: 'q' },
@@ -352,6 +389,24 @@ export const LEX = [
   { id: 'okurimasu', kana: 'おくります', kanji: '送ります', te: 'おくって', tek: '送って', dict: 'おくる', dictk: '送る', es: 'enviar', en: "to send", sit: 'post', kind: 'v' },
   { id: 'kaeshimasu', kana: 'かえします', kanji: '返します', te: 'かえして', tek: '返して', dict: 'かえす', dictk: '返す', es: 'devolver', en: "to return (something)", sit: 'post', kind: 'v' },
 
+  // Etapa 2 del currículo (P-08c: 2.14, 2.15, 2.16 y 2.18)
+  { id: 'jimu', kana: 'ジム', kanji: null, es: 'gimnasio', en: 'gym', sit: 'post', kind: 'n' },
+  { id: 'shokudou', kana: 'しょくどう', kanji: '食堂', es: 'comedor · cafetería', en: 'cafeteria · dining hall', sit: 'post', kind: 'n' },
+  { id: 'kukkii', kana: 'クッキー', kanji: null, es: 'galleta', en: 'cookie', sit: 'post', kind: 'n' },
+  { id: 'chokoreeto', kana: 'チョコレート', kanji: null, es: 'chocolate', en: 'chocolate', sit: 'post', kind: 'n' },
+  { id: 'ichigo', kana: 'いちご', kanji: null, es: 'fresa', en: 'strawberry', sit: 'post', kind: 'n' },
+  { id: 'purin', kana: 'プリン', kanji: null, es: 'flan', en: 'custard pudding', sit: 'post', kind: 'n' },
+  { id: 'rousoku', kana: 'ろうそく', kanji: null, es: 'vela', en: 'candle', sit: 'post', kind: 'n' },
+  { id: 'urikire', kana: 'うりきれ', kanji: '売り切れ', es: 'agotado', en: 'sold out', sit: 'post', kind: 'n' },
+  { id: 'irimasu', kana: 'いります', kanji: null, te: 'いって', dict: 'いる', es: 'necesitar (〜が いります)', en: 'to need (〜が いります)', sit: 'post', kind: 'v' },
+  { id: 'fukuro', kana: 'ふくろ', kanji: '袋', es: 'bolsa', en: 'bag (plastic or paper)', sit: 'post', kind: 'n' },
+  { id: 'bijutsukan', kana: 'びじゅつかん', kanji: '美術館', es: 'museo de arte', en: 'art museum', sit: 'post', kind: 'n' },
+  { id: 'hakubutsukan', kana: 'はくぶつかん', kanji: '博物館', es: 'museo (de historia o ciencia)', en: 'museum', sit: 'post', kind: 'n' },
+  { id: 'yuubinkyoku', kana: 'ゆうびんきょく', kanji: '郵便局', es: 'oficina de correos', en: 'post office', sit: 'post', kind: 'n' },
+  { id: 'resutoran', kana: 'レストラン', kanji: null, es: 'restaurante', en: 'restaurant', sit: 'post', kind: 'n' },
+  { id: 'meisho', kana: 'めいしょ', kanji: '名所', es: 'lugar famoso (para visitar)', en: 'famous sight', sit: 'post', kind: 'n' },
+  { id: 'chizu', kana: 'ちず', kanji: '地図', es: 'mapa', en: 'map', sit: 'post', kind: 'n' },
+  { id: 'hoteru', kana: 'ホテル', kanji: null, es: 'hotel', en: 'hotel', sit: 'post', kind: 'n' },
   // ── ruins · Objetos y estudio ──
   { id: 'hon', kana: 'ほん', kanji: '本', es: 'libro', en: 'book', sit: 'ruins', kind: 'n' },
   { id: 'sensei', kana: 'せんせい', kanji: '先生', es: 'profesor · maestra', en: 'teacher', sit: 'ruins', kind: 'n' },
@@ -475,6 +530,10 @@ export const LEX = [
   { id: 'okyakusan', kana: 'おきゃくさん', kanji: 'お客さん', es: 'cliente · visita', en: "customer · guest", sit: 'ranch', kind: 'n' },
   { id: 'shain', kana: 'しゃいん', kanji: '社員', es: 'empleado de una empresa', en: "company employee", sit: 'ranch', kind: 'n' },
 
+  // Etapa 2 del currículo (P-08c: 2.15 y 2.18)
+  { id: 'onaka', kana: 'おなか', kanji: 'お腹', es: 'barriga · estómago', en: 'stomach · belly', sit: 'ranch', kind: 'n' },
+  { id: 'inaka', kana: 'いなか', kanji: '田舎', es: 'el campo · pueblo de origen', en: 'the countryside · hometown', sit: 'ranch', kind: 'n' },
+  { id: 'shizen', kana: 'しぜん', kanji: '自然', es: 'naturaleza', en: 'nature', sit: 'ranch', kind: 'n' },
   // ── lake · Clima y direcciones ──
   { id: 'tenki', kana: 'てんき', kanji: '天気', es: 'tiempo · clima', en: 'weather', sit: 'lake', kind: 'n' },
   { id: 'ii', kana: 'いい', kanji: null, es: 'bueno', en: 'good', sit: 'lake', kind: 'adj' },
@@ -549,6 +608,19 @@ export const LEX = [
   { id: 'ken', kana: 'けん', kanji: '県', es: 'prefectura', en: "prefecture", sit: 'lake', kind: 'n' },
   { id: 'shinkansen', kana: 'しんかんせん', kanji: '新幹線', es: 'tren bala', en: "bullet train", sit: 'lake', kind: 'n' },
 
+  // Etapa 2 del currículo (P-08c: 2.15 y 2.17)
+  { id: 'tsumetai', kana: 'つめたい', kanji: '冷たい', es: 'frío (al tacto: agua, comida)', en: 'cold (to the touch: water, food)', sit: 'lake', kind: 'adj' },
+  { id: 'donokurai', kana: 'どのくらい', kanji: null, es: 'cuánto (tiempo, distancia)', en: 'how long · how far', sit: 'lake', kind: 'q' },
+  { id: 'gurai', kana: 'ぐらい', kanji: null, es: 'más o menos · unos (tras una cantidad)', en: 'about (after an amount)', sit: 'lake', kind: 'expr' },
+  { id: 'norikaemasu', kana: 'のりかえます', kanji: '乗り換えます', te: 'のりかえて', tek: '乗り換えて', dict: 'のりかえる', dictk: '乗り換える', es: 'hacer transbordo · cambiar de tren', en: 'to change trains · transfer', sit: 'lake', kind: 'v' },
+  { id: 'orimasu', kana: 'おります', kanji: '降ります', te: 'おりて', tek: '降りて', dict: 'おりる', dictk: '降りる', es: 'bajar (de un vehículo)', en: 'to get off (a vehicle)', sit: 'lake', kind: 'v' },
+  { id: 'tsukimasu', kana: 'つきます', kanji: '着きます', te: 'ついて', tek: '着いて', dict: 'つく', dictk: '着く', es: 'llegar (〜に つきます)', en: 'to arrive (〜に つきます)', sit: 'lake', kind: 'v' },
+  { id: 'higashiguchi', kana: 'ひがしぐち', kanji: '東口', es: 'salida este (de una estación)', en: 'east exit (of a station)', sit: 'lake', kind: 'n' },
+  { id: 'nishiguchi', kana: 'にしぐち', kanji: '西口', es: 'salida oeste (de una estación)', en: 'west exit (of a station)', sit: 'lake', kind: 'n' },
+  { id: 'hoomu', kana: 'ホーム', kanji: null, es: 'andén', en: 'platform', sit: 'lake', kind: 'n' },
+  { id: 'kippu', kana: 'きっぷ', kanji: '切符', es: 'boleto', en: 'ticket', sit: 'lake', kind: 'n' },
+  { id: 'katamichi', kana: 'かたみち', kanji: '片道', es: 'ida (boleto solo de ida)', en: 'one way', sit: 'lake', kind: 'n' },
+  { id: 'oufuku', kana: 'おうふく', kanji: '往復', es: 'ida y vuelta', en: 'round trip', sit: 'lake', kind: 'n' },
   // ── shrine · Rutina diaria ──
   { id: 'asa', kana: 'あさ', kanji: '朝', es: 'mañana (parte del día)', en: 'morning', sit: 'shrine', kind: 'n' },
   { id: 'okimasu', kana: 'おきます', kanji: '起きます', te: 'おきて', tek: '起きて', dict: 'おきる', dictk: '起きる', es: 'levantarse', en: 'to get up', sit: 'shrine', kind: 'v' },
@@ -625,6 +697,14 @@ export const LEX = [
   { id: 'oshougatsu', kana: 'おしょうがつ', kanji: 'お正月', es: 'Año Nuevo', en: "New Year", sit: 'shrine', kind: 'n' },
   { id: 'hanami', kana: 'はなみ', kanji: '花見', es: 'mirar los cerezos en flor', en: "cherry-blossom viewing", sit: 'shrine', kind: 'n' },
   { id: 'tanoshii', kana: 'たのしい', kanji: '楽しい', es: 'divertido', en: "fun", sit: 'shrine', kind: 'adj' },
+  // Etapa 2 del currículo (P-08c: 2.14 y 2.18)
+  { id: 'taitei', kana: 'たいてい', kanji: null, es: 'normalmente · casi siempre', en: 'usually', sit: 'shrine', kind: 'expr' },
+  { id: 'osoku', kana: 'おそく', kanji: '遅く', es: 'tarde (おそく おきます: me levanto tarde)', en: 'late (おそく おきます: I get up late)', sit: 'shrine', kind: 'expr' },
+  { id: 'sanpo', kana: 'さんぽ', kanji: '散歩', es: 'paseo (さんぽ します: pasear)', en: 'walk (さんぽ します: to take a walk)', sit: 'shrine', kind: 'n' },
+  { id: 'undou', kana: 'うんどう', kanji: '運動', es: 'ejercicio (うんどう します: hacer ejercicio)', en: 'exercise (うんどう します: to exercise)', sit: 'shrine', kind: 'n' },
+  { id: 'dekakemasu', kana: 'でかけます', kanji: '出かけます', te: 'でかけて', tek: '出かけて', dict: 'でかける', dictk: '出かける', es: 'salir (de casa, a pasear o a hacer algo)', en: 'to go out', sit: 'shrine', kind: 'v' },
+  { id: 'jinja', kana: 'じんじゃ', kanji: '神社', es: 'santuario sintoísta', en: 'Shinto shrine', sit: 'shrine', kind: 'n' },
+  { id: 'otera', kana: 'おてら', kanji: 'お寺', es: 'templo budista', en: 'Buddhist temple', sit: 'shrine', kind: 'n' },
 ];
 
 // Patrones gramaticales, en el orden de E1.
@@ -892,7 +972,7 @@ export const useOf = k => USE[k] || 'daily';
 const VERB_ENDS = ['ます', 'ました', 'ません', 'ませんでした', 'ましょう', 'たい', 'ながら', 'そう'];
 // Adjetivos な (no forman 〜そう quitando la い final)
 export const taOf = te => te && te.replace(/て$/, 'た').replace(/で$/, 'だ');
-const NA_ADJ = new Set(['kirei', 'genki', 'suki', 'jouzu', 'heta', 'dame', 'kirai', 'shizuka', 'nigiyaka', 'benri', 'yuumei']);
+const NA_ADJ = new Set(['kirei', 'genki', 'suki', 'jouzu', 'heta', 'dame', 'kirai', 'shizuka', 'nigiyaka', 'benri', 'yuumei', 'shinsetsu']);
 // Etapa 4: potencial cortés (pot: たべられます, con sus ません · ました y la forma corta potd), volitiva (vol: いこう) y
 // condicional (ba: いけば). Van como campos del verbo porque no se pueden deducir sin saber su grupo.
 const masuSet = f => f ? [f, f.slice(0, -2) + 'ません', f.slice(0, -2) + 'ました'] : [];
@@ -997,11 +1077,10 @@ export function checkLang() {
     if (p.pat !== null) seenPat.add(p.pat);
   }
   for (const pt of PATTERNS) if (!seenPat.has(pt.id) && !pt.cur) errs.push(`Patrón ${pt.id}: ninguna frase lo usa`);
-  const cover = inPhrase.size / LEX.length;
-  // 25 %: las palabras que suma el currículo se practican con sus propias frases; la cobertura total (70 %) la exige checkCurriculum().
-  // Era 40 %; P-07 (etapa 1 completa) lo bajó a 30 % y P-08b+ (lo de #49 sumado sobre #48) a 25 %: el currículo suma
-  // cientos de palabras con sus propias frases y las situaciones ya tienen el máximo de 8 frases de viaje (hoy: 29 %).
-  if (cover < .25) errs.push(`Solo el ${Math.round(cover * 100)} % de las palabras aparece en alguna frase de viaje (mínimo 25 %)`);
+  // La cobertura de frases de viaje ya no se mide aquí sobre todo LEX: desde P-08c la mide checkCurriculum() (js/curriculum.js),
+  // solo sobre las palabras que no tienen frase propia del currículo (EXTRA), con mínimo 30 %. Decidido por Nicolás el
+  // 15/11/2026: las palabras del currículo se practican con sus propias frases y las situaciones tienen el máximo de 8
+  // frases de viaje. Historia: 40 % sobre todo LEX → 30 % (P-07) → 25 % (P-08b+).
 
   let prevLevel = -1;
   for (const r of READINGS) {
