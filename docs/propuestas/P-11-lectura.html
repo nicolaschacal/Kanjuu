@@ -1,0 +1,842 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Propuesta P-11 · Leer de corrido</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Yuji+Syuku&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/style.css">
+<link rel="stylesheet" href="../../css/ui.css">
+<link rel="stylesheet" href="../../css/art.css">
+<style>
+/* Propuesta P-11 (docs/PROGRESION.md §12). Solo maqueta: no toca el juego.
+   Misma forma que P-03: estilos del juego (D-01, sin líneas negras ni sombra negra corrida), prefijo p11-. */
+html, body { height: auto; background: #0E0C1C }
+body { padding: 0 0 40px; user-select: auto; -webkit-user-select: auto }
+.pp { max-width: 390px; margin: 0 auto; padding: 16px 16px 0; color: var(--paper) }
+.pp h1 { font-size: 19px; margin: 0 0 4px; color: var(--paper) }
+.pp > p { font-size: 13px; color: var(--muted-d); line-height: 1.45 }
+.pp-opts { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 0 }
+.pp-sw { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px 0 8px; border-radius: 22px; background: #F6EBD014; font-size: 13px; font-weight: 700; color: var(--paper); cursor: pointer }
+.pp-dec { margin: 12px 0 0; background: #F6EBD00F; border-radius: 16px; padding: 0 14px }
+.pp-dec summary { min-height: 44px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; color: var(--gold); cursor: pointer }
+.pp-dec summary .ic { width: 18px; height: 18px }
+.pp-dec ol { margin: 0 0 12px 18px; padding: 0 }
+.pp-dec li { font-size: 12.5px; line-height: 1.45; color: #E9DCC0; margin: 0 0 6px }
+.pp-dec li b { color: var(--paper) }
+.pp-nav { display: flex; gap: 8px; overflow-x: auto; padding: 12px 0 8px; scrollbar-width: none }
+.pp-nav::-webkit-scrollbar { display: none }
+.pp-nav button { flex: none; min-height: 44px; border: 2px solid #F6EBD033; color: var(--paper); border-radius: 22px; padding: 0 14px; font-size: 13px; font-weight: 700 }
+.pp-nav button.on { background: var(--paper); color: var(--line); border-color: var(--paper) }
+.pp-sub { display: flex; gap: 8px; overflow-x: auto; padding: 0 0 12px; scrollbar-width: none }
+.pp-sub:empty { display: none }
+.pp-sub button { flex: none; min-height: 44px; padding: 0 14px; border-radius: 22px; background: #F6EBD014; color: var(--muted-d); font-size: 12.5px; font-weight: 700 }
+.pp-sub button.on { background: var(--gold); color: var(--line) }
+.phone { position: relative; width: 390px; max-width: 100%; height: 844px; margin: 0 auto; background: var(--bg); overflow: hidden; border-radius: 28px; color: var(--line) }
+.notes { max-width: 390px; margin: 16px auto 0; padding: 16px; background: #1E1A38; border-radius: 20px; color: var(--paper) }
+.notes h2 { font-size: 14px; margin: 0 0 8px; color: var(--gold) }
+.notes h3 { font-family: var(--f-title); font-size: 13px; margin: 12px 0 6px; color: var(--paper) }
+.notes li { font-size: 13px; line-height: 1.45; color: #E9DCC0; margin: 0 0 6px 16px }
+.notes .spec { font-size: 12.5px; color: var(--muted-d); margin: 8px 0 0 }
+.notes .dec { margin-top: 12px; padding: 10px 12px; border-radius: 14px; background: #F2B5441F }
+.notes .dec h3 { margin-top: 0; color: var(--gold) }
+
+.jp { font-family: var(--f-jp); font-weight: 700 }
+.btn .ic { display: inline-block; vertical-align: -5px; margin-right: 6px; width: 20px; height: 20px }
+.art svg { width: 100%; height: 100% }
+.p11-toast { position: absolute; left: 50%; bottom: 112px; z-index: 30; transform: translateX(-50%); width: max-content; max-width: 320px; padding: 10px 16px; border-radius: 20px; background: var(--line); color: var(--paper); font-size: 13px; font-weight: 700; text-align: center; box-shadow: var(--sh-d); animation: fade .2s }
+
+/* ---------- Santuario de fondo y hoja ---------- */
+.p11-world { position: absolute; inset: 0 }
+.p11-world svg { width: 100%; height: 100% }
+.p11-panel { position: absolute; inset: 0; display: flex; padding: 14px 12px 12px; background: #0B091640 }
+.p11-panel .pn-card { position: relative }
+.p11-hic { width: 44px; height: 44px; flex: none; border-radius: 14px; background: var(--line); color: var(--paper); display: grid; place-items: center }
+.p11-ht { flex: 1; min-width: 0; padding-left: 4px }
+.p11-ht small { display: block; font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--muted) }
+.p11-ht b { display: block; font-family: var(--f-title); font-size: 18px; font-weight: 800; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.p11-hb { width: 44px; height: 44px; flex: none; border-radius: 22px; display: grid; place-items: center; background: var(--paper3); color: var(--line); box-shadow: inset 0 0 0 2px #1A122014 }
+.p11-hb .ic { width: 20px; height: 20px }
+.p11-hb.fg { font-family: var(--f-jp); font-weight: 900; font-size: 15px; position: relative }
+.p11-hb.fg[aria-pressed="true"] { background: #FFF3C9; box-shadow: inset 0 0 0 2px var(--gold) }
+.p11-hb.fg[aria-pressed="false"] { color: var(--muted) }
+.p11-hb.fg[aria-pressed="false"]::after { content: ''; position: absolute; width: 26px; height: 3px; border-radius: 2px; background: var(--muted); transform: rotate(-40deg) }
+.p11-body { flex: 1; min-height: 0; overflow-y: auto; padding: 12px 16px 16px; scroll-padding-bottom: 300px }
+.p11-foot { flex: none; display: grid; gap: 8px; padding: 12px 16px 16px; background: var(--paper); box-shadow: 0 -1px 0 #1A12200F }
+.p11-foot .btn.wide { margin: 0 }
+.p11-foot .p11-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px }
+.p11-foot .p11-row .btn { margin: 0; min-height: 48px; display: flex; align-items: center; justify-content: center }
+.p11-foot .p11-row .btn.on { background: #DCEEFB; box-shadow: inset 0 0 0 2px var(--blue) }
+
+/* Tu KANJŪ lee contigo */
+.p11-host { display: grid; grid-template-columns: 64px 1fr; gap: 10px; align-items: end; margin: 0 0 12px }
+.p11-host .art { width: 64px; height: 64px }
+.p11-bub { position: relative; min-height: 52px; padding: 8px 12px; border-radius: 18px 18px 18px 4px; background: var(--paper3); box-shadow: var(--sh) }
+.p11-bub .who { display: block; font-size: 11px; font-weight: 800; color: #4A3A8C; letter-spacing: .06em }
+.p11-bub p { margin: 0; font-size: 13.5px; font-weight: 700; line-height: 1.4 }
+.p11-bub.pop { animation: p11-pop .25s ease-out }
+@keyframes p11-pop { from { transform: scale(.96); opacity: .6 } }
+.p11-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px }
+.p11-chip { display: inline-flex; align-items: center; gap: 4px; min-height: 26px; padding: 0 10px; border-radius: 13px; background: #1A12200A; font-size: 11.5px; font-weight: 800; color: var(--line) }
+.p11-chip .ic { width: 13px; height: 13px }
+.p11-chip.nw { background: #5DB84F26; color: #2F7A25 }
+.p11-chip.fgc { background: #4AA3E81F }
+
+/* ---------- La hoja de lectura ---------- */
+.p11-paper { position: relative; margin: 6px 0 0; padding: 20px 18px 18px; border-radius: 16px; background: #FFFDF6; box-shadow: var(--sh) }
+/* Nota (etapa 1): papel suelto con cinta */
+.p11-paper.note { padding-top: 26px; background: #FFFBEF }
+.p11-paper.note::before { content: ''; position: absolute; left: 50%; top: -9px; width: 92px; height: 22px; margin-left: -46px; border-radius: 4px; background: #F2B54488 }
+/* Correo (etapa 2): cabecera de remitente y renglones suaves */
+.p11-mail { display: flex; align-items: center; gap: 10px; margin: -4px 0 12px; padding: 0 0 12px; box-shadow: 0 1px 0 #1A122014 }
+.p11-mail > i { width: 36px; height: 36px; flex: none; border-radius: 18px; display: grid; place-items: center; background: #4AA3E833; font-style: normal; font-family: var(--f-jp); font-weight: 900; font-size: 15px; color: #1F5F92 }
+.p11-mail span { flex: 1; min-width: 0 }
+.p11-mail b { display: block; font-size: 13.5px; font-weight: 800 }
+.p11-mail small { display: block; font-size: 11.5px; color: var(--muted); font-weight: 700 }
+.p11-txt { font-family: var(--f-jp); font-weight: 700; font-size: 21px; line-height: 2.35; letter-spacing: .02em; line-break: strict; color: var(--line) }
+.p11-paper.note .p11-txt { font-size: 20px; letter-spacing: 0 }
+.p11-paper.mail .p11-txt { font-size: 19.5px; line-height: 2.3; background: repeating-linear-gradient(transparent 0 calc(2.3em - 2px), #1A12200F calc(2.3em - 2px) 2.3em); background-position: 0 -.15em }
+.p11-l { margin: 0 }
+.p11-l.sign { text-align: right }
+.p11-l + .p11-l { margin-top: 2px }
+.w { border-radius: 8px; cursor: pointer; padding: 3px 0; transition: background .15s }
+.w.on { background: #FFF3C9; box-shadow: 0 0 0 3px #FFF3C9, inset 0 -3px 0 var(--gold) }
+.w.p11-say { background: #DCEEFB; box-shadow: 0 0 0 3px #DCEEFB }
+.pu { color: var(--muted) }
+.p11-fam { background: linear-gradient(transparent 58%, #F2B5448C 58%, #F2B5448C 92%, transparent 92%); border-radius: 2px }
+.p11-txt ruby rt { font-size: .48em; font-weight: 700; color: #7A6A55; letter-spacing: 0 }
+body.no-fg .p11-txt ruby rt, .p11-txt.nofg ruby rt { display: none }
+.p11-legend { display: flex; flex-wrap: wrap; gap: 10px 14px; margin: 12px 0 0; font-size: 11.5px; font-weight: 700; color: var(--muted) }
+.p11-legend span { display: inline-flex; align-items: center; gap: 6px }
+.p11-legend i { width: 18px; height: 12px; border-radius: 3px; flex: none }
+.p11-legend .lf { background: linear-gradient(transparent 40%, #F2B5448C 40%) }
+.p11-legend .ln { background: #5DB84F55 }
+.p11-legend .lt { background: #FFF3C9; box-shadow: inset 0 -3px 0 var(--gold) }
+.p11-hint { display: flex; align-items: center; gap: 8px; margin: 12px 0 0; padding: 10px 12px; border-radius: 16px; background: #F2B54426; font-size: 13px; line-height: 1.4 }
+.p11-hint .ic { width: 18px; height: 18px; flex: none }
+
+/* ---------- Hoja de la palabra tocada ---------- */
+.p11-sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 8; padding: 8px 16px 16px; border-radius: 24px 24px 0 0; background: var(--paper3); box-shadow: 0 -8px 24px rgba(26, 18, 32, .16); animation: p11-up .26s cubic-bezier(.2, 1.2, .4, 1) }
+.p11-sheet::before { content: ''; display: block; width: 40px; height: 5px; margin: 0 auto 8px; border-radius: 3px; background: #1A12201F }
+@keyframes p11-up { from { transform: translateY(40px); opacity: 0 } }
+.p11-wh { display: grid; grid-template-columns: 1fr 44px; gap: 8px; align-items: start }
+.p11-wk { font-family: var(--f-jp); font-size: 34px; font-weight: 900; line-height: 1.6 }
+.p11-wk ruby rt { font-size: .42em; font-weight: 700; color: #7A6A55 }
+.p11-wr { margin: -2px 0 0; font-family: var(--f-jp); font-size: 15px; font-weight: 700; color: var(--muted) }
+.p11-wm { margin: 6px 0 0; font-family: var(--f-title); font-size: 18px; font-weight: 800; line-height: 1.3 }
+.p11-wg { margin: 4px 0 0; font-size: 13px; line-height: 1.45; color: var(--line) }
+.p11-new { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; margin: 10px 0 0; padding: 10px 12px; border-radius: 16px; background: #E6F4DE }
+.p11-new > i { width: 32px; height: 32px; border-radius: 16px; display: grid; place-items: center; background: var(--green); color: #fff }
+.p11-new > i .ic { width: 18px; height: 18px }
+.p11-new b { display: block; font-size: 13.5px; color: #2F7A25 }
+.p11-new small { display: block; font-size: 12.5px; line-height: 1.4 }
+.p11-ks { display: flex; gap: 8px; margin: 12px 0 0; overflow-x: auto; scrollbar-width: none }
+.p11-k { flex: 1 0 96px; max-width: 132px; display: grid; justify-items: center; gap: 2px; padding: 8px 6px; border-radius: 16px; background: var(--paper2); text-align: center }
+.p11-k .art, .p11-k .p11-tile { width: 52px; height: 52px }
+.p11-k .p11-tile { display: grid; place-items: center; border-radius: 14px; background: #FFFDF6; font-family: var(--f-jp); font-size: 30px; font-weight: 900 }
+.p11-k b { font-family: var(--f-jp); font-size: 15px; font-weight: 900; line-height: 1.2 }
+.p11-k small { font-size: 11px; font-weight: 700; color: var(--muted); line-height: 1.25 }
+.p11-k em { font-style: normal; font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 10px; background: #1A12200D }
+.p11-k em.ok { background: #5DB84F26; color: #2F7A25 }
+.p11-k em.fg { background: #4AA3E826; color: #1F5F92 }
+.p11-k.kf { box-shadow: inset 0 0 0 2px #F2B544AA }
+.p11-wnav { display: grid; grid-template-columns: 48px 1fr 48px; gap: 8px; margin: 14px 0 0 }
+.p11-wnav .btn { margin: 0; min-height: 48px; padding: 0; display: flex; align-items: center; justify-content: center }
+.p11-wnav .btn .ic { margin-right: 0 }
+.p11-wnav .btn.p11-ws .ic { margin-right: 6px }
+
+/* ---------- Preguntas ---------- */
+.p11-qbar { display: flex; gap: 6px; margin: 0 0 14px }
+.p11-qbar i { flex: 1; height: 6px; border-radius: 3px; background: #1A12201A }
+.p11-qbar i.on { background: var(--red) } .p11-qbar i.ok { background: var(--green) } .p11-qbar i.no { background: #E8452C80 }
+.p11-q { margin: 0 0 14px; font-family: var(--f-title); font-size: 20px; font-weight: 800; line-height: 1.3 }
+.p11-opts { display: grid; gap: 10px }
+.p11-opt { display: grid; grid-template-columns: 32px 1fr; gap: 10px; align-items: center; min-height: 56px; padding: 8px 14px 8px 10px; border-radius: 18px; background: var(--paper3); box-shadow: var(--sh); font-size: 15.5px; font-weight: 700; text-align: left; color: var(--line) }
+.p11-opt > i { width: 32px; height: 32px; border-radius: 16px; display: grid; place-items: center; background: var(--paper2); font-style: normal; font-size: 13px; font-weight: 800; color: var(--muted) }
+.p11-opt.on { background: #FFF3C9; box-shadow: inset 0 0 0 3px var(--gold), var(--sh) }
+.p11-opt.on > i { background: var(--gold); color: var(--line) }
+.p11-opt.right { background: #DDF2D6; box-shadow: none } .p11-opt.right > i { background: var(--green); color: #fff }
+.p11-opt.wrong { background: #F9DED6; box-shadow: none } .p11-opt.wrong > i { background: var(--red); color: #fff }
+.p11-peek { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 48px; margin: 16px 0 0; padding: 0 14px; border-radius: 24px; background: var(--paper2); font-size: 13.5px; font-weight: 800; color: var(--line) }
+.p11-peek .ic { width: 18px; height: 18px }
+.p11-peek > .ic:last-child { margin-left: auto; color: var(--muted) }
+.p11-peekbox { margin: 10px 0 0; padding: 12px 14px; border-radius: 16px; background: #FFFDF6; box-shadow: inset 0 0 0 2px #1A12200F }
+.p11-peekbox .p11-txt { font-size: 17px; line-height: 2.2 }
+.p11-res { position: absolute; left: 0; right: 0; bottom: 0; z-index: 6; max-height: 70%; overflow-y: auto; padding: 16px; border-radius: 24px 24px 0 0; box-shadow: 0 -8px 24px rgba(26, 18, 32, .14); animation: p11-up .28s cubic-bezier(.2, 1.2, .4, 1) }
+.p11-res.ok { background: #E6F4DE } .p11-res.no { background: #FBEAE3 }
+.p11-rh { display: flex; align-items: center; gap: 12px; margin: 0 0 10px }
+.p11-rh i { width: 40px; height: 40px; flex: none; border-radius: 20px; display: grid; place-items: center; background: var(--green); color: #fff }
+.p11-res.no .p11-rh i { background: var(--red) }
+.p11-rh b { font-family: var(--f-title); font-size: 19px; font-weight: 800; color: #2F7A25 }
+.p11-res.no .p11-rh b { color: #B8321F }
+.p11-quote { margin: 0; padding: 10px 12px; border-radius: 16px; background: #FFFFFF99 }
+.p11-quote small { display: block; font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--muted) }
+.p11-quote .p11-txt { font-size: 18px; line-height: 2.1 }
+.p11-quote p.es { margin: 2px 0 0; font-size: 14px; line-height: 1.4 }
+.p11-tip { display: flex; gap: 8px; align-items: flex-start; margin: 10px 0 0; font-size: 13.5px; line-height: 1.45 }
+.p11-tip .ic { width: 18px; height: 18px; flex: none; margin-top: 1px }
+.p11-res .btn.wide { margin-top: 14px }
+
+/* ---------- Final ---------- */
+.p11-end { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 48px 20px 20px; text-align: center; color: var(--paper); background: radial-gradient(80% 50% at 50% 26%, #3A2E66 0%, #16132A 70%); overflow-y: auto }
+.p11-end h2 { font-family: var(--f-title); font-size: 26px; font-weight: 800; margin: 8px 0 4px }
+.p11-end > p { margin: 0; font-size: 14px; color: var(--muted-d); line-height: 1.45 }
+.p11-endart { width: 104px; height: 104px; margin: 0 auto }
+.p11-endc { display: grid; gap: 8px; margin: 18px 0 0; padding: 12px; border-radius: 20px; background: var(--paper); color: var(--line); text-align: left }
+.p11-er { display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center; min-height: 52px }
+.p11-er > i { width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center; background: var(--paper2); font-style: normal }
+.p11-er > i .ic { width: 20px; height: 20px }
+.p11-er b { display: block; font-size: 14px }
+.p11-er small { display: block; font-size: 12px; color: var(--muted); line-height: 1.35 }
+.p11-er em { font-style: normal; font-family: var(--f-title); font-weight: 800; font-size: 16px }
+.p11-er .jp { font-size: 16px }
+.p11-acts { margin-top: auto; padding-top: 18px; display: grid; gap: 10px }
+.p11-end .btn.wide { margin: 0 }
+.p11-tr { display: grid; gap: 8px; margin: 10px 0 0; text-align: left }
+.p11-tr p { margin: 0; padding: 8px 12px; border-radius: 14px; background: #F6EBD014; font-size: 13px; line-height: 1.4; color: #E9DCC0 }
+
+/* ---------- Cuaderno ---------- */
+.p11-units { flex: none; display: flex; gap: 8px; overflow-x: auto; padding: 10px 14px; scrollbar-width: none; box-shadow: 0 1px 0 #1A12200F }
+.p11-units::-webkit-scrollbar { display: none }
+.p11-unit { flex: none; height: 44px; padding: 0 14px; border-radius: 22px; background: var(--paper2); color: var(--muted); display: flex; align-items: center; gap: 6px; font-family: var(--f-title); font-size: 14px; font-weight: 800 }
+.p11-unit .ic { width: 16px; height: 16px }
+.p11-unit.on { background: var(--red); color: #FFF6E3 }
+.p11-h { font-family: var(--f-title); font-size: 24px; font-weight: 800; letter-spacing: -.01em; margin: 0 }
+.p11-cando { display: block; margin: 4px 0 14px; font-size: 13px; color: var(--muted); line-height: 1.4 }
+.p11-card { display: grid; grid-template-columns: 48px 1fr 20px; gap: 12px; align-items: center; width: 100%; min-height: 64px; margin: 0 0 10px; padding: 10px 12px; border-radius: 20px; background: var(--paper3); box-shadow: var(--sh); text-align: left; color: var(--line) }
+.p11-card .art { width: 48px; height: 48px }
+.p11-card b { display: block; font-family: var(--f-title); font-size: 15px }
+.p11-card small { display: block; font-size: 12px; color: var(--muted); line-height: 1.35 }
+.p11-card > .ic { width: 18px; height: 18px; color: var(--muted) }
+.p11-card.guide { background: #FFF3C9 }
+.p11-read { margin: 0 0 16px; padding: 12px; border-radius: 22px; background: var(--paper3); box-shadow: inset 0 0 0 2px #4AA3E866, var(--sh) }
+.p11-read.lock { background: #FFFDF6B0; box-shadow: inset 0 0 0 2px #1A122010 }
+.p11-read.done { box-shadow: inset 0 0 0 2px #5DB84F66, var(--sh) }
+.p11-rt { display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: center }
+.p11-mini { position: relative; width: 64px; height: 80px; padding: 14px 9px 8px; border-radius: 10px; background: #FFFBEF; box-shadow: 0 3px 10px rgba(26, 18, 32, .12); display: grid; align-content: start; gap: 5px }
+.p11-mini::before { content: ''; position: absolute; left: 18px; top: -5px; width: 28px; height: 10px; border-radius: 2px; background: #F2B54488 }
+.p11-mini i { height: 4px; border-radius: 2px; background: #1A122026 }
+.p11-mini i.k { background: #1A122040 }
+.p11-mini.mail::before { display: none }
+.p11-mini.mail i:first-child { background: #4AA3E866 }
+.p11-read.lock .p11-mini { opacity: .55 }
+.p11-rt .eb { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: #1F5F92 }
+.p11-rt .eb .ic { width: 14px; height: 14px }
+.p11-read.lock .p11-rt .eb { color: var(--muted) }
+.p11-read.done .p11-rt .eb { color: #2F7A25 }
+.p11-rt b { display: block; margin: 2px 0 2px; font-family: var(--f-title); font-size: 17px; font-weight: 800 }
+.p11-rt small { display: block; font-size: 12.5px; color: var(--muted); line-height: 1.4 }
+.p11-read .p11-chips { margin: 10px 0 0 }
+.p11-read .btn.wide { margin-top: 10px }
+.p11-lockt { display: flex; gap: 6px; align-items: center; margin: 10px 0 0; font-size: 12.5px; color: var(--muted); font-weight: 700 }
+.p11-lockt .ic { width: 15px; height: 15px }
+.p11-lvh4 { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 10px; font-family: var(--f-title); font-size: 15px; font-weight: 800 }
+.p11-lvh4 small { font-family: var(--f-ui); font-size: 12px; font-weight: 700; color: var(--muted) }
+.p11-lvs { display: grid; gap: 8px }
+.p11-lv { display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center; min-height: 56px; padding: 8px 12px; border-radius: 18px; background: var(--paper3); box-shadow: var(--sh) }
+.p11-lv.lock { background: #FFFDF6B0; box-shadow: none }
+.p11-lv.lock b, .p11-lv.lock small { opacity: .6 }
+.p11-med { width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center; font-family: var(--f-title); font-size: 16px; font-weight: 800; background: var(--paper2); color: var(--muted) }
+.p11-med .ic { width: 20px; height: 20px }
+.p11-lv.done .p11-med { background: var(--green); color: #fff }
+.p11-lv.cur .p11-med { background: var(--red); color: #FFF6E3 }
+.p11-lv b { display: block; font-family: var(--f-title); font-size: 14.5px; font-weight: 800 }
+.p11-lv small { display: block; font-size: 12px; color: var(--muted); font-weight: 600 }
+.p11-lv .tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 12px; background: #4AA3E81F; font-size: 11px; font-weight: 800; color: #1F5F92 }
+.p11-lv .tag .ic { width: 12px; height: 12px }
+
+/* ---------- Largo por etapa ---------- */
+.p11-ladder { display: grid; gap: 10px }
+.p11-st { display: grid; grid-template-columns: 72px 1fr; gap: 14px; align-items: center; padding: 12px; border-radius: 20px; background: var(--paper3); box-shadow: var(--sh); text-align: left; color: var(--line); width: 100% }
+.p11-st.soon { background: #FFFDF6B0; box-shadow: none }
+.p11-thumb { position: relative; width: 72px; border-radius: 10px; background: #FFFBEF; box-shadow: 0 3px 10px rgba(26, 18, 32, .12); display: grid; align-content: start; gap: 4px; padding: 10px 8px }
+.p11-thumb i { height: 4px; border-radius: 2px; background: #1A122030 }
+.p11-thumb i.s { width: 60% }
+.p11-st.soon .p11-thumb i { background: #1A12201A }
+.p11-st .eb { font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--muted) }
+.p11-st b { display: block; margin: 2px 0; font-family: var(--f-title); font-size: 16px; font-weight: 800 }
+.p11-st small { display: block; font-size: 12.5px; color: var(--muted); line-height: 1.4 }
+.p11-st .go { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; font-size: 12.5px; font-weight: 800; color: var(--red) }
+.p11-st .go .ic { width: 15px; height: 15px }
+.p11-st.soon .go { color: var(--muted) }
+
+/* Reducir movimiento: del sistema o simulado con el interruptor de arriba */
+@media (prefers-reduced-motion: reduce) {
+  .p11-sheet, .p11-res, .p11-toast, .p11-bub.pop { animation: none }
+  .w { transition: none }
+}
+body.rm .p11-sheet, body.rm .p11-res, body.rm .p11-toast, body.rm .p11-bub.pop { animation: none }
+body.rm .w { transition: none }
+</style>
+</head>
+<body>
+<div class="pp">
+  <h1>Propuesta P-11 · Leer de corrido</h1>
+  <p>Maqueta de <b>docs/PROGRESION.md §12</b>: una lectura por unidad en japonés real, sin espacios entre palabras, que crece con la etapa. Dos ejemplos tocables: una <b>nota</b> de la etapa 1 (unidad 1.10) y un <b>correo</b> de la etapa 2 (unidad 2.10). Entrenas con tu KANJŪ <b>日</b>. Toca cualquier palabra, escucha y responde.</p>
+  <div class="pp-opts">
+    <label class="pp-sw"><input type="checkbox" class="sw" id="swFg" checked> Furigana</label>
+    <label class="pp-sw"><input type="checkbox" class="sw" id="swRm"> Simular «reducir movimiento»</label>
+  </div>
+  <details class="pp-dec" id="dec"></details>
+  <nav class="pp-nav" id="nav"></nav>
+  <div class="pp-sub" id="sub"></div>
+</div>
+<div class="phone" id="phone"></div>
+<div class="notes" id="notes"></div>
+
+<script type="module">
+import { creatureSVG } from '../../js/creature.js';
+import { ic } from '../../js/icons.js';
+import { KANJI } from '../../js/data.js';
+import { SECTIONS } from '../../js/curriculum.js';
+
+const $ = s => document.querySelector(s);
+const art = k => creatureSVG(k);
+const TRAINER = '日';
+// Íconos nuevos que pide la propuesta (mismo formato que js/icons.js): reproducir, pausa y «lento» (el caracol de P-03)
+const LOCAL = {
+  play: '<path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"/>',
+  pause: '<rect x="6" y="4.5" width="4" height="15" rx="1.5"/><rect x="14" y="4.5" width="4" height="15" rx="1.5"/>',
+  slow: '<path d="M3 18h15.5a2.5 2.5 0 0 0 2.5-2.5V11"/><path d="m19 11-1.2-3.2M21 11l1-3.2"/><circle cx="11" cy="12.5" r="5.5"/><path d="M11 12.5a2 2 0 1 1 2-2"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/>',
+  note: '<path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M8.5 12.5h7M8.5 16h5"/>',
+};
+const ic2 = n => LOCAL[n] ? `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${LOCAL[n]}</svg>` : ic(n);
+
+// ---------- Datos reales del juego ----------
+// Unidad donde se enseña cada kanji (primera aparición en SECTIONS de js/curriculum.js)
+const UNIT = {};
+for (const s of SECTIONS) for (const k of s.kanji || []) UNIT[k] ??= s.id;
+// Familia del KANJŪ: él mismo y los kanji cuya receta lo contiene (recipes de js/data.js, verificadas con KanjiVG)
+const FAMILY = new Set([TRAINER, ...Object.entries(KANJI).filter(([, v]) => (v.recipes || []).some(r => r.includes(TRAINER))).map(([c]) => c)]);
+const KRX = /[一-鿿]/;
+const KM = { 帰: 'volver', 雪: 'nieve', 窓: 'ventana' }; // kanji enseñados que todavía no son KANJŪ
+const kMean = k => KM[k] || (KANJI[k]?.m || '').split(' · ')[0];
+
+// ---------- Las dos lecturas de ejemplo ----------
+// Cada línea es una lista de fichas separadas por «|». [kanji:lectura] lleva furigana; «^» marca puntuación.
+// Las fichas se dibujan pegadas (sin espacios, como se escribe de verdad); el espacio solo existe en los datos.
+// D = qué dice cada ficha al tocarla. Una clave con «#» distingue dos usos de la misma forma.
+const READS = {
+  e1: {
+    unit: '1.10', unitT: '¿Dónde está?', stage: 'Etapa 1 · Primeros pasos', kind: 'note', kindT: 'Una nota',
+    title: 'Una nota para Yumi',
+    say: 'Yumi encontró una nota en la mesa. ¿La leemos juntos?',
+    // Kanji dominados (S.srs con caja ≥ FURI_OFF): van sin furigana
+    mastered: '人三七時食日',
+    lines: [
+      'ゆみ|へ',
+      '[母:はは]|は|[七:しち][時:じ]|ごろ|[帰:かえ]ります|^。',
+      'ばんごはん|は|[三:さん][人:にん]|で#with|[食:た]べます|^。',
+      'おにぎり|は|つくえ|の|[上:うえ]|に|あります|^。',
+    ],
+    es: ['Para Yumi:', 'Mamá vuelve a eso de las siete.', 'Cenamos los tres.', 'Los onigiri están encima del escritorio.'],
+    Q: [
+      { q: '¿A qué hora vuelve la mamá?', o: ['A eso de las siete', 'A las tres en punto', 'A eso de las diez'], a: 0, line: 1,
+        tip: ['', '三 aparece en 三人 (tres personas), no en la hora. La hora es 七時: las siete.', '十 (diez) no aparece en la nota. La hora es 七時: las siete.'], ok: 'ごろ quiere decir «a eso de».' },
+      { q: '¿Dónde están los onigiri?', o: ['Debajo del escritorio', 'Encima del escritorio', 'Dentro de la mochila'], a: 1, line: 3,
+        tip: ['上 es «arriba, encima». «Debajo» sería 下.', '', 'La nota no habla de una mochila (かばん). Dice つくえの上: encima del escritorio.'], ok: 'つくえの上: encima del escritorio.' },
+    ],
+  },
+  e2: {
+    unit: '2.10', unitT: 'Pedir permiso', stage: 'Etapa 2 · Vida diaria', kind: 'mail', kindT: 'Un correo',
+    title: 'Un sábado de nieve',
+    say: 'Ken le escribió un correo a Tanaka. ¡Habla de la nieve! ¿Lo leemos?',
+    mastered: '土曜日朝雨十時母私飲食高明行白家前',
+    from: 'ケン', to: 'たなかさん',
+    lines: [
+      'たなか|さん|へ',
+      '[土:ど][曜:よう][日:び]|は|[朝:あさ]|から|[雨:あめ]|でした|^。|とても|さむかった|です|^。',
+      '[十:じゅう][時:じ]|ごろ|^、|[母:はは]|と|[駅:えき][前:まえ]|の|カフェ|に#into|[入:はい]りました|^。',
+      '[私:わたし]|は|コーヒー|を|[飲:の]みました|^。|[母:はは]|は|ケーキ|を|[食:た]べました|^。',
+      'ケーキ|は|[高:たか]かった|です|^。|でも|^、|とても|おいしかった|です|^。',
+      'ゆうがた|^、|[雪:ゆき]|が|ふりました|^。|[家:いえ]|の|[窓:まど]|から|^、|[白:しろ]い|[雪:ゆき]|を|みました|^。',
+      '[明日:あした]|は|[休:やす]み|です|^。|たなか|さん|の|[家:いえ]|に|[行:い]って|もいいですか|^。',
+      'ケン',
+    ],
+    es: ['Para Tanaka:', 'El sábado llovió desde la mañana. Hacía mucho frío.', 'A eso de las diez, entré con mamá a la cafetería frente a la estación.', 'Yo tomé café. Mamá comió pastel.', 'El pastel era caro. Pero estaba muy rico.', 'Al atardecer nevó. Desde la ventana de casa vi la nieve blanca.', 'Mañana es mi día libre. ¿Puedo ir a tu casa?', 'Ken'],
+    Q: [
+      { q: '¿Qué tiempo hizo el sábado por la mañana?', o: ['Llovió', 'Nevó', 'Hubo sol'], a: 0, line: 1,
+        tip: ['', 'La nieve llegó después, ゆうがた (al atardecer). A la mañana dice 朝から雨でした: llovió.', 'Dice 朝から雨でした: llovió desde la mañana.'], ok: '朝から雨でした: llovió desde la mañana.' },
+      { q: '¿Qué comió la mamá?', o: ['Café', 'Pastel', 'Arroz'], a: 1, line: 3,
+        tip: ['El café lo tomó Ken: 私はコーヒーを飲みました.', '', 'El correo no habla de arroz. 母はケーキを食べました: mamá comió pastel.'], ok: '母はケーキを食べました: mamá comió pastel.' },
+      { q: '¿Qué le pregunta Ken a Tanaka?', o: ['Si quiere ir a la cafetería', 'Si mañana va a nevar', 'Si puede ir a su casa mañana'], a: 2, line: 6,
+        tip: ['La cafetería ya fue: 入りました está en pasado.', 'No pregunta por el clima. 行ってもいいですか es «¿puedo ir?».', ''], ok: '行ってもいいですか: ¿puedo ir? Es lo que aprendiste en esta unidad.' },
+    ],
+  },
+};
+const D = {
+  'ゆみ': { m: 'Yumi', g: 'Un nombre de persona.', kind: 'nombre' },
+  'へ': { m: 'para… (al empezar una nota o una carta)', g: 'Es la misma へ de «ir hacia»: la nota va hacia Yumi. Se lee «e».', kind: 'partícula' },
+  'は': { m: 'marca el tema de la frase', g: 'Escrita は, se lee «wa». Lo que va antes es de lo que se habla.', kind: 'partícula' },
+  '母': { m: 'mi mamá', g: 'Para hablar de tu propia madre. La de otra persona es お母さん.', kind: 'sustantivo' },
+  '七時': { m: 'las siete', g: '七 (siete) + 時 (hora). En la hora, 七 se lee しち.', kind: 'hora' },
+  'ごろ': { m: 'a eso de (una hora)', g: 'Va pegada a la hora: 七時ごろ, «a eso de las siete».', kind: 'expresión' },
+  '帰ります': { m: 'volver (a casa)', g: 'Forma educada (〜ます).', kind: 'verbo' },
+  'ばんごはん': { m: 'la cena', g: 'Va en kana porque 晩 todavía no se enseña.', kind: 'sustantivo' },
+  '三人': { m: 'tres personas', g: '三 (tres) + 人 contado como にん. 1 y 2 son distintos: ひとり, ふたり.', kind: 'número', nw: ['三', '人'] },
+  'で#with': { m: 'entre (tantas personas)', g: '三人で: «los tres juntos». Es la で de «con qué» o «cómo» se hace algo.', kind: 'partícula' },
+  '食べます': { m: 'comer', g: 'Forma educada (〜ます).', kind: 'verbo' },
+  'おにぎり': { m: 'bola de arroz (onigiri)', kind: 'sustantivo' },
+  'つくえ': { m: 'escritorio', g: 'Va en kana porque 机 todavía no se enseña.', kind: 'sustantivo' },
+  'の': { m: 'de', g: 'Une dos palabras: つくえの上, «lo de arriba del escritorio».', kind: 'partícula' },
+  '上': { m: 'arriba · encima', kind: 'sustantivo' },
+  'に': { m: 'en (el lugar donde algo está)', g: 'Con あります o います marca dónde está.', kind: 'partícula' },
+  'あります': { m: 'hay · está (cosas)', g: 'Para cosas. Para personas y animales es います.', kind: 'verbo' },
+  'たなか': { m: 'Tanaka', g: 'Un apellido.', kind: 'nombre' },
+  'さん': { m: 'señor · señora', g: 'Va después del nombre de otra persona, nunca del tuyo.', kind: 'expresión' },
+  '土曜日': { m: 'sábado', kind: 'sustantivo' },
+  '朝': { m: 'la mañana', kind: 'sustantivo' },
+  'から': { m: 'desde', g: '朝から: desde la mañana. 窓から: desde la ventana.', kind: 'partícula' },
+  '雨': { m: 'lluvia', kind: 'sustantivo' },
+  'でした': { m: 'era · fue', g: 'Pasado de です.', kind: 'forma' },
+  'とても': { m: 'muy', kind: 'expresión' },
+  'さむかった': { m: 'hacía frío', g: 'Pasado de さむい: la い final se vuelve かった. Va en kana porque 寒 todavía no se enseña.', kind: 'adjetivo い' },
+  'です': { m: '(forma educada)', g: 'Después de un adjetivo en pasado, です solo lo hace educado: さむかったです.', kind: 'forma' },
+  '十時': { m: 'las diez', kind: 'hora' },
+  '、': null,
+  'と': { m: 'con', g: '母と: con mamá.', kind: 'partícula' },
+  '駅前': { m: 'frente a la estación', g: 'Se usa para nombrar lugares: 駅前のカフェ.', kind: 'sustantivo', nw: ['駅', '前'] },
+  'カフェ': { m: 'cafetería', kind: 'sustantivo' },
+  'に#into': { m: 'a (el lugar al que entras)', g: 'Con 入ります, el lugar va con に.', kind: 'partícula' },
+  '入りました': { m: 'entré', g: 'Pasado de 入ります (entrar).', kind: 'verbo' },
+  '私': { m: 'yo', kind: 'sustantivo' },
+  'コーヒー': { m: 'café', kind: 'sustantivo' },
+  'を': { m: 'marca lo que se come, se toma, se ve…', g: 'Se escribe を y se lee «o».', kind: 'partícula' },
+  '飲みました': { m: 'tomé · bebí', g: 'Pasado de 飲みます.', kind: 'verbo' },
+  'ケーキ': { m: 'pastel', kind: 'sustantivo' },
+  '食べました': { m: 'comió · comí', g: 'Pasado de 食べます.', kind: 'verbo' },
+  '高かった': { m: 'era caro', g: 'Pasado de 高い: 高い → 高かった.', kind: 'adjetivo い' },
+  'でも': { m: 'pero', g: 'Al empezar la frase.', kind: 'expresión' },
+  'おいしかった': { m: 'estaba rico', g: 'Pasado de おいしい.', kind: 'adjetivo い' },
+  'ゆうがた': { m: 'al atardecer', g: 'Va en kana porque 方 todavía no se enseña (llega en la 2.20).', kind: 'sustantivo' },
+  '雪': { m: 'nieve', kind: 'sustantivo' },
+  'が': { m: 'marca quién o qué hace algo', g: '雪がふりました: lo que cayó fue la nieve.', kind: 'partícula' },
+  'ふりました': { m: 'cayó (lluvia, nieve)', g: 'Pasado de ふります. Va en kana porque 降 todavía no se enseña.', kind: 'verbo' },
+  '家': { m: 'casa', kind: 'sustantivo' },
+  '窓': { m: 'ventana', kind: 'sustantivo' },
+  '白い': { m: 'blanco', kind: 'adjetivo い' },
+  'みました': { m: 'vi · miré', g: 'Pasado de みます. Va en kana porque 見 llega en la 2.12.', kind: 'verbo' },
+  '明日': { m: 'mañana (el día siguiente)', g: 'Se lee あした como palabra entera: no se separa por kanji.', kind: 'sustantivo' },
+  '休み': { m: 'día libre · descanso', kind: 'sustantivo' },
+  '行って': { m: 'ir (forma て)', g: '行きます en forma て es 行って.', kind: 'verbo' },
+  'もいいですか': { m: '¿puedo…?', g: 'Forma て + もいいですか: pedir permiso. Es la gramática de esta unidad.', kind: 'gramática' },
+  'ケン': { m: 'Ken', g: 'Un nombre, en katakana. Firma el correo.', kind: 'nombre' },
+};
+
+// ---------- Fichas ----------
+const segs = s => { const out = []; s.replace(/\[([^:\]]+):([^\]]+)\]|([^\[]+)/g, (_, k, r, t) => { out.push(k ? { k, r } : { t }); }); return out; };
+const plainOf = s => s.replace(/#.*$/, '').replace(/\[([^:\]]+):[^\]]+\]/g, '$1');
+const readOf = s => s.replace(/#.*$/, '').replace(/\[([^:\]]+):([^\]]+)\]/g, '$2');
+const keyOf = s => { const p = plainOf(s), h = s.match(/#\w+$/); return h ? p + h[0] : p; };
+const famWrap = (txt, on = true) => [...txt].map(c => on && FAMILY.has(c) ? `<span class="p11-fam">${c}</span>` : c).join('');
+// furigana: 'auto' (solo kanji no dominados) · 'all' (siempre, para la hoja de la palabra) · 'none'
+function tokHTML(s, mastered, mode = 'auto', fam = true) {
+  return segs(s.replace(/#\w+$/, '')).map(x => {
+    if (x.t) return famWrap(x.t, fam);
+    const need = mode === 'all' || (mode === 'auto' && [...x.k].some(c => !mastered.includes(c)));
+    return need ? `<ruby>${famWrap(x.k, fam)}<rt>${x.r}</rt></ruby>` : famWrap(x.k, fam);
+  }).join('');
+}
+// Una lectura → HTML. Cada ficha es un <span class="w"> tocable; las oraciones llevan data-s para el audio.
+function readingHTML(R, { mode = 'auto', on = null, sayOn = null } = {}) {
+  let sn = 0, wi = 0;
+  return R.lines.map((ln, li) => {
+    const toks = ln.split('|');
+    const html = toks.map(t => {
+      if (t.startsWith('^')) { const p = t.slice(1), s = sn; if ('。！？'.includes(p)) sn++; return `<span class="pu" data-s="${s}">${p}</span>`; }
+      if (D[keyOf(t)] === null) return `<span class="pu" data-s="${sn}">${t}</span>`;
+      const i = wi++;
+      return `<span class="w${on === i ? ' on' : ''}${sayOn === sn ? ' p11-say' : ''}" data-w="${i}" data-s="${sn}" data-t="${t}" role="button" tabindex="0">${tokHTML(t, R.mastered, mode)}</span>`;
+    }).join('');
+    if (!toks.some(t => '^。^！'.includes(t))) sn++; // saludo y firma cuentan como su propia frase
+    const cls = li === R.lines.length - 1 && R.lines.length > 1 && R.kind === 'mail' ? ' sign' : '';
+    return `<p class="p11-l${cls}" data-l="${li}">${html}</p>`;
+  }).join('');
+}
+// Oraciones en texto plano para la voz
+function sentences(R) {
+  const out = []; let cur = '';
+  R.lines.forEach(ln => {
+    const toks = ln.split('|'); let closed = false;
+    toks.forEach(t => { if (t.startsWith('^')) { const p = t.slice(1); cur += p; if ('。！？'.includes(p)) { out.push(cur); cur = ''; closed = true; } } else cur += readOf(t) === plainOf(t) ? plainOf(t) : plainOf(t); });
+    if (!toks.some(t => '^。^！'.includes(t)) && cur) { out.push(cur); cur = ''; }
+  });
+  return out;
+}
+const kanjiOf = R => [...new Set(R.lines.join('').replace(/\[([^:\]]+):[^\]]+\]/g, '$1').split('').filter(c => KRX.test(c)))];
+const unitsOf = R => [...new Set(kanjiOf(R).map(k => UNIT[k]).filter(Boolean))];
+const fgCount = R => kanjiOf(R).filter(k => !R.mastered.includes(k)).length;
+const famIn = R => kanjiOf(R).filter(k => FAMILY.has(k));
+const newWords = R => [...new Set(R.lines.join('|').split('|').filter(t => D[keyOf(t)]?.nw).map(plainOf))];
+
+// ---------- Voz japonesa (speechSynthesis ja-JP, como el motor del juego) ----------
+let jaVoice = null;
+const loadV = () => { try { jaVoice = speechSynthesis.getVoices().find(v => /^ja/i.test(v.lang)) || null; } catch {} };
+try { loadV(); speechSynthesis.onvoiceschanged = loadV; } catch {}
+function speak(text, rate = .9, tapped = false) {
+  try {
+    const u = new SpeechSynthesisUtterance(text); u.lang = 'ja-JP'; if (jaVoice) u.voice = jaVoice; u.rate = rate;
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+    if (!jaVoice && tapped) toast('Este navegador no tiene voz japonesa. En el juego, sin voz, el botón no aparece.');
+  } catch { if (tapped) toast('Este navegador no puede hablar.'); }
+}
+// Lee la lectura entera, frase por frase, y resalta la frase que suena
+let playing = null;
+function stopAll() { playing = null; try { speechSynthesis.cancel(); } catch {} $('#phone').querySelectorAll('.w.p11-say').forEach(x => x.classList.remove('p11-say')); }
+function playAll(R, root, rate, onEnd) {
+  stopAll();
+  if (!jaVoice) toast('Este navegador no tiene voz japonesa. En el juego, sin voz, el botón no aparece.');
+  const ss = sentences(R), token = {}; playing = token;
+  const mark = i => root.querySelectorAll('.w').forEach(x => x.classList.toggle('p11-say', +x.dataset.s === i));
+  ss.forEach((s, i) => {
+    try {
+      const u = new SpeechSynthesisUtterance(s); u.lang = 'ja-JP'; if (jaVoice) u.voice = jaVoice; u.rate = rate;
+      u.onstart = () => playing === token && mark(i);
+      u.onend = () => { if (playing === token && i === ss.length - 1) { mark(-1); playing = null; onEnd(); } };
+      speechSynthesis.speak(u);
+    } catch {}
+  });
+}
+function toast(msg) {
+  $('#phone .p11-toast')?.remove();
+  const t = document.createElement('div'); t.className = 'p11-toast'; t.textContent = msg; $('#phone').append(t);
+  setTimeout(() => t.remove(), 2800);
+}
+
+// Santuario de fondo (papel recortado, igual que en P-03)
+function worldSVG() {
+  return `<svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFB38A"/><stop offset=".45" stop-color="#FFD9A0"/><stop offset=".62" stop-color="#CFE6B0"/></linearGradient></defs>
+    <rect width="390" height="844" fill="url(#sky)"/><circle cx="300" cy="150" r="42" fill="#FFF3C4"/>
+    <path d="M-40 470 Q90 360 230 450 T470 430 V844 H-40z" fill="#93C47D"/><path d="M-40 540 Q140 450 300 520 T470 500 V844 H-40z" fill="#7DB36A"/>
+    <path d="M-40 620 Q170 560 470 610 V844 H-40z" fill="#9FD37F"/>
+    <g fill="#E8452C"><rect x="150" y="430" width="90" height="10" rx="4"/><rect x="160" y="448" width="70" height="6"/><rect x="166" y="440" width="8" height="70"/><rect x="216" y="440" width="8" height="70"/></g></svg>`;
+}
+const sheet = (head, body, foot = '') => `<div class="p11-world">${worldSVG()}</div>
+  <div class="p11-panel"><div class="pn-card"><div class="pn-head">${head}</div>${body}${foot}</div></div>`;
+const host = (txt, who = TRAINER) => `<div class="p11-host"><span class="art">${art(who)}</span><div class="p11-bub" id="bub"><span class="who">${who} · lee contigo</span><p>${txt}</p></div></div>`;
+function bub(v, txt) { const b = v.querySelector('#bub'); if (!b) return; b.querySelector('p').innerHTML = txt; b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); }
+
+// ======================================================================
+// 1 · Dónde se abre: la página de la unidad en el cuaderno
+// ======================================================================
+function cuaderno(v, st = 'ready') {
+  const R = READS.e2, done = st === 'lock' ? 1 : st === 'ready' ? 2 : 4;
+  const lvT = ['Presentación y palabras', 'Palabras en frases', 'Gramática', 'Escuchar y completar', 'Producción'];
+  const lv = (t, i) => {
+    const n = i + 1, s = n <= done ? 'done' : n === done + 1 ? 'cur' : 'lock';
+    return `<div class="p11-lv ${s}"><span class="p11-med">${s === 'done' ? ic('check') : n}</span>
+      <span><b>Nivel ${n} · ${t}</b><small>${s === 'done' ? '3 de 3 rondas' : s === 'cur' ? 'ronda 1 de 3' : '3 rondas · 15 ejercicios'}</small></span>
+      ${n === 2 ? `<span class="tag">${ic('book')}abre la lectura</span>` : '<span></span>'}</div>`;
+  };
+  const card = st === 'lock'
+    ? `<div class="p11-read lock"><div class="p11-rt"><span class="p11-mini mail"><i></i><i class="k"></i><i></i><i class="k"></i><i></i><i></i></span>
+        <div><span class="eb">${ic('lock')}Lectura de la unidad</span><b>${R.title}</b><small>${R.kindT} de ${R.lines.length} líneas para leer de corrido, con todo lo que ya sabes.</small></div></div>
+        <p class="p11-lockt">${ic('lock')}Se abre al terminar el nivel 2.</p></div>`
+    : st === 'ready'
+    ? `<div class="p11-read"><div class="p11-rt"><span class="p11-mini mail"><i></i><i class="k"></i><i></i><i class="k"></i><i></i><i></i></span>
+        <div><span class="eb">${ic2('mail')}Lectura de la unidad · nueva</span><b>${R.title}</b><small>${R.kindT} de Ken, de ${R.lines.length} líneas. Te la lee 日.</small></div></div>
+        <div class="p11-chips"><span class="p11-chip">${ic('kana')}${kanjiOf(R).length} kanji de ${unitsOf(R).length} unidades</span><span class="p11-chip nw">${ic('sparkle')}${newWords(R).length} palabra nueva</span><span class="p11-chip">${ic('ink')}+10 de tinta</span></div>
+        <button class="btn ok wide" data-go="e2">${ic('book')}Leer</button></div>`
+    : `<div class="p11-read done"><div class="p11-rt"><span class="p11-mini mail"><i></i><i class="k"></i><i></i><i class="k"></i><i></i><i></i></span>
+        <div><span class="eb">${ic('check')}Lectura de la unidad · leída</span><b>${R.title}</b><small>3 de 3 respuestas. Ya está en tu diario, en «Lecturas».</small></div></div>
+        <button class="btn ghost wide" data-go="e2:nofg">${ic('refresh')}Leer otra vez sin furigana</button></div>`;
+  v.innerHTML = sheet(`<span class="p11-hic">${ic('book')}</span><span class="pn-title">Cuaderno</span><button class="pn-x" aria-label="Cerrar">${ic('x')}</button>`,
+    `<div class="p11-units" role="tablist">${[['2.8', 'ok'], ['2.9', 'ok'], ['2.10', 'on'], ['2.11', 'lock']].map(([u, s]) => `<button class="p11-unit ${s === 'on' ? 'on' : ''}" role="tab" aria-selected="${s === 'on'}" data-unit="${u}">${s === 'ok' ? ic('check') : s === 'lock' ? ic('lock') : ''}${u}</button>`).join('')}</div>
+    <div class="pn-body view"><div>
+      <p class="eyebrow">Etapa 2 · Vida diaria</p>
+      <h2 class="p11-h">2.10 · Pedir permiso</h2>
+      <span class="p11-cando">Puedo pedir permiso y decir lo que no se puede.</span>
+      <button class="p11-card guide" data-toast="La guía de la unidad es la de P-03."><span class="art">${art('入')}</span><span><b>Guía de la unidad</b><small>Frases clave, gramática y kanji. Opcional.</small></span>${ic('right')}</button>
+      ${card}
+      <h4 class="p11-lvh4">Niveles <small>5 niveles · 3 rondas cada uno</small></h4>
+      <div class="p11-lvs">${lvT.map(lv).join('')}</div>
+    </div></div>`);
+  v.querySelectorAll('[data-unit]').forEach(b => b.onclick = () => b.dataset.unit !== '2.10' && toast('En la maqueta solo está la unidad 2.10.'));
+  v.querySelector('.pn-x').onclick = () => toast('Cierras la hoja y vuelves al santuario.');
+}
+
+// ======================================================================
+// 2 y 3 · La lectura (nota de la etapa 1 · correo de la etapa 2)
+// ======================================================================
+let fgOn = true;
+function reading(v, id, st = 'read') {
+  const R = READS[id];
+  if (st === 'nofg') fgOn = false;
+  const isMail = R.kind === 'mail';
+  const fam = famIn(R);
+  v.innerHTML = sheet(`<span class="p11-hic">${isMail ? ic2('mail') : ic2('note')}</span>
+      <span class="p11-ht"><small>Lectura · ${R.unit}</small><b>${R.title}</b></span>
+      <button class="p11-hb fg" id="fgBtn" aria-pressed="${fgOn}" aria-label="Furigana">あ</button>
+      <button class="p11-hb" aria-label="Cerrar" data-go="cuaderno">${ic('x')}</button>`,
+    `<div class="p11-body" id="rb">
+      ${host(st === 'say' ? 'Escucha y sigue la frase azul con los ojos.' : R.say)}
+      <div class="p11-chips"><span class="p11-chip">${isMail ? ic2('mail') : ic2('note')}${R.kindT} · ${R.lines.length} líneas</span><span class="p11-chip">${ic('kana')}${kanjiOf(R).length} kanji de ${unitsOf(R).length} unidades</span><span class="p11-chip fgc">${ic('eye')}furigana en ${fgCount(R)}</span></div>
+      <div class="p11-paper ${R.kind}">
+        ${isMail ? `<div class="p11-mail"><i>ケ</i><span><b>ケン</b><small>para たなかさん · sábado</small></span></div>` : ''}
+        <div class="p11-txt" id="txt">${readingHTML(R, { mode: 'auto', sayOn: st === 'say' ? 2 : null })}</div>
+      </div>
+      <div class="p11-legend"><span><i class="lf"></i>familia de 日 (${fam.join(' ')})</span><span><i class="lt"></i>toca una palabra</span></div>
+      <p class="p11-hint">${ic('bulb')}<span>Las palabras van pegadas, como en un texto real. Toca una para ver su lectura y qué significa.</span></p>
+    </div>`,
+    `<div class="p11-foot"><div class="p11-row"><button class="btn ghost${st === 'say' ? ' on' : ''}" id="play">${st === 'say' ? ic2('pause') + 'Pausa' : ic2('play') + 'Escuchar'}</button><button class="btn ghost" id="slow">${ic2('slow')}Lento</button></div>
+      <button class="btn ok wide" data-go="q:${id}">Terminé · Preguntas</button></div>`);
+  const txt = v.querySelector('#txt');
+  const fgBtn = v.querySelector('#fgBtn');
+  const applyFg = () => { document.body.classList.toggle('no-fg', !fgOn); fgBtn.setAttribute('aria-pressed', fgOn); $('#swFg').checked = fgOn; };
+  applyFg();
+  fgBtn.onclick = () => { fgOn = !fgOn; applyFg(); bub(v, fgOn ? 'Furigana encendida: solo sobre los kanji que todavía no dominas.' : 'Sin furigana. Si dudas, toca la palabra.'); };
+  // Tocar una palabra
+  const words = [...txt.querySelectorAll('.w')];
+  const open = i => wordSheet(v, R, words, i);
+  words.forEach((w, i) => { w.onclick = () => open(i); w.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(i); } }; });
+  // Escuchar
+  const play = v.querySelector('#play'), slow = v.querySelector('#slow');
+  const idle = () => { play.innerHTML = ic2('play') + 'Escuchar'; play.classList.remove('on'); slow.classList.remove('on'); };
+  const go = (rate, btn) => {
+    if (playing) { stopAll(); idle(); return; }
+    btn.classList.add('on'); if (btn === play) play.innerHTML = ic2('pause') + 'Pausa';
+    bub(v, 'Escucha y sigue la frase azul con los ojos.');
+    playAll(R, txt, rate, idle);
+  };
+  play.onclick = () => go(.9, play); slow.onclick = () => go(.6, slow);
+  if (st === 'word') open(id === 'e2' ? words.findIndex(w => plainOf(w.dataset.t) === '駅前') : words.findIndex(w => plainOf(w.dataset.t) === '三人'));
+  if (st === 'wordk') open(words.findIndex(w => plainOf(w.dataset.t) === (id === 'e2' ? '土曜日' : '七時')));
+  if (st === 'wordp') open(words.findIndex(w => keyOf(w.dataset.t) === (id === 'e2' ? 'もいいですか' : 'へ')));
+}
+
+// Hoja de la palabra tocada: lectura completa, significado, sus kanji (con su KANJŪ) y, si es nueva, de dónde sale
+function wordSheet(v, R, words, i) {
+  v.querySelector('.p11-sheet')?.remove();
+  words.forEach(w => w.classList.remove('on'));
+  const el = words[i]; if (!el) return;
+  el.classList.add('on');
+  const t = el.dataset.t, d = D[keyOf(t)] || { m: '', kind: '' }, ks = [...plainOf(t)].filter(c => KRX.test(c));
+  const kTile = k => {
+    const m = R.mastered.includes(k), f = FAMILY.has(k);
+    return `<span class="p11-k${f ? ' kf' : ''}">${KANJI[k] ? `<span class="art">${art(k)}</span>` : `<span class="p11-tile">${k}</span>`}
+      <b>${k}</b><small>${kMean(k)}${UNIT[k] ? ` · ${UNIT[k]}` : ''}</small><em class="${m ? 'ok' : 'fg'}">${m ? 'dominado' : 'con furigana'}</em></span>`;
+  };
+  const nw = d.nw ? `<div class="p11-new"><i>${ic('sparkle')}</i><span><b>Palabra nueva</b><small>No la viste antes, pero la puedes leer: ${d.nw.map(k => `${k} (${kMean(k)})`).join(' + ')} = ${plainOf(t)}.</small></span></div>` : '';
+  const s = document.createElement('div');
+  s.className = 'p11-sheet'; s.setAttribute('role', 'dialog'); s.setAttribute('aria-label', `Palabra ${plainOf(t)}`);
+  s.innerHTML = `<div class="p11-wh"><div><div class="p11-wk">${tokHTML(t, R.mastered, ks.length ? 'all' : 'none', false)}</div></div>
+      <button class="p11-hb" aria-label="Cerrar" id="wx">${ic('x')}</button></div>
+    <p class="p11-wm">${d.m}</p>${d.g ? `<p class="p11-wg"><span class="p11-chip">${d.kind}</span> ${d.g}</p>` : `<p class="p11-wg"><span class="p11-chip">${d.kind}</span></p>`}
+    ${nw}
+    ${ks.length ? `<div class="p11-ks">${ks.map(kTile).join('')}</div>` : ''}
+    <div class="p11-wnav"><button class="btn ghost" id="wp" aria-label="Palabra anterior" ${i === 0 ? 'disabled' : ''}>${ic('left')}</button>
+      <button class="btn ghost p11-ws" id="ws">${ic('sound')}Escuchar</button>
+      <button class="btn ghost" id="wn" aria-label="Palabra siguiente" ${i === words.length - 1 ? 'disabled' : ''}>${ic('right')}</button></div>`;
+  v.querySelector('.pn-card').append(s);
+  // La palabra tocada queda a la vista, arriba de la hoja
+  const body = v.querySelector('#rb');
+  if (body) {
+    body.style.paddingBottom = `${s.offsetHeight + 16}px`;
+    const top = el.getBoundingClientRect().top - body.getBoundingClientRect().top + body.scrollTop;
+    const free = body.clientHeight - s.offsetHeight + (v.querySelector('.p11-foot')?.offsetHeight || 0);
+    body.scrollTo({ top: Math.max(0, top - Math.max(48, free / 2 - 24)), behavior: document.body.classList.contains('rm') || matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  }
+  const fk = ks.filter(k => FAMILY.has(k) && k !== TRAINER);
+  if (ks.includes(TRAINER) && !fk.length) bub(v, `¡Ahí estoy yo, en ${plainOf(t)}!`);
+  else if (fk.length) { const r = KANJI[fk[0]]?.recipes?.[0]; bub(v, `${fk[0]} lleva mi 日 adentro${r ? ` (${r.join(' + ')})` : ''}. ¡Somos familia!`); }
+  else if (d.nw) bub(v, `¡${plainOf(t)}! No la conocías, pero ya sabes sus kanji.`);
+  s.querySelector('#wx').onclick = () => { s.remove(); el.classList.remove('on'); if (body) body.style.paddingBottom = ''; };
+  s.querySelector('#ws').onclick = () => speak(plainOf(t) === 'へ' ? 'え' : readOf(t), .85, true);
+  s.querySelector('#wp').onclick = () => wordSheet(v, R, words, i - 1);
+  s.querySelector('#wn').onclick = () => wordSheet(v, R, words, i + 1);
+}
+
+// ======================================================================
+// 4 · Preguntas de comprensión
+// ======================================================================
+let qAns = [];
+function questions(v, st = 'e2:0') {
+  const [id, n0] = st.split(':'), n = +n0 || 0, R = READS[id], Q = R.Q[n];
+  if (n === 0) qAns = [];
+  let sel = null, peek = false;
+  const render = () => {
+    v.innerHTML = sheet(`<span class="p11-hic">${ic('question')}</span><span class="p11-ht"><small>Lectura · ${R.unit}</small><b>Pregunta ${n + 1} de ${R.Q.length}</b></span>
+        <button class="p11-hb" aria-label="Cerrar" data-go="cuaderno">${ic('x')}</button>`,
+      `<div class="p11-body">
+        <div class="p11-qbar">${R.Q.map((_, i) => `<i class="${i < n ? (qAns[i] ? 'ok' : 'no') : i === n ? 'on' : ''}"></i>`).join('')}</div>
+        ${host(n === 0 ? '¿Lo entendiste? A ver… yo creo que sí.' : 'Otra más. Puedes mirar el texto cuando quieras.')}
+        <p class="p11-q">${Q.q}</p>
+        <div class="p11-opts">${Q.o.map((o, i) => `<button class="p11-opt${sel === i ? ' on' : ''}" data-o="${i}"><i>${'ABC'[i]}</i><span>${o}</span></button>`).join('')}</div>
+        <button class="p11-peek" id="peek" aria-expanded="${peek}">${ic('eye')}${peek ? 'Ocultar la lectura' : 'Ver la lectura'}${ic(peek ? 'minus' : 'plus')}</button>
+        ${peek ? `<div class="p11-peekbox"><div class="p11-txt">${readingHTML(R)}</div></div>` : ''}
+      </div>`,
+      `<div class="p11-foot"><button class="btn ok wide" id="check" ${sel === null ? 'disabled' : ''}>Comprobar</button></div>`);
+    v.querySelectorAll('[data-o]').forEach(b => b.onclick = () => { sel = +b.dataset.o; render(); });
+    v.querySelector('#peek').onclick = () => { peek = !peek; const sc = v.querySelector('.p11-body').scrollTop; render(); v.querySelector('.p11-body').scrollTop = sc; };
+    v.querySelector('#check').onclick = check;
+  };
+  const check = () => {
+    const ok = sel === Q.a; qAns[n] = ok;
+    v.querySelectorAll('[data-o]').forEach(b => { b.disabled = true; b.classList.toggle('right', +b.dataset.o === Q.a); });
+    if (!ok) v.querySelector(`[data-o="${sel}"]`).classList.add('wrong');
+    v.querySelector('.p11-foot').hidden = true;
+    bub(v, ok ? '¡Eso es!' : 'Casi. Mira lo que dice el texto.');
+    const line = { ...R, lines: [R.lines[Q.line]] };
+    const d = document.createElement('div');
+    d.className = `p11-res ${ok ? 'ok' : 'no'}`; d.setAttribute('role', 'status');
+    d.innerHTML = `<div class="p11-rh"><i>${ic(ok ? 'check' : 'x')}</i><b>${ok ? '¡Bien!' : `Era «${Q.o[Q.a]}»`}</b></div>
+      <div class="p11-quote"><small>En la lectura, línea ${Q.line + 1}</small><div class="p11-txt">${readingHTML(line)}</div><p class="es">«${R.es[Q.line]}»</p></div>
+      <p class="p11-tip">${ic('bulb')}<span>${ok ? Q.ok : Q.tip[sel]}</span></p>
+      <button class="btn ok wide">${n + 1 < R.Q.length ? 'Siguiente' : 'Ver cómo te fue'}</button>`;
+    v.querySelector('.pn-card').append(d);
+    d.querySelector('.btn').onclick = () => n + 1 < R.Q.length ? show('q', `${id}:${n + 1}`) : show('end', id);
+  };
+  render();
+}
+
+// ======================================================================
+// 5 · Final de la lectura
+// ======================================================================
+function end(v, id = 'e2') {
+  const R = READS[id], got = qAns.length === R.Q.length ? qAns.filter(Boolean).length : R.Q.length, nw = newWords(R);
+  v.innerHTML = `<div class="p11-end">
+    <p class="eyebrow" style="color:var(--gold)">Lectura · ${R.unit}</p>
+    <span class="p11-endart art">${art(TRAINER)}</span>
+    <h2>¡Lo leíste de corrido!</h2>
+    <p>${R.kindT} entero en japonés real, con ${kanjiOf(R).length} kanji de ${unitsOf(R).length} unidades.</p>
+    <div class="p11-endc">
+      <div class="p11-er"><i>${ic('question')}</i><span><b>Comprensión</b><small>Las preguntas no restan: solo te muestran la línea.</small></span><em>${got} de ${R.Q.length}</em></div>
+      <div class="p11-er"><i>${ic('sparkle')}</i><span><b>Palabra nueva al diario</b><small>La leíste con kanji que ya conocías.</small></span><em class="jp">${nw.join(' · ')}</em></div>
+      <div class="p11-er"><i>${ic('kana')}</i><span><b>Kanji leídos</b><small>${kanjiOf(R).length - fgCount(R)} sin ayuda · ${fgCount(R)} con furigana</small></span><em>${kanjiOf(R).length}</em></div>
+      <div class="p11-er"><i>${ic('ink')}</i><span><b>Tinta</b><small>Solo la primera vez que la terminas.</small></span><em>+10</em></div>
+    </div>
+    <details class="p11-tr-d" style="margin-top:12px;text-align:left"><summary class="btn ghost wide" style="display:flex;align-items:center;justify-content:center;list-style:none;margin:0">${ic('eye')}Ver la traducción</summary>
+      <div class="p11-tr">${R.es.map(x => `<p>${x}</p>`).join('')}</div></details>
+    <div class="p11-acts"><button class="btn ok wide" data-go="cuaderno:done">Volver al cuaderno</button>
+      <button class="btn ghost wide" data-go="${id}:nofg">${ic('refresh')}Leer otra vez sin furigana</button></div>
+  </div>`;
+}
+
+// ======================================================================
+// 6 · Cómo crece la lectura por etapa
+// ======================================================================
+function ladder(v) {
+  const bars = (n, short = []) => Array.from({ length: n }, (_, i) => `<i class="${short.includes(i) ? 's' : ''}"></i>`).join('');
+  const rows = [
+    ['e1', 'Etapa 1 · Primeros pasos', 'Una nota o un mensaje', '2 a 4 líneas', bars(4, [0, 3]), 'Ver el ejemplo de la 1.10'],
+    ['e2', 'Etapa 2 · Vida diaria', 'Un diario o un correo', '5 a 10 líneas', bars(8, [0, 7]), 'Ver el ejemplo de la 2.10'],
+    [null, 'Etapa 3 · Ampliar el mundo', 'Un aviso o un blog', 'Un párrafo', bars(11, [10]), 'Llega con el contenido de la etapa 3'],
+    [null, 'Etapa 4 · Conversación cotidiana', 'Un cuento o una noticia sencilla', 'Una página corta', bars(16, [7, 15]), 'Llega con el contenido de la etapa 4'],
+  ];
+  v.innerHTML = sheet(`<span class="p11-hic">${ic('book')}</span><span class="pn-title">Diario · Lecturas</span><button class="pn-x" aria-label="Cerrar">${ic('x')}</button>`,
+    `<div class="pn-body view"><div>
+      ${host('Cada etapa, los textos se alargan. ¡Al final leemos un cuento entero!')}
+      <div class="p11-ladder">${rows.map(([id, s, k, l, b, go]) => `<button class="p11-st${id ? '' : ' soon'}" ${id ? `data-go="${id}"` : 'aria-disabled="true"'}>
+        <span class="p11-thumb">${b}</span><span><span class="eb">${s}</span><b>${k}</b><small>${l} · una por unidad</small><span class="go">${id ? ic('right') : ic('lock')}${go}</span></span></button>`).join('')}</div>
+      <p class="p11-hint">${ic('bulb')}<span>Cada lectura usa todos los kanji enseñados hasta ahí, no solo los de su unidad. Las que ya leíste quedan aquí para releerlas.</span></p>
+    </div></div>`);
+  v.querySelector('.pn-x').onclick = () => toast('Cierras la hoja y vuelves al santuario.');
+  v.querySelectorAll('.p11-st.soon').forEach(b => b.onclick = () => toast('Los textos de las etapas 3 y 4 llegan con su contenido.'));
+}
+
+// ======================================================================
+// Pestañas, estados y notas
+// ======================================================================
+const GENERAL = [
+  '<b>Íconos nuevos</b> para js/icons.js: reproducir, pausa, «lento» (el caracol de P-03), correo y nota.',
+  '<b>Nombre en el juego:</b> la maqueta dice «Lectura de la unidad». ¿Prefieres «Leer de corrido» u otro?',
+];
+const SCREENS = [
+  { id: 'cuaderno', label: '1 · Dónde se abre', fn: cuaderno, states: [['lock', 'Cerrada'], ['ready', 'Lista'], ['done', 'Leída']], notes: {
+    see: ['La lectura vive en la página de la unidad del cuaderno, como una tarjeta propia debajo de la guía: un papel con el tipo de texto (correo), su título, cuántos kanji usa y de cuántas unidades, la palabra nueva y la tinta.',
+      'Cerrada: se abre al terminar el nivel 2 (en la lista de niveles, el nivel 2 lo dice). Lista: «Leer». Leída: queda marcada en verde y se puede releer sin furigana.',
+      'Las lecturas leídas también quedan en el Diario, en «Lecturas» (pantalla 6), donde hoy viven las 18 lecturas en kana.'],
+    spec: '§12 «Una lectura por unidad» · §3 (niveles) · tarjeta «Guía» de P-03',
+    decide: ['<b>Cuándo se abre.</b> A: al terminar el nivel 2, cuando ya viste las palabras en frases (propuesta). B: al terminar el nivel 4, como cierre antes de la producción. C: desde el principio, como lectura de desafío.',
+      '<b>Dónde va.</b> A: tarjeta propia debajo de la guía (propuesta). B: un paso más dentro de la lista de niveles, entre el 4 y el 5.',
+      '<b>¿Es obligatoria?</b> Propuesta: no. No bloquea el nivel 5 ni el premio; da +10 de tinta la primera vez (READ_INK, como las lecturas del diario de hoy). Alternativa: pedirla para el combate de examen (dorado).'] } },
+  { id: 'e1', label: '2 · Etapa 1 · Nota', fn: (v, st) => reading(v, 'e1', st), states: [['read', 'Leer'], ['word', 'Palabra nueva 三人'], ['wordk', 'Familia: 七時'], ['wordp', 'Partícula へ']], notes: {
+    see: ['Unidad 1.10. Una nota de 4 líneas de la mamá a Yumi, en japonés real, con kanji y sin espacios: ゆみへ / 母は七時ごろ帰ります。/ ばんごはんは三人で食べます。/ おにぎりはつくえの上にあります。',
+      'Usa 8 kanji de 6 unidades (1.1, 1.3, 1.5, 1.7, 1.9 y 1.10), no solo los de la 1.10. Lo que no se enseñó va en kana: ばんごはん (晩) y つくえ (机).',
+      'Furigana solo sobre los 3 kanji que en este ejemplo aún no dominas (母, 帰, 上). El botón あ de arriba la apaga; el interruptor de la página hace lo mismo.',
+      'Palabra nueva: 三人 (さんにん). Nunca la viste junta, pero conoces 三 y 人.',
+      'Tu KANJŪ 日 te la presenta y su familia se resalta con un trazo de marcador: aquí, 時 (日 + 寺).'],
+    spec: '§12 (etapa 1: 2 a 4 líneas, una nota) · §12 «todos los kanji ya enseñados» · §12 «kanji en palabra nueva» · §5',
+    decide: [] } },
+  { id: 'e2', label: '3 · Etapa 2 · Correo', fn: (v, st) => reading(v, 'e2', st), states: [['read', 'Leer'], ['say', 'Escuchando'], ['word', 'Palabra nueva 駅前'], ['wordk', 'Familia: 土曜日'], ['wordp', 'Gramática もいいですか'], ['nofg', 'Sin furigana']], notes: {
+    see: ['Unidad 2.10. Un correo de Ken a Tanaka de 8 líneas (saludo, 6 líneas y firma): el sábado de lluvia, la cafetería frente a la estación con mamá, la nieve del atardecer y, al final, la gramática de la unidad: 行ってもいいですか.',
+      'Usa 22 kanji de 15 unidades, de la 1.1 a la 2.10. Lo que todavía no se enseñó va en kana: さむかった (寒), ゆうがた (方), ふりました (降) y みました (見 llega en la 2.12).',
+      'Furigana solo en los 5 kanji no dominados del ejemplo (駅, 入, 雪, 窓, 休). 明日 es una lectura de palabra entera (あした): su furigana va sobre las dos y se apaga solo si dominas los dos kanji.',
+      'Escuchar lee el texto entero con la voz japonesa del sistema (speechSynthesis ja-JP), frase por frase, y pinta de azul la frase que suena. «Lento» lo lee a 0,6. Sin voz japonesa, en el juego el botón no aparece.',
+      'La familia de 日 en este texto: 曜, 日, 時 y 明.'],
+    spec: '§12 (etapa 2: 5 a 10 líneas, un diario o un correo) · §12 «se puede escuchar entera» · §12 «el KANJŪ lee contigo» · §2b',
+    decide: ['<b>Furigana.</b> Propuesta: un interruptor de dos estados (según tu dominio / ninguna). ¿Hace falta un tercero, «en todos los kanji»? Propuesta: no, porque tocar la palabra ya muestra su lectura.',
+      '<b>Traducción.</b> Propuesta: no se muestra mientras lees; aparece en cada respuesta (la línea que importa) y al final, con «Ver la traducción».',
+      '<b>Audio.</b> Frase por frase con resaltado, no palabra por palabra: los eventos por palabra de speechSynthesis no son fiables en todos los teléfonos.'] } },
+  { id: 'word', label: '4 · Tocar una palabra', fn: (v, st) => reading(v, st === 'e1' ? 'e1' : 'e2', 'word'), states: [['e2', '駅前 (etapa 2)'], ['e1', '三人 (etapa 1)']], notes: {
+    see: ['Al tocar una palabra se resalta en el texto y sube una hoja: la palabra con furigana completa, su lectura, qué significa, una nota corta (por qué va en kana, de qué verbo viene) y sus kanji con su KANJŪ, su unidad y si ya lo dominas.',
+      'Si es una palabra nueva (駅前, 三人), una franja verde explica que la lees con kanji conocidos: 駅 (estación) + 前 (delante).',
+      'Los kanji que aún no son KANJŪ (帰, 雪, 窓) se muestran como ficha de tinta.',
+      'Las flechas ‹ › pasan a la palabra anterior o siguiente sin cerrar la hoja; «Escuchar» dice solo esa palabra.',
+      'Tu KANJŪ comenta cuando la palabra tiene kanji de su familia («曜 lleva mi 日 adentro») o es nueva.'],
+    spec: '§12 «Tocar una palabra muestra su lectura y su significado» · §12 «kanji en palabra nueva» · §2b.1 (los KANJŪ presentan)',
+    decide: ['<b>Toque.</b> Las partículas (は, が) miden menos de 44 px de ancho. Propuesta: línea alta (2,3) para que el toque tenga 44 px de alto, y las flechas ‹ › para ir palabra por palabra sin apuntar.',
+      '<b>Familia.</b> Propuesta: el KANJŪ y los kanji cuya receta lo contiene (recipes de js/data.js). ¿También los que lo contienen de forma indirecta (por ejemplo, a través de 明)?'] } },
+  { id: 'q', label: '5 · Preguntas', fn: questions, states: [['e2:0', 'Etapa 2 · 1 de 3'], ['e2:2', 'Etapa 2 · 3 de 3'], ['e1:0', 'Etapa 1 · 1 de 2']], notes: {
+    see: ['Al terminar, 2 o 3 preguntas en español con 3 opciones: 2 en la nota de la etapa 1 y 3 en el correo de la etapa 2.',
+      'El texto está a mano con «Ver la lectura»: se mide si lo entendiste, no si lo recuerdas.',
+      'Al comprobar, la línea del texto que responde la pregunta, con su traducción, y una pista para cada opción equivocada. La tercera pregunta del correo es sobre la gramática de la unidad (行ってもいいですか).'],
+    spec: '§12 «Al final, 2 o 3 preguntas de comprensión en español» · §6 (sin castigo)',
+    decide: ['<b>¿Cuántas preguntas?</b> Propuesta: 2 en la etapa 1 y 3 desde la etapa 2.',
+      '<b>¿Las preguntas cuentan?</b> Propuesta: no restan ni se repiten; la tinta llega igual al terminar. Alternativa: pedir todas bien para el +10 de tinta.'] } },
+  { id: 'end', label: '6 · Final', fn: end, states: [['e2', 'Etapa 2'], ['e1', 'Etapa 1']], notes: {
+    see: ['Cierre con tu KANJŪ: respuestas, la palabra nueva que pasa al diario, cuántos kanji leíste sin ayuda y la tinta (+10, solo la primera vez).',
+      '«Ver la traducción» abre el texto entero en español. «Leer otra vez sin furigana» vuelve a la lectura con la furigana apagada.'],
+    spec: '§12 · READ_INK y finishReading de js/lex.js (la tinta de las lecturas de hoy)',
+    decide: [] } },
+  { id: 'ladder', label: '7 · Largo por etapa', fn: ladder, notes: {
+    see: ['En el Diario, «Lecturas» ordena las lecturas por etapa y muestra cómo crecen: nota o mensaje (2 a 4 líneas), diario o correo (5 a 10), aviso o blog (un párrafo), cuento o noticia (una página corta).',
+      'Las etapas 1 y 2 abren sus ejemplos. Las etapas 3 y 4 se ven cerradas: sus textos llegan con su contenido (P-13 y siguientes); la maqueta no inventa japonés para ellas.'],
+    spec: '§12 «El largo crece con la etapa» · Diario (js/diary.js, pestaña Lecturas)',
+    decide: ['<b>Las 18 lecturas en kana de hoy</b> (READINGS en js/lang.js). Propuesta: se quedan como lecturas de la etapa 0, y las nuevas se suman por unidad. Alternativa: se reescriben al formato nuevo.'] } },
+];
+
+function nav(cur) {
+  $('#nav').innerHTML = SCREENS.map(s => `<button data-s="${s.id}" class="${s.id === cur ? 'on' : ''}">${s.label}</button>`).join('');
+  $('#nav').querySelectorAll('button').forEach(b => b.onclick = () => show(b.dataset.s));
+  $('#nav .on')?.scrollIntoView({ block: 'nearest', inline: 'center' });
+}
+function show(id, st) {
+  const S = SCREENS.find(s => s.id === id) || SCREENS[0];
+  st = st || S.states?.[0][0];
+  stopAll();
+  if (id === 'e1' || id === 'e2' || id === 'word') { if (st !== 'nofg') fgOn = $('#swFg').checked; }
+  nav(S.id);
+  $('#sub').innerHTML = S.states ? S.states.map(([k, l]) => `<button data-st="${k}" class="${k === st ? 'on' : ''}">${l}</button>`).join('') : '';
+  $('#sub').querySelectorAll('button').forEach(b => b.onclick = () => show(S.id, b.dataset.st));
+  S.fn($('#phone'), st);
+  const n = S.notes;
+  $('#notes').innerHTML = `<h2>Notas · ${S.label}</h2><h3>Qué ve el jugador</h3><ul>${n.see.map(x => `<li>${x}</li>`).join('')}</ul>
+    <p class="spec"><b>Cumple:</b> ${n.spec}</p>
+    ${n.decide.length ? `<div class="dec"><h3>Para decidir</h3><ul>${n.decide.map(x => `<li>${x}</li>`).join('')}</ul></div>` : ''}`;
+  try { history.replaceState(null, '', `?p=${S.id}${st ? `&s=${st}` : ''}`); } catch {}
+}
+
+const ALL = [...GENERAL.map(x => ['General', x]), ...SCREENS.flatMap(s => s.notes.decide.map(d => [s.label, d]))];
+$('#dec').innerHTML = `<summary>${ic('question')}Para decidir (${ALL.length})</summary><ol>${ALL.map(([l, d]) => `<li><b>${l}:</b> ${d}</li>`).join('')}</ol>`;
+
+$('#phone').addEventListener('click', e => {
+  const tst = e.target.closest('[data-toast]'); if (tst) { toast(tst.dataset.toast); return; }
+  const g = e.target.closest('[data-go]'); if (!g) return;
+  const [id, st] = g.dataset.go.split(/:(.*)/);
+  if (id === 'q') return show('q', `${st}:0`);
+  if (id === 'end') return show('end', st);
+  show(id, st || undefined);
+});
+const fg = $('#swFg'), rm = $('#swRm');
+fg.onchange = () => { fgOn = fg.checked; document.body.classList.toggle('no-fg', !fgOn); const b = $('#fgBtn'); if (b) b.setAttribute('aria-pressed', fgOn); };
+rm.onchange = () => document.body.classList.toggle('rm', rm.checked);
+
+const q = new URLSearchParams(location.search);
+show(q.get('p') || 'cuaderno', q.get('s') || undefined);
+</script>
+</body>
+</html>
