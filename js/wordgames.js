@@ -6,11 +6,41 @@ import { S } from './state.js';
 import { t } from './i18n.js';
 import { kanaUnits, kanaHTML, kanaHit, kanaMiss } from './help.js';
 import { speak, canSpeak } from './games.js';
-import { WORD, LEX, tr, wordHTML, jaHTML, jaTokens, jaPlain, phrasesOf, foundIds } from './lex.js';
+import { WORD, LEX, tr, wordHTML, jaHTML, jaTokens, jaPlain, phrasesOf } from './lex.js';
 import { tokenNotes, choiceNote, fixPanel } from './feedback.js';
+import { SECTIONS } from './curriculum.js';
 
 const shuffle = a => a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(v => v[1]);
 const IS_KANA = /[ぁ-ゖァ-ヺ]/;
+
+// ---------- Distractores plausibles (P-02, docs/PROGRESION.md §4) ----------
+// Nunca «perro / martes / rojo / ventana» mezclados: primero palabras del mismo tipo y de la misma unidad o de las
+// anteriores cercanas; las de unidades futuras pesan menos (todavía no se vieron) pero sirven si no hay otras.
+const SEC_OF = {};
+SECTIONS.forEach((s, i) => s.words.forEach(id => { SEC_OF[id] ??= i; }));
+export function nearWords(id, n = 3) {
+  const w = WORD[id], si = SEC_OF[id] ?? SECTIONS.length;
+  const score = x => {
+    const xi = SEC_OF[x.id];
+    return (x.kind === w.kind ? 0 : 10) + (xi == null ? 8 : xi <= si ? Math.min(si - xi, 6) : 4 + Math.min(xi - si, 6)) + Math.random() * 1.5;
+  };
+  const seen = new Set([tr(w)]), out = [];
+  for (const x of LEX.filter(x => x.id !== id).map(x => [score(x), x]).sort((a, b) => a[0] - b[0]).map(v => v[1])) {
+    const m = tr(x); if (!m || seen.has(m)) continue;
+    seen.add(m); out.push(x); if (out.length >= n) break;
+  }
+  return out;
+}
+// Fichas de más al armar una frase: 2 o 3 partículas que no van y 1 o 2 palabras de la unidad del mismo tipo
+const PARTS = ['は', 'が', 'を', 'に', 'の', 'も', 'で', 'へ', 'と'];
+export function extraTiles(toks) {
+  const answer = toks.map(x => x.tok);
+  const parts = shuffle(PARTS.filter(x => !answer.includes(x))).slice(0, 2 + (Math.random() < .5 ? 1 : 0)).map(tok => ({ tok, w: null }));
+  const inPhrase = new Set(toks.filter(x => x.w).map(x => x.w.id));
+  const base = shuffle(toks.filter(x => x.w))[0]?.w;
+  const words = base ? nearWords(base.id, 4).filter(x => !inPhrase.has(x.id) && !answer.includes(x.kana)).slice(0, 1 + (Math.random() < .5 ? 1 : 0)).map(x => ({ tok: x.kana, w: x })) : [];
+  return [...parts, ...words];
+}
 
 export const wordType = box => box <= 0 ? 'l2m' : box === 1 ? 'k2m' : box <= 3 ? 'build' : 'order';
 
@@ -47,8 +77,7 @@ export function wordExercise(id, body, done) {
 
   if (type === 'l2m' || type === 'k2m') {
     // Distractores: primero palabras ya halladas (lo que el jugador podría confundir de verdad)
-    const mine = shuffle(foundIds().filter(x => x !== id).map(x => WORD[x])), rest = shuffle(LEX.filter(x => x.id !== id && !S.lex[x.id]));
-    const correct = tr(w), opts = shuffle([correct, ...[...new Set([...mine, ...rest].map(tr))].filter(m => m !== correct).slice(0, 3)]);
+    const correct = tr(w), opts = shuffle([correct, ...nearWords(id, 3).map(tr)]);
     body.innerHTML = `${type === 'l2m'
       ? `<button class="speaker" aria-label="${t('dojo.listen')}">${ic('sound')}<span></span></button><p class="hint">${t('dojo.hearMeaning')}</p>`
       : `<div class="qw">${wordHTML(w)}</div><p class="hint">${t('dojo.meaning')}</p>`}
@@ -66,13 +95,13 @@ export function wordExercise(id, body, done) {
   // Armar: se ve el significado y se recupera la forma, ficha por ficha
   if (type === 'build') {
     answer = kanaUnits(w.kana);
-    const extra = shuffle([...new Set(LEX.filter(x => x.id !== id).flatMap(x => kanaUnits(x.kana)))].filter(u => IS_KANA.test(u) && !answer.includes(u))).slice(0, Math.min(4, Math.max(2, 6 - answer.length)));
+    const extra = shuffle([...new Set(LEX.filter(x => x.id !== id).flatMap(x => kanaUnits(x.kana)))].filter(u => IS_KANA.test(u) && !answer.includes(u))).slice(0, Math.min(5, Math.max(3, 7 - answer.length)));
     tiles = shuffle([...answer, ...extra]).map(u => ({ v: u, html: kanaHTML(u) }));
     prompt = `<p class="hint">${t('dojo.build')}</p><div class="qm">«${tr(w)}»</div>`;
   } else {
     const toks = jaTokens(phrase.ja, phrase.ids);
     answer = toks.map(x => x.tok);
-    tiles = shuffle(toks).map(x => ({ v: x.tok, html: x.w ? wordHTML(x.w, x.tok) : kanaHTML(x.tok, { particle: true }) }));
+    tiles = shuffle([...toks, ...extraTiles(toks)]).map(x => ({ v: x.tok, html: x.w ? wordHTML(x.w, x.tok) : kanaHTML(x.tok, { particle: true }) }));
     prompt = `<p class="hint">${t('dojo.order')}</p><div class="qm sm">«${tr(phrase)}»</div>`;
   }
   body.innerHTML = `${prompt}<div class="asm-row" aria-live="polite"></div>
