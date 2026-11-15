@@ -148,10 +148,12 @@ P-01 y P-02 se notan enseguida y no necesitan diseño nuevo: se pueden hacer pri
 
 Nicolás pidió el 14 de noviembre de 2026 «preparar todo» y avanzar. Para no frenar, se arranca con los valores propuestos en este documento: etapa → unidad → nivel → ronda; 3 rondas por nivel; saltar con hasta 3 errores; guía opcional; P-01 y P-02 primero. **Cada uno se puede cambiar** respondiendo en el pull request; están juntos en `js/curriculum.js` (`ROUNDS_PER_LEVEL`, `JUMP_ERRORS`) para que cambiarlos sea una línea.
 
-## Necesita tu decisión
+## Decisiones de Nicolás (15 de noviembre de 2026)
 
-1. ¿Los nombres quedan **etapa → unidad → nivel → ronda**, o prefieres otros?
-2. ¿**3 rondas por nivel** (15 por unidad) te parece bien, o prefieres menos rondas y más largas?
-3. ¿Saltar con **hasta 3 errores** de margen, o más estricto?
-4. ¿La guía de la unidad **opcional** (como Duolingo) u **obligatoria** la primera vez?
-5. ¿Empezamos por **P-01 y P-02**, que no necesitan diseño, mientras se prepara la propuesta visual P-03?
+Nicolás aprobó por chat todo lo propuesto hasta P-08b y pidió mergear los PR #41 a #48. Queda decidido:
+
+1. **Valores provisorios aprobados:** etapa → unidad → nivel → ronda; 3 rondas por nivel (15 por unidad); saltar con hasta 3 errores; guía de la unidad opcional.
+2. **Los límites de contenido se pueden superar** cuando sea razonable y siga métodos de enseñanza comprobados (Duolingo y manuales como Genki, Marugoto e Irodori). Esto vale para el tope de palabras por unidad y para el máximo de frases de viaje por situación. Para llegar a ~800 palabras (etapa 2) y ~1500 (etapas 3 y 4) se puede subir el tope por unidad o sumar unidades nuevas, con el mismo criterio.
+3. **Cobertura de frases de viaje (mínimo 30 %):** se mide solo sobre las palabras que no tienen frase propia en el currículo (lo que propuso el revisor en #46). La cobertura total del 70 % (frases de viaje, frases del currículo y diálogos) se mantiene.
+4. **Forma de diccionario y 〜のが 好き:** van en la unidad 2.12 con 1 o 2 frases de manual (p. ej. 「うた を うたう の が すき です」).
+5. **Tú y usted:** todo el texto del juego en español va con tú, también las frases viejas de 2.8 y el mesero de 2.9 («¿Qué vas a tomar?»), como pide la regla de idioma de `CLAUDE.md`.
