@@ -56,7 +56,7 @@ export function tokenNotes(given, answer) {
   // Las mismas fichas en otro orden
   if (!notes.length && given.length === answer.length && [...given].sort().join() === [...answer].sort().join()) {
     const last = answer[answer.length - 1];
-    notes.push(t(wordOf(last) || ['です', 'でした'].includes(last) ? 'fx.orderVerb' : 'fx.order'));
+    notes.push(t(wordOf(last) || ['です', 'でした', 'じゃありません', 'じゃありませんでした'].includes(last) ? 'fx.orderVerb' : 'fx.order'));
   }
   return { diff: d, notes };
 }

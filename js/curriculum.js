@@ -438,7 +438,7 @@ export const EXTRA = [
   { id: 'c_takakunai', ja: 'この くつ は たかくない です', ids: ['kono', 'kutsu', 'takai'], pat: 'adjneg', es: 'Estos zapatos no son caros.', en: 'These shoes are not expensive.' },
   { id: 'c_shizukajanai', ja: 'あの まち は しずか じゃない です', ids: ['ano', 'machi', 'shizuka'], pat: 'adjneg', es: 'Aquel pueblo no es tranquilo.', en: 'That town is not quiet.' },
   // 2.5: pasado de です en pregunta
-  { id: 'c_doudeshita', ja: 'しゅうまつ は どう でした か', ids: ['shuumatsu', 'dou'], pat: 'ka', es: '¿Qué tal tu fin de semana?', en: 'How was your weekend?' },
+  { id: 'c_doudeshita', ja: 'しゅうまつ は どう でした か', ids: ['shuumatsu', 'dou'], pat: 'ka', es: '¿Qué tal estuvo tu fin de semana?', en: 'How was your weekend?' },
   // 2.6: pasado de un adjetivo い
   { id: 'c_samukatta', ja: 'きのう は さむかった です', ids: ['kinou', 'samui'], pat: 'adjneg', es: 'Ayer hizo frío.', en: 'It was cold yesterday.' },
   // 2.7: な ante sustantivo y más negativos (junto con c_semai y c_demo, que pasan de 2.4 a 2.7)
@@ -456,7 +456,7 @@ export const EXTRA = [
   { id: 'c_itakatta', ja: 'きのう は あたま が いたかった です', ids: ['kinou', 'atama', 'itai'], pat: 'adjneg', es: 'Ayer me dolía la cabeza.', en: 'I had a headache yesterday.' },
   { id: 'c_yokunai', ja: 'おさけ は からだ に よくない です', ids: ['osake', 'karada', 'ii'], pat: 'adjneg', es: 'El alcohol no es bueno para el cuerpo.', en: 'Alcohol is not good for your body.' },
   // 3.4
-  { id: 'c_yokatta', ja: 'にほん の りょこう は よかった です', ids: ['nihon', 'ryokou', 'ii'], pat: 'adjneg', es: 'El viaje por Japón estuvo muy bien.', en: 'The trip to Japan was good.' },
+  { id: 'c_yokatta', ja: 'にほん の りょこう は よかった です', ids: ['nihon', 'ryokou', 'ii'], pat: 'adjneg', es: 'El viaje por Japón estuvo bien.', en: 'The trip to Japan was good.' },
 ];
 
 const T = (es, en) => ({ es, en });

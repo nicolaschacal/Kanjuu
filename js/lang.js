@@ -635,7 +635,7 @@ export const PATTERNS = [
   { id: 'arimasu', ja: 'X に Y が あります ・ います', es: 'en X hay Y (あります cosas, います seres vivos)', en: 'there is Y in X (あります things, います living beings)' },
   { id: 'mashita', ja: 'V ました', es: 'hice V (pasado)', en: 'I did V (past)' },
   // P-10 · Solo lo usan frases del currículo (EXTRA): cur: true lo saca del chequeo de frases de viaje.
-  { id: 'adjneg', cur: true, ja: 'A くない です ・ A かった です', es: 'no es A · era A. Adjetivos い: たかくない です (no es caro), たかかった です (era caro); いい cambia a よくない · よかった. Adjetivos な y sustantivos: しずか じゃない です (no es tranquilo), しずか でした (era tranquilo)', en: 'is not A · was A. い-adjectives: たかくない です, たかかった です; いい becomes よくない · よかった. な-adjectives and nouns: しずか じゃない です, しずか でした' },
+  { id: 'adjneg', cur: true, ja: 'A くない です ・ A かった です', es: 'no es A · era A. Adjetivos い: たかくない です (no es caro), たかかった です (era caro); いい cambia a よくない · よかった. Adjetivos な y sustantivos: しずか じゃない です o, más formal, しずか じゃありません (no es tranquilo), しずか でした (era tranquilo)', en: 'is not A · was A. い-adjectives: たかくない です, たかかった です; いい becomes よくない · よかった. な-adjectives and nouns: しずか じゃない です, しずか でした' },
 ];
 
 // Fichas que no son palabras de LEX: partículas, cópula y terminaciones de cortesía.
