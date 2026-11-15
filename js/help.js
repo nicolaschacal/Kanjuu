@@ -25,6 +25,11 @@ const RX = new RegExp(KEYS.join('|'), 'g');
 const SEL = '.tok i,.fab i,.rk-badge,.collect-pill i,.review-pill i,.rv i,.tabs i,.dk i,.act i,.shop-row>i,.gcard i,.chip,.pill,.ak,.rank span,.sheet h3,.sheet h4,.v-shop h4,.v-dex h4,.v-lab h4,.wallet,.goal i,.mast,.reads span,.bar label,.btn,.story-d summary,.new-tag,.cal-d b i,.ach i,.deco-row>i,.place-bar,.acad-btn';
 
 export const helpOn = () => S.help !== false;
+// Ayudas del nivel de la ronda (P-04, docs/PROGRESION.md §3): 0 fuera de una ronda (todo normal).
+// 1 furigana y romaji · 2 furigana, sin romaji · 3 y 4 la furigana se apaga en los kanji que ya dominas · 5 nada.
+let aid = 0;
+export const setAid = n => { aid = n || 0; };
+export const aidLevel = () => aid;
 // Íconos y glifos de navegación no llevan furigana: ya tienen su etiqueta y la ruby los desalinea
 // (los íconos SÍ llevan furigana; sólo se excluyen la respuesta de los desafíos y números flotantes)
 const NOFURI = 'rt,ruby,svg,.ck,.dmg,.dmg3d,.no-furi';
@@ -100,7 +105,7 @@ export const ALL_KANA = H + H.replace(/[ぁ-ゖ]/g, c => String.fromCharCode(c.c
 export function kanaSkip(texts) { texts.forEach(tx => kanaKeys(tx).forEach(c => S.kana[c] = Math.max(kanaSeen(c), KANA_OK))); }
 // Texto en kana con el romaji de cada unidad mientras haga falta. particle: は y へ sueltas son partículas (wa, e)
 export function kanaHTML(text, { particle = false } = {}) {
-  if (!helpOn()) return text;
+  if (!helpOn() || aid >= 2) return text;
   const us = kanaUnits(text), wa = /(こんにちは|こんばんは)$/.test(text);
   return us.map((u, i) => {
     if (!IS_KANA.test(u) || romajiOff(kanaKey(u))) return u;

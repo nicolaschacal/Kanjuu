@@ -4,7 +4,7 @@ import { artThumb } from './paper.js';
 import { KANJI, PIECES, kLevel, MAX_LV, gradeTag } from './data.js';
 import { creatureSVG } from './creature.js';
 import { S, save, mastery, expNeed } from './state.js';
-import { OBJS, STORE_COSTS, foot, storeFree, arrive, rankNeed, shownObjs, objCap, totalRate } from './world.js';
+import { OBJS, STORE_COSTS, STORE_BASE, STORE_STEP, foot, storeFree, arrive, rankNeed, shownObjs, objCap, totalRate } from './world.js';
 import { $, buzz, ui, go, hud, toast, owned, openMenu } from './main.js';
 import { openCreature } from './sheet.js';
 import { storedMenu, findIt, CONSUMABLES, storeTabNow, setStoreTab } from './sanctuary.js';
@@ -47,7 +47,7 @@ function bagTab(v) {
 const where = c => c.away ? ['旅', 'De viaje', 'trip'] : c.pos ? ['島', 'En la isla', 'isle'] : ['蔵', 'Almacén', 'store'];
 function kanTab(v) {
   const list = [...S.creatures].sort((a, b) => (!!b.pos - !!a.pos) || b.lv - a.lv);
-  const inStore = S.creatures.filter(c => !c.pos && !c.away).length, more = STORE_COSTS[(S.storeCap - 10) / 5];
+  const inStore = S.creatures.filter(c => !c.pos && !c.away).length, more = STORE_COSTS[Math.round((S.storeCap - STORE_BASE) / STORE_STEP)];
   v.innerHTML = `<div class="tr">
     <p class="eyebrow">Tu colección</p><h2 class="pn-h">Mis KANJŪ</h2>
     <p class="pn-lead">${list.length} compañeros · ${owned()}/${Object.keys(KANJI).length} kanji en el Atlas · almacén ${inStore}/${S.storeCap}</p>
@@ -55,15 +55,15 @@ function kanTab(v) {
     <div class="tr-grid">${list.map(c => { const [k, l, cls] = where(c);
       return `<button class="tr-card" data-c="${c.id}"><span class="tr-th ${c.gold ? 'gold' : ''}">${creatureSVG(c.k, { egg: c.egg, gold: c.gold, mood: c.mood })}${c.egg ? '' : gradeTag(c.k, 'gem')}</span>
         <span class="tr-t"><b>${c.egg ? 'Huevo' : `${c.k} ${KANJI[c.k].m}`}</b><small>${c.egg ? '¿?' : `Nv ${c.lv}/${MAX_LV}${c.lv >= MAX_LV ? ' MAX' : ''}${c.stars ? ' · ' + '★'.repeat(c.stars) : ''}`}</small><em class="loc ${cls}">${k} ${l}</em></span></button>`; }).join('')}</div>
-    ${more ? `<button class="btn ghost wide" id="moreStore">蔵 +5 lugares en el almacén · ${more} 墨</button>` : ''}</div>`;
+    ${more ? `<button class="btn ghost wide" id="moreStore">蔵 +${STORE_STEP} lugares en el almacén · ${more} 墨</button>` : ''}</div>`;
   v.querySelectorAll('[data-c]').forEach(b => b.onclick = () => {
     const c = findIt(b.dataset.c); buzz(6);
-    if (c.egg && c.pos) return toast('Toca el huevo en la isla 3 veces para que nazca');
+    if (c.egg && c.pos) return toast(t('egg.hint'));
     !c.pos && !c.away ? storedMenu(c, noop) : openCreature(c.id);
   });
   v.querySelectorAll('[data-gin]').forEach(b => b.onclick = () => { const g = S.gate.splice(+b.dataset.gin, 1)[0]; arrive(g.k, { gold: g.gold }); go(); });
   v.querySelectorAll('[data-gout]').forEach(b => b.onclick = () => { const g = S.gate.splice(+b.dataset.gout, 1)[0]; S.ink += 6 + kLevel(g.k) * 4; go(); });
-  $('#moreStore', v) && ($('#moreStore', v).onclick = () => { if (S.ink < more) return toast(`Te faltan ${more - S.ink} 墨`); S.ink -= more; S.storeCap += 5; buzz(12); go(); });
+  $('#moreStore', v) && ($('#moreStore', v).onclick = () => { if (S.ink < more) return toast(`Te faltan ${more - S.ink} 墨`); S.ink -= more; S.storeCap += STORE_STEP; buzz(12); go(); });
 }
 
 // ---------- Usuario: rango con barra de progreso, estadísticas y accesos ----------

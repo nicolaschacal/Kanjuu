@@ -56,7 +56,7 @@ export function tokenNotes(given, answer) {
   // Las mismas fichas en otro orden
   if (!notes.length && given.length === answer.length && [...given].sort().join() === [...answer].sort().join()) {
     const last = answer[answer.length - 1];
-    notes.push(t(wordOf(last) || ['です', 'でした'].includes(last) ? 'fx.orderVerb' : 'fx.order'));
+    notes.push(t(wordOf(last) || ['です', 'でした', 'じゃありません', 'じゃありませんでした'].includes(last) ? 'fx.orderVerb' : 'fx.order'));
   }
   return { diff: d, notes };
 }
@@ -73,7 +73,7 @@ export function choiceNote(chosen, { kanji = false } = {}) {
 export const replyMeaning = ids => ids.map(id => LEX.find(w => w.id === id)).filter(Boolean).map(w => `${w.kana} = ${tr(w)}`).join(' · ');
 
 // ---------- Panel ----------
-const rowHTML = (toks, cls, render) => `<div class="fx-row ${cls}">${toks.map(x => `<span class="fx-t${x.ok ? '' : ' x'}">${render(x.tok)}</span>`).join('')}</div>`;
+const rowHTML = (toks, cls, render) => `<div class="fx-row ${cls}">${toks.map(x => `<span class="fx-t${x.ok ? '' : ' bad'}">${render(x.tok)}</span>`).join('')}</div>`;
 // opts: { diff?, render?, notes, ask: { question, given, correct } } · al tocar «Entendido», onDone()
 export function fixPanel(body, { diff, render = esc, notes = [], extra = '', ask }, onDone) {
   const why = ask && aiOn();
@@ -86,8 +86,22 @@ export function fixPanel(body, { diff, render = esc, notes = [], extra = '', ask
     <div class="fx-ai" hidden></div>
     <div class="fx-acts">${why ? `<button class="btn ghost fx-why">${ic('sparkles')} ${t('fx.why')}</button>` : ''}<button class="btn ok fx-ok">${t('dojo.gotIt')}</button></div>`;
   body.append(box);
-  box.scrollIntoView?.({ block: 'nearest' });
-  box.querySelector('.fx-ok').onclick = () => onDone();
+  // La lección puede ser más alta que la pantalla: el área de abajo hace scroll y el botón queda a la vista
+  // Sin scrollIntoView: en Safari de iPhone mueve también la página de atrás de la capa fija y el toque queda
+  // corrido respecto de lo que se ve («Entendido» no respondía). Solo se desplaza el contenedor de la lección.
+  requestAnimationFrame(() => {
+    const sc = box.parentElement; if (!sc) return;
+    const over = box.offsetTop + box.offsetHeight + 12 - (sc.scrollTop + sc.clientHeight);
+    if (over > 0) sc.scrollTop += over;
+  });
+  // «Entendido» responde al click y también al levantar el dedo (Safari de iPhone a veces no manda el click),
+  // una sola vez y sin confundirse con un desplazamiento
+  const okBtn = box.querySelector('.fx-ok');
+  let fired = false, x0 = 0, y0 = 0;
+  const go = () => { if (fired) return; fired = true; okBtn.disabled = true; onDone(); };
+  okBtn.onclick = go;
+  okBtn.addEventListener('pointerdown', e => { x0 = e.clientX; y0 = e.clientY; });
+  okBtn.addEventListener('pointerup', e => { if (e.pointerType !== 'mouse' && Math.hypot(e.clientX - x0, e.clientY - y0) < 12) go(); });
   const w = box.querySelector('.fx-why');
   if (w) w.onclick = async () => {
     w.disabled = true; w.textContent = t('fx.thinking');

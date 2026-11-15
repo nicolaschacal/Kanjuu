@@ -5,7 +5,7 @@ import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
 import { GAMES, hasWord, hasParts, play, review, storyHTML, speak, okuHTML } from './games.js';
 import * as cloud from './cloud.js';
-import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn } from './help.js';
+import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn, setAid } from './help.js';
 import { openAcademy, acadDue, reviewAcademy, DAILY_GOAL } from './academy.js';
 import { openAISettings, aiStatus } from './ai.js';
 import { startTutorial, emit } from './tutorial.js';
@@ -17,8 +17,8 @@ import { PIECES, isPiece, TYPES, typeOf, gradeTag, SRS_HOURS } from './data.js';
 import { useTagHTML, anchorsHTML, bindAnchors } from './diary.js';
 import { t } from './i18n.js';
 import { tr } from './lex.js';
-import { curSection, roundsOf, runRound, endRound, passTest, ROUNDS, inkSVG, paintedOf, strokesOf, prizeState, wakeBox, PRIZE_INK } from './round.js';
-import { sectionById } from './curriculum.js';
+import { curSection, runRound, endRound, passTest, inkSVG, paintedOf, strokesOf, prizeState, wakeBox, PRIZE_INK } from './round.js';
+import { sectionById, ROUNDS_PER_LEVEL } from './curriculum.js';
 import { WORD, wordHTML } from './lex.js';
 import { bookCardHTML, openBook } from './book.js';
 import { aiCardHTML, bindAICard } from './aiplay.js';
@@ -61,10 +61,10 @@ export function openCreature(id) {
 
   $('#bookCard', m) && ($('#bookCard', m).onclick = () => { buzz(5); openBook(modal, c); });
   bindAICard(m, c, () => { go(); openCreature(c.id); });
-  $('#pet', m).onclick = e => {
-    c.mood = Math.min(1, c.mood + .12); c.bond++; bump('pet'); giveExp(c, 1); emit('pet');
-    floatText(e.currentTarget, '♥', 'heart'); buzz(6);
-    const a = $('#pet', m); a.classList.remove('squish'); void a.offsetWidth; a.classList.add('squish'); hud();
+  $('#pet', m).onclick = async () => {
+    buzz(6);
+    if (!await petChallenge(c)) return;
+    const a = $('#pet', m); floatText(a, '♥', 'heart'); a.classList.remove('squish'); void a.offsetWidth; a.classList.add('squish'); hud();
   };
   $('#snack', m).onclick = () => { S.ink -= 5; c.mood = 1; c.bond += 3; const up = giveExp(c, 8); m.close(); toast(`${c.k} disfrutó el mochi ${up ? '· ¡Subió de nivel!' : ''}`); go(); setTimeout(() => openCreature(id), 260); };
   $('#train', m).onclick = () => openTraining(c, m);
@@ -78,7 +78,7 @@ export function openCreature(id) {
   if (S.items.scroll) $('#scroll', m).onclick = () => { S.items.scroll--; const up = giveExp(c, 60); m.close(); go(); toast(`${c.k} absorbió el pergamino${up ? ` · ¡Nivel ${c.lv}!` : ''}`); setTimeout(() => openCreature(id), 260); };
   $('#reborn', m).onclick = () => {
     if (!confirm(`${c.k} volverá a ser un huevo de su raíz y ganará +25% EXP para siempre. ¿Renacer?`)) return;
-    rebirth(c); m.close(); ui.tab = 'home'; go(); toast('Un huevo apareció en el santuario. Tócalo 3 veces.');
+    rebirth(c); m.close(); ui.tab = 'home'; go(); toast(t('egg.reborn'));
   };
   m.querySelectorAll('[data-evo]').forEach(b => b.onclick = () => { m.close(); evolveFX(c, b.dataset.evo); });
   m.querySelectorAll('[data-eq]').forEach(b => b.onclick = () => {
@@ -104,12 +104,25 @@ export function evoCard(c, t) {
     <span class="evo-q">${q(c.lv >= need, `Nv ${need}`)}${q(learned, `知 ${Math.min(mastery(c.k), gate)}/${gate}`)}${missing.length ? q(false, `Conoce ${missing.join(' ')}`) : ''}${piece ? q(pieceOk, `Pieza ${piece}`) : ''}</span></div>
   </button>`;
 }
+// Mimar (pedido de Nicolás): en vez de un toque, un desafío corto de su kanji. Se turnan dibujarlo (Trazo),
+// sus lecturas y armarlo con sus piezas (si tiene receta). Si lo superas, se pone feliz como antes.
+export async function petChallenge(c) {
+  const types = ['trace', 'bubbles', 'parts'].filter(g => (g !== 'trace' || STROKES[c.k]?.length) && (g !== 'parts' || hasParts(c.k)));
+  const g = types[(c.petN || 0) % types.length]; c.petN = (c.petN || 0) + 1;
+  const stars = await play(g, c.k, mastery(c.k), $('#layer'));
+  if (stars < 0) return false;
+  if (stars === 0) { toast(t('pet.again', { k: c.k })); save(); return false; }
+  c.mood = Math.min(1, c.mood + .12); c.bond = (c.bond || 0) + 1; bump('pet'); giveExp(c, 1); emit('pet'); save();
+  toast(t('pet.done', { k: c.k }));
+  return true;
+}
 // Entrenar: abre directo la lección de la sección actual (docs/CURRICULO.md). Los juegos del kanji quedan
 // dentro de la lección (2 ejercicios) y como práctica libre desde el resultado (openPractice).
 export async function openTraining(c, parent) {
   const sec = curSection(), before = paintedOf(sec.id);
   parent.close();
   const res = await runRound(c, $('#layer'));
+  setAid(0); // por si la ronda se cerró por otro camino: las ayudas del nivel no siguen fuera
   if (!res) return go();
   if (res.skipTest) return skipTest(c, sec);
   const r = endRound(sec.id, res.right, res.total);
@@ -124,7 +137,8 @@ export async function openTraining(c, parent) {
   S.ink += ink; c.know += res.kanjiOk ? 1 : 0; emit('train');
   c.mood = Math.max(0, c.mood - .05); S.stats.trainings++; bump('train'); save();
   const msg = r.completed ? t('round.complete', { title: tr(sec.title) }) + (r.next ? ' ' + t('round.next', { title: tr(r.next.title) }) : '')
-    : r.counted ? t('round.counted', { n: r.rounds, total: ROUNDS }) : t('round.notCounted');
+    : r.levelUp ? t('round.levelDone', { l: r.level, next: r.level + 1 }) + (painted > before ? ' ' + t('round.levelInk') : '')
+    : r.counted ? t('round.counted', { n: r.rounds, total: ROUNDS_PER_LEVEL, l: r.level }) : t('round.notCounted');
   const out = modal(`<div class="result"><div class="res-art">${creatureSVG(c.k, { mood: r.counted ? 1 : .5 })}</div>
     <p><b>${res.right}/${res.total}</b> · +${Math.round(exp * (1 + c.gen * .25))} EXP · +${ink} 墨${ups ? ` · <b class="g">${t('round.levelUp', { lv: c.lv })}</b>` : ''}</p>
     <p class="${r.counted ? 'g' : 'muted'}">${msg}</p>${prizeHTML}

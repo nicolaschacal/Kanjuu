@@ -11,7 +11,7 @@ import { openAISettings, aiStatus } from './ai.js';
 import { startTutorial, emit } from './tutorial.js';
 import { ISLANDS, island, buyIsland, objCap, shownObjs, harmony, harmonyMult, monCap, shownMons, monFits, slot, syncGrid, COLS, BASE_ROWS, ROW_COSTS, ROW_RANK, STORE_COSTS, OBJS, OBJ_MAX, upCost, objCost, foot, placed, tilesUsed, tilesTotal, fits, findSpot, settle, stored, storeFree, arrive, newObj, has, bellBonus, tripMult, neighbors, expBonus, calm, rate, pending, full, collect as gather, totalPending, totalRate, rankNeed, addXP, LOGIN, loginReady, claimLogin, PULL, PULL10, PITY, GOLD_RATE, pull, dupesOf, awaken, initWorld, CATS, objEff, GROUNDS, paintTile, raiseTile, rampTile, cascadeTile, raining } from './world.js';
 import { $, buzz, home, owned, ui, go, hud, toast, modal, floatText, covered } from './main.js';
-import { openCreature } from './sheet.js';
+import { openCreature, petChallenge } from './sheet.js';
 import { allDue, openDojo, acadCtx } from './dojo.js';
 import { openDiary } from './diary.js';
 import { pathReady } from './path.js';
@@ -19,6 +19,8 @@ import { artThumb } from './paper.js';
 import { webgl, mountScene, emoteAt, hopAll, poke, setFocus, rotateCam, zoomCam, tileAtScreen, flashTile } from './scene3d.js';
 import { openTraining } from './sheet.js';
 import { TYPES, typeOf, gradeTag } from './data.js';
+import { STROKES } from './strokes.js';
+import { t } from './i18n.js';
 
 // ---------- Santuario (grilla de tiles) ----------
 let idleT, build = false, placing = null, seenGoal = '', focusId = null, tool = 'move';
@@ -286,13 +288,31 @@ function bindFocus(stg, c) {
   $('#fcX', stg).onclick = () => { focusId = null; setFocus(null); go(); };
   $('#fcTrain', stg).onclick = () => openTraining(c, { close() {} });
   $('#fcSheet', stg).onclick = () => openCreature(c.id);
-  $('#fcPet', stg).onclick = () => {
-    c.mood = Math.min(1, c.mood + .12); c.bond = (c.bond || 0) + 1; bump('pet'); giveExp(c, 1); emit('pet');
-    poke(c.id); emoteAt(c.id, '♥'); buzz(6); save();
-    stg.querySelector('.fc-bars .b i').style.width = c.mood * 100 + '%';
+  $('#fcPet', stg).onclick = async () => {
+    buzz(6);
+    if (!await petChallenge(c)) return;
+    poke(c.id); emoteAt(c.id, '♥');
+    const bar = stg.querySelector('.fc-bars .b i'); if (bar) bar.style.width = c.mood * 100 + '%';
   };
 }
 export const unfocus = () => { if (focusId) { focusId = null; setFocus(null); } };
+// Eclosión (pedido de Nicolás): el huevo se agrieta cada vez que dibujas bien su kanji; nace a la 3.ª.
+// La guía se va retirando: con demostración, con guía, sin guía. Kanji sin trazos de KanjiVG: se toca como antes.
+export const EGG_CRACKS = 3;
+let hatching = false;
+export async function crackEgg(it, onCrack, onHatch) {
+  if (hatching) return;
+  const n = it.cracks || 0;
+  if (STROKES[it.k]?.length) {
+    hatching = true;
+    const stars = await play('trace', it.k, [0, 1, 3][n] ?? 3, $('#layer')).finally(() => { hatching = false; });
+    if (stars < 0) return;                        // cerró el dibujo: el huevo queda igual
+    if (stars === 0) return toast(t('egg.again'));
+  }
+  it.cracks = n + 1;
+  if (it.cracks >= EGG_CRACKS) { delete it.egg; delete it.cracks; save(); return onHatch(); }
+  save(); onCrack(it.cracks);
+}
 function tap3d(id) {
   const it = findIt(id);
   if (!it) { if (focusId) { focusId = null; setFocus(null); go(); } return; }
@@ -300,12 +320,7 @@ function tap3d(id) {
   if (build) { if (it.away) return toast(`${it.k} está de viaje`); if (sel === id) sel = null; else pick(id); return go(); }
   if (it.t) return toast(`${OBJS[it.t].k} ${OBJS[it.t].name} Nv${it.lv} · ${OBJS[it.t].desc}`);
   if (it.away) return toast(`${it.k} está de viaje`);
-  if (it.egg) {
-    it.cracks = (it.cracks || 0) + 1;
-    if (it.cracks >= 3) { delete it.egg; delete it.cracks; save(); setTimeout(() => { go(); hatched(it); }, 350); }
-    else { emoteAt(id, it.cracks === 1 ? '…' : '！！'); save(); }
-    return;
-  }
+  if (it.egg) return crackEgg(it, n => { emoteAt(id, n === 1 ? '…' : '！！'); toast(t('egg.crack', { n, total: EGG_CRACKS })); }, () => setTimeout(() => { go(); hatched(it); }, 350));
   focusId = it.id; setFocus(it.id); emit('sheet'); go();
 }
 function dockHTML(pend) {
@@ -415,11 +430,7 @@ export function tapItem(id, el, e) {
   if (it.t) return toast(`${OBJS[it.t].k} ${OBJS[it.t].name} Nv${it.lv} · ${OBJS[it.t].desc}`);
   if (it.away) return toast(`${it.k} está de viaje`);
   el.classList.remove('squish'); void el.offsetWidth; el.classList.add('squish');
-  if (it.egg) {
-    it.cracks = (it.cracks || 0) + 1;
-    if (it.cracks >= 3) { delete it.egg; delete it.cracks; el.classList.add('hatch'); setTimeout(() => { go(); hatched(it); }, 600); }
-    else emote(el, it.cracks === 1 ? '…' : '！！'); save(); return;
-  }
+  if (it.egg) return crackEgg(it, n => { emote(el, n === 1 ? '…' : '！！'); toast(t('egg.crack', { n, total: EGG_CRACKS })); }, () => { el.classList.add('hatch'); setTimeout(() => { go(); hatched(it); }, 600); });
   setTimeout(() => openCreature(it.id), 160);
 }
 export function hatched(c) {
@@ -480,7 +491,7 @@ export function storedMenu(it, parent) {
   const why = !capOk ? (isObj ? `La isla ya tiene ${objCap()} objetos. Guarda uno o amplía la isla.` : `Ocupa ${slot(it)} ${slot(it) === 1 ? 'plaza' : 'plazas'} y en la isla quedan ${free} de ${monCap()}. Guarda uno o amplía la isla.`)
     : spot ? '' : 'No hay lugar libre de ese tamaño. Amplía la isla o guarda algo.';
   const m = modal(`<h3>${isObj ? `${OBJS[it.t].k} ${OBJS[it.t].name}` : egg ? '卵 Huevo misterioso' : `${it.k} · ${KANJI[it.k].m}`}</h3>
-    ${egg ? '<p class="muted">Colócalo en la isla y tócalo 3 veces para que nazca.</p>' : isObj ? '' : `<p class="muted">${gradeTag(it.k)} · ocupa ${slot(it)} ${slot(it) === 1 ? 'plaza' : 'plazas'} (${monCap() - shownMons()} libres)</p>`}
+    ${egg ? `<p class="muted">${t('egg.place')}</p>` : isObj ? '' : `<p class="muted">${gradeTag(it.k)} · ocupa ${slot(it)} ${slot(it) === 1 ? 'plaza' : 'plazas'} (${monCap() - shownMons()} libres)</p>`}
     <div class="menu-acts">
     <button class="btn ok" id="put" ${spot && capOk ? '' : 'disabled'}>✥ Colocar en la isla</button>
     ${isObj ? `<button class="btn ghost" id="sell">Vender · +${sellValue(it)} 墨</button>` : egg ? '' : `<button class="btn ghost" id="see">Ver ficha</button><button class="btn ghost" id="free" ${S.creatures.filter(c => !c.egg).length <= 1 ? 'disabled' : ''}>放 Liberar</button>`}</div>
@@ -504,7 +515,7 @@ export function rankUp(ups) {
 export function goalHTML() {
   const cs = S.creatures.filter(c => !c.egg);
   let g;
-  if (S.creatures.some(c => c.egg)) g = 'Toca el huevo 3 veces para que nazca';
+  if (S.creatures.some(c => c.egg)) g = t('egg.hint');
   else if (!Object.keys(S.lex).length) g = t('guide.firstWord');
   else if (pathReady()) g = t('guide.pathReady');
   else if (totalPending() >= 20) g = `Tus KANJŪ produjeron ${totalPending()} 墨 · toca 収 para recoger`;

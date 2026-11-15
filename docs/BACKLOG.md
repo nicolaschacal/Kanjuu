@@ -98,6 +98,62 @@ Pedido por Nicolás el 9 de noviembre de 2026. Especificación completa en **doc
 
 ---
 
+## Bloque P · Progresión real del aprendizaje *(va primero: pedido por Nicolás el 14 de noviembre de 2026)*
+Especificación completa en **docs/PROGRESION.md**: el modelo de Duolingo para el idioma y el de componentes → kanji → vocabulario para los kanji, con los KANJŪ al centro. Se hace en este orden; cada tarea es un pull request.
+
+### P-01 · Kanji desde que se enseñan
+- Una palabra se escribe con kanji cuando su kanji ya se enseñó en una unidad cursada (o está en `S.srs`), no solo si el jugador tiene la criatura
+- Las frases del entrenamiento se muestran en japonés real con furigana
+
+**Aceptación:** en la 3.2, いぬ se ve como 犬 con furigana aunque no tengas al KANJŪ 犬; en la 1.1, 犬 sigue en kana.
+
+### P-02 · Primer intento cuenta y distractores plausibles
+- La ronda cuenta con 80 % de aciertos al primer intento; el ejercicio fallado vuelve, pero no suma
+- Distractores del mismo tipo de palabra y de la unidad o las anteriores; 3 a 5 fichas de más plausibles al armar frases
+
+**Aceptación:** una ronda con 3 errores no cuenta; las opciones de «perro» son otros sustantivos de animales o de la unidad.
+
+### P-03 · Propuesta: ejercicios nuevos, presentación del KANJŪ, guía y «Saltar aquí» *(diseño)*
+- Maqueta en `docs/propuestas/P-03-progresion.html`: presentación de un KANJŪ (dibujo, componentes, lectura), emparejar pares, japonés → español, escuchar y armar, hueco, teclado kana, kanji parecido, guía de la unidad, mapa de niveles en el cuaderno y prueba para saltar
+- Solo propuesta: no toca el juego
+
+**Aceptación:** maqueta navegable en el teléfono; Nicolás la aprueba o la rechaza.
+
+### P-04 · Niveles dentro de la unidad
+- 5 niveles × 3 rondas por unidad, con la dificultad de docs/PROGRESION.md §3; la tinta se pinta por nivel; guardado compatible
+
+**Aceptación:** una partida vieja carga en su unidad, nivel 1, con lo pintado intacto.
+
+### P-05 · Ejercicios nuevos *(después de aprobar P-03)*
+### P-06 · Presentación del KANJŪ, guía de la unidad y pruebas para saltar *(después de aprobar P-03)*
+### P-07 · Contenido: etapa 1 completa (~250 palabras, ~40 kanji)
+### P-08 · Contenido: etapa 2 hasta el N5 (~800 palabras)
+### P-09 · Contenido: etapas 3 y 4 hasta el N4 (~1500 palabras)
+Cada tarea de contenido: frases de manual (Genki, Marugoto, Irodori), kanji ordenados según sus recetas (componentes antes), `tools/check_curriculo.mjs` sin errores.
+
+*Agregado el 15 de noviembre de 2026, con las decisiones de Nicolás (docs/PROGRESION.md §11 a §14):*
+
+### P-08c · P-08d · P-08e · Etapa 2, unidades nuevas 2.13 a 2.30 *(después de aprobar el mapa §13)*
+- 6 unidades por PR, cada una con 18–20 palabras, 12–15 frases, diálogo, rivales y premio, según el mapa de docs/PROGRESION.md §13
+
+**Aceptación:** la etapa 2 llega a ~800 palabras acumuladas; `tools/check_curriculo.mjs` sin errores; una partida vieja carga en su unidad.
+
+### P-10 · Pasado y negativo de los adjetivos い y な, y de です *(decidido por Nicolás)*
+- Formas 〜くない, 〜かった, 〜くなかった, 〜くて; じゃない, じゃありません y でした como fichas; frases nuevas
+
+**Aceptación:** en la 2.4 se arma 「この くつ は たかくない です」 y se ve 高くない con furigana.
+
+### P-11 · Propuesta: leer de corrido *(diseño)*
+- Maqueta en `docs/propuestas/P-11-lectura.html`: lectura por unidad sin espacios, furigana solo en kanji no dominados, tocar una palabra, audio y preguntas de comprensión (§12)
+
+**Aceptación:** maqueta navegable en el teléfono; Nicolás la aprueba o la rechaza.
+
+### P-12 · Lectura por unidad *(después de aprobar P-11)*
+### P-13 · Lecturas de las etapas 1 y 2 *(después de P-12)*
+### P-14 · Forma ない y forma た corta en el motor
+
+---
+
 ## Bloque A · Aprendizaje en el entrenamiento *(va primero: decidido por Nicolás el 13 de noviembre de 2026)*
 Pedido por Nicolás el 13 de noviembre de 2026: la Academia desaparece y el japonés se aprende en la pestaña Entrenar de cada KANJŪ, por etapas y secciones. Especificación completa en **docs/CURRICULO.md**. Reemplaza a los sprints 4 y 5 tentativos (Academia en dos idiomas y contenido nuevo de la Academia). Se hace **antes** del Sprint 2 (estados y clima), que se corre una vez terminado el bloque.
 
