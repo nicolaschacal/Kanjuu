@@ -260,7 +260,7 @@ export const LEX = [
   { id: 'midori', kana: 'みどり', kanji: '緑', es: 'verde', en: 'green', sit: 'spring', kind: 'n' },
   // Etapa 2 del currículo (P-08b)
   { id: 'menyuu', kana: 'メニュー', kanji: null, es: 'menú · carta', en: 'menu', sit: 'spring', kind: 'n' },
-  { id: 'teishoku', kana: 'ていしょく', kanji: '定食', es: 'menú del día (plato con arroz, sopa y guarnición)', en: 'set meal', sit: 'spring', kind: 'n' },
+  { id: 'teishoku', kana: 'ていしょく', kanji: '定食', es: 'menú completo (arroz, sopa y guarniciones)', en: 'set meal', sit: 'spring', kind: 'n' },
   { id: 'misoshiru', kana: 'みそしる', kanji: '味噌汁', es: 'sopa de miso', en: 'miso soup', sit: 'spring', kind: 'n' },
   { id: 'ohashi', kana: 'おはし', kanji: 'お箸', es: 'palillos (para comer)', en: 'chopsticks', sit: 'spring', kind: 'n' },
   { id: 'supuun', kana: 'スプーン', kanji: null, es: 'cuchara', en: 'spoon', sit: 'spring', kind: 'n' },
@@ -268,7 +268,7 @@ export const LEX = [
   { id: 'okawari', kana: 'おかわり', kanji: 'お代わり', es: 'otra porción (del mismo plato o bebida)', en: 'second helping · refill', sit: 'spring', kind: 'n' },
   { id: 'ikaga', kana: 'いかが', kanji: null, es: 'qué tal (cortés): 〜は いかが です か = ¿quieres…?', en: 'how about (polite): 〜は いかが です か = would you like…?', sit: 'spring', kind: 'q' },
   { id: 'kashikomarimashita', kana: 'かしこまりました', kanji: null, es: 'entendido · enseguida (lo dice quien atiende)', en: 'certainly (said by staff)', sit: 'spring', kind: 'expr' },
-  { id: 'kekkou', kana: 'けっこう', kanji: '結構', es: 'no, gracias (いいえ、けっこう です)', en: 'no, thank you (いいえ、けっこう です)', sit: 'spring', kind: 'expr' },
+  { id: 'kekkou', kana: 'けっこう', kanji: '結構', es: 'bien · suficiente (いいえ、けっこう です = no, gracias)', en: 'fine · enough (いいえ、けっこう です = no, thank you)', sit: 'spring', kind: 'expr' },
   { id: 'okaikei', kana: 'おかいけい', kanji: 'お会計', es: 'la cuenta (para pagar)', en: 'the bill · the check', sit: 'spring', kind: 'n' },
   { id: 'piano', kana: 'ピアノ', kanji: null, es: 'piano', en: 'piano', sit: 'spring', kind: 'n' },
   { id: 'gitaa', kana: 'ギター', kanji: null, es: 'guitarra', en: 'guitar', sit: 'spring', kind: 'n' },
@@ -396,7 +396,7 @@ export const LEX = [
   { id: 'daidokoro', kana: 'だいどころ', kanji: '台所', es: 'cocina (el cuarto)', en: 'kitchen', sit: 'ruins', kind: 'n' },
   { id: 'genkan', kana: 'げんかん', kanji: '玄関', es: 'entrada de la casa (donde se dejan los zapatos)', en: 'entrance hall (where shoes are left)', sit: 'ruins', kind: 'n' },
   { id: 'kaidan', kana: 'かいだん', kanji: '階段', es: 'escalera', en: 'stairs', sit: 'ruins', kind: 'n' },
-  { id: 'kai', kana: 'かい', kanji: '階', es: 'piso de un edificio (contador: に かい = segundo piso)', en: 'floor of a building (counter: に かい = second floor)', sit: 'ruins', kind: 'n' },
+  { id: 'kai', kana: 'かい', kanji: '階', es: 'piso de un edificio (contador: に かい = segundo piso; さん がい = tercer piso)', en: 'floor of a building (counter: に かい = second floor)', sit: 'ruins', kind: 'n' },
   { id: 'reizouko', kana: 'れいぞうこ', kanji: '冷蔵庫', es: 'refrigerador', en: 'refrigerator', sit: 'ruins', kind: 'n' },
   { id: 'eakon', kana: 'エアコン', kanji: null, es: 'aire acondicionado', en: 'air conditioner', sit: 'ruins', kind: 'n' },
   { id: 'doa', kana: 'ドア', kanji: null, es: 'puerta', en: 'door', sit: 'ruins', kind: 'n' },
@@ -980,7 +980,7 @@ export function checkLang() {
   }
   for (const pt of PATTERNS) if (!seenPat.has(pt.id)) errs.push(`Patrón ${pt.id}: ninguna frase lo usa`);
   const cover = inPhrase.size / LEX.length;
-  // 30 %: las palabras que suma el currículo se practican con sus propias frases; la cobertura total (70 %) la exige checkCurriculum().
+  // 25 %: las palabras que suma el currículo se practican con sus propias frases; la cobertura total (70 %) la exige checkCurriculum().
   // Era 40 %; P-07 lo bajó a 30 % y P-08b a 25 %: el currículo suma cientos de palabras con sus propias frases
   // y las situaciones ya tienen el máximo de 8 frases de viaje. Pendiente de Nicolás: medir solo las palabras sin frase del currículo.
   if (cover < .25) errs.push(`Solo el ${Math.round(cover * 100)} % de las palabras aparece en alguna frase de viaje (mínimo 25 %)`);
