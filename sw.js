@@ -7,9 +7,9 @@ self.addEventListener('fetch', e => e.request.method === 'GET' && !e.request.url
 FILES.push('js/i18n.js', 'locales/es.json');
 // Analítica de la Academia (S1-02)
 FILES.push('js/analytics.js');
+// Gestos (B-02)
+FILES.push('js/gestures.js');
 // Favicon de la cara en PNG (para navegadores sin SVG)
 FILES.push('icons/favicon-32.png', 'icons/favicon-48.png');
 // Aprendizaje dentro del juego: lengua, diario, palabras, Camino y ejercicios de palabras
 FILES.push('js/lang.js', 'js/lex.js', 'js/diary.js', 'js/path.js', 'js/wordgames.js');
-// Gestos (B-02)
-FILES.push('js/gestures.js');

@@ -307,6 +307,14 @@ b,strong{font-weight:700}
 .chest{border:2px dashed #F6EBD040;border-radius:14px}
 .cupd{display:flex;align-items:center;gap:6px;justify-content:center}.cupd .ic{width:20px;height:20px;color:var(--gold)}
 
+/* ---------- Gestos (B-02) ---------- */
+.gs-drag{transition:none!important;animation:none!important;will-change:transform}
+.gs-gone{background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;transition:background .18s}
+.gs-back{position:fixed;left:0;top:0;z-index:400;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--paper);color:var(--line);border:var(--b);box-shadow:var(--sh-d);pointer-events:none;opacity:.85}
+.gs-back.on{background:var(--gold);opacity:1}
+.modal .sheet,.pn-card{overscroll-behavior:contain}
+.gs-gone .sheet,.gs-gone .pn-card{animation:none!important}
+
 /* ---------- Duelo 3D ---------- */
 .duel.d3{padding:0;background:#1C0F24}
 .duel-stage{position:absolute;inset:0}
@@ -1023,11 +1031,3 @@ ruby.wk rt{font-family:var(--f-ui);font-size:.42em;font-weight:700;opacity:.75}
 .fx-t{display:inline-flex;align-items:flex-start;flex:none;white-space:nowrap;min-width:36px;justify-content:center;padding:5px 9px 4px;line-height:1.2}
 .fx-t ruby.kr{display:inline-flex;flex-direction:column;align-items:center}
 .fx-t ruby.kr rt{display:block;line-height:1.1;margin-top:1px}
-
-/* ---------- Gestos (B-02) ---------- */
-.gs-drag{transition:none!important;animation:none!important;will-change:transform}
-.gs-gone{background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;transition:background .18s}
-.gs-back{position:fixed;left:0;top:0;z-index:400;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--paper);color:var(--line);border:var(--b);box-shadow:var(--sh-d);pointer-events:none;opacity:.85}
-.gs-back.on{background:var(--gold);opacity:1}
-.modal .sheet,.pn-card{overscroll-behavior:contain}
-.gs-gone .sheet,.gs-gone .pn-card{animation:none!important}

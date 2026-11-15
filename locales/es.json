@@ -1,4 +1,5 @@
 {
+ "gs.exit": "Vuelve a presionar atrás para salir",
  "egg.hint": "Toca el huevo y dibuja su kanji 3 veces para que nazca",
  "egg.place": "Colócalo en la isla, tócalo y dibuja su kanji 3 veces para que nazca.",
  "egg.reborn": "Un huevo apareció en el santuario. Tócalo y dibuja su kanji 3 veces.",
@@ -385,6 +386,5 @@
  "fx.chosenW": "Elegiste «{m}»: esa es {w}.",
  "fx.chosenK": "Elegiste «{m}»: ese es {k}.",
  "fx.chosenR": "Elegiste {m}: esa es la lectura de {k}.",
- "fx.kanjiIs": "{k} significa «{m}» y se lee {r}.",
- "gs.exit": "Vuelve a presionar atrás para salir"
+ "fx.kanjiIs": "{k} significa «{m}» y se lee {r}."
 }

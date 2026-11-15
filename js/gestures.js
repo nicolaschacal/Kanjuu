@@ -8,8 +8,8 @@ import { t } from './i18n.js';
 const $ = (s, r = document) => r.querySelector(s);
 const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const EDGE = 24, BACK_DX = 70, TAB_DX = 64, CLOSE_DY = 110, FLICK = .55; // px y px/ms
-// Dónde un gesto no debe empezar: campos, trazado de kanji (svg), 3D (canvas) y controles deslizantes
-const BUSY = 'input,textarea,select,canvas,svg,[data-nogesture],.rcode';
+// Dónde un gesto no debe empezar: campos, trazado de kanji y dibujos (svg; los íconos .ic sí dejan), 3D (canvas) y controles deslizantes
+const BUSY = 'input,textarea,select,canvas,svg:not(.ic),[data-nogesture],.rcode';
 
 // ---------- Atrás ----------
 // Lo que está arriba de todo, de más cerca a más lejos. Devuelve cómo cerrarlo, o null si no hay nada abierto.
