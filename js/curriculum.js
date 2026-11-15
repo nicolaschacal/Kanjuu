@@ -280,7 +280,7 @@ export const EXTRA = [
   { id: 'c_daidokoro', ja: 'だいどころ に れいぞうこ が あります', ids: ['daidokoro', 'reizouko', 'arimasu'], pat: 'arimasu', es: 'En la cocina hay un refrigerador.', en: 'There is a refrigerator in the kitchen.' },
   { id: 'c_reizouko', ja: 'れいぞうこ の なか に ぎゅうにゅう が あります', ids: ['reizouko', 'naka', 'gyuunyuu', 'arimasu'], pat: 'arimasu', es: 'Dentro del refrigerador hay leche.', en: 'There is milk in the refrigerator.' },
   { id: 'c_sofaa', ja: 'ソファー の うえ に ねこ が います', ids: ['sofaa', 'ue', 'neko', 'imasu'], pat: 'arimasu', es: 'Hay un gato sobre el sofá.', en: 'There is a cat on the sofa.' },
-  { id: 'c_ofuro', ja: 'おふろ は ひろい です', ids: ['ofuro', 'hiroi'], pat: 'adj', es: 'La bañera es amplia.', en: 'The bathroom is spacious.' },
+  { id: 'c_ofuro', ja: 'おふろ は ひろい です', ids: ['ofuro', 'hiroi'], pat: 'adj', es: 'La bañera es amplia.', en: 'The bathtub is spacious.' },
   { id: 'c_daidokorosemai', ja: 'だいどころ は せまい です', ids: ['daidokoro', 'semai'], pat: 'adj', es: 'La cocina es pequeña.', en: 'The kitchen is small.' },
   { id: 'c_beddotsukue', ja: 'へや に ベッド と つくえ が あります', ids: ['heya', 'beddo', 'tsukue', 'arimasu'], pat: 'arimasu', es: 'En el cuarto hay una cama y un escritorio.', en: 'There is a bed and a desk in the room.' },
   { id: 'c_toireheya', ja: 'トイレ は へや の となり です', ids: ['toire', 'heya', 'tonari'], pat: 'no', es: 'El baño está al lado del cuarto.', en: 'The toilet is next to the room.' },
