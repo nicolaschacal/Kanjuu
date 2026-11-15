@@ -155,3 +155,89 @@ Nicolás pidió el 14 de noviembre de 2026 «preparar todo» y avanzar. Para no 
 3. ¿Saltar con **hasta 3 errores** de margen, o más estricto?
 4. ¿La guía de la unidad **opcional** (como Duolingo) u **obligatoria** la primera vez?
 5. ¿Empezamos por **P-01 y P-02**, que no necesitan diseño, mientras se prepara la propuesta visual P-03?
+
+---
+
+## 11. Decisiones de Nicolás (15 de noviembre de 2026)
+
+Respondidas en el chat sobre #47 (P-08a):
+
+1. **Aumentar el contenido de la etapa 2:** sí. Se suman unidades nuevas hasta llegar a ~30 en la etapa 2 (§13), con el tope de 20 palabras por unidad.
+2. **早 y 夕** (kanji del N4) se quedan, porque ordenan los componentes de 朝 y 夜.
+3. **Pasado y negativo:** «Tenemos que enseñar pasado y negativo». Los adjetivos い y な en positivo, negativo, presente y pasado, y です / でした / じゃないです. Es la tarea P-10 (#50).
+4. **«Planes para el finde»** queda así.
+
+Además, pidió: «Es muy importante que el juego enseñe muchas más palabras, frases y cómo armar diálogos en general». Las secciones 1 y 2 de Duolingo le enseñaron lo básico, verbos, forma て, presente, pasado y futuro, y adjetivos な e い en todas sus formas. **Lo que no le enseñó Duolingo fue a leer de corrido.** Podía leer frases sueltas, pero no un texto real en japonés, por la cantidad de kanji y porque Duolingo repite siempre los mismos kanji. Eso es §12.
+
+Referencia: el índice del curso de japonés de Duolingo (duolingodata.com, jafen1030), que Nicolás compartió.
+- La sección 1 tiene 10 unidades y la sección 2 tiene 30 unidades del A1.
+- La sección 2 trata situaciones como presentarse y presentar a otros, hábitos, comer, comprar ropa, rutina, detalles de viaje, fin de semana, clima, pastelería, direcciones, casa, familia, emergencias, lugares nuevos, una cita, planes de viaje, alrededores, horarios de trabajo, ir a una fiesta, eventos, vida universitaria, hábitos sanos, clases, hobbies, hotel y supermercado.
+- La etapa 2 de Kanjū toma esa progresión de situaciones (no sus textos) y le suma los KANJŪ y la lectura.
+
+## 12. Leer de corrido (lo que Duolingo no da)
+
+Es el segundo diferenciador de Kanjū, junto con los KANJŪ: **salir de cada etapa leyendo un texto real**, no solo frases sueltas.
+
+- **Una lectura por unidad.** Es un texto corto en japonés real, con kanji y **sin espacios entre palabras**, como se escribe de verdad. Las fichas de las rondas van separadas; la lectura no.
+- **El largo crece con la etapa:**
+
+  | Etapa | Largo de la lectura | Qué es |
+  |---|---|---|
+  | 1 | 2 a 4 líneas | Una nota o un mensaje |
+  | 2 | 5 a 10 líneas | Un diario o un correo |
+  | 3 | Un párrafo | Un aviso o un blog |
+  | 4 | Una página corta | Un cuento o una noticia sencilla |
+- **Usa todos los kanji ya enseñados, no solo los de la unidad.** Así se rompe la «burbuja» de los mismos kanji de siempre. La furigana aparece solo sobre los kanji que el jugador todavía no domina (`S.srs`) y se puede apagar.
+- **Tocar una palabra** muestra su lectura y su significado. Se puede escuchar entera con el motor de voces del juego.
+- **Al final, 2 o 3 preguntas de comprensión** en español.
+- **Kanji en palabra nueva:** cada lectura trae 1 o 2 palabras no vistas que se pueden leer con kanji conocidos (日 + 本 → 日本), como en §4.
+- **El KANJŪ lee contigo:** la lectura la presenta tu criatura, y los kanji de su familia se resaltan en el texto.
+- **Base técnica:** ya existen `READINGS` (18 lecturas de 3 a 5 líneas en kana) en `js/lang.js`. Se amplían al formato de arriba.
+- **Necesita propuesta visual aprobada** antes de implementarse (regla 3): es P-11.
+
+## 13. Mapa de la etapa 2 (30 unidades) — propuesta para aprobar
+
+Las unidades 2.1 a 2.12 ya existen (P-08a #47, P-08b #48 o #49). Se suman 2.13 a 2.30, después de las actuales: los ids viejos no cambian y el guardado sigue compatible. Cada unidad nueva trae 18 a 20 palabras y 12 a 15 frases. Con eso, la etapa 2 cierra en **~780 a 800 palabras** y **~130 kanji acumulados**, todo el N5 más algunos del N4.
+
+| Unidad | Situación (Duolingo sección 2) | Gramática nueva | Kanji nuevos | KANJŪ premio (candidato) |
+|---|---|---|---|---|
+| 2.13 | Presentar a otros | 〜と (y), 〜と いっしょに | 友 男 名 会 | 友 |
+| 2.14 | Mis costumbres | Frecuencia con ます / ません (よく, あまり, ぜんぜん) | 午 分 | 午 |
+| 2.15 | Lo que comemos | Pasado de adjetivos (おいしかった) con P-10 | 飯 茶 | 飯 |
+| 2.16 | En la pastelería | Contadores つ · こ · まい · ほん; 〜を 〜つ ください | 枚 売 | 売 |
+| 2.17 | Detalles del viaje | 〜から 〜まで, どのくらい かかりますか | 東 西 南 北 | 東 |
+| 2.18 | Lugares nuevos | どんな, ちかい / とおい, 〜に 〜が あります | 町 村 | 町 |
+| 2.19 | Una cita | 〜たい です, 〜に いきます (para qué) | 待 持 | 待 |
+| 2.20 | Planes de viaje | 〜たり 〜たり します, 〜ましょう | 歩 方 | 歩 |
+| 2.21 | Mi barrio | Lugares y tiendas: 〜の となり / まえ | 店 屋 | 店 |
+| 2.22 | Horarios de trabajo | 〜時から 〜時まで, 〜ごろ, 〜曜日 | 働 | 働 |
+| 2.23 | Rumbo a una fiesta | 〜て、〜て (secuencia), 〜て から | 番 | 番 |
+| 2.24 | Eventos | Fechas: 〜月 〜日, 〜は いつ ですか | 回 | 回 |
+| 2.25 | Vida en la universidad | Forma ない: 〜ないで ください | 英 字 | 英 |
+| 2.26 | Hábitos sanos | 〜た ほうが いい, 〜ない ほうが いい | 医 | 医 |
+| 2.27 | Mis clases | 〜まえに, 〜た あとで | 室 | 室 |
+| 2.28 | Comprar ropa (2) | 〜が ほしい, 〜は どう ですか | 服 | 服 |
+| 2.29 | Reservar un hotel | Días y noches, 〜を おねがいします, 〜で (precio) | 屋 | 屋 |
+| 2.30 | En el supermercado | 〜は どこ ですか, 〜と 〜と, repaso de la etapa | 理 | 理 |
+
+Notas del mapa:
+- **Componentes antes que compuestos:** si un kanji de la tabla necesita un componente no enseñado, la tarea de contenido lo adelanta o cambia el kanji, y lo anota en su PR.
+- **Premios:** todos están en el roster (`KANJI`) y hoy no son premio de ninguna unidad. Los que no tengan arte final se dibujan como borrador simple (igual que 旅, 風, 晴 y 客). Elegir el premio es tu decisión: la columna es solo una propuesta.
+- **Cada unidad nueva trae** su intro, su «Puedo…», su diálogo (`TALKS`) y sus 3 rivales, igual que las de hoy. Desde que se apruebe P-11, también su lectura.
+
+## 14. Plan de trabajo actualizado
+
+| ID | Tarea | Tipo |
+|---|---|---|
+| P-08a · P-08b | Etapa 2, unidades 2.1 a 2.12 a 18–20 palabras | contenido (#47; #48 o #49) |
+| P-08c · P-08d · P-08e | Unidades 2.13 a 2.18, 2.19 a 2.24 y 2.25 a 2.30 del mapa §13 (6 por PR) | contenido, después de aprobar §13 |
+| P-10 | Pasado y negativo de los adjetivos い y な, y de です | código + contenido (#50) |
+| P-11 | Propuesta visual de «Leer de corrido» (§12) | diseño (propuesta) |
+| P-12 | Implementación de la lectura por unidad | código, después de P-11 |
+| P-13 | Lecturas de las etapas 1 y 2 (una por unidad) | contenido, después de P-12 |
+| P-14 | Forma ない y forma た (corta) en el motor, para 2.25 y la etapa 3 | código |
+
+## Necesita tu decisión (§13)
+
+1. ¿Apruebas el **mapa de 2.13 a 2.30** (situaciones, gramática y kanji)? ¿Cambiarías algún **KANJŪ premio**?
+2. ¿Te parece bien **«Leer de corrido»** como está descrito en §12, para preparar la propuesta visual P-11?
