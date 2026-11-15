@@ -5,7 +5,7 @@ import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
 import { GAMES, hasWord, hasParts, play, review, storyHTML, speak, okuHTML } from './games.js';
 import * as cloud from './cloud.js';
-import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn } from './help.js';
+import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn, setAid } from './help.js';
 import { openAcademy, acadDue, reviewAcademy, DAILY_GOAL } from './academy.js';
 import { openAISettings, aiStatus } from './ai.js';
 import { startTutorial, emit } from './tutorial.js';
@@ -17,8 +17,8 @@ import { PIECES, isPiece, TYPES, typeOf, gradeTag, SRS_HOURS } from './data.js';
 import { useTagHTML, anchorsHTML, bindAnchors } from './diary.js';
 import { t } from './i18n.js';
 import { tr } from './lex.js';
-import { curSection, roundsOf, runRound, endRound, passTest, ROUNDS, inkSVG, paintedOf, strokesOf, prizeState, wakeBox, PRIZE_INK } from './round.js';
-import { sectionById } from './curriculum.js';
+import { curSection, runRound, endRound, passTest, inkSVG, paintedOf, strokesOf, prizeState, wakeBox, PRIZE_INK } from './round.js';
+import { sectionById, ROUNDS_PER_LEVEL } from './curriculum.js';
 import { WORD, wordHTML } from './lex.js';
 import { bookCardHTML, openBook } from './book.js';
 import { aiCardHTML, bindAICard } from './aiplay.js';
@@ -122,6 +122,7 @@ export async function openTraining(c, parent) {
   const sec = curSection(), before = paintedOf(sec.id);
   parent.close();
   const res = await runRound(c, $('#layer'));
+  setAid(0); // por si la ronda se cerró por otro camino: las ayudas del nivel no siguen fuera
   if (!res) return go();
   if (res.skipTest) return skipTest(c, sec);
   const r = endRound(sec.id, res.right, res.total);
@@ -136,7 +137,8 @@ export async function openTraining(c, parent) {
   S.ink += ink; c.know += res.kanjiOk ? 1 : 0; emit('train');
   c.mood = Math.max(0, c.mood - .05); S.stats.trainings++; bump('train'); save();
   const msg = r.completed ? t('round.complete', { title: tr(sec.title) }) + (r.next ? ' ' + t('round.next', { title: tr(r.next.title) }) : '')
-    : r.counted ? t('round.counted', { n: r.rounds, total: ROUNDS }) : t('round.notCounted');
+    : r.levelUp ? t('round.levelDone', { l: r.level, next: r.level + 1 }) + (painted > before ? ' ' + t('round.levelInk') : '')
+    : r.counted ? t('round.counted', { n: r.rounds, total: ROUNDS_PER_LEVEL, l: r.level }) : t('round.notCounted');
   const out = modal(`<div class="result"><div class="res-art">${creatureSVG(c.k, { mood: r.counted ? 1 : .5 })}</div>
     <p><b>${res.right}/${res.total}</b> · +${Math.round(exp * (1 + c.gen * .25))} EXP · +${ink} 墨${ups ? ` · <b class="g">${t('round.levelUp', { lv: c.lv })}</b>` : ''}</p>
     <p class="${r.counted ? 'g' : 'muted'}">${msg}</p>${prizeHTML}
