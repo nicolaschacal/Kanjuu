@@ -4,6 +4,8 @@
  "egg.reborn": "Un huevo apareció en el santuario. Tócalo y dibuja su kanji 3 veces.",
  "egg.crack": "¡Se agrietó! {n} de {total}",
  "egg.again": "Casi. Dibújalo otra vez para agrietar el huevo",
+ "pet.done": "¡A {k} le encantó! Se puso feliz",
+ "pet.again": "{k} quiere que lo intentes otra vez",
  "hud.clock": "Momento del día y clima",
  "hud.phase.morning": "Mañana",
  "hud.phase.afternoon": "Tarde",
