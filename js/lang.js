@@ -59,7 +59,6 @@ export const LEX = [
   { id: 'asoko', kana: 'あそこ', kanji: null, es: 'allá', en: 'over there', sit: 'forest', kind: 'n' },
   { id: 'tonari', kana: 'となり', kanji: '隣', es: 'al lado · vecino', en: 'next to', sit: 'forest', kind: 'n' },
   { id: 'chikaku', kana: 'ちかく', kanji: '近く', es: 'cerca', en: 'nearby', sit: 'forest', kind: 'n' },
-<<<<<<< HEAD
   // Etapa 2 del currículo (P-08a)
   { id: 'donna', kana: 'どんな', kanji: null, es: 'qué tipo de · cómo es', en: 'what kind of', sit: 'forest', kind: 'q' },
   { id: 'demo', kana: 'でも', kanji: null, es: 'pero (al empezar la frase)', en: 'but (at the start of a sentence)', sit: 'forest', kind: 'expr' },
@@ -72,8 +71,6 @@ export const LEX = [
   { id: 'sukoshi', kana: 'すこし', kanji: '少し', es: 'un poco', en: 'a little', sit: 'forest', kind: 'expr' },
   { id: 'dore', kana: 'どれ', kanji: null, es: 'cuál (entre varias cosas)', en: 'which one (of several)', sit: 'forest', kind: 'q' },
   { id: 'dono', kana: 'どの', kanji: null, es: 'qué · cuál (antes de un nombre)', en: 'which (before a noun)', sit: 'forest', kind: 'q' },
-=======
->>>>>>> origin/main
   // Etapa 3 del currículo
   { id: 'hou', kana: 'ほう', kanji: '方', es: 'lado (〜の ほう が: «es más…»)', en: "side (〜の ほう が: «more…»)", sit: 'forest', kind: 'n' },
   { id: 'ichiban', kana: 'いちばん', kanji: '一番', es: 'el más · número uno', en: "the most · number one", sit: 'forest', kind: 'expr' },
@@ -130,7 +127,6 @@ export const LEX = [
   { id: 'nanyoubi', kana: 'なんようび', kanji: '何曜日', es: 'qué día de la semana', en: 'what day of the week', sit: 'hill', kind: 'q' },
   { id: 'asatte', kana: 'あさって', kanji: null, es: 'pasado mañana', en: 'the day after tomorrow', sit: 'hill', kind: 'n' },
   { id: 'ototoi', kana: 'おととい', kanji: null, es: 'anteayer', en: 'the day before yesterday', sit: 'hill', kind: 'n' },
-<<<<<<< HEAD
   // Etapa 2 del currículo (P-08a)
   { id: 'maiasa', kana: 'まいあさ', kanji: '毎朝', es: 'todas las mañanas', en: 'every morning', sit: 'hill', kind: 'n' },
   { id: 'maiban', kana: 'まいばん', kanji: '毎晩', es: 'todas las noches', en: 'every night', sit: 'hill', kind: 'n' },
@@ -142,8 +138,6 @@ export const LEX = [
   { id: 'tanjoubi', kana: 'たんじょうび', kanji: '誕生日', es: 'cumpleaños', en: 'birthday', sit: 'hill', kind: 'n' },
   { id: 'raigetsu', kana: 'らいげつ', kanji: '来月', es: 'el mes que viene', en: 'next month', sit: 'hill', kind: 'n' },
   { id: 'rainen', kana: 'らいねん', kanji: '来年', es: 'el año que viene', en: 'next year', sit: 'hill', kind: 'n' },
-=======
->>>>>>> origin/main
   // Etapa 4 del currículo
   { id: 'kagi', kana: 'かぎ', kanji: '鍵', es: 'llave', en: "key", sit: 'hill', kind: 'n' },
   { id: 'shimaimasu', kana: 'しまいます', kanji: null, te: 'しまって', dict: 'しまう', es: 'terminar · (〜て しまう: sin querer)', en: "to finish · (〜て しまう: by accident)", sit: 'hill', kind: 'v' },
@@ -373,15 +367,12 @@ export const LEX = [
   { id: 'zasshi', kana: 'ざっし', kanji: '雑誌', es: 'revista', en: 'magazine', sit: 'ruins', kind: 'n' },
   { id: 'jugyou', kana: 'じゅぎょう', kanji: '授業', es: 'clase', en: 'class · lesson', sit: 'ruins', kind: 'n' },
   { id: 'isu', kana: 'いす', kanji: '椅子', es: 'silla', en: 'chair', sit: 'ruins', kind: 'n' },
-<<<<<<< HEAD
   // Etapa 2 del currículo (P-08a)
   { id: 'omoi', kana: 'おもい', kanji: '重い', es: 'pesado', en: 'heavy', sit: 'ruins', kind: 'adj' },
   { id: 'karui', kana: 'かるい', kanji: '軽い', es: 'liviano · ligero', en: 'light (not heavy)', sit: 'ruins', kind: 'adj' },
   { id: 'hiroi', kana: 'ひろい', kanji: '広い', es: 'amplio · espacioso', en: 'spacious · wide', sit: 'ruins', kind: 'adj' },
   { id: 'semai', kana: 'せまい', kanji: '狭い', es: 'estrecho · pequeño (lugar)', en: 'narrow · cramped', sit: 'ruins', kind: 'adj' },
   { id: 'muzukashii', kana: 'むずかしい', kanji: '難しい', es: 'difícil', en: 'difficult', sit: 'ruins', kind: 'adj' },
-=======
->>>>>>> origin/main
   // Etapa 4 del currículo
   { id: 'dekimasu', kana: 'できます', kanji: null, te: 'できて', dict: 'できる', es: 'poder · saber hacer', en: "can · be able to", sit: 'ruins', kind: 'v' },
   { id: 'jouzu', kana: 'じょうず', kanji: '上手', es: 'hábil · bueno en', en: "good at", sit: 'ruins', kind: 'adj' },
@@ -830,11 +821,7 @@ export const useOf = k => USE[k] || 'daily';
 const VERB_ENDS = ['ます', 'ました', 'ません', 'ませんでした', 'ましょう', 'たい', 'ながら', 'そう'];
 // Adjetivos な (no forman 〜そう quitando la い final)
 export const taOf = te => te && te.replace(/て$/, 'た').replace(/で$/, 'だ');
-<<<<<<< HEAD
 const NA_ADJ = new Set(['kirei', 'genki', 'suki', 'jouzu', 'heta', 'dame', 'kirai', 'shizuka', 'nigiyaka', 'benri', 'yuumei']);
-=======
-const NA_ADJ = new Set(['kirei', 'genki', 'suki', 'jouzu', 'heta', 'dame', 'kirai']);
->>>>>>> origin/main
 // Etapa 4: potencial cortés (pot: たべられます, con sus ません · ました y la forma corta potd), volitiva (vol: いこう) y
 // condicional (ba: いけば). Van como campos del verbo porque no se pueden deducir sin saber su grupo.
 const masuSet = f => f ? [f, f.slice(0, -2) + 'ません', f.slice(0, -2) + 'ました'] : [];
