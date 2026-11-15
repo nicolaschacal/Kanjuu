@@ -6,7 +6,7 @@ import { S, grade } from './state.js';
 import { t } from './i18n.js';
 import { kanaHTML, setAid } from './help.js';
 import { speak } from './games.js';
-import { wordExercise } from './wordgames.js';
+import { wordExercise, extraTiles } from './wordgames.js';
 import { WORD, tr, jaTokens, jaHTML, jaPlain, wordHTML, gradeWord, meet, lexDue } from './lex.js';
 import { SECTIONS, sectionById, phraseById, nextSection, TALKS, LEVELS, ROUNDS_PER_LEVEL, ROUND_SIZE, PRIOR_MIX } from './curriculum.js';
 import { creatureSVG } from './creature.js';
@@ -198,7 +198,7 @@ export function inkSVG(k, done, fresh = 0) {
 // Frase: ordenar las fichas. Sirve para PHRASES y para las frases del currículo (EXTRA).
 function phraseExercise(ph, body, done) {
   const toks = jaTokens(ph.ja, ph.ids), answer = toks.map(x => x.tok);
-  const extra = shuffle(['は', 'が', 'を', 'に', 'の', 'も'].filter(x => !answer.includes(x))).slice(0, 2).map(tok => ({ tok, w: null }));
+  const extra = extraTiles(toks);
   const tiles = shuffle([...toks, ...extra]).map(x => ({ v: x.tok, html: x.w ? wordHTML(x.w, x.tok) : kanaHTML(x.tok, { particle: true }) }));
   body.innerHTML = `<p class="hint">${t('dojo.order')}</p><div class="qm sm">«${tr(ph)}»</div><div class="asm-row" aria-live="polite"></div>
     <div class="asm-bank">${tiles.map((x, i) => `<button class="asm-t" data-i="${i}">${x.html}</button>`).join('')}</div>
@@ -249,7 +249,9 @@ export function talkExercise(d, body, done) {
 
 // Kanji de la criatura: qué significa, o cómo se lee su lectura principal
 function kanjiExercise(k, ask, body, done) {
-  const pool = shuffle(Object.keys(KANJI).filter(x => x !== k && !KANJI[x].recipes?.some(r => r.some(p => !KANJI[p]))));
+  // Distractores (P-02): primero kanji ya enseñados o de la unidad actual, que son los que de verdad se confunden
+  const c0 = cur(), taught = new Set([...Object.keys(S.srs), ...SECTIONS.filter(x => c0.done[x.id] || x.id === c0.sec).flatMap(x => x.kanji)]), all = Object.keys(KANJI).filter(x => x !== k && !KANJI[x].recipes?.some(r => r.some(p => !KANJI[p])));
+  const pool = [...shuffle(all.filter(x => taught.has(x))), ...shuffle(all.filter(x => !taught.has(x)))];
   const val = x => ask === 'read' ? mainRead(x) : KANJI[x].m;
   const correct = val(k), opts = shuffle([correct, ...[...new Set(pool.map(val))].filter(v => v && v !== correct).slice(0, 3)]);
   body.innerHTML = `<div class="qw">${k}</div><p class="hint">${t(ask === 'read' ? 'round.kRead' : 'round.kMeaning')}</p>
