@@ -5,7 +5,8 @@ import { KANJI, mainRead } from './data.js';
 import { S, grade } from './state.js';
 import { t } from './i18n.js';
 import { kanaHTML, setAid } from './help.js';
-import { speak } from './games.js';
+import { speak, canSpeak } from './games.js';
+import { ic } from './icons.js';
 import { wordExercise, extraTiles } from './wordgames.js';
 import { WORD, tr, jaTokens, jaHTML, jaPlain, wordHTML, gradeWord, meet, lexDue } from './lex.js';
 import { SECTIONS, sectionById, phraseById, nextSection, TALKS, LEVELS, ROUNDS_PER_LEVEL, ROUND_SIZE, PRIOR_MIX } from './curriculum.js';
@@ -13,6 +14,7 @@ import { creatureSVG } from './creature.js';
 import { STROKES } from './strokes.js';
 import { arrive } from './world.js';
 import { tokenNotes, replyMeaning, fixPanel } from './feedback.js';
+import { pairsOf, jaesFits, listenFits, gapsOf, typeFits, similarFits, pairsExercise, jaesExercise, listenExercise, gapExercise, typeExercise, similarExercise } from './exercises.js';
 
 // Una sección tiene LEVELS niveles de ROUNDS_PER_LEVEL rondas (docs/PROGRESION.md §3, tarea P-04)
 export const UNIT_ROUNDS = LEVELS * ROUNDS_PER_LEVEL;
@@ -87,14 +89,17 @@ export function touchWord(id, sec) {
 // Cada nivel cambia la mezcla (docs/PROGRESION.md §3): 1 palabras nuevas · 2 frases cortas · 3 más frases ·
 // 4 la situación con diálogo · 5 producción con un 30 % de secciones anteriores. Los 2 ejercicios del kanji de la
 // criatura siguen en todos los niveles. ROUND_SIZE ejercicios por ronda, sin contar la apertura.
-// Letras: w palabra · p frase · K/R kanji de la criatura (significado/lectura) · v repaso · t situación · o anteriores.
+// Letras: w palabra · p frase (español → japonés) · K/R kanji de la criatura (significado/lectura) · v repaso · t situación · o anteriores.
+// Ejercicios nuevos (P-05, js/exercises.js), repartidos como en la maqueta P-03: m emparejar (nivel 1) · j japonés → español
+// y s kanji parecido (nivel 2) · y escribir la lectura con teclado kana (nivel 3) · l escuchar y armar y g completar el hueco
+// (nivel 4). El nivel 5 los mezcla. Si una unidad no tiene material para uno, ese paso vuelve a palabra, frase o kanji.
 // Si ROUND_SIZE es mayor que el patrón, el patrón se repite; si LEVELS pasa de 5, los niveles extra usan el último.
 export const PLANS = {
-  1: 'w w w K w w p w R w w v p w v',
-  2: 'w p w K p w p R p w v p w v p',
-  3: 'p w K p p w p R w p v p w v p',
-  4: 't p w K p p w R p p w v p v p',
-  5: 'p w K p w p R w p w p w p w p', // aquí se reparten los pasos «o» según PRIOR_MIX (planOf)
+  1: 'w m w K w w p w R w m v p w v',
+  2: 'w j w K p s j R p w v j w v p',
+  3: 'p w K y p p w R j p v y w v p',
+  4: 't l w K g p l R p g w v l v p',
+  5: 'p w K l p g R w p y p w j w p', // aquí se reparten los pasos «o» según PRIOR_MIX (planOf)
 };
 const LAST = Math.max(...Object.keys(PLANS).map(Number));
 // Pasos de un nivel: el patrón al largo ROUND_SIZE y, en el último nivel, PRIOR_MIX de la ronda con secciones anteriores
@@ -130,7 +135,28 @@ export function planRound(k, secId = cur().sec, rnd = Math.random, level = level
   const kan = ask => KANJI[k] ? { t: 'kanji', k, ask } : w();
   // La situación con diálogo de la sección (si tiene); si no, una frase
   const talk = () => TALKS[secId] ? { t: 'talk' } : p();
-  const make = { w, p, v, o, t: talk, K: () => kan('meaning'), R: () => kan('read') };
+  // Ejercicios nuevos (P-05): cada uno rota por su material y, si no hay, cae en el paso de siempre
+  const oldWords = [...new Set(before.flatMap(x => x.words))].filter(id => !own.has(id)).reverse(); // primero las más cercanas
+  const rot = (list, n) => list.length ? list[n % list.length] : null;
+  let ji = 0, li = 0, gi = 0, yi = 0, si = 0;
+  const m = () => { const r = pairsOf([...shuffle(s.words, rnd), ...oldWords], rnd); return r ? { t: 'pairs', ...r } : w(); };
+  const jP = phrases.filter(id => jaesFits(phraseById(id))), lP = phrases.filter(id => listenFits(phraseById(id)));
+  const j = () => { const id = rot(jP, ji++); return id ? { t: 'jaes', id } : p(); };
+  const l = () => { const id = rot(lP, li++); return id ? { t: 'listen', id } : p(); };
+  // Hueco: dos frases distintas, primero una partícula y después una forma del verbo si la unidad la tiene
+  const gapsAll = phrases.flatMap(id => gapsOf(phraseById(id)).map(x => ({ id, i: x.i, kind: x.kind })));
+  const g = () => {
+    if (!gapsAll.length) return p();
+    const a = rot(gapsAll.filter(x => x.kind === 'p'), gi) || rot(gapsAll, gi);
+    const b = rot(gapsAll.filter(x => x.id !== a.id && x.kind === 'v'), gi) || rot(gapsAll.filter(x => x.id !== a.id), gi + 1);
+    gi++;
+    return { t: 'gap', items: b ? [a, b] : [a] };
+  };
+  const yW = [...words.filter(typeFits), ...oldWords.filter(typeFits)];
+  const y = () => { if (!yW.length) return w(); const a = rot(yW, yi++), b = yW.length > 1 ? rot(yW, yi++) : null; return { t: 'type', ids: b && b !== a ? [a, b] : [a] }; };
+  const sK = [...new Set([...s.kanji, ...Object.keys(S.srs), k])].filter(similarFits);
+  const sm = () => { const x = rot(sK, si++); return x ? { t: 'similar', k: x } : kan('meaning'); };
+  const make = { w, p, v, o, t: talk, K: () => kan('meaning'), R: () => kan('read'), m, j, l, g, y, s: sm };
   return [{ t: 'intro' }, ...planOf(lv).map(c => make[c]())];
 }
 
@@ -291,10 +317,11 @@ export function runRound(c, root, { test = false } = {}) {
     const wrap = document.createElement('div');
     wrap.className = 'game round rd-lesson';
     const n = test ? steps.length : steps.length - 1;
-    wrap.innerHTML = `<div class="rd-scene">${roomSVG()}<button class="x rd-x" aria-label="${t('dojo.back')}">${'✕'}</button>
+    wrap.innerHTML = `<div class="rd-scene">${roomSVG()}<button class="x rd-x" aria-label="${t('dojo.back')}">${ic('x')}</button>
       <div class="rd-drops">${Array.from({ length: n }, (_, i) => `<i class="${steps[test ? i : i + 1]?.t === 'kanji' && steps[test ? i : i + 1]?.k === c.k ? 'k' : ''}"></i>`).join('')}</div>
       <div class="rd-bub"><span class="who">${c.k}</span><p></p></div><span class="rd-me">${creatureSVG(c.k)}</span><span class="rd-npc"></span></div>
-      <p class="rd-sec">${tr(s.title)}</p><div class="game-body rd-low"></div>`;
+      <div class="rd-sec p3-sec"><span>${test ? tr(s.title) : t('round.lvRound', { l: lv, n: Math.min(ROUNDS_PER_LEVEL, levelRounds(s.id) + 1), total: ROUNDS_PER_LEVEL })}</span><em hidden></em></div>
+      <div class="game-body rd-low"></div>`;
     root.append(wrap);
     const body = wrap.querySelector('.game-body'), drops = [...wrap.querySelectorAll('.rd-drops i')], scene = wrap.querySelector('.rd-scene');
     const say = (txt, who = c.k, html = false) => { const b = wrap.querySelector('.rd-bub p'); b[html ? 'innerHTML' : 'textContent'] = txt; wrap.querySelector('.rd-bub .who').textContent = who; wrap.querySelector('.rd-bub').classList.toggle('npc', who !== c.k); wrap.querySelector('.rd-bub').classList.remove('pop'); void b.offsetWidth; wrap.querySelector('.rd-bub').classList.add('pop'); };
@@ -305,6 +332,10 @@ export function runRound(c, root, { test = false } = {}) {
       f ? say(`<span class="jp">${jaHTML(f.ja, f.ids)}</span><small>${f.tr.replace(/</g, '&lt;')}</small>`, c.k, true) : say(pick(t(ok ? 'round.sayOk' : 'round.sayMiss').split('|')));
       wrap.querySelector('.rd-me').classList.toggle('happy', ok);
     };
+    // Marco de los ejercicios nuevos (js/exercises.js): etiqueta del tipo, globo, reacción y el KANJŪ que entra a la escena
+    const chip = wrap.querySelector('.p3-sec em');
+    const ctx = { wrap, body, chip: tx => { chip.textContent = tx || ''; chip.hidden = !tx; }, say: (tx, who) => say(tx, who), react,
+      npc: k => { scene.classList.add('talk'); wrap.querySelector('.rd-npc').innerHTML = creatureSVG(k); } };
     const queue = steps.map((st, i) => ({ ...st, i })), retried = new Set();
     let right = 0, total = 0, kanjiOk = 0, pos = 0; const used = new Set(), use = id => { touchWord(id, s.id); used.add(id); }; // pos = pasos terminados (acertados, o fallados por segunda vez)
     const end = res => { setAid(0); wrap.classList.add('out'); setTimeout(() => wrap.remove(), 250); resolve(res); };
@@ -312,15 +343,17 @@ export function runRound(c, root, { test = false } = {}) {
     const paint = () => drops.forEach((d, i) => { d.classList.toggle('on', i < pos); d.classList.toggle('now', i === pos); });
     const next = () => {
       const st = queue.shift(); paint();
+      body.classList.remove('p3-body', 'lock'); wrap.querySelectorAll('.p3-foot, .p3-res').forEach(x => x.remove()); ctx.chip('');
       if (!st) return end({ right, total, kanjiOk, words: [...used] });
-      const after = ok => {
+      // quick: el ejercicio ya mostró su panel y su reacción; se sigue al tocar «Seguir» o «Entendido»
+      const after = (ok, quick = false) => {
         if (!retried.has(st.i)) { total++; if (ok) right++; }
-        if (!test) react(ok);
+        if (!test && !quick) react(ok);
         scene.classList.remove('power', 'talk'); wrap.querySelector('.rd-npc').innerHTML = '';
         if (!ok && !retried.has(st.i) && !test) { retried.add(st.i); queue.push(st); }
         if (ok || st.again || test) pos++;
         if (!ok && !st.again && !test) st.again = true; // el paso reencolado es el mismo objeto; en la prueba no se reencola (fallar la última rompía la prueba)
-        test ? next() : setTimeout(next, 700); // un momento para leer la reacción de la criatura
+        test || quick ? next() : setTimeout(next, 700); // un momento para leer la reacción de la criatura
       };
       if (st.t === 'intro') {
         say(tr(s.intro));
@@ -333,8 +366,37 @@ export function runRound(c, root, { test = false } = {}) {
         use(st.id); say(t(st.review ? 'round.sayReview' : 'round.sayWord'));
         return wordExercise(st.id, body, ok => { gradeWord(st.id, ok); after(ok); }, LEVEL_TYPES[st.lv] || {});
       }
+      // Frases de los ejercicios nuevos: suman encuentros como las de siempre
+      const sawPhrase = (ph, ok) => { (S.phr[ph.id] ??= { n: 0, t: Date.now() }).n++; if (ok) ph.ids.forEach(id => meet(id, 'train')); };
+      if (st.t === 'pairs') {
+        st.ids.forEach(use);
+        return pairsExercise(ctx, st, ok => { if (ok) st.ids.forEach(id => meet(id, 'train')); after(ok, true); });
+      }
+      // Sin voz japonesa, Escuchar y armar se cambia por Japonés → español (propuesta P-03)
+      if (st.t === 'jaes' || (st.t === 'listen' && !canSpeak())) {
+        const ph = phraseById(st.id); ph.ids.forEach(use);
+        const at = SECTIONS.indexOf(s), others = [...s.phrases, ...SECTIONS.slice(Math.max(0, at - 2), at).flatMap(x => x.phrases)].map(phraseById).filter(Boolean);
+        return jaesExercise(ctx, ph, others, ok => { sawPhrase(ph, ok); after(ok, true); });
+      }
+      if (st.t === 'listen') {
+        const ph = phraseById(st.id); ph.ids.forEach(use);
+        return listenExercise(ctx, ph, ok => { sawPhrase(ph, ok); after(ok, true); });
+      }
+      if (st.t === 'gap') {
+        const items = st.items.map(x => { const ph = phraseById(x.id); return { ph, gap: gapsOf(ph).find(y => y.i === x.i && y.kind === x.kind) }; }).filter(x => x.gap);
+        if (!items.length) { st.t = 'phrase'; st.id = st.items[0].id; queue.unshift(st); return next(); } // sin hueco válido: la frase de siempre
+        items.forEach(x => x.ph.ids.forEach(use));
+        return gapExercise(ctx, items, (ok, res) => { items.forEach((x, i) => sawPhrase(x.ph, res[i])); after(ok, true); });
+      }
+      if (st.t === 'type') {
+        st.ids.forEach(use);
+        return typeExercise(ctx, st.ids, (ok, res) => { st.ids.forEach((id, i) => gradeWord(id, res[i])); after(ok, true); });
+      }
+      if (st.t === 'similar') {
+        return similarExercise(ctx, st.k, ok => { if (S.srs[st.k]) grade(st.k, ok); after(ok, true); });
+      }
       if (st.t === 'phrase') {
-        const ph = phraseById(st.id); say(t('round.sayPhrase'));
+        const ph = phraseById(st.id); say(t('round.sayPhrase')); ctx.chip(t('ex.esja'));
         ph.ids.forEach(use);
         // La frase suma encuentros a sus palabras; no cambia sus cajas (eso lo hacen los ejercicios de cada palabra)
         return phraseExercise(ph, body, ok => { (S.phr[ph.id] ??= { n: 0, t: Date.now() }).n++; if (ok) ph.ids.forEach(id => meet(id, 'train')); after(ok); });
