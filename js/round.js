@@ -263,7 +263,7 @@ export function runRound(c, root, { test = false } = {}) {
         scene.classList.remove('power', 'talk'); wrap.querySelector('.rd-npc').innerHTML = '';
         if (!ok && !retried.has(st.i) && !test) { retried.add(st.i); queue.push(st); }
         if (ok || st.again || test) pos++;
-        if (!ok && !st.again) queue[queue.length - 1].again = true;
+        if (!ok && !st.again && !test) st.again = true; // el paso reencolado es el mismo objeto; en la prueba no se reencola (fallar la última rompía la prueba)
         test ? next() : setTimeout(next, 700); // un momento para leer la reacción de la criatura
       };
       if (st.t === 'intro') {
