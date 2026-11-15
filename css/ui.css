@@ -1027,15 +1027,15 @@ ruby.wk rt{font-family:var(--f-ui);font-size:.42em;font-weight:700;opacity:.75}
 /* ---------- Ejercicios nuevos de la ronda (P-05, propuesta docs/propuestas/P-03-progresion.html) ----------
    Copia fiel de la maqueta (prefijo p3-), con el marco de la lección más bajo para que entren el teclado kana y los
    pares sin desplazar. Sin líneas negras ni sombra negra corrida (D-01). */
-.rd-lesson .rd-scene{height:calc(176px + var(--safe-t))}
-.rd-lesson .rd-x{width:44px;height:44px;left:8px;top:calc(8px + var(--safe-t));display:grid;place-items:center;border-radius:22px}
-.rd-lesson .rd-x .ic{width:20px;height:20px}
-.rd-lesson .rd-drops{left:64px;right:16px;top:calc(26px + var(--safe-t))}
-.rd-lesson .rd-drops i.now{box-shadow:0 0 0 2px #E8452C99}
-.rd-lesson .rd-me{width:96px;height:96px;left:12px;bottom:4px}
-.rd-lesson .rd-npc{width:92px;height:92px;right:12px;bottom:4px}
-.rd-lesson .rd-bub{left:116px;right:16px;top:calc(56px + var(--safe-t))}
-.rd-lesson .rd-scene.talk .rd-bub{left:116px;right:112px;border-radius:18px 18px 4px 18px}
+.rd-p3 .rd-scene{height:calc(176px + var(--safe-t))}
+.rd-p3 .rd-x{width:44px;height:44px;left:8px;top:calc(8px + var(--safe-t));display:grid;place-items:center;border-radius:22px}
+.rd-p3 .rd-x .ic{width:20px;height:20px}
+.rd-p3 .rd-drops{left:64px;right:16px;top:calc(26px + var(--safe-t))}
+.rd-p3 .rd-drops i.now{box-shadow:0 0 0 2px #E8452C99}
+.rd-p3 .rd-me{width:96px;height:96px;left:12px;bottom:4px}
+.rd-p3 .rd-npc{width:92px;height:92px;right:12px;bottom:4px}
+.rd-p3 .rd-bub{left:116px;right:16px;top:calc(56px + var(--safe-t))}
+.rd-p3 .rd-scene.talk .rd-bub{left:116px;right:112px;border-radius:18px 18px 4px 18px}
 .p3-sec{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:40px;padding:8px 16px 0}
 .p3-sec>span{font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
 .p3-sec em{font-style:normal;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:12px;background:#1A12200D;color:var(--line);white-space:nowrap;letter-spacing:0;text-transform:none}
@@ -1076,7 +1076,8 @@ ruby.wk rt{font-family:var(--f-ui);font-size:.42em;font-weight:700;opacity:.75}
 .p3-pairs{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
 .p3-pc{min-height:60px;border-radius:18px;background:var(--paper3);border:var(--b);box-shadow:var(--sh);font-family:var(--f-jp);font-weight:900;font-size:24px;line-height:1.25;color:var(--line);transition:background .15s,opacity .2s}
 .p3-pc.r{font-size:20px}
-.p3-pc.es{font-family:var(--f-ui);font-size:15px;font-weight:700}
+.p3-pc{white-space:nowrap;word-break:keep-all;padding:4px 6px;min-width:0}.p3-pc.sm{font-size:18px}.p3-pc.r.sm{font-size:16px}
+.p3-pc.es{font-family:var(--f-ui);font-size:15px;font-weight:700;white-space:normal;word-break:normal}
 .p3-pc.p3-on{background:#FFF3C9;box-shadow:inset 0 0 0 3px var(--gold),var(--sh)}
 .p3-pc.ok{background:#DDF2D6;box-shadow:none;color:#2F7A25;opacity:.6}
 .p3-pc.bad{background:#F9DED6;animation:shake .3s}
@@ -1096,7 +1097,7 @@ ruby.wk rt{font-family:var(--f-ui);font-size:.42em;font-weight:700;opacity:.75}
 .p3-gap.fill{background:#FFF3C9;box-shadow:inset 0 -3px 0 var(--gold)}
 .p3-gap ruby rt{display:none}
 .p3-opts4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%}
-.p3-opts4.v{grid-template-columns:1fr 1fr}
+.p3-opts4.v{grid-template-columns:1fr 1fr}.p3-opts4.n3{grid-template-columns:repeat(3,1fr)}
 .p3-opts4 .asm-t{width:100%;padding:6px 0}
 .p3-body .asm-t.p3-on,.p3-body .opt.p3-on{box-shadow:inset 0 0 0 3px var(--gold),var(--sh)!important;background:#FFF3C9}
 .p3-step{display:inline-flex;gap:6px;align-items:center;font-size:12px;font-weight:800;color:var(--muted);margin:0 auto 8px}

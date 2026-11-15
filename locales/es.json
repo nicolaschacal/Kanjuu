@@ -400,6 +400,7 @@
  "ex.pairsHintR": "Toca los pares: cada kanji con su lectura",
  "ex.pairsHintM": "Toca los pares: cada palabra con su significado",
  "ex.pairsN": "{n} de {total} pares",
+ "ex.pairsLater": "Casi: este ejercicio vuelve más tarde",
  "ex.pairsMiss": {
   "one": "{n} par equivocado en el camino.",
   "other": "{n} pares equivocados en el camino."

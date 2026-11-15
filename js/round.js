@@ -154,7 +154,9 @@ export function planRound(k, secId = cur().sec, rnd = Math.random, level = level
   };
   const yW = [...words.filter(typeFits), ...oldWords.filter(typeFits)];
   const y = () => { if (!yW.length) return w(); const a = rot(yW, yi++), b = yW.length > 1 ? rot(yW, yi++) : null; return { t: 'type', ids: b && b !== a ? [a, b] : [a] }; };
-  const sK = [...new Set([...s.kanji, ...Object.keys(S.srs), k])].filter(similarFits);
+  // Kanji parecido: primero los de la unidad, barajados, y después los ya enseñados; cada ronda empieza en otro lugar
+  const sK = [...new Set([...shuffle(s.kanji, rnd), ...shuffle(Object.keys(S.srs), rnd), k])].filter(similarFits);
+  si = Math.floor(rnd() * Math.max(1, Math.min(sK.length, s.kanji.length || sK.length)));
   const sm = () => { const x = rot(sK, si++); return x ? { t: 'similar', k: x } : kan('meaning'); };
   const make = { w, p, v, o, t: talk, K: () => kan('meaning'), R: () => kan('read'), m, j, l, g, y, s: sm };
   return [{ t: 'intro' }, ...planOf(lv).map(c => make[c]())];
@@ -315,7 +317,7 @@ export function runRound(c, root, { test = false } = {}) {
   setAid(test ? 0 : s.stage === 'e0' ? 1 : lv);
   return new Promise(resolve => {
     const wrap = document.createElement('div');
-    wrap.className = 'game round rd-lesson';
+    wrap.className = 'game round rd-lesson rd-p3'; // rd-p3: marco de la maqueta P-03 (solo en las rondas, no en el salón de IA)
     const n = test ? steps.length : steps.length - 1;
     wrap.innerHTML = `<div class="rd-scene">${roomSVG()}<button class="x rd-x" aria-label="${t('dojo.back')}">${ic('x')}</button>
       <div class="rd-drops">${Array.from({ length: n }, (_, i) => `<i class="${steps[test ? i : i + 1]?.t === 'kanji' && steps[test ? i : i + 1]?.k === c.k ? 'k' : ''}"></i>`).join('')}</div>

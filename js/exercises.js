@@ -5,13 +5,12 @@
 // que sube desde abajo, con «Seguir» o «Entendido». El motor (js/round.js) decide en qué nivel va cada uno.
 import { ic } from './icons.js';
 import { t } from './i18n.js';
-import { S } from './state.js';
 import { KANJI, mainRead } from './data.js';
 import { STROKES } from './strokes.js';
 import { kanaHTML, helpOn, aidLevel, romaji } from './help.js';
 import { speak, canSpeak } from './games.js';
 import { extraTiles } from './wordgames.js';
-import { WORD, PHRASES, tr, wordHTML, jaTokens, jaHTML, jaPlain, showsKanji } from './lex.js';
+import { WORD, PHRASES, tr, wordHTML, jaTokens, jaHTML, jaPlain, showsKanji, kanjiTaught } from './lex.js';
 import { verbKanji, taOf } from './lang.js';
 import { EXTRA } from './curriculum.js';
 import { tokenDiff, tokenNotes } from './feedback.js';
@@ -22,8 +21,27 @@ const shuffle = (a, rnd = Math.random) => a.map(v => [rnd(), v]).sort((x, y) => 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const HIRA = /^[ぁ-ゖー]+$/;
 const PARTS = ['は', 'が', 'を', 'に', 'の', 'も', 'で', 'へ', 'と'];
-// Partículas que en muchas frases podrían ir las dos: nunca se ofrecen juntas en un hueco (no habría una sola correcta)
-const CLOSE = { に: ['へ'], へ: ['に'], は: ['が', 'も'], が: ['は', 'も', 'を'], も: ['は', 'が'], を: ['が'] };
+// Huecos de partícula: los distractores salen solo de を · に · で · へ · の. は, が, も y と nunca se ofrecen como
+// distractor, porque casi siempre arman otra frase correcta (窓 は しめて, ともだち と はなして…).
+const GAP_FAKE = ['を', 'に', 'で', 'へ', 'の'];
+// Pares que en muchas frases podrían ir los dos: nunca se ofrecen juntos en un hueco. El mapa es simétrico.
+const CLOSE_PAIRS = [['に', 'へ'], ['に', 'で'], ['で', 'を'], ['が', 'を'], ['に', 'と'], ['の', 'に'], ['の', 'で'], ['へ', 'を']];
+const CLOSE = {};
+CLOSE_PAIRS.forEach(([a, b]) => { (CLOSE[a] ??= []).push(b); (CLOSE[b] ??= []).push(a); });
+// の entre dos sustantivos casi siempre es gramatical (カフェ の コーヒー, ちち の はは): no se ofrece si después del
+// hueco viene un sustantivo o una ficha que no es verbo, adjetivo ni cópula
+const PRED = new Set(['です', 'でした', 'だ', 'ください', 'います', 'あります', 'いい']);
+const predAfter = x => !!x && (x.w ? ['v', 'adj'].includes(x.w.kind) : PRED.has(x.tok));
+// で delante de un adjetivo puede ser «en» (にほん で ゆうめい): tampoco se ofrece ahí. Si el hueco es el tema, el sujeto
+// o «con» (は · が · も · と), に y で tampoco: podrían marcar el momento o el lugar (あさ に テレビ を みません)
+const TOPIC = ['は', 'が', 'も', 'と'];
+// Verbos que aceptan «en / a / dentro de» con に junto a su objeto (ノート に かきます, かばん に おとします): con ellos,
+// に no es distractor de を
+const NI_VERBS = new Set(['おとします', 'おきます', 'かきます', 'おくります', 'あげます', 'かえします', 'つけます', 'のります', 'はいります', 'すわります', 'いいます', 'はなします', 'ききます', 'おしえます', 'かします', 'いれます', 'だします', 'かけます', 'とります', 'うります', 'かいます']);
+// は o も delante de un verbo pueden estar en lugar de を (さかな は たべません → さかな を たべません): ahí no va を
+export const gapFakes = (right, nextTok) => GAP_FAKE.filter(p => p !== right && !(CLOSE[right] || []).includes(p) && !(p === 'の' && !predAfter(nextTok)) && !(p === 'で' && nextTok?.w?.kind === 'adj') && !(TOPIC.includes(right) && (p === 'に' || p === 'で'))
+  && !(p === 'を' && ['は', 'も'].includes(right) && nextTok?.w?.kind === 'v')
+  && !(p === 'に' && right === 'を' && NI_VERBS.has(nextTok?.w?.kana)));
 // Forma escrita de una palabra sin furigana (lo que se lee en Emparejar y en el teclado kana)
 const bare = (w, form = w.kana) => showsKanji(w) ? verbKanji(w, form) : form;
 const tokHTML = x => x.w ? wordHTML(x.w, x.tok) : kanaHTML(x.tok, { particle: true });
@@ -36,7 +54,15 @@ export function pairsOf(pool, rnd = Math.random) {
   const ws = pool.map(id => WORD[id]).filter(Boolean);
   const kj = ws.filter(showsKanji), byKana = take(kj, w => w.kana);
   if (byKana.length === 5 && new Set(byKana.map(w => bare(w))).size === 5) return { mode: 'read', ids: shuffle(byKana, rnd).map(w => w.id) };
-  const byM = take(ws.filter(w => tr(w)), w => tr(w));
+  // Por significado: sin dos que se pisen («dame, por favor» y «por favor»)
+  const STOP = new Set(['las', 'los', 'del', 'una', 'uno', 'por', 'con', 'que', 'para', 'muy', 'más', 'sin']);
+  const mw = m => new Set(m.toLowerCase().split(/[^a-záéíóúñü]+/).filter(x => x.length > 2 && !STOP.has(x)));
+  const byM = [];
+  for (const w of ws.filter(w => tr(w))) {
+    const a = mw(tr(w));
+    if (byM.some(x => [...mw(tr(x))].some(y => a.has(y)))) continue;
+    byM.push(w); if (byM.length === 5) break;
+  }
   return byM.length === 5 ? { mode: 'mean', ids: shuffle(byM, rnd).map(w => w.id) } : null;
 }
 // Japonés → español: fichas en español de la traducción, sin ¿ ? ¡ ! ni comas (los signos de pregunta y
@@ -44,12 +70,22 @@ export function pairsOf(pool, rnd = Math.random) {
 // alguna frase aparecen con mayúscula en medio de la oración (Tanaka, Japón…).
 let proper = null;
 const properSet = () => proper ??= new Set([...PHRASES, ...EXTRA].flatMap(p => (p.es || '').split(/\s+/).slice(1)).map(clean).filter(w => w && w !== w.toLowerCase()));
-const clean = w => w.replace(/[¿?¡!.,;:«»"…]/g, '');
+const clean = w => w.replace(/[¿?¡!.,;:«»"…()]/g, '');
+// Las notas entre paréntesis («(con minutos)», «(al terminar)») no son parte de la traducción: se quitan antes
+const noNote = es => es.replace(/\s*\([^)]*\)/g, '').trim();
 export function esTokens(es) {
-  const ws = es.split(/\s+/).map(clean).filter(Boolean);
+  es = noNote(es);
+  // Si la pregunta o la exclamación empieza a mitad de la oración («Disculpa, ¿dónde está…?»), su ¿ o ¡ va pegado a
+  // la palabra donde empieza; si la oración empieza con ella, queda fijo al principio de la línea
+  const ws = es.split(/\s+/).map((w, i) => (i > 0 && /^[¿¡]/.test(w) ? w[0] : '') + clean(w)).filter(w => clean(w));
   if (ws[0] && !properSet().has(ws[0])) ws[0] = ws[0].toLowerCase();
-  return { ws, open: /^[¿¡]/.test(es) ? es[0] : '', close: /[?!]\s*$/.test(es) ? es.trim().slice(-1) : '' };
+  const close = /[?!]$/.test(es) ? es.slice(-1) : '';
+  const open = /^[¿¡]/.test(es) ? es[0] : close && !/[¿¡]/.test(es) ? { '?': '¿', '!': '¡' }[close] : '';
+  return { ws, open, close };
 }
+// Dos palabras que se parecen tanto que una podría ir por la otra (disculpa / disculpe, está / están)
+const prefix = (a, b) => { let i = 0; while (i < a.length && a[i] === b[i]) i++; return i; };
+const twin = (a, b) => { a = a.toLowerCase(); b = b.toLowerCase(); return a === b || (prefix(a, b) >= Math.min(5, a.length - 1, b.length - 1) && Math.abs(a.length - b.length) <= 2 && Math.min(a.length, b.length) >= 4); };
 export const jaesFits = ph => { const n = esTokens(tr(ph)).ws.length; return n >= 2 && n <= 7; };
 export const listenFits = ph => jaTokens(ph.ja, ph.ids).length >= 3;
 // Huecos posibles de una frase: una partícula suelta, o un verbo en forma て antes de も · ください · います
@@ -58,8 +94,8 @@ export function gapsOf(ph) {
   if (toks.length < 3) return out;
   toks.forEach((x, i) => {
     if (!x.w && PARTS.includes(x.tok) && i > 0) {
-      const bad = new Set([x.tok, ...(CLOSE[x.tok] || [])]);
-      out.push({ i, kind: 'p', right: x.tok, opts: [x.tok, ...PARTS.filter(p => !bad.has(p)).slice(0, 6)] });
+      const fakes = gapFakes(x.tok, toks[i + 1]);
+      if (fakes.length >= 2) out.push({ i, kind: 'p', right: x.tok, opts: [x.tok, ...fakes] });
     }
     const w = x.w, nx = toks[i + 1]?.tok;
     if (w?.kind === 'v' && w.te && x.tok === w.te && ['も', 'ください', 'います'].includes(nx)) {
@@ -79,7 +115,8 @@ export function similarOf(k) {
   const ok = x => x !== k && KANJI[x] && STROKES[x];
   return [...new Set(SIMILAR.filter(g => g.includes(k)).flatMap(g => [...g]).filter(ok))];
 }
-export const similarFits = k => !!(KANJI[k] && STROKES[k]) && similarOf(k).length >= 2;
+// Solo se pregunta un kanji enseñado con al menos 2 parecidos también enseñados (los distractores se reconocen)
+export const similarFits = k => !!(KANJI[k] && STROKES[k]) && kanjiTaught(k) && similarOf(k).filter(kanjiTaught).length >= 2;
 
 // ---------- Marco común ----------
 // ctx (lo arma runRound): { wrap, body, chip(texto), say(texto, quién, html), react(ok), npc(kanji) }
@@ -159,11 +196,12 @@ const jaItems = toks => shuffle([...toks, ...extraTiles(toks)]).map(x => ({ v: x
 // ======================================================================
 // Emparejar pares (nivel 1)
 // ======================================================================
+const long = s => [...s].length > 5;
 export function pairsExercise(ctx, { mode, ids }, done) {
   const ws = ids.map(id => WORD[id]), right = shuffle(ws.map((w, i) => i));
   const R = i => mode === 'read' ? kanaHTML(ws[i].kana) : esc(tr(ws[i]));
   frame(ctx, t('ex.pairs'), `<p class="hint">${t(mode === 'read' ? 'ex.pairsHintR' : 'ex.pairsHintM')}</p>
-    <div class="p3-pairs">${ws.map((w, i) => `<button class="p3-pc" data-l="${i}">${mode === 'read' ? bare(w) : wordHTML(w)}</button><button class="p3-pc r${mode === 'mean' ? ' es' : ''}" data-r="${right[i]}">${R(right[i])}</button>`).join('')}</div>
+    <div class="p3-pairs">${ws.map((w, i) => `<button class="p3-pc${long(mode === 'read' ? bare(w) : w.kana) ? ' sm' : ''}" data-l="${i}">${mode === 'read' ? bare(w) : wordHTML(w)}</button><button class="p3-pc r${mode === 'mean' ? ' es' : long(ws[right[i]].kana) ? ' sm' : ''}" data-r="${right[i]}">${R(right[i])}</button>`).join('')}</div>
     <p class="p3-pstat" aria-live="polite">${t('ex.pairsN', { n: 0, total: ws.length })}</p>`, false);
   ctx.say(t(mode === 'read' ? 'ex.sayPairsR' : 'ex.sayPairsM'));
   const B = ctx.body;
@@ -175,9 +213,10 @@ export function pairsExercise(ctx, { mode, ids }, done) {
       [a, b].forEach(x => { x.classList.remove('p3-on'); x.classList.add('ok'); x.disabled = true; });
       speak(ws[selL].kana); got++;
       B.querySelector('.p3-pstat').textContent = t('ex.pairsN', { n: got, total: ws.length });
-      if (got === ws.length) setTimeout(() => result(ctx, true, {
-        html: `<div class="p3-mtab">${ws.map(w => `<b>${bare(w)}</b><span class="jp">${w.kana}</span><span>${esc(tr(w))}</span>`).join('')}</div>${miss ? `<p class="p3-ans p3-miss">${t('ex.pairsMiss', { n: miss })}</p>` : ''}`,
-        onDone: () => done(miss === 0) }), 400);
+      // Con algún par equivocado no cuenta como acierto al primer intento: el panel lo dice y el ejercicio vuelve
+      if (got === ws.length) setTimeout(() => result(ctx, !miss, { title: miss ? t('ex.pairsLater') : '',
+        html: `<div class="p3-mtab">${ws.map(w => `<b>${bare(w)}</b><span class="jp">${bare(w) === w.kana ? "" : w.kana}</span><span>${esc(tr(w))}</span>`).join('')}</div>${miss ? `<p class="p3-ans p3-miss">${t('ex.pairsMiss', { n: miss })}</p>` : ''}`,
+        onDone: () => done(!miss) }), 400);
     } else {
       miss++; ctx.say(t('ex.sayPairMiss'));
       [a, b].forEach(x => { x.classList.remove('p3-on', 'bad'); void x.offsetWidth; x.classList.add('bad'); });
@@ -193,9 +232,10 @@ export function pairsExercise(ctx, { mode, ids }, done) {
 // Japonés → español (nivel 2): la frase en japonés y la traducción con fichas en español
 // ======================================================================
 export function jaesExercise(ctx, ph, others, done) {
-  const { ws, open, close } = esTokens(tr(ph)), have = new Set(ws.map(w => w.toLowerCase()));
+  const { ws, open, close } = esTokens(tr(ph)), have = new Set(ws.map(w => clean(w).toLowerCase()));
   // Fichas de más: palabras de otras frases de la unidad y de las anteriores (others), que no estén en la respuesta
-  const pool = [...new Set(others.filter(p => p.id !== ph.id).flatMap(p => esTokens(tr(p)).ws))].filter(w => !have.has(w.toLowerCase()));
+  // (sin el ¿ o ¡ pegado y sin palabras gemelas de la respuesta, que darían otra traducción correcta)
+  const pool = [...new Set(others.filter(p => p.id !== ph.id).flatMap(p => esTokens(tr(p)).ws.map(clean)))].filter(w => !have.has(w.toLowerCase()) && !ws.some(a => twin(clean(a), w)));
   const extra = shuffle(pool).slice(0, Math.min(4, Math.max(3, 9 - ws.length)));
   const items = shuffle([...ws, ...extra]).map(w => ({ v: w, html: esc(w), cls: 'es' }));
   const voice = canSpeak();
@@ -238,11 +278,11 @@ export function listenExercise(ctx, ph, done) {
 export function gapExercise(ctx, items, done) {
   series(items, ({ ph, gap }, i, n, next) => {
     const toks = jaTokens(ph.ja, ph.ids), part = gap.kind === 'p';
-    const opts = shuffle([gap.right, ...shuffle(gap.opts.slice(1)).slice(0, 3)]);
+    const opts = shuffle([gap.right, ...shuffle(gap.opts.slice(1)).slice(0, 3)]); // 3 o 4 opciones
     const side = a => a.length ? jaHTML(a.map(x => x.tok).join(' '), ph.ids) : '';
     const btn = frame(ctx, t('ex.gap'), `${stepHTML(i, n)}<p class="hint">${t(part ? 'ex.gapHintP' : 'ex.gapHintV')}</p>
       <p class="p3-gapq jp">${side(toks.slice(0, gap.i))}<span class="p3-gap" aria-label="${t('ex.gapAria')}">＿</span>${side(toks.slice(gap.i + 1))}</p>
-      <div class="p3-opts4${part ? '' : ' v'}">${opts.map(o => `<button class="asm-t${part ? ' pt' : ''}" data-v="${o}">${part ? kanaHTML(o, { particle: true }) : gap.w ? wordHTML(gap.w, o) : o}</button>`).join('')}</div>`);
+      <div class="p3-opts4${part ? '' : ' v'}${opts.length === 3 ? ' n3' : ''}">${opts.map(o => `<button class="asm-t${part ? ' pt' : ''}" data-v="${o}">${part ? kanaHTML(o, { particle: true }) : gap.w ? wordHTML(gap.w, o) : o}</button>`).join('')}</div>`);
     ctx.say(t(part ? 'ex.sayGapP' : 'ex.sayGapV'));
     const g = ctx.body.querySelector('.p3-gap');
     let sel = null;
@@ -316,8 +356,7 @@ export function typeExercise(ctx, ids, done) {
 // ======================================================================
 const inkFull = k => { const st = STROKES[k]; return `<svg class="rd-ink" viewBox="0 0 109 109" role="img" aria-label="${k}"><g class="d">${st.map(d => `<path d="${d}"/>`).join('')}</g></svg>`; };
 export function similarExercise(ctx, k, done) {
-  const taught = new Set(Object.keys(S.srs));
-  const near = similarOf(k), others = [...shuffle(near.filter(x => taught.has(x))), ...shuffle(near.filter(x => !taught.has(x)))].slice(0, 3);
+  const others = shuffle(similarOf(k).filter(kanjiTaught)).slice(0, 3);
   const opts = shuffle([k, ...others]), m = KANJI[k].m;
   const btn = frame(ctx, t('ex.similar'), `<p class="hint">${t('ex.simHint', { m: esc(m) })}</p><div class="qm sm"><span class="jp">${mainRead(k) || ''}</span></div>
     <div class="opts">${opts.map(x => `<button class="opt" data-k="${x}">${x}</button>`).join('')}</div>`);
