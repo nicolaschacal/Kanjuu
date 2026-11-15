@@ -307,7 +307,4 @@ cloud.me().then(async u => {
   shell(); aiStatus().catch(() => {});
   start.enter(startGame);
 });
-// Como app: sin menú de pulsación larga ni zoom con dos dedos (los campos de texto sí lo conservan)
-addEventListener('contextmenu', e => { if (!e.target.closest?.('input,textarea')) e.preventDefault(); });
-addEventListener('gesturestart', e => e.preventDefault());
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});

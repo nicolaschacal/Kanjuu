@@ -21,6 +21,9 @@ function cast() {
 
 export function startScreen() {
   document.getElementById('boot')?.remove();
+  // Como app: sin menú de pulsación larga ni zoom con dos dedos (los campos de texto sí lo conservan)
+  addEventListener('contextmenu', e => { if (!e.target.closest?.('input,textarea')) e.preventDefault(); });
+  addEventListener('gesturestart', e => e.preventDefault());
   const el = document.createElement('div'), born = Date.now();
   el.className = 'title-scr'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'KANJŪ');
   document.body.append(el);
