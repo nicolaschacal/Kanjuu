@@ -20,7 +20,7 @@ import { viewExp, fmt } from './trips.js';
 import { viewDex, openQuests } from './atlas.js';
 import { viewShop, openLogin } from './shop.js';
 import { acadCtx } from './dojo.js';
-import { openAccount, authWall } from './account.js';
+import { openAccount } from './account.js';
 import { startScreen } from './start.js';
 import { t, locale } from './i18n.js';
 import { pathReady } from './path.js';
