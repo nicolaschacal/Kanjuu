@@ -169,7 +169,7 @@ Las palabras concretas de cada sección se cargan en `js/curriculum.js` etapa po
 | 2.1 | Mi rutina | 〜ます / 〜ません, 毎〜 | 毎 朝 昼 夜 起 | 朝 |
 | 2.2 | Lo que hice ayer | 〜ました / 〜ませんでした | 今 先 週 年 | 今 |
 | 2.3 | Comprar ropa | 〜を ください, colores | 買 赤 白 黒 青 | 買 |
-| 2.4 | Describir cosas | adjetivos い / な, pasado | 新 古 高 安 | 新 |
+| 2.4 | Describir cosas | adjetivos い / な, pasado | 新 古 高 安 長 | 新 |
 | 2.5 | Planes para el finde (futuro) | presente con valor futuro, 〜ませんか, 〜ましょう | 明 来週 末 | 明 |
 | 2.6 | El clima | 〜でしょう, estaciones | 天 気 雨 雪 春 夏 秋 冬 | 雨 |
 | 2.7 | Mi casa | 〜が あります, contadores | 家 門 窓 | 家 |
