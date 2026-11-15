@@ -316,7 +316,7 @@ export const LEX = [
   { id: 'soba', kana: 'そば', kanji: null, es: 'soba (fideos de alforfón)', en: 'soba (buckwheat noodles)', sit: 'spring', kind: 'n' },
   { id: 'udon', kana: 'うどん', kanji: null, es: 'udon (fideos gruesos de trigo)', en: 'udon (thick wheat noodles)', sit: 'spring', kind: 'n' },
   { id: 'sarada', kana: 'サラダ', kanji: null, es: 'ensalada', en: 'salad', sit: 'spring', kind: 'n' },
-  { id: 'mazui', kana: 'まずい', kanji: null, es: 'feo (de sabor) · que sabe mal', en: 'bad-tasting', sit: 'spring', kind: 'adj' },
+  { id: 'mazui', kana: 'まずい', kanji: null, es: 'malo (de sabor) · que sabe mal', en: 'bad-tasting', sit: 'spring', kind: 'adj' },
   { id: 'nigai', kana: 'にがい', kanji: '苦い', es: 'amargo', en: 'bitter', sit: 'spring', kind: 'adj' },
   { id: 'sukimasu', kana: 'すきます', kanji: '空きます', te: 'すいて', tek: '空いて', dict: 'すく', dictk: '空く', es: 'vaciarse (おなか が すきました: tengo hambre)', en: 'to become empty (おなか が すきました: I am hungry)', sit: 'spring', kind: 'v' },
   { id: 'ippai', kana: 'いっぱい', kanji: null, es: 'lleno (おなか が いっぱい: estar satisfecho)', en: 'full (おなか が いっぱい: to be full)', sit: 'spring', kind: 'expr' },
@@ -595,7 +595,7 @@ export const LEX = [
   { id: 'norimasu', kana: 'のります', kanji: '乗ります', te: 'のって', tek: '乗って', dict: 'のる', dictk: '乗る', es: 'subir (a un vehículo)', en: "to ride · get on", sit: 'lake', kind: 'v' },
   { id: 'kakarimasu', kana: 'かかります', kanji: null, te: 'かかって', dict: 'かかる', es: 'tardar · llevar (tiempo)', en: "to take (time)", sit: 'lake', kind: 'v' },
   { id: 'jikan', kana: 'じかん', kanji: '時間', es: 'hora (duración) · tiempo', en: "hour (duration) · time", sit: 'lake', kind: 'n' },
-  { id: 'chikatetsu', kana: 'ちかてつ', kanji: '地下鉄', es: 'metro · subte', en: "subway", sit: 'lake', kind: 'n' },
+  { id: 'chikatetsu', kana: 'ちかてつ', kanji: '地下鉄', es: 'metro', en: "subway", sit: 'lake', kind: 'n' },
   // Etapa 4 del currículo
   { id: 'oyogimasu', kana: 'およぎます', kanji: '泳ぎます', te: 'およいで', tek: '泳いで', dict: 'およぐ', dictk: '泳ぐ', pot: 'およげます', potk: '泳げます', es: 'nadar', en: "to swim", sit: 'lake', kind: 'v' },
   { id: 'kaze', kana: 'かぜ', kanji: '風', es: 'viento', en: "wind", sit: 'lake', kind: 'n' },
