@@ -433,6 +433,30 @@ export const EXTRA = [
   { id: 'c_shinkansen', ja: 'とうきょう から きょうと まで しんかんせん で いきます', ids: ['toukyou', 'kyouto', 'shinkansen', 'ikimasu'], pat: null, es: 'Voy de Tokio a Kioto en tren bala.', en: 'I go from Tokyo to Kyoto by bullet train.' },
   { id: 'c_ken', ja: 'にほん に は けん が たくさん あります', ids: ['nihon', 'ken', 'takusan', 'arimasu'], pat: null, es: 'Japón tiene muchas prefecturas.', en: 'Japan has many prefectures.' },
   { id: 'c_kyoutomatsuri', ja: 'きょうと の まつり は きれい でしょう', ids: ['kyouto', 'matsuri', 'kirei'], pat: null, es: 'El festival de Kioto debe de ser precioso.', en: 'The Kyoto festival must be beautiful.' },
+  // ── P-10 · adjetivos en pasado y negativo ──
+  // 2.4 (presenta adjneg): presente negativo de い y な
+  { id: 'c_takakunai', ja: 'この くつ は たかくない です', ids: ['kono', 'kutsu', 'takai'], pat: 'adjneg', es: 'Estos zapatos no son caros.', en: 'These shoes are not expensive.' },
+  { id: 'c_shizukajanai', ja: 'あの まち は しずか じゃない です', ids: ['ano', 'machi', 'shizuka'], pat: 'adjneg', es: 'Aquel pueblo no es tranquilo.', en: 'That town is not quiet.' },
+  // 2.5: pasado de です en pregunta
+  { id: 'c_doudeshita', ja: 'しゅうまつ は どう でした か', ids: ['shuumatsu', 'dou'], pat: 'ka', es: '¿Qué tal tu fin de semana?', en: 'How was your weekend?' },
+  // 2.6: pasado de un adjetivo い
+  { id: 'c_samukatta', ja: 'きのう は さむかった です', ids: ['kinou', 'samui'], pat: 'adjneg', es: 'Ayer hizo frío.', en: 'It was cold yesterday.' },
+  // 2.7: な ante sustantivo y más negativos (junto con c_semai y c_demo, que pasan de 2.4 a 2.7)
+  { id: 'c_hirokunai', ja: 'わたし の へや は ひろくない です', ids: ['watashi', 'heya', 'hiroi'], pat: 'adjneg', es: 'Mi cuarto no es amplio.', en: 'My room is not spacious.' },
+  { id: 'c_shizukana', ja: 'しずか な へや です', ids: ['shizuka', 'heya'], pat: null, es: 'Es un cuarto tranquilo.', en: 'It is a quiet room.' },
+  { id: 'c_kireijanai', ja: 'にわ は あまり きれい じゃない です', ids: ['niwa', 'amari', 'kirei'], pat: 'adjneg', es: 'El jardín no es muy bonito.', en: 'The garden is not very pretty.' },
+  // 2.8: sustantivo + じゃありません
+  { id: 'c_ekijanai', ja: 'あれ は えき じゃありません', ids: ['are', 'eki'], pat: 'adjneg', es: 'Aquello no es la estación.', en: 'That is not the station.' },
+  // 2.9
+  { id: 'c_oishikatta', ja: 'ラーメン は おいしかった です', ids: ['raamen', 'oishii'], pat: 'adjneg', es: 'El ramen estuvo rico.', en: 'The ramen was delicious.' },
+  // 2.12
+  { id: 'c_omoshirokatta', ja: 'きのう の えいが は おもしろかった です', ids: ['kinou', 'eiga', 'omoshiroi'], pat: 'adjneg', es: 'La película de ayer estuvo interesante.', en: "Yesterday's movie was interesting." },
+  { id: 'c_sukijanai', ja: 'その うた は あまり すき じゃない です', ids: ['sono', 'uta', 'amari', 'suki'], pat: 'adjneg', es: 'Esa canción no me gusta mucho.', en: 'I do not like that song very much.' },
+  // 3.3
+  { id: 'c_itakatta', ja: 'きのう は あたま が いたかった です', ids: ['kinou', 'atama', 'itai'], pat: 'adjneg', es: 'Ayer me dolía la cabeza.', en: 'I had a headache yesterday.' },
+  { id: 'c_yokunai', ja: 'おさけ は からだ に よくない です', ids: ['osake', 'karada', 'ii'], pat: 'adjneg', es: 'El alcohol no es bueno para el cuerpo.', en: 'Alcohol is not good for your body.' },
+  // 3.4
+  { id: 'c_yokatta', ja: 'にほん の りょこう は よかった です', ids: ['nihon', 'ryokou', 'ii'], pat: 'adjneg', es: 'El viaje por Japón estuvo muy bien.', en: 'The trip to Japan was good.' },
 ];
 
 const T = (es, en) => ({ es, en });
@@ -541,32 +565,32 @@ export const SECTIONS = [
   { id: '2.4', stage: 'e2', title: T('Describir cosas', 'Describing things'), cando: T('Puedo decir cómo son las cosas', 'I can say what things are like'),
     intro: T('Este pincel es viejo… ¡pero es mi favorito! ¿Cómo son tus cosas?', 'This brush is old… but it is my favorite! What are your things like?'),
     words: ['atarashii', 'furui', 'takai', 'yasui', 'kirei', 'hana', 'ii', 'nagai', 'omoi', 'karui', 'hiroi', 'semai', 'muzukashii', 'shizuka', 'nigiyaka', 'benri', 'yuumei', 'donna', 'demo'],
-    phrases: ['p_fuku', 'c_takai', 'c_furui', 'c_yasui', 'c_kirei', 'c_omoi', 'c_karui', 'c_semai', 'c_demo', 'c_muzukashii', 'c_shizuka', 'c_nigiyaka', 'c_benri', 'c_yuumei', 'c_donna'], pats: ['adj'],
+    phrases: ['p_fuku', 'c_takai', 'c_furui', 'c_yasui', 'c_kirei', 'c_omoi', 'c_karui', 'c_takakunai', 'c_muzukashii', 'c_shizuka', 'c_shizukajanai', 'c_nigiyaka', 'c_benri', 'c_yuumei', 'c_donna'], pats: ['adj', 'adjneg'],
     kanji: ['新', '古', '高', '安'], reward: '新', rewardWord: 'atarashii', rival: ['古', '高', '安'] },
   { id: '2.5', stage: 'e2', title: T('Planes para el finde', 'Weekend plans'), cando: T('Puedo invitar y hacer planes', 'I can invite someone and make plans'),
     intro: T('¡El fin de semana no hay entrenamiento! ¿Qué hacemos?', 'No training this weekend! What shall we do?'),
     words: ['ashita', 'shuumatsu', 'raishuu', 'issho', 'eiga', 'doyoubi', 'mimasu', 'ikimasu', 'dou', 'ee', 'chotto', 'zannen', 'raigetsu', 'rainen', 'kondo', 'jaa', 'mata', 'konsaato', 'tenisu'],
-    phrases: ['c_eiga', 'c_machi', 'c_ashitagohan', 'c_doyoubi', 'c_tenisu', 'c_iidesune', 'c_dou', 'c_chotto', 'c_zannen', 'c_kondo', 'c_konsaato', 'c_rainen', 'c_nanji', 'c_ekimae'], pats: [],
+    phrases: ['c_eiga', 'c_machi', 'c_ashitagohan', 'c_doyoubi', 'c_tenisu', 'c_iidesune', 'c_dou', 'c_chotto', 'c_zannen', 'c_kondo', 'c_konsaato', 'c_rainen', 'c_nanji', 'c_ekimae', 'c_doudeshita'], pats: [],
     kanji: ['明', '来', '週', '末'], reward: '明', rewardWord: 'ashita', rival: ['来', '週', '日'] },
   { id: '2.6', stage: 'e2', title: T('El clima', 'The weather'), cando: T('Puedo hablar del clima y de las estaciones', 'I can talk about the weather and the seasons'),
     intro: T('Hoy hay mucho sol… ¡es mi día! ¿Qué tiempo hará mañana?', 'Lots of sun today… it is my day! What will the weather be like tomorrow?'),
     words: ['tenki', 'ame', 'furimasu', 'yuki', 'haru', 'natsu', 'aki', 'fuyu', 'atsui', 'samui', 'hare', 'kumori', 'kaze', 'tsuyoi', 'atatakai', 'suzushii', 'tabun', 'sukoshi', 'kisetsu', 'dono'],
-    phrases: ['p_tenki', 'p_ame', 'p_fuyu', 'p_natsu', 'c_yuki', 'c_deshou', 'c_kyouhare', 'c_kumori', 'c_kazefuyu', 'c_atatakai', 'c_suzushii', 'c_tabun', 'c_sukoshi', 'c_kisetsu'], pats: [],
+    phrases: ['p_tenki', 'p_ame', 'p_fuyu', 'p_natsu', 'c_yuki', 'c_deshou', 'c_kyouhare', 'c_kumori', 'c_kazefuyu', 'c_atatakai', 'c_suzushii', 'c_tabun', 'c_sukoshi', 'c_kisetsu', 'c_samukatta'], pats: [],
     kanji: ['天', '気', '雨', '雪', '春', '夏', '秋', '冬'], reward: '雨', rewardWord: 'ame', rival: ['春', '夏', '冬'] },
   { id: '2.7', stage: 'e2', title: T('Mi casa', 'My home'), cando: T('Puedo describir mi casa', 'I can describe my home'),
     intro: T('¡Quiero conocer tu casa! ¿Qué hay adentro?', 'I want to see your home! What is inside?'),
     words: ['ie', 'heya', 'mado', 'mon', 'niwa', 'tsukue', 'arimasu', 'imasu', 'daidokoro', 'reizouko', 'kai', 'toire', 'genkan', 'kaidan', 'ofuro', 'eakon', 'akarui', 'kurai', 'doa', 'apaato'],
-    phrases: ['p_heya', 'c_mado', 'c_mon', 'c_niwa', 'c_daidokoro', 'c_heyamittsu', 'c_nikai', 'c_kaidan', 'c_ofuro', 'c_eakon', 'c_akarui', 'c_kurai', 'c_doa', 'c_apaato'], pats: ['arimasu'],
+    phrases: ['p_heya', 'c_mado', 'c_mon', 'c_niwa', 'c_daidokoro', 'c_heyamittsu', 'c_nikai', 'c_kaidan', 'c_ofuro', 'c_eakon', 'c_akarui', 'c_kurai', 'c_doa', 'c_apaato', 'c_semai', 'c_demo', 'c_hirokunai', 'c_shizukana', 'c_kireijanai'], pats: ['arimasu'],
     kanji: ['家', '門', '窓', '台'], reward: '家', rewardWord: 'ie', rival: ['門', '戸', '室'] },
   { id: '2.8', stage: 'e2', title: T('Pedir direcciones', 'Asking for directions'), cando: T('Puedo preguntar y explicar cómo llegar', 'I can ask and explain how to get somewhere'),
     intro: T('Me perdí buscando la estación… ¿Me ayudas a preguntar?', 'I got lost looking for the station… Will you help me ask?'),
     words: ['michi', 'migi', 'hidari', 'eki', 'massugu', 'magarimasu', 'ikimasu', 'kudasai', 'sumimasen', 'kado', 'tsugi', 'shingou', 'hashi', 'watarimasu', 'banme', 'chikai', 'tooi', 'arukimasu', 'migigawa', 'hidarigawa'],
-    phrases: ['p_migi', 'c_massugu', 'c_magatte', 'c_ekidoko', 'c_hidari', 'c_kado', 'c_shingou', 'c_hashi', 'c_banme', 'c_chikai', 'c_tooi', 'c_aruite', 'c_migigawa', 'c_hidarigawa'], pats: [],
+    phrases: ['p_migi', 'c_massugu', 'c_magatte', 'c_ekidoko', 'c_hidari', 'c_kado', 'c_shingou', 'c_hashi', 'c_banme', 'c_chikai', 'c_tooi', 'c_aruite', 'c_migigawa', 'c_hidarigawa', 'c_ekijanai'], pats: [],
     kanji: ['道', '駅', '右', '左'], reward: '道', rewardWord: 'michi', rival: ['右', '左', '駅'] },
   { id: '2.9', stage: 'e2', title: T('En el restaurante', 'At the restaurant'), cando: T('Puedo pedir comida en un restaurante', 'I can order food at a restaurant'),
     intro: T('¡Huele a ramen! Vamos a pedir algo rico.', "It smells like ramen! Let's order something tasty."),
     words: ['niku', 'sakana', 'tamago', 'kome', 'yasai', 'raamen', 'shimasu', 'oishii', 'irasshaimase', 'menyuu', 'teishoku', 'kashikomarimashita', 'misoshiru', 'ohashi', 'supuun', 'fooku', 'okawari', 'ikaga', 'kekkou', 'okaikei'],
-    phrases: ['c_raamen', 'c_nikuyasai', 'c_tamago', 'c_gohansakana', 'c_irasshai', 'c_menyuu', 'c_teishoku', 'c_kashikomari', 'c_misoshiru', 'c_ohashi', 'c_supuun', 'c_okawari', 'c_kekkou', 'c_okaikei', 'c_kome'], pats: [],
+    phrases: ['c_raamen', 'c_nikuyasai', 'c_tamago', 'c_gohansakana', 'c_irasshai', 'c_menyuu', 'c_teishoku', 'c_kashikomari', 'c_misoshiru', 'c_ohashi', 'c_supuun', 'c_okawari', 'c_kekkou', 'c_okaikei', 'c_kome', 'c_oishikatta'], pats: [],
     kanji: ['田', '肉', '魚', '卵', '米'], reward: '魚', rewardWord: 'sakana', rival: ['肉', '米', '食'] },
   { id: '2.10', stage: 'e2', title: T('Pedir permiso', 'Asking for permission'), cando: T('Puedo pedir permiso y decir lo que no se puede', 'I can ask permission and say what is not allowed'),
     intro: T('En el templo hay reglas… ¿Cómo se pide permiso?', 'There are rules at the temple… How do you ask for permission?'),
@@ -581,7 +605,7 @@ export const SECTIONS = [
   { id: '2.12', stage: 'e2', title: T('Mis hobbies', 'My hobbies'), cando: T('Puedo hablar de lo que me gusta hacer', 'I can talk about what I like to do'),
     intro: T('Cuando no entreno, ¡me encanta cantar! ¿Qué te gusta hacer a ti?', 'When I am not training, I love to sing! What do you like to do?'),
     words: ['ongaku', 'uta', 'utaimasu', 'eiga', 'suki', 'kikimasu', 'mainichi', 'mimasu', 'shumi', 'dokusho', 'piano', 'hikimasu', 'gitaa', 'naraimasu', 'oyogimasu', 'ryouri', 'tsuri', 'yakyuu', 'e', 'jouzu'],
-    phrases: ['c_ongaku', 'c_uta', 'c_shumi', 'c_kiitemasu', 'c_shuminan', 'c_dokusho', 'c_utau', 'c_piano', 'c_gitaa', 'c_oyogu', 'c_ryouri', 'c_tsuri', 'c_yakyuu', 'c_e', 'c_pianojouzu'], pats: [],
+    phrases: ['c_ongaku', 'c_uta', 'c_shumi', 'c_kiitemasu', 'c_shuminan', 'c_dokusho', 'c_utau', 'c_piano', 'c_gitaa', 'c_oyogu', 'c_ryouri', 'c_tsuri', 'c_yakyuu', 'c_e', 'c_pianojouzu', 'c_omoshirokatta', 'c_sukijanai'], pats: [],
     kanji: ['音', '楽', '歌', '見', '料'], reward: '音', rewardWord: 'ongaku', rival: ['楽', '見', '聞'] },
   // ───────── Etapa 3 · Ampliar el mundo ─────────
   { id: '3.1', stage: 'e3', title: T('Comparar', 'Comparing'), cando: T('Puedo comparar cosas y decir cuál me gusta más', 'I can compare things and say which I like most'),
@@ -597,12 +621,12 @@ export const SECTIONS = [
   { id: '3.3', stage: 'e3', title: T('Me siento mal', 'I feel sick'), cando: T('Puedo decir qué me duele y dar un consejo', 'I can say what hurts and give advice'),
     intro: T('Uy… hoy no me siento bien. ¿Me ayudas a decir qué me pasa?', "Ugh… I don't feel well today. Will you help me say what's wrong?"),
     words: ['atama', 'te', 'ashi', 'karada', 'byouki', 'kusuri', 'itai', 'yasumimasu'],
-    phrases: ['c_atama', 'c_kusuri', 'c_yasunda', 'c_ashi'], pats: [],
+    phrases: ['c_atama', 'c_kusuri', 'c_yasunda', 'c_ashi', 'c_itakatta', 'c_yokunai'], pats: [],
     kanji: ['体', '頭', '手', '足', '病', '薬'], reward: '体', rewardWord: 'karada', rival: ['手', '足', '心'] },
   { id: '3.4', stage: 'e3', title: T('¿Alguna vez…?', 'Have you ever…?'), cando: T('Puedo contar lo que hice alguna vez', 'I can say what I have done before'),
     intro: T('Yo una vez fui hasta el mar. ¿Y tú, qué hiciste alguna vez?', 'I once went all the way to the sea. What have you done before?'),
     words: ['koto', 'ryokou', 'soto', 'iimasu', 'nihon', 'ikimasu', 'tabemasu', 'mimasu'],
-    phrases: ['c_itta', 'c_tabeta', 'c_mita', 'c_ryokou', 'c_soto'], pats: [],
+    phrases: ['c_itta', 'c_tabeta', 'c_mita', 'c_ryokou', 'c_soto', 'c_yokatta'], pats: [],
     kanji: ['旅', '外', '言'], reward: '旅', rewardWord: 'ryokou', rival: ['外', '行', '言'] },
   { id: '3.5', stage: 'e3', title: T('Un día en la naturaleza', 'A day in nature'), cando: T('Puedo contar varias cosas que hice', 'I can list several things I did'),
     intro: T('¡Hoy entrenamos afuera, entre montañas y ríos!', 'Today we train outside, among mountains and rivers!'),
@@ -883,6 +907,11 @@ export function checkCurriculum() {
     if (s.stage === 'e0' && s.kana === undefined) errs.push(`${where}: falta kana`);
   }
   EXTRA.forEach(p => { if (!usedExtra.has(p.id)) errs.push(`EXTRA ${p.id}: ninguna sección la usa`); });
+  // Los patrones propios del currículo (cur: true) no los chequea checkLang: aquí se exige una frase y una sección que los presente
+  for (const pt of PATTERNS.filter(x => x.cur)) {
+    if (!EXTRA.some(p => p.pat === pt.id)) errs.push(`Patrón ${pt.id}: ninguna frase del currículo lo usa`);
+    if (!SECTIONS.some(s => s.pats.includes(pt.id))) errs.push(`Patrón ${pt.id}: ninguna sección lo presenta`);
+  }
 
   // Diálogos: fichas válidas y solo palabras de su sección o de las anteriores
   const tokOk = (where, ja, ids) => {

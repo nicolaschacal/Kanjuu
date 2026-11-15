@@ -634,10 +634,14 @@ export const PATTERNS = [
   { id: 'de', ja: 'X で V ます', es: 'hago V en X · con X (lugar o medio)', en: 'I do V at X · by X (place or means)' },
   { id: 'arimasu', ja: 'X に Y が あります ・ います', es: 'en X hay Y (あります cosas, います seres vivos)', en: 'there is Y in X (あります things, います living beings)' },
   { id: 'mashita', ja: 'V ました', es: 'hice V (pasado)', en: 'I did V (past)' },
+  // P-10 · Solo lo usan frases del currículo (EXTRA): cur: true lo saca del chequeo de frases de viaje.
+  { id: 'adjneg', cur: true, ja: 'A くない です ・ A かった です', es: 'no es A · era A. Adjetivos い: たかくない です (no es caro), たかかった です (era caro); いい cambia a よくない · よかった. Adjetivos な y sustantivos: しずか じゃない です (no es tranquilo), しずか でした (era tranquilo)', en: 'is not A · was A. い-adjectives: たかくない です, たかかった です; いい becomes よくない · よかった. な-adjectives and nouns: しずか じゃない です, しずか でした' },
 ];
 
 // Fichas que no son palabras de LEX: partículas, cópula y terminaciones de cortesía.
-export const PARTICLES = ['は', 'が', 'を', 'に', 'で', 'へ', 'も', 'の', 'と', 'か', 'ね', 'です', 'でした', 'でしょう', 'だ', 'より', 'から', 'まで', 'みたい', 'ので', 'のに', 'ございます', 'お'];
+export const PARTICLES = ['は', 'が', 'を', 'に', 'で', 'へ', 'も', 'の', 'と', 'か', 'ね', 'です', 'でした', 'でしょう', 'だ', 'より', 'から', 'まで', 'みたい', 'ので', 'のに', 'ございます', 'お',
+  // P-10 · cópula negativa y pasada de adjetivos な y sustantivos (しずか じゃない です), y な ante sustantivo (しずか な まち)
+  'じゃない', 'じゃなかった', 'じゃありません', 'じゃありませんでした', 'な'];
 
 // Frases. `ja` segmentada, `ids` = palabras de LEX que usa, `pat` = id de PATTERNS o null (frase hecha).
 export const PHRASES = [
@@ -887,8 +891,13 @@ const masuSet = f => f ? [f, f.slice(0, -2) + 'ません', f.slice(0, -2) + 'ま
 const potForms = w => w.pot ? [...masuSet(w.pot), ...(w.potd ? [w.potd] : [])] : [];
 // Pasiva (pass: しかられます) y causativa (caus: たべさせます), también con sus ません · ました
 const passForms = w => [...masuSet(w.pass), ...masuSet(w.caus)];
+// Adjetivos い (P-10): 〜そう · 〜くない · 〜かった · 〜くなかった · 〜くて sobre la raíz sin い. いい es irregular: conjuga
+// sobre よ (よさそう · よくない · よかった…). Los な quedan en su raíz: la cópula (じゃない · でした · な) va como ficha aparte.
+const ADJ_ENDS = ['そう', 'くない', 'かった', 'くなかった', 'くて'];
+const isIAdj = w => w.kind === 'adj' && w.kana.endsWith('い') && !NA_ADJ.has(w.id);
+const adjStem = w => w.id === 'ii' ? 'よ' : w.kana.slice(0, -1);
 export function verbForms(w) {
-  if (w.kind === 'adj') return w.kana.endsWith('い') && !NA_ADJ.has(w.id) ? [w.kana, w.kana.slice(0, -1) + 'そう'] : [w.kana];
+  if (w.kind === 'adj') return isIAdj(w) ? [w.kana, ...ADJ_ENDS.map(e => adjStem(w) + (w.id === 'ii' && e === 'そう' ? 'さそう' : e))] : [w.kana];
   if (w.kind !== 'v') return [w.kana];
   const stem = w.kana.slice(0, -2), ta = taOf(w.te);
   return [...VERB_ENDS.map(e => stem + e), ...(w.te ? [w.te, ta, ta + 'り', ta + 'ら'] : []), ...(w.dict ? [w.dict] : []),
@@ -897,7 +906,8 @@ export function verbForms(w) {
 // La misma forma escrita con kanji (para mostrarla cuando el jugador ya los tiene)
 export function verbKanji(w, form) {
   if (!w.kanji || form === w.kana) return w.kanji;
-  if (w.kind === 'adj') return w.kanji.slice(0, -1) + form.slice(w.kana.length - 1);
+  // 高い → 高くない · 高かった. いい no tiene kanji en LEX; si algún día lo tiene (良い), よ ocupa el lugar de い y la cuenta sigue bien.
+  if (w.kind === 'adj') return isIAdj(w) ? w.kanji.slice(0, -1) + form.slice(adjStem(w).length) : w.kanji;
   if (w.kind !== 'v') return w.kanji;
   if (form === w.dict) return w.dictk || w.kanji;
   if (form === w.vol) return w.volk || w.kanji;
@@ -978,7 +988,7 @@ export function checkLang() {
     runMax = Math.max(runMax, max);
     if (p.pat !== null) seenPat.add(p.pat);
   }
-  for (const pt of PATTERNS) if (!seenPat.has(pt.id)) errs.push(`Patrón ${pt.id}: ninguna frase lo usa`);
+  for (const pt of PATTERNS) if (!seenPat.has(pt.id) && !pt.cur) errs.push(`Patrón ${pt.id}: ninguna frase lo usa`);
   const cover = inPhrase.size / LEX.length;
   // 25 %: las palabras que suma el currículo se practican con sus propias frases; la cobertura total (70 %) la exige checkCurriculum().
   // Era 40 %; P-07 lo bajó a 30 % y P-08b a 25 %: el currículo suma cientos de palabras con sus propias frases
