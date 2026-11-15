@@ -5,7 +5,7 @@ import { creatureSVG, objSVG } from './creature.js';
 import { S, loadedAt, save, replace, reset, grade, dueList, mastery, release, rollDaily, bump, see, addCreature, byId, expNeed, giveExp, evolve, fuse, rebirth } from './state.js';
 import { GAMES, hasWord, hasParts, play, review, storyHTML, speak, okuHTML } from './games.js';
 import * as cloud from './cloud.js';
-import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn } from './help.js';
+import { startHelp, rr, romaji, kanaPool, kanaDrill, helpOn, setAid } from './help.js';
 import { openAcademy, acadDue, reviewAcademy, DAILY_GOAL } from './academy.js';
 import { openAISettings, aiStatus } from './ai.js';
 import { startTutorial, emit } from './tutorial.js';
@@ -122,6 +122,7 @@ export async function openTraining(c, parent) {
   const sec = curSection(), before = paintedOf(sec.id);
   parent.close();
   const res = await runRound(c, $('#layer'));
+  setAid(0); // por si la ronda se cerró por otro camino: las ayudas del nivel no siguen fuera
   if (!res) return go();
   if (res.skipTest) return skipTest(c, sec);
   const r = endRound(sec.id, res.right, res.total);

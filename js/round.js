@@ -8,7 +8,7 @@ import { kanaHTML, setAid } from './help.js';
 import { speak } from './games.js';
 import { wordExercise } from './wordgames.js';
 import { WORD, tr, jaTokens, jaHTML, jaPlain, wordHTML, gradeWord, meet, lexDue } from './lex.js';
-import { SECTIONS, sectionById, phraseById, nextSection, TALKS, LEVELS, ROUNDS_PER_LEVEL, ROUND_SIZE } from './curriculum.js';
+import { SECTIONS, sectionById, phraseById, nextSection, TALKS, LEVELS, ROUNDS_PER_LEVEL, ROUND_SIZE, PRIOR_MIX } from './curriculum.js';
 import { creatureSVG } from './creature.js';
 import { STROKES } from './strokes.js';
 import { arrive } from './world.js';
@@ -19,7 +19,8 @@ export const UNIT_ROUNDS = LEVELS * ROUNDS_PER_LEVEL;
 const OLD_ROUNDS = 5; // rondas por sección antes de P-04: S.cur.rounds se sigue escribiendo así para partidas viejas
 export const PASS = .8;    // la ronda cuenta con el 80 % o más
 // Qué ejercicios de palabra admite cada nivel (wordgames.js): reconocer al principio, producir al final
-const LEVEL_TYPES = { 1: { max: 'k2m' }, 2: { max: 'build' }, 3: { min: 'k2m' }, 4: { min: 'build' }, 5: { min: 'build' } };
+// (nivel 2 sigue en japonés → significado; armar en japonés empieza en el 3)
+const LEVEL_TYPES = { 1: { max: 'k2m' }, 2: { max: 'k2m' }, 3: { min: 'k2m' }, 4: { min: 'build' }, 5: { min: 'build' } };
 const pick = a => a[Math.floor(Math.random() * a.length)];
 const shuffle = (a, rnd = Math.random) => a.map(v => [rnd(), v]).sort((x, y) => x[0] - y[0]).map(v => v[1]);
 
@@ -86,15 +87,27 @@ export function touchWord(id, sec) {
 // Cada nivel cambia la mezcla (docs/PROGRESION.md §3): 1 palabras nuevas · 2 frases cortas · 3 más frases ·
 // 4 la situación con diálogo · 5 producción con un 30 % de secciones anteriores. Los 2 ejercicios del kanji de la
 // criatura siguen en todos los niveles. ROUND_SIZE ejercicios por ronda, sin contar la apertura.
+// Letras: w palabra · p frase · K/R kanji de la criatura (significado/lectura) · v repaso · t situación · o anteriores.
+// Si ROUND_SIZE es mayor que el patrón, el patrón se repite; si LEVELS pasa de 5, los niveles extra usan el último.
 export const PLANS = {
   1: 'w w w K w w p w R w w v p w v',
   2: 'w p w K p w p R p w v p w v p',
   3: 'p w K p p w p R w p v p w v p',
   4: 't p w K p p w R p p w v p v p',
-  5: 'p w K o p w o p R o w p o w o', // o = anteriores: 5 de 15 (PRIOR_MIX)
+  5: 'p w K p w p R w p w p w p w p', // aquí se reparten los pasos «o» según PRIOR_MIX (planOf)
 };
+const LAST = Math.max(...Object.keys(PLANS).map(Number));
+// Pasos de un nivel: el patrón al largo ROUND_SIZE y, en el último nivel, PRIOR_MIX de la ronda con secciones anteriores
+export function planOf(lv) {
+  const base = PLANS[Math.min(lv, LAST)].split(' '), out = Array.from({ length: ROUND_SIZE }, (_, i) => base[i % base.length]);
+  if (lv >= LAST) {
+    const n = Math.round(ROUND_SIZE * PRIOR_MIX), free = out.map((c, i) => c === 'K' || c === 'R' ? -1 : i).filter(i => i >= 0);
+    for (let j = 0; j < n && free.length; j++) out[free[Math.min(free.length - 1, Math.floor((j + .5) * free.length / n))]] = 'o';
+  }
+  return out;
+}
 export function planRound(k, secId = cur().sec, rnd = Math.random, level = levelOf(secId)) {
-  const s = sectionById(secId), lv = Math.min(LEVELS, Math.max(1, level));
+  const s = sectionById(secId), lv = level >= LEVELS ? LAST : Math.max(1, level); // el último nivel siempre es el de producción
   const box = id => S.lex[id]?.box ?? -1;
   // Primero lo nuevo y lo más flojo; en empate, al azar
   const words = shuffle(s.words, rnd).sort((a, b) => box(a) - box(b));
@@ -118,7 +131,7 @@ export function planRound(k, secId = cur().sec, rnd = Math.random, level = level
   // La situación con diálogo de la sección (si tiene); si no, una frase
   const talk = () => TALKS[secId] ? { t: 'talk' } : p();
   const make = { w, p, v, o, t: talk, K: () => kan('meaning'), R: () => kan('read') };
-  return [{ t: 'intro' }, ...PLANS[lv].split(' ').slice(0, ROUND_SIZE).map(c => make[c]())];
+  return [{ t: 'intro' }, ...planOf(lv).map(c => make[c]())];
 }
 
 // ---------- Cerrar la ronda ----------
@@ -140,7 +153,7 @@ export function endRound(secId, right, total) {
     if (sectionById(secId).reward && !c.skipped[secId]) c.got[secId] ??= 'asleep';
   }
   const lr = (c.prog[secId] || 0) % ROUNDS_PER_LEVEL;
-  return { counted, level: completed ? LEVELS : levelOf(secId) - (levelUp ? 1 : 0), rounds: levelUp || completed ? ROUNDS_PER_LEVEL : lr,
+  return { counted, level: completed || c.done[secId] ? LEVELS : levelOf(secId) - (levelUp ? 1 : 0), rounds: levelUp || c.done[secId] ? ROUNDS_PER_LEVEL : lr,
     levelUp, completed, next, prizes: checkPrizes() };
 }
 
@@ -269,8 +282,9 @@ export function roomSVG(h = 260) {
 // Resuelve { right, total, kanjiOk } o null si el jugador sale. Un error no corta la ronda: el paso vuelve al final una vez.
 export function runRound(c, root, { test = false } = {}) {
   const s = curSection(), steps = test ? planTest(s.id) : planRound(c.k, s.id), lv = test ? LEVELS : levelOf(s.id);
-  // Ayudas del nivel (furigana y romaji, docs/PROGRESION.md §3); en la etapa 0 el romaji sigue su regla por kana
-  setAid(s.stage === 'e0' ? 1 : lv);
+  // Ayudas del nivel (furigana y romaji, docs/PROGRESION.md §3); en la etapa 0 el romaji sigue su regla por kana.
+  // La prueba «Ya sé esto» queda como antes, con todas las ayudas (su cambio es P-06).
+  setAid(test ? 0 : s.stage === 'e0' ? 1 : lv);
   return new Promise(resolve => {
     const wrap = document.createElement('div');
     wrap.className = 'game round rd-lesson';

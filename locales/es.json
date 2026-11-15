@@ -244,7 +244,7 @@
  "book.open": "ver cuaderno",
  "book.title": "Cuaderno de entrenamiento",
  "book.lead": "Una página por sección. Lo que pintas entrenando, cobra vida.",
- "book.here": "Aquí estás · nivel {l} de {total} · ronda {n} de {rounds}",
+ "book.here": "Aquí estás · nivel {l} de {total} · {n} de {rounds} rondas",
  "book.blank": "Página en blanco",
  "book.skipped": "Saltada en la prueba",
  "book.asleep": "Pintado · despierta cuando domines su palabra",
