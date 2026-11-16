@@ -1024,6 +1024,118 @@ ruby.wk rt{font-family:var(--f-ui);font-size:.42em;font-weight:700;opacity:.75}
 .fx-t ruby.kr{display:inline-flex;flex-direction:column;align-items:center}
 .fx-t ruby.kr rt{display:block;line-height:1.1;margin-top:1px}
 
+/* ---------- Ejercicios nuevos de la ronda (P-05, propuesta docs/propuestas/P-03-progresion.html) ----------
+   Copia fiel de la maqueta (prefijo p3-), con el marco de la lección más bajo para que entren el teclado kana y los
+   pares sin desplazar. Sin líneas negras ni sombra negra corrida (D-01). */
+.rd-p3 .rd-scene{height:calc(176px + var(--safe-t))}
+.rd-p3 .rd-x{width:44px;height:44px;left:8px;top:calc(8px + var(--safe-t));display:grid;place-items:center;border-radius:22px}
+.rd-p3 .rd-x .ic{width:20px;height:20px}
+.rd-p3 .rd-drops{left:64px;right:16px;top:calc(26px + var(--safe-t))}
+.rd-p3 .rd-drops i.now{box-shadow:0 0 0 2px #E8452C99}
+.rd-p3 .rd-me{width:96px;height:96px;left:12px;bottom:4px}
+.rd-p3 .rd-npc{width:92px;height:92px;right:12px;bottom:4px}
+.rd-p3 .rd-bub{left:116px;right:16px;top:calc(56px + var(--safe-t))}
+.rd-p3 .rd-scene.talk .rd-bub{left:116px;right:112px;border-radius:18px 18px 4px 18px}
+.p3-sec{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:40px;padding:8px 16px 0}
+.p3-sec>span{font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.p3-sec em{font-style:normal;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:12px;background:#1A12200D;color:var(--line);white-space:nowrap;letter-spacing:0;text-transform:none}
+.p3-sec em[hidden]{display:none}
+.rd-low.p3-body{flex:1;min-height:0;padding:8px 16px 16px;align-items:stretch}
+.p3-body.lock{pointer-events:none}
+.p3-body .hint{font-size:16px;font-weight:700;margin:4px 0 12px}
+.p3-foot{flex:none;display:grid;gap:8px;padding:12px 16px calc(16px + var(--safe-b));background:var(--paper);box-shadow:0 -1px 0 #1A12200F}
+.p3-foot .btn.wide{margin:0}
+.p3-foot[hidden]{display:none}
+/* Panel de acierto / error */
+.p3-res{position:absolute;left:0;right:0;bottom:0;z-index:6;max-height:72%;overflow-y:auto;padding:16px 16px calc(16px + var(--safe-b));border-radius:24px 24px 0 0;box-shadow:0 -8px 24px rgba(26,18,32,.14);animation:p3-up .28s cubic-bezier(.2,1.2,.4,1);color:var(--line)}
+.p3-res.ok{background:#E6F4DE}.p3-res.no{background:#FBEAE3}
+.p3-rh{display:flex;align-items:center;gap:12px;margin:0 0 8px}
+.p3-rh i{width:40px;height:40px;flex:none;border-radius:20px;display:grid;place-items:center;background:var(--green);color:#fff}
+.p3-res.no .p3-rh i{background:var(--red)}
+.p3-rh b{font-family:var(--f-title);font-size:19px;font-weight:800;color:#2F7A25}
+.p3-res.no .p3-rh b{color:#B8321F}
+.p3-res .fx-acts{margin-top:12px}.p3-res .fx-acts .btn.wide{margin:0}
+.p3-res .fx{margin:4px 0 0;box-shadow:none}
+.p3-res .fx-n{margin-top:10px}
+.p3-ans{margin:0;font-size:14px;line-height:1.45}
+.p3-ans .jp{display:block;font-size:20px;line-height:2}
+.p3-res .fx+.p3-ans,.p3-ans.p3-miss{margin-top:8px}.p3-ans.p3-miss{color:var(--muted)}
+@keyframes p3-up{from{transform:translateY(60px);opacity:0}}
+/* Fichas */
+.p3-line{width:100%;min-height:116px;margin:0 0 16px;padding:6px 2px;display:flex;flex-wrap:wrap;align-content:flex-start;align-items:center;gap:8px 6px;background:repeating-linear-gradient(transparent 0 56px,#1A12201A 56px 58px)}
+.p3-pun{font-family:var(--f-ui);font-size:22px;font-weight:800;color:var(--muted);padding:0 2px}
+.p3-body .asm-t{line-height:1.35;padding:6px 12px}
+.p3-body .asm-t.es{font-family:var(--f-ui);font-size:17px;font-weight:700}
+.p3-body .asm-t.pt{background:#EEE6FA}
+.p3-body .asm-t.used{background:#1A12200D;box-shadow:none;color:transparent}
+.p3-body .asm-t.used *{visibility:hidden}
+.p3-src{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:10px 12px;border-radius:18px;background:var(--paper3);box-shadow:var(--sh)}
+.p3-src .jp{flex:1;font-size:21px;line-height:2;margin:0}
+.p3-spk-s{width:44px;height:44px;flex:none;border-radius:22px;background:var(--paper2);color:var(--red);display:grid;place-items:center}
+/* Emparejar */
+.p3-pairs{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.p3-pc{min-height:60px;border-radius:18px;background:var(--paper3);border:var(--b);box-shadow:var(--sh);font-family:var(--f-jp);font-weight:900;font-size:24px;line-height:1.25;color:var(--line);transition:background .15s,opacity .2s}
+.p3-pc.r{font-size:20px}
+.p3-pc{white-space:nowrap;word-break:keep-all;padding:4px 6px;min-width:0}.p3-pc.sm{font-size:18px}.p3-pc.r.sm{font-size:16px}
+.p3-pc.es{font-family:var(--f-ui);font-size:15px;font-weight:700;white-space:normal;word-break:normal}
+.p3-pc.p3-on{background:#FFF3C9;box-shadow:inset 0 0 0 3px var(--gold),var(--sh)}
+.p3-pc.ok{background:#DDF2D6;box-shadow:none;color:#2F7A25;opacity:.6}
+.p3-pc.bad{background:#F9DED6;animation:shake .3s}
+.p3-pstat{margin:14px 0 0;text-align:center;font-size:13px;font-weight:700;color:var(--muted)}
+.p3-mtab{display:grid;grid-template-columns:auto auto 1fr;gap:4px 12px;align-items:baseline;margin:4px 0 0;font-size:13.5px}
+.p3-mtab b{font-family:var(--f-jp);font-size:18px}
+/* Escuchar */
+.p3-say{display:flex;gap:16px;justify-content:center;align-items:flex-end;margin:4px 0 16px}
+.p3-spk{width:104px;height:104px;border-radius:52px;background:var(--paper3);color:var(--red);box-shadow:var(--sh);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12px;font-weight:800}
+.p3-spk .ic{width:40px;height:40px}
+.p3-spk.slow{width:72px;height:72px;color:var(--line)}
+.p3-spk.slow .ic{width:26px;height:26px}
+.p3-spk span{color:var(--line)}
+/* Completar el hueco */
+.p3-gapq{margin:6px 0 22px;text-align:center;font-size:22px;font-weight:700;line-height:2.3}
+.p3-gap{display:inline-grid;place-items:center;min-width:48px;height:48px;margin:0 3px;padding:0 8px;vertical-align:middle;line-height:1;border-radius:14px;background:#1A12200A;box-shadow:inset 0 -3px 0 #1A122026;color:var(--red)}
+.p3-gap.fill{background:#FFF3C9;box-shadow:inset 0 -3px 0 var(--gold)}
+.p3-gap ruby rt{display:none}
+.p3-opts4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%}
+.p3-opts4.v{grid-template-columns:1fr 1fr}.p3-opts4.n3{grid-template-columns:repeat(3,1fr)}
+.p3-opts4 .asm-t{width:100%;padding:6px 0}
+.p3-body .asm-t.p3-on,.p3-body .opt.p3-on{box-shadow:inset 0 0 0 3px var(--gold),var(--sh)!important;background:#FFF3C9}
+.p3-step{display:inline-flex;gap:6px;align-items:center;font-size:12px;font-weight:800;color:var(--muted);margin:0 auto 8px}
+.p3-step i{width:22px;height:6px;border-radius:3px;background:#1A12201A}
+.p3-step i.on{background:var(--red)}
+/* Teclado kana */
+.p3-kw{display:flex;align-items:center;justify-content:center;gap:12px;margin:0 0 10px;padding:8px 14px;border-radius:18px;background:var(--paper3);box-shadow:var(--sh)}
+.p3-kw b{font-size:38px;font-weight:900;line-height:1.3}
+.p3-kw small{font-size:13px;color:var(--muted);font-weight:700}
+.p3-type{display:flex;align-items:center;justify-content:center;min-height:60px;margin:0 0 12px;border-radius:18px;background:#FFFDF6;box-shadow:inset 0 0 0 2px #1A12201A;font-family:var(--f-jp);font-size:30px;font-weight:700;letter-spacing:.04em}
+.p3-type .ph{font-family:var(--f-ui);font-size:14px;font-weight:600;color:var(--muted);letter-spacing:0}
+.p3-caret{width:2px;height:32px;margin-left:3px;border-radius:1px;background:var(--red);animation:p3-blink 1s steps(1) infinite}
+@keyframes p3-blink{50%{opacity:0}}
+.p3-kb{display:grid;gap:6px}
+.p3-krow{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.p3-k{min-height:48px;border-radius:18px;background:var(--paper2);color:var(--line);font-family:var(--f-jp);font-weight:900;font-size:20px;line-height:1.1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.p3-k small{font-family:var(--f-ui);font-size:10px;font-weight:700;opacity:.65}
+.p3-k.on{background:var(--line);color:var(--paper)}
+.p3-k.fn{background:#1A12200D;font-size:22px}
+/* ゛ y ゜ se dibujan arriba a la derecha de su caja tipográfica: se corren al centro de la tecla */
+.p3-k.fn .mk{display:block;line-height:1;font-size:28px;transform:translate(.32em,.25em)}
+.p3-k .ic{width:22px;height:22px}
+.p3-kstrip .p3-k{min-height:56px;background:var(--paper3);box-shadow:var(--sh);font-size:24px}
+.p3-kstrip{margin-bottom:4px}
+/* Kanji parecido y ayuda del KANJŪ */
+.p3-body .opts{gap:10px}
+.p3-body .opt{padding:10px;line-height:1.4}
+.p3-help{display:grid;grid-template-columns:72px 1fr;gap:12px;align-items:center;margin:0 0 10px;padding:10px 12px;border-radius:18px;background:var(--paper3)}
+.p3-help .art{width:72px;height:72px}.p3-help .art svg{width:100%;height:100%}
+.p3-help b{display:block;font-family:var(--f-title);font-size:16px}
+.p3-help small{font-size:13px;color:var(--muted);line-height:1.4}
+.p3-cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.p3-cmp figure{margin:0;display:grid;justify-items:center;gap:4px;padding:10px 8px;border-radius:16px;background:var(--paper3)}
+.p3-cmp .rd-ink-box{width:80px;height:80px}
+.p3-cmp figcaption{font-size:12.5px;font-weight:700}
+.p3-cmp figure.me{box-shadow:inset 0 0 0 2px #5DB84F88}
+@media (prefers-reduced-motion:reduce){.p3-res,.p3-pc.bad,.p3-caret{animation:none}.p3-pc{transition:none}}
+
 /* ---------- Pantalla de inicio (B-01) ---------- */
 .title-scr{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;background:linear-gradient(#16132A 0%,#2A2148 58%,#3A2E66 100%);color:var(--paper);overflow:hidden;padding:var(--safe-t) 0 0}
 .title-scr.out{animation:stOut .42s ease forwards}
