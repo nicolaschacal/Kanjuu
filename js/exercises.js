@@ -5,14 +5,14 @@
 // que sube desde abajo, con «Seguir» o «Entendido». El motor (js/round.js) decide en qué nivel va cada uno.
 import { ic } from './icons.js';
 import { t } from './i18n.js';
-import { KANJI, mainRead } from './data.js';
+import { KANJI, PIECES, mainRead, reads } from './data.js';
 import { STROKES } from './strokes.js';
 import { kanaHTML, helpOn, aidLevel, romaji } from './help.js';
 import { speak, canSpeak } from './games.js';
 import { extraTiles } from './wordgames.js';
 import { WORD, PHRASES, tr, wordHTML, jaTokens, jaHTML, jaPlain, showsKanji, kanjiTaught } from './lex.js';
 import { verbKanji, taOf } from './lang.js';
-import { EXTRA } from './curriculum.js';
+import { EXTRA, phraseById } from './curriculum.js';
 import { tokenDiff, tokenNotes } from './feedback.js';
 import { aiOn, explain } from './ai.js';
 import { creatureSVG } from './creature.js';
@@ -377,4 +377,77 @@ export function similarExercise(ctx, k, done) {
         <p class="fx-n">${ic('bulb')}<span>${t('ex.simNote', { a: sel, ma: esc(KANJI[sel].m), b: k, mb: esc(m) })}</span></p>`,
       ask: { question: t('ex.saySim', { m }), given: sel, correct: k }, onDone: () => done(false) });
   };
+}
+
+// ======================================================================
+// Presentación de un KANJŪ (nivel 1, P-06; maqueta P-03, pantalla 2 y docs/PROGRESION.md §2b.2): primero el KANJŪ
+// (dibujo, significado, lecturas exactas y receta verificada), después una palabra de la unidad con ese kanji y
+// después una frase con esa palabra. No hay nada que comprobar: el botón dice «Seguir».
+// ======================================================================
+// Lecturas exactas del kanji (docs/LECTURAS.md: solo las de data.js), la principal primero. Cada una se oye si hay voz.
+export function readsHTML(k, { max = 9, cls = 'p3-read' } = {}) {
+  const K = KANJI[k], voice = canSpeak();
+  const tag = r => { const kun = K.kun.includes(r); return helpOn() ? `<ruby>${kun ? '訓' : '音'}<rt>${kun ? 'くん' : 'おん'}</rt></ruby>` : kun ? '訓' : '音'; };
+  return reads(k).slice(0, max).map((r, i) => `<button class="${cls}${i ? '' : ' main'}" ${voice ? `data-say="${esc(r)}"` : 'disabled'}><small>${tag(r)}</small><span class="jp">${esc(r)}</span>${voice ? ic('sound') : ''}</button>`).join('');
+}
+// Receta verificada (data.js) como fila de componentes: los ya enseñados llevan «ya lo conoces»; los demás, «componente»
+// (刀, 寸, 士… se presentan como componentes, decidido el 15/11). La nota de data.js («人 aparece como 亻») va en su parte.
+export function recipeHTML(k) {
+  const K = KANJI[k], parts = K.recipes?.[0];
+  if (!parts) return '';
+  const note = K.note || '';
+  const part = p => {
+    const known = !!KANJI[p] && kanjiTaught(p), m = KANJI[p]?.m || PIECES[p]?.m || '';
+    const extra = note.startsWith(p + ' ') ? ` · ${esc(note.slice(p.length + 1))}` : '';
+    return `<span class="p3-part"><span class="art">${KANJI[p] ? creatureSVG(p) : `<span class="k">${p}</span>`}</span><b>${p}</b><small>${esc(m)}${extra}</small>
+      <em class="${known ? '' : 'c'}">${known ? `${ic('check')}${t('meet.known')}` : t('meet.part')}</em></span>`;
+  };
+  return `<div class="p3-recipe" style="grid-template-columns:${parts.map(() => '1fr auto').join(' ')} 1fr">${parts.map(part).join('<i>+</i>')}<i>=</i>
+    <span class="p3-part res"><span class="k">${k}</span><small>${esc(K.m)}</small></span></div>`;
+}
+// La palabra de la unidad que presenta al kanji: la de premio si lo lleva; si no, la primera que ya se escribe con kanji
+function meetWord(k, s) {
+  const ws = [s.rewardWord, ...s.words].map(id => WORD[id]).filter(w => w?.kanji?.includes(k) && showsKanji(w));
+  return ws[0] || null;
+}
+// Una frase de la unidad con esa palabra (la más corta)
+const meetPhrase = (w, s) => s.phrases.map(phraseById).filter(p => p?.ids.includes(w.id)).sort((a, b) => a.ja.length - b.ja.length)[0] || null;
+// Romaji de una frase del currículo (va en kana, separada por fichas); は · へ · を sueltas son partículas
+const PART_ROM = { 'は': 'wa', 'へ': 'e', 'を': 'o' };
+const romLine = ph => jaTokens(ph.ja, ph.ids).map(x => (!x.w && PART_ROM[x.tok]) || romaji(x.tok)).join(' ');
+export function meetExercise(ctx, k, me, s, done) {
+  const K = KANJI[k], w = meetWord(k, s), ph = w && meetPhrase(w, s), voice = canSpeak();
+  const rom = helpOn() && aidLevel() === 1; // romaji solo en el nivel 1, como el resto de la ronda
+  const steps = ['k', w && 'w', ph && 'f'].filter(Boolean), NAMES = { k: t('meet.stepK'), w: t('meet.stepW'), f: t('meet.stepF') };
+  const listen = say => voice ? `<button class="btn ghost" data-say="${esc(say)}">${ic('sound')}${t('dojo.listen')}</button>` : '';
+  const show = i => {
+    const st = steps[i];
+    const bar = `<div class="p3-steps" style="grid-template-columns:repeat(${steps.length},1fr)">${steps.map((x, j) => `<span class="${j === i ? 'on' : j < i ? 'done' : ''}">${NAMES[x]}</span>`).join('')}</div>`;
+    let html, say;
+    if (st === 'k') {
+      const parts = K.recipes?.[0] || [];
+      say = k === me ? t('meet.sayMe', { k }) : parts.includes(me) ? t('meet.sayPart', { k, o: parts.filter(p => p !== me).join(' · '), me }) : t('meet.say', { k });
+      html = `${bar}<div class="p3-meet">
+        <div class="p3-mtop"><span class="art p3-big">${creatureSVG(k)}</span>
+          <div><div class="p3-bk"><b>${k}</b><span>${esc(K.m)}</span></div><div class="p3-reads">${readsHTML(k, { max: 3 })}</div></div></div>
+        ${recipeHTML(k)}
+        ${K.mn ? `<p class="p3-mn">${ic('bulb')}<span>${esc(K.mn)}</span></p>` : ''}</div>`;
+    } else if (st === 'w') {
+      say = t('meet.sayWord');
+      const masu = w.kind === 'v' && w.dict ? `<small>${t('meet.masu', { d: w.dictk || w.dict })}</small>` : '';
+      html = `${bar}<div class="wcard p3-wc"><span class="p3-wk jp">${wordHTML(w)}</span>${rom ? `<span class="p3-rom">${romaji(w.kana)}</span>` : ''}<b>${esc(tr(w))}</b>${masu}
+        ${listen(w.kana)}</div>
+        <p class="p3-mn">${ic('eye')}<span>${t('meet.from', { k })}</span></p>`;
+    } else {
+      say = t('meet.sayPhrase');
+      html = `${bar}<div class="wcard p3-wc"><p class="p3-sent jp${rom ? ' rom' : ''}">${jaHTML(ph.ja, ph.ids)}。</p>${rom ? `<span class="p3-rom">${romLine(ph)}</span>` : ''}<b>${esc(tr(ph))}</b>
+        ${listen(jaPlain(ph.ja))}</div>`;
+    }
+    const btn = frame(ctx, t('ex.meet'), html);
+    ctx.say(say);
+    btn.disabled = false; btn.textContent = t('round.continue');
+    ctx.body.querySelectorAll('[data-say]').forEach(b => b.onclick = () => speak(b.dataset.say));
+    btn.onclick = () => { btn.disabled = true; i + 1 < steps.length ? show(i + 1) : done(); };
+  };
+  show(0);
 }

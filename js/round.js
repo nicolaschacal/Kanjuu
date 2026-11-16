@@ -9,12 +9,12 @@ import { speak, canSpeak } from './games.js';
 import { ic } from './icons.js';
 import { wordExercise, extraTiles } from './wordgames.js';
 import { WORD, tr, jaTokens, jaHTML, jaPlain, wordHTML, gradeWord, meet, lexDue } from './lex.js';
-import { SECTIONS, sectionById, phraseById, nextSection, TALKS, LEVELS, ROUNDS_PER_LEVEL, ROUND_SIZE, PRIOR_MIX } from './curriculum.js';
+import { SECTIONS, STAGES, sectionById, phraseById, nextSection, TALKS, LEVELS, ROUNDS_PER_LEVEL, ROUND_SIZE, PRIOR_MIX, JUMP_ERRORS, JUMP_SIZE, JUMP_STAGE_SIZE } from './curriculum.js';
 import { creatureSVG } from './creature.js';
 import { STROKES } from './strokes.js';
 import { arrive } from './world.js';
 import { tokenNotes, replyMeaning, fixPanel } from './feedback.js';
-import { pairsOf, jaesFits, listenFits, gapsOf, typeFits, similarFits, pairsExercise, jaesExercise, listenExercise, gapExercise, typeExercise, similarExercise } from './exercises.js';
+import { pairsOf, jaesFits, listenFits, gapsOf, typeFits, similarFits, pairsExercise, jaesExercise, listenExercise, gapExercise, typeExercise, similarExercise, meetExercise } from './exercises.js';
 
 // Una sección tiene LEVELS niveles de ROUNDS_PER_LEVEL rondas (docs/PROGRESION.md §3, tarea P-04)
 export const UNIT_ROUNDS = LEVELS * ROUNDS_PER_LEVEL;
@@ -30,10 +30,12 @@ const shuffle = (a, rnd = Math.random) => a.map(v => [rnd(), v]).sort((x, y) => 
 // Partidas sin S.cur: empiezan en la etapa 0, o en la 1 si en la nivelación dijeron que leen kana (S.level ≥ 1).
 // La ubicación fina de partidas viejas es la tarea A-05.
 export function cur() {
-  if (!S.cur) { S.cur = { sec: SECTIONS[0].id, rounds: {}, prog: {}, done: {}, gold: {}, got: {}, skipped: {}, eggs: {} }; place(); }
+  if (!S.cur) { S.cur = { sec: SECTIONS[0].id, rounds: {}, prog: {}, done: {}, gold: {}, got: {}, skipped: {}, eggs: {}, met: {} }; place(); }
   // P-04: S.cur.prog[sección] = rondas que contaron (0 a UNIT_ROUNDS). Una partida vieja arranca su sección en el
   // nivel 1; lo que ya había pintado (S.cur.rounds, de 0 a 5) se conserva como piso de la tinta (paintedOf).
   S.cur.prog ??= {};
+  // P-06: S.cur.met[kanji] = cuándo se presentó su KANJŪ en el nivel 1 (partidas viejas: nada presentado todavía)
+  S.cur.met ??= {};
   if (!sectionById(S.cur.sec)) S.cur.sec = SECTIONS[0].id;
   return S.cur;
 }
@@ -47,27 +49,47 @@ function place() {
   }
 }
 function skip(id) { const c = S.cur; c.done[id] ??= Date.now(); c.skipped[id] = true; c.rounds[id] = OLD_ROUNDS; (c.prog ??= {})[id] = UNIT_ROUNDS; }
-// Prueba «Ya sé esto»: en la etapa 0 cubre todo lo que queda de la etapa (para quien ya lee kana); después, la sección.
-export const testScope = (secId = cur().sec) => {
-  const s = sectionById(secId);
-  return s.stage === 'e0' ? SECTIONS.filter(x => x.stage === 'e0' && !cur().done[x.id]) : [s];
-};
-export const TEST_SIZE = 10;
-export function planTest(secId = cur().sec, rnd = Math.random) {
-  const secs = testScope(secId), words = shuffle([...new Set(secs.flatMap(s => s.words))], rnd).slice(0, TEST_SIZE - 1);
-  const ph = shuffle(secs.flatMap(s => s.phrases), rnd)[0];
-  return [...words.map(id => ({ t: 'word', id })), { t: 'phrase', id: ph }];
+// ---------- «Saltar aquí» (docs/PROGRESION.md §8, tarea P-06) ----------
+// Se puede saltar a una unidad que viene después de la actual, en la etapa actual o en la siguiente. La prueba es de
+// producción (sin ayudas) sobre las unidades que se saltan y las anteriores. Se aprueba con hasta JUMP_ERRORS errores;
+// si no, todo sigue donde estaba. Las unidades saltadas quedan completas y sin premio (skip()).
+const at = id => SECTIONS.findIndex(x => x.id === id);
+const stageAt = id => STAGES.findIndex(x => x.id === sectionById(id)?.stage);
+export function canJump(target) {
+  const c = cur(), s = sectionById(target);
+  return !!s && !c.done[target] && at(target) > at(c.sec) && stageAt(target) <= stageAt(c.sec) + 1;
 }
-// Aprobar la prueba (80 %) completa las secciones de su alcance sin premio y lleva a la siguiente
-export function passTest(secId, right, total) {
-  const ok = total > 0 && right / total >= PASS, secs = testScope(secId);
-  if (ok) {
-    secs.forEach(s => skip(s.id));
-    const last = secs.at(-1), next = nextSection(last.id);
-    if (next) S.cur.sec = next.id;
-    return { ok, secs, next };
-  }
-  return { ok, secs, next: null };
+// Unidades que quedan saltadas al aprobar: desde la actual hasta la anterior a la elegida
+export const jumpSkips = target => SECTIONS.slice(at(cur().sec), at(target)).filter(x => !cur().done[x.id]);
+// Al principio de la etapa siguiente, la prueba es más larga (saltar la etapa)
+export const jumpSize = target => { const s = sectionById(target); return s.stage !== curSection().stage && SECTIONS.find(x => x.stage === s.stage) === s ? JUMP_STAGE_SIZE : JUMP_SIZE; };
+// «Ya sé esto» desde la ronda: salta a la unidad siguiente; en la etapa 0, «Ya leo kana» salta al principio de la etapa 1
+export function jumpFrom(secId) {
+  const s = sectionById(secId), first1 = SECTIONS.find(x => x.stage !== 'e0');
+  return s.stage === 'e0' ? first1 : nextSection(secId);
+}
+// Pasos de la prueba: frases para armar, palabras en modo producción, huecos y lecturas con teclado kana
+export function planJump(target, rnd = Math.random) {
+  const skips = jumpSkips(target), before = SECTIONS.slice(0, at(cur().sec));
+  // Primero lo que se salta y, después, lo anterior («todo lo anterior», §8)
+  const uniq = a => [...new Set(a)];
+  const phrases = uniq([...shuffle(skips.flatMap(x => x.phrases), rnd), ...shuffle(before.flatMap(x => x.phrases), rnd)]).filter(id => phraseById(id));
+  const words = uniq([...shuffle(skips.flatMap(x => x.words), rnd), ...shuffle(before.flatMap(x => x.words), rnd)]).filter(id => WORD[id]);
+  let pi = 0, wi = 0, gi = 0, yi = 0;
+  const w = () => ({ t: 'word', id: words[wi++ % words.length], lv: LEVELS });
+  const p = () => phrases.length ? { t: 'phrase', id: phrases[pi++ % phrases.length] } : w();
+  const gaps = phrases.flatMap(id => gapsOf(phraseById(id)).map(x => ({ id, i: x.i, kind: x.kind })));
+  const g = () => gaps.length ? { t: 'gap', items: [gaps[gi++ % gaps.length]] } : p();
+  const yW = words.filter(typeFits), y = () => yW.length ? { t: 'type', ids: [yW[yi++ % yW.length]] } : w();
+  const make = { p, w, g, y }, pat = 'p w p g p y p w p g p w p y p'.split(' ');
+  return Array.from({ length: jumpSize(target) }, (_, i) => make[pat[i % pat.length]]());
+}
+// Aprobar: las unidades salteadas quedan completas sin premio y se empieza en la elegida, en el nivel 1
+export function passJump(target) {
+  const skips = jumpSkips(target);
+  skips.forEach(x => skip(x.id));
+  cur().sec = target;
+  return skips;
 }
 export const curSection = () => sectionById(cur().sec);
 export const isDone = id => !!cur().done[id];
@@ -159,7 +181,12 @@ export function planRound(k, secId = cur().sec, rnd = Math.random, level = level
   si = Math.floor(rnd() * Math.max(1, Math.min(sK.length, s.kanji.length || sK.length)));
   const sm = () => { const x = rot(sK, si++); return x ? { t: 'similar', k: x } : kan('meaning'); };
   const make = { w, p, v, o, t: talk, K: () => kan('meaning'), R: () => kan('read'), m, j, l, g, y, s: sm };
-  return [{ t: 'intro' }, ...planOf(lv).map(c => make[c]())];
+  // Nivel 1 (§2b.2): antes de los ejercicios se presentan los KANJŪ de la unidad que todavía no se presentaron, en su
+  // orden (los componentes van antes). Se reparten entre las rondas que le quedan al nivel. No cuentan como ejercicio.
+  const met = cur().met, unmet = lv === 1 ? s.kanji.filter(x => KANJI[x] && !met[x]) : [];
+  const left = Math.max(1, ROUNDS_PER_LEVEL - (isDone(secId) ? 0 : levelRounds(secId)));
+  const meets = unmet.slice(0, Math.ceil(unmet.length / left)).map(x => ({ t: 'meet', k: x }));
+  return [{ t: 'intro' }, ...meets, ...planOf(lv).map(c => make[c]())];
 }
 
 // ---------- Cerrar la ronda ----------
@@ -214,12 +241,14 @@ export function checkPrizes() {
   return out;
 }
 
-// Kanji pintado: `done` trazos en tinta, los `fresh` siguientes se dibujan ahora, el resto como guía tenue
-export function inkSVG(k, done, fresh = 0) {
+// Kanji pintado: `done` trazos en tinta, los `fresh` siguientes se dibujan ahora, los `next` siguientes en rojo tenue
+// (la parte del nivel en curso, en el cuaderno) y el resto como guía tenue
+export function inkSVG(k, done, fresh = 0, next = 0) {
   const st = STROKES[k]; if (!st) return `<span class="rd-inkk">${done ? k : '？'}</span>`;
   return `<svg class="rd-ink" viewBox="0 0 109 109" role="img" aria-label="${done >= st.length ? k : '？'}"><g class="g">${st.map(d => `<path d="${d}"/>`).join('')}</g>
     <g class="d">${st.slice(0, done).map(d => `<path d="${d}"/>`).join('')}</g>
-    <g class="n">${st.slice(done, done + fresh).map((d, i) => `<path d="${d}" style="animation-delay:${.4 + i * .6}s"/>`).join('')}</g></svg>`;
+    <g class="n">${st.slice(done, done + fresh).map((d, i) => `<path d="${d}" style="animation-delay:${.4 + i * .6}s"/>`).join('')}</g>${next ? `
+    <g class="p">${st.slice(done + fresh, done + fresh + next).map(d => `<path d="${d}"/>`).join('')}</g>` : ''}</svg>`;
 }
 
 // ---------- Ejercicios propios de la ronda ----------
@@ -310,19 +339,28 @@ export function roomSVG(h = 260) {
 
 // ---------- Jugar una ronda ----------
 // Resuelve { right, total, kanjiOk } o null si el jugador sale. Un error no corta la ronda: el paso vuelve al final una vez.
-export function runRound(c, root, { test = false } = {}) {
-  const s = curSection(), steps = test ? planTest(s.id) : planRound(c.k, s.id), lv = test ? LEVELS : levelOf(s.id);
+// Opciones: sec + level = repasar un nivel ya terminado (desde el cuaderno; no avanza nada) · jump = la prueba
+// «Saltar aquí» hacia esa unidad: sin ayudas, sin repetir lo fallado y se corta al pasar JUMP_ERRORS errores.
+export function runRound(c, root, { sec, level, jump } = {}) {
+  const test = !!jump, review = !!sec && !test;
+  const s = review ? sectionById(sec) : curSection(), lv = test ? LEVELS : review ? level : levelOf(s.id);
+  const steps = test ? planJump(jump) : planRound(c.k, s.id, Math.random, lv);
   // Ayudas del nivel (furigana y romaji, docs/PROGRESION.md §3); en la etapa 0 el romaji sigue su regla por kana.
-  // La prueba «Ya sé esto» queda como antes, con todas las ayudas (su cambio es P-06).
-  setAid(test ? 0 : s.stage === 'e0' ? 1 : lv);
+  // La prueba para saltar va sin ayudas (§8: «ejercicios de producción»).
+  setAid(test ? LEVELS : s.stage === 'e0' ? 1 : lv);
   return new Promise(resolve => {
     const wrap = document.createElement('div');
     wrap.className = 'game round rd-lesson rd-p3'; // rd-p3: marco de la maqueta P-03 (solo en las rondas, no en el salón de IA)
-    const n = test ? steps.length : steps.length - 1;
+    // Una gota por ejercicio: la apertura y la presentación de los KANJŪ no cuentan
+    const exs = steps.filter(x => x.t !== 'intro' && x.t !== 'meet'), n = exs.length;
+    let pos = 0; // pasos terminados (acertados, o fallados por segunda vez)
+    const label = () => test ? t('jump.sec', { n: Math.min(n, pos + 1), total: n }) : review ? t('round.reviewLv', { l: lv })
+      : t('round.lvRound', { l: lv, n: Math.min(ROUNDS_PER_LEVEL, levelRounds(s.id) + 1), total: ROUNDS_PER_LEVEL });
+    const marks = e => `<span class="p3-errs" role="img" aria-label="${t('jump.errsAria', { n: Math.min(e, JUMP_ERRORS), total: JUMP_ERRORS })}">${t('jump.errs')} ${Array.from({ length: JUMP_ERRORS }, (_, i) => `<i class="${i < e ? 'on' : ''}">${i < e ? ic('x') : ''}</i>`).join('')}</span>`;
     wrap.innerHTML = `<div class="rd-scene">${roomSVG()}<button class="x rd-x" aria-label="${t('dojo.back')}">${ic('x')}</button>
-      <div class="rd-drops">${Array.from({ length: n }, (_, i) => `<i class="${steps[test ? i : i + 1]?.t === 'kanji' && steps[test ? i : i + 1]?.k === c.k ? 'k' : ''}"></i>`).join('')}</div>
+      <div class="rd-drops">${exs.map(x => `<i class="${x.t === 'kanji' && x.k === c.k ? 'k' : ''}"></i>`).join('')}</div>
       <div class="rd-bub"><span class="who">${c.k}</span><p></p></div><span class="rd-me">${creatureSVG(c.k)}</span><span class="rd-npc"></span></div>
-      <div class="rd-sec p3-sec"><span>${test ? tr(s.title) : t('round.lvRound', { l: lv, n: Math.min(ROUNDS_PER_LEVEL, levelRounds(s.id) + 1), total: ROUNDS_PER_LEVEL })}</span><em hidden></em></div>
+      <div class="rd-sec p3-sec"><span>${label()}</span><em hidden></em>${test ? marks(0) : ''}</div>
       <div class="game-body rd-low"></div>`;
     root.append(wrap);
     const body = wrap.querySelector('.game-body'), drops = [...wrap.querySelectorAll('.rd-drops i')], scene = wrap.querySelector('.rd-scene');
@@ -336,20 +374,23 @@ export function runRound(c, root, { test = false } = {}) {
     };
     // Marco de los ejercicios nuevos (js/exercises.js): etiqueta del tipo, globo, reacción y el KANJŪ que entra a la escena
     const chip = wrap.querySelector('.p3-sec em');
-    const ctx = { wrap, body, chip: tx => { chip.textContent = tx || ''; chip.hidden = !tx; }, say: (tx, who) => say(tx, who), react,
+    // En la prueba para saltar, a la derecha van los errores en vez del tipo de ejercicio (maqueta P-03)
+    const ctx = { wrap, body, chip: tx => { chip.textContent = tx || ''; chip.hidden = !tx || test; }, say: (tx, who) => say(tx, who), react,
       npc: k => { scene.classList.add('talk'); wrap.querySelector('.rd-npc').innerHTML = creatureSVG(k); } };
     const queue = steps.map((st, i) => ({ ...st, i })), retried = new Set();
-    let right = 0, total = 0, kanjiOk = 0, pos = 0; const used = new Set(), use = id => { touchWord(id, s.id); used.add(id); }; // pos = pasos terminados (acertados, o fallados por segunda vez)
+    let right = 0, total = 0, kanjiOk = 0, errs = 0; const used = new Set(), use = id => { touchWord(id, s.id); used.add(id); }; // pos = pasos terminados (acertados, o fallados por segunda vez)
     const end = res => { setAid(0); wrap.classList.add('out'); setTimeout(() => wrap.remove(), 250); resolve(res); };
     wrap.querySelector('.x').onclick = () => end(null);
-    const paint = () => drops.forEach((d, i) => { d.classList.toggle('on', i < pos); d.classList.toggle('now', i === pos); });
+    const paint = () => { drops.forEach((d, i) => { d.classList.toggle('on', i < pos); d.classList.toggle('now', i === pos); }); if (test) wrap.querySelector('.p3-sec > span').textContent = label(); };
     const next = () => {
       const st = queue.shift(); paint();
       body.classList.remove('p3-body', 'lock'); wrap.querySelectorAll('.p3-foot, .p3-res').forEach(x => x.remove()); ctx.chip('');
-      if (!st) return end({ right, total, kanjiOk, words: [...used] });
+      if (!st) return end({ right, total, kanjiOk, errors: errs, words: [...used] });
       // quick: el ejercicio ya mostró su panel y su reacción; se sigue al tocar «Seguir» o «Entendido»
       const after = (ok, quick = false) => {
         if (!retried.has(st.i)) { total++; if (ok) right++; }
+        // Saltar aquí: cada error suma una marca; al pasar el margen, la prueba termina (propuesta P-03)
+        if (test && !ok) { errs++; wrap.querySelector('.p3-errs').outerHTML = marks(errs); if (errs > JUMP_ERRORS) return end({ right, total, kanjiOk, errors: errs, words: [...used] }); }
         if (!test && !quick) react(ok);
         scene.classList.remove('power', 'talk'); wrap.querySelector('.rd-npc').innerHTML = '';
         if (!ok && !retried.has(st.i) && !test) { retried.add(st.i); queue.push(st); }
@@ -359,11 +400,13 @@ export function runRound(c, root, { test = false } = {}) {
       };
       if (st.t === 'intro') {
         say(tr(s.intro));
-        body.innerHTML = `${s.reward ? `<div class="rd-goal"><span class="rd-ink-box">${inkSVG(s.reward, paintedOf(s.id))}</span><span><b>${tr(s.title)} · ${t('book.level', { l: levelOf(s.id), total: LEVELS })}</b><small>${t('round.ofLevel', { n: Math.min(ROUNDS_PER_LEVEL, levelRounds(s.id) + 1), total: ROUNDS_PER_LEVEL })}. ${t('round.goal')}</small></span></div>` : ''}<button class="btn ok wide">${t('round.start')}</button>
-          ${isDone(s.id) ? '' : `<button class="link rd-skip">${t(s.stage === 'e0' ? 'round.skipKana' : 'round.skip')}</button>`}`;
+        body.innerHTML = `${s.reward ? `<div class="rd-goal"><span class="rd-ink-box">${inkSVG(s.reward, paintedOf(s.id))}</span><span><b>${tr(s.title)} · ${t('book.level', { l: lv, total: LEVELS })}</b><small>${review ? t('round.reviewSub') : `${t('round.ofLevel', { n: Math.min(ROUNDS_PER_LEVEL, levelRounds(s.id) + 1), total: ROUNDS_PER_LEVEL })}. ${t('round.goal')}`}</small></span></div>` : ''}<button class="btn ok wide">${t('round.start')}</button>
+          ${isDone(s.id) || review || !jumpFrom(s.id) ? '' : `<button class="link rd-skip">${t(s.stage === 'e0' ? 'round.skipKana' : 'round.skip')}</button>`}`;
         body.querySelector('.rd-skip') && (body.querySelector('.rd-skip').onclick = () => end({ skipTest: true }));
         return body.querySelector('.btn').onclick = () => { pos = 0; next(); };
       }
+      // Presentación de un KANJŪ (nivel 1): no se comprueba ni suma; al terminar queda presentado
+      if (st.t === 'meet') return meetExercise(ctx, st.k, c.k, s, () => { cur().met[st.k] = Date.now(); next(); });
       if (st.t === 'word') {
         use(st.id); say(t(st.review ? 'round.sayReview' : 'round.sayWord'));
         return wordExercise(st.id, body, ok => { gradeWord(st.id, ok); after(ok); }, LEVEL_TYPES[st.lv] || {});
