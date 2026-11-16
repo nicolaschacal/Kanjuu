@@ -1168,6 +1168,8 @@ ruby.wk rt{font-family:var(--f-ui);font-size:.42em;font-weight:700;opacity:.75}
 .title-scr.typing .ts-seal{width:64px;height:64px;border-radius:16px;margin-bottom:8px}.title-scr.typing .ts-logo h1{font-size:30px}.title-scr.typing .ts-logo p,.title-scr.typing .ts-moon{display:none}
 @media (max-height:640px){.title-scr.typing .ts-hill{display:none}}
 @media (prefers-reduced-motion:reduce){.ts-logo,.ts-c,.ts-brush::after,.title-scr.out{animation:none}}
+/* Cuenta desde el inicio (código de recuperación, recuperar cuenta): por encima del título; !important porque recoverForm pone z-index en línea */
+body:has(>.title-scr) #layer>.onacct{z-index:310!important}
 
 /* ---------- Sensación de app (B-01) ---------- */
 *{-webkit-tap-highlight-color:transparent}
