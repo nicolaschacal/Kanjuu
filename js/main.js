@@ -24,12 +24,13 @@ import { openAccount } from './account.js';
 import { startScreen } from './start.js';
 import { t, locale } from './i18n.js';
 import { pathReady } from './path.js';
+import { startGestures, haptic } from './gestures.js';
 import { kanaSkip, ALL_KANA } from './help.js';
 import { LEX } from './lex.js';
 
 export const $ = (s, r = document) => r.querySelector(s);
 export const app = $('#app');
-export const buzz = (n = 10) => navigator.vibrate?.(n);
+export const buzz = (n = 10) => haptic(n); // vibración nativa en la app empaquetada (js/gestures.js)
 export const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 export const sorted = a => [...a].sort().join('');
 export const home = () => S.creatures.filter(c => !c.away);
@@ -294,6 +295,7 @@ export function startGame() {
 }
 shell();
 startHelp(toast);
+startGestures(toast);
 startTutorial({ toast, modal, refresh: go });
 // Se necesita cuenta para jugar. Sin conexión, quien ya inició sesión en este dispositivo puede seguir.
 // La pantalla de inicio (js/start.js) se ve mientras carga la partida y, sin sesión, pide crear cuenta o entrar.
