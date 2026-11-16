@@ -20,7 +20,8 @@ import { viewExp, fmt } from './trips.js';
 import { viewDex, openQuests } from './atlas.js';
 import { viewShop, openLogin } from './shop.js';
 import { acadCtx } from './dojo.js';
-import { openAccount, authWall } from './account.js';
+import { openAccount } from './account.js';
+import { startScreen } from './start.js';
 import { t, locale } from './i18n.js';
 import { pathReady } from './path.js';
 import { kanaSkip, ALL_KANA } from './help.js';
@@ -295,13 +296,15 @@ shell();
 startHelp(toast);
 startTutorial({ toast, modal, refresh: go });
 // Se necesita cuenta para jugar. Sin conexión, quien ya inició sesión en este dispositivo puede seguir.
+// La pantalla de inicio (js/start.js) se ve mientras carga la partida y, sin sesión, pide crear cuenta o entrar.
+const start = startScreen();
 cloud.me().then(async u => {
-  if (u === undefined) return cloud.lastUser() ? startGame() : authWall('Sin conexión: conéctate a internet para crear tu cuenta o entrar.');
-  if (!u) return authWall();
+  if (u === undefined) return cloud.lastUser() ? start.enter(startGame) : start.auth(t('start.offline'));
+  if (!u) return start.auth();
   const remote = await cloud.pull().catch(() => undefined);
   if (remote?.creatures?.length && (remote.savedAt || 0) > loadedAt) { replace(remote); initWorld(); }
   if (remote !== undefined) cloud.setReady(true);
   shell(); aiStatus().catch(() => {});
-  startGame();
+  start.enter(startGame);
 });
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});

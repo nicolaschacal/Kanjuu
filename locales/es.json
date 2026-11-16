@@ -430,5 +430,20 @@
  "ex.saySim": "Estos kanji se parecen mucho… ¿cuál es «{m}»?",
  "ex.saySimMiss": "¡Ese no soy yo! Mírame bien.",
  "ex.simNo": "Ese no es {k}",
- "ex.simNote": "Compara los trazos: {a} es «{ma}» y {b} es «{mb}»."
+ "ex.simNote": "Compara los trazos: {a} es «{ma}» y {b} es «{mb}».",
+ "start.tag": "El mundo vivo de los kanji",
+ "start.loading": "Preparando el santuario…",
+ "start.opening": "Abriendo tu santuario…",
+ "start.create": "Crear cuenta",
+ "start.have": "Ya tengo cuenta",
+ "start.enter": "Entrar",
+ "start.cloud": "Tu cuenta guarda tu santuario y tu progreso en la nube.",
+ "start.email": "Correo electrónico",
+ "start.pass": "Contraseña",
+ "start.passNew": "Contraseña (mínimo 8)",
+ "start.back": "Volver",
+ "start.forgot": "¿Olvidaste tu contraseña?",
+ "start.offline": "Sin conexión. Conéctate a internet para crear tu cuenta o entrar.",
+ "start.welcomeNew": "¡Cuenta creada! Te damos la bienvenida al santuario",
+ "start.welcomeBack": "¡Qué bueno verte de nuevo!"
 }

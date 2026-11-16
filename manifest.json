@@ -1,14 +1,36 @@
 {
-  "name": "KANJŪ Santuario",
+  "name": "KANJŪ",
   "short_name": "KANJŪ",
   "start_url": ".",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#1d2a3a",
-  "theme_color": "#1d2a3a",
+  "background_color": "#16132A",
+  "theme_color": "#16132A",
   "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
-  ]
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "description": "El mundo vivo de los kanji",
+  "lang": "es",
+  "categories": [
+    "games",
+    "education"
+  ],
+  "id": "/"
 }
