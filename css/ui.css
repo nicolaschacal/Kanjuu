@@ -312,6 +312,7 @@ b,strong{font-weight:700}
 .gs-gone{background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;transition:background .18s}
 .gs-back{position:fixed;left:0;top:0;z-index:400;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--paper);color:var(--line);border:var(--b);box-shadow:var(--sh-d);pointer-events:none;opacity:.85}
 .gs-back.on{background:var(--gold);opacity:1}
+.gs-back .ic{width:20px;height:20px;stroke-width:3}
 .modal .sheet,.pn-card{overscroll-behavior:contain}
 .gs-gone .sheet,.gs-gone .pn-card{animation:none!important}
 

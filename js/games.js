@@ -1,5 +1,6 @@
 import { KANJI, WORDS, PIECES, isPiece, reads, plain } from './data.js';
 import { ic } from './icons.js';
+import { haptic } from './gestures.js';
 import { STROKES } from './strokes.js';
 import { S } from './state.js';
 import { rr, romaji, helpOn } from './help.js';
@@ -96,10 +97,10 @@ function trace(k, know, body, end) {
     const ok = dist(exp[0], got[0]) < 22 && dist(exp[exp.length - 1], got[got.length - 1]) < 22 && avg < 15;
     ink.setAttribute('d', '');
     if (ok) {
-      const p = document.createElementNS(NS, 'path'); p.setAttribute('d', strokes[i]); done.append(p); navigator.vibrate?.(8);
+      const p = document.createElementNS(NS, 'path'); p.setAttribute('d', strokes[i]); done.append(p); haptic(8);
       i++; tries = 0; hintg.innerHTML = '';
     } else {
-      mistakes++; tries++; navigator.vibrate?.(40); busy = true;
+      mistakes++; tries++; haptic(40); busy = true;
       svg.classList.add('shake-s'); setTimeout(() => svg.classList.remove('shake-s'), 300);
       await animate(strokes[i], 'hint', 500); await new Promise(r => setTimeout(r, 350)); hintg.innerHTML = ''; busy = false;
       if (tries >= 3) { const p = document.createElementNS(NS, 'path'); p.setAttribute('d', strokes[i]); p.setAttribute('class', 'auto'); done.append(p); i++; tries = 0; }
@@ -124,7 +125,7 @@ function bubbles(k, know, body, end) {
     const b = h(`<button class="bubble" style="left:${8 + Math.random() * 70}%;animation-duration:${time * .7 + Math.random() * 3}s;animation-delay:${-Math.random() * time * .6}s">${r}${helpOn() && know < 3 ? `<i class="rmj">${romaji(r)}</i>` : ''}</button>`);
     b.onclick = () => {
       if (over || b.disabled) return; b.disabled = true;
-      if (good.includes(r)) { score++; caught++; b.classList.add('pop'); navigator.vibrate?.(8); } else { score--; b.classList.add('bad'); }
+      if (good.includes(r)) { score++; caught++; b.classList.add('pop'); haptic(8); } else { score--; b.classList.add('bad'); }
       if (caught >= total) finish();
     };
     pond.append(b);
@@ -166,7 +167,7 @@ function parts(k, know, body, end) {
     picked.forEach(p => need.splice(need.indexOf(p), 1));
     if (need.includes(t)) {
       slots[picked.length].textContent = t; slots[picked.length].classList.add('in');
-      picked.push(t); b.disabled = true; b.classList.add('right'); navigator.vibrate?.(8);
+      picked.push(t); b.disabled = true; b.classList.add('right'); haptic(8);
       if (picked.length === rec.length) {
         const tg = body.querySelector('.target'); tg.textContent = k; tg.classList.add('done');
         setTimeout(() => end(mistakes ? mistakes > 1 ? 1 : 2 : 3), 900);
@@ -223,7 +224,7 @@ export function review(list, root, onGrade) {
       body.querySelectorAll('.opt').forEach(b => b.onclick = () => {
         body.querySelectorAll('.opt').forEach(x => x.disabled = true);
         if (b.textContent === correct) {
-          b.classList.add('right'); navigator.vibrate?.(8);
+          b.classList.add('right'); haptic(8);
           if (!item.retry) { res.right++; onGrade(k, true); }
           speak(reads(k)[0] || '');
           setTimeout(next, 650);

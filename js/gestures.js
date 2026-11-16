@@ -4,6 +4,7 @@
 // - Deslizar a los lados cambia de pestaña dentro de una hoja con pestañas.
 // Solo escucha: no toca el mapa del Santuario ni la Arena, que tienen sus propios controles.
 import { t } from './i18n.js';
+import { ic } from './icons.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -14,11 +15,16 @@ const BUSY = 'input,textarea,select,canvas,svg:not(.ic),[data-nogesture],.rcode'
 // ---------- Atrás ----------
 // Lo que está arriba de todo, de más cerca a más lejos. Devuelve cómo cerrarlo, o null si no hay nada abierto.
 function top() {
+  // Duelo de la Arena, evolución o invocación: viven en body, encima de todo, y no se cierran con gestos
+  if ($('body>.duel,body>.evofx,body>.summon')) return { fixed: true };
   const ts = $('.title-scr'); if (ts) { const b = $('#stBack', ts); return { fixed: !b, close: () => b?.click() }; }
   const layer = $('#layer'), el = layer?.lastElementChild;
   if (el) {
     if (el.classList.contains('modal')) return el.onclick ? { el, sheet: $('.sheet', el), close: () => el.onclick({ target: el }) } : { fixed: true };
-    const x = $('.x', el); return x ? { el, close: () => x.click() } : { fixed: true };
+    const x = $('.x', el); if (!x) return { fixed: true };
+    // Rondas, ejercicios, Dojo y repaso de kana: se pregunta antes de abandonar (el ✕ sigue igual)
+    if (el.matches('.game')) return { el, close: () => { if (confirm(t('gs.leave'))) x.click(); } };
+    return { el, close: () => x.click() };
   }
   const p = $('#panel.open:not(.out)');
   if (p) return { el: p, sheet: $('.pn-card', p), close: () => $('#pnX', p)?.click() };
@@ -55,7 +61,7 @@ function onMove(e) {
     else if (g.canDown && dy > 0 && dy > Math.abs(dx) * 1.5) g.kind = 'down';
     else if (g.canSide && Math.abs(dx) > Math.abs(dy) * 2) g.kind = 'side';
     else g.kind = 'none';
-    if (g.kind === 'back') { g.tip = document.createElement('div'); g.tip.className = 'gs-back'; g.tip.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>'; document.body.append(g.tip); }
+    if (g.kind === 'back') { g.tip = document.createElement('div'); g.tip.className = 'gs-back'; g.tip.innerHTML = ic('left'); document.body.append(g.tip); }
     if (g.kind === 'down') g.sheet.classList.add('gs-drag');
   }
   if (g.kind === 'none') return;
