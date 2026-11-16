@@ -327,7 +327,7 @@ const READS = {
     mastered: '人三七時食日',
     lines: [
       'ゆみ|へ',
-      '[母:はは]|は|[七:しち][時:じ]|ごろ|[帰:かえ]ります|^。',
+      'お[母:かあ]さん|は|[七:しち][時:じ]|ごろ|[帰:かえ]ります|^。',
       'ばんごはん|は|[三:さん][人:にん]|で#with|[食:た]べます|^。',
       'おにぎり|は|つくえ|の|[上:うえ]|に|あります|^。',
     ],
@@ -351,14 +351,14 @@ const READS = {
       '[十:じゅう][時:じ]|ごろ|^、|[母:はは]|と|[駅:えき][前:まえ]|の|カフェ|に#into|[入:はい]りました|^。',
       '[私:わたし]|は|コーヒー|を|[飲:の]みました|^。|[母:はは]|は|ケーキ|を|[食:た]べました|^。',
       'ケーキ|は|[高:たか]かった|です|^。|でも|^、|とても|おいしかった|です|^。',
-      'ゆうがた|^、|[雪:ゆき]|が|ふりました|^。|[家:いえ]|の|[窓:まど]|から|^、|[白:しろ]い|[雪:ゆき]|を|みました|^。',
+      'ゆうがた|^、|[雪:ゆき]|が|ふりました|^。|[窓:まど]|から|^、|[白:しろ]い|[雪:ゆき]|を|みました|^。',
       '[明日:あした]|は|[休:やす]み|です|^。|たなか|さん|の|[家:いえ]|に|[行:い]って|もいいですか|^。',
       'ケン',
     ],
-    es: ['Para Tanaka:', 'El sábado llovió desde la mañana. Hacía mucho frío.', 'A eso de las diez, entré con mamá a la cafetería frente a la estación.', 'Yo tomé café. Mamá comió pastel.', 'El pastel era caro. Pero estaba muy rico.', 'Al atardecer nevó. Desde la ventana de casa vi la nieve blanca.', 'Mañana es mi día libre. ¿Puedo ir a tu casa?', 'Ken'],
+    es: ['Para Tanaka:', 'El sábado llovió desde la mañana. Hacía mucho frío.', 'A eso de las diez, entramos con mamá a la cafetería frente a la estación.', 'Yo tomé café. Mamá comió pastel.', 'El pastel era caro. Pero estaba muy rico.', 'Al atardecer nevó. Desde la ventana vi la nieve blanca.', 'Mañana es mi día libre. ¿Puedo ir a tu casa?', 'Ken'],
     Q: [
       { q: '¿Qué tiempo hizo el sábado por la mañana?', o: ['Llovió', 'Nevó', 'Hubo sol'], a: 0, line: 1,
-        tip: ['', 'La nieve llegó después, ゆうがた (al atardecer). A la mañana dice 朝から雨でした: llovió.', 'Dice 朝から雨でした: llovió desde la mañana.'], ok: '朝から雨でした: llovió desde la mañana.' },
+        tip: ['', 'La nieve llegó después, ゆうがた (al atardecer). Por la mañana dice 朝から雨でした: llovió.', 'Dice 朝から雨でした: llovió desde la mañana.'], ok: '朝から雨でした: llovió desde la mañana.' },
       { q: '¿Qué comió la mamá?', o: ['Café', 'Pastel', 'Arroz'], a: 1, line: 3,
         tip: ['El café lo tomó Ken: 私はコーヒーを飲みました.', '', 'El correo no habla de arroz. 母はケーキを食べました: mamá comió pastel.'], ok: '母はケーキを食べました: mamá comió pastel.' },
       { q: '¿Qué le pregunta Ken a Tanaka?', o: ['Si quiere ir a la cafetería', 'Si mañana va a nevar', 'Si puede ir a su casa mañana'], a: 2, line: 6,
@@ -370,7 +370,8 @@ const D = {
   'ゆみ': { m: 'Yumi', g: 'Un nombre de persona.', kind: 'nombre' },
   'へ': { m: 'para… (al empezar una nota o una carta)', g: 'Es la misma へ de «ir hacia»: la nota va hacia Yumi. Se lee «e».', kind: 'partícula' },
   'は': { m: 'marca el tema de la frase', g: 'Escrita は, se lee «wa». Lo que va antes es de lo que se habla.', kind: 'partícula' },
-  '母': { m: 'mi mamá', g: 'Para hablar de tu propia madre. La de otra persona es お母さん.', kind: 'sustantivo' },
+  '母': { m: 'mi mamá', g: 'Así nombras a tu madre ante alguien de afuera (como Ken en su correo a Tanaka). En la familia se dice お母さん.', kind: 'sustantivo' },
+  'お母さん': { m: 'mamá', g: 'Así se le dice a la mamá dentro de la familia, y también a la madre de otra persona.', kind: 'sustantivo' },
   '七時': { m: 'las siete', g: '七 (siete) + 時 (hora). En la hora, 七 se lee しち.', kind: 'hora' },
   'ごろ': { m: 'a eso de (una hora)', g: 'Va pegada a la hora: 七時ごろ, «a eso de las siete».', kind: 'expresión' },
   '帰ります': { m: 'volver (a casa)', g: 'Forma educada (〜ます).', kind: 'verbo' },
@@ -400,7 +401,7 @@ const D = {
   '駅前': { m: 'frente a la estación', g: 'Se usa para nombrar lugares: 駅前のカフェ.', kind: 'sustantivo', nw: ['駅', '前'] },
   'カフェ': { m: 'cafetería', kind: 'sustantivo' },
   'に#into': { m: 'a (el lugar al que entras)', g: 'Con 入ります, el lugar va con に.', kind: 'partícula' },
-  '入りました': { m: 'entré', g: 'Pasado de 入ります (entrar).', kind: 'verbo' },
+  '入りました': { m: 'entramos', g: 'Pasado de 入ります (entrar).', kind: 'verbo' },
   '私': { m: 'yo', kind: 'sustantivo' },
   'コーヒー': { m: 'café', kind: 'sustantivo' },
   'を': { m: 'marca lo que se come, se toma, se ve…', g: 'Se escribe を y se lee «o».', kind: 'partícula' },
@@ -410,7 +411,7 @@ const D = {
   '高かった': { m: 'era caro', g: 'Pasado de 高い: 高い → 高かった.', kind: 'adjetivo い' },
   'でも': { m: 'pero', g: 'Al empezar la frase.', kind: 'expresión' },
   'おいしかった': { m: 'estaba rico', g: 'Pasado de おいしい.', kind: 'adjetivo い' },
-  'ゆうがた': { m: 'al atardecer', g: 'Va en kana porque 方 todavía no se enseña (llega en la 2.20).', kind: 'sustantivo' },
+  'ゆうがた': { m: 'al atardecer', g: 'Va en kana porque 方 todavía no se enseña.', kind: 'sustantivo' },
   '雪': { m: 'nieve', kind: 'sustantivo' },
   'が': { m: 'marca quién o qué hace algo', g: '雪がふりました: lo que cayó fue la nieve.', kind: 'partícula' },
   'ふりました': { m: 'cayó (lluvia, nieve)', g: 'Pasado de ふります. Va en kana porque 降 todavía no se enseña.', kind: 'verbo' },
@@ -523,18 +524,18 @@ function bub(v, txt) { const b = v.querySelector('#bub'); if (!b) return; b.quer
 // 1 · Dónde se abre: la página de la unidad en el cuaderno
 // ======================================================================
 function cuaderno(v, st = 'ready') {
-  const R = READS.e2, done = st === 'lock' ? 1 : st === 'ready' ? 2 : 4;
+  const R = READS.e2, done = st === 'lock' ? 2 : st === 'ready' ? 3 : 4;
   const lvT = ['Presentación y palabras', 'Palabras en frases', 'Gramática', 'Escuchar y completar', 'Producción'];
   const lv = (t, i) => {
     const n = i + 1, s = n <= done ? 'done' : n === done + 1 ? 'cur' : 'lock';
     return `<div class="p11-lv ${s}"><span class="p11-med">${s === 'done' ? ic('check') : n}</span>
       <span><b>Nivel ${n} · ${t}</b><small>${s === 'done' ? '3 de 3 rondas' : s === 'cur' ? 'ronda 1 de 3' : '3 rondas · 15 ejercicios'}</small></span>
-      ${n === 2 ? `<span class="tag">${ic('book')}abre la lectura</span>` : '<span></span>'}</div>`;
+      ${n === 3 ? `<span class="tag">${ic('book')}abre la lectura</span>` : '<span></span>'}</div>`;
   };
   const card = st === 'lock'
     ? `<div class="p11-read lock"><div class="p11-rt"><span class="p11-mini mail"><i></i><i class="k"></i><i></i><i class="k"></i><i></i><i></i></span>
         <div><span class="eb">${ic('lock')}Lectura de la unidad</span><b>${R.title}</b><small>${R.kindT} de ${R.lines.length} líneas para leer de corrido, con todo lo que ya sabes.</small></div></div>
-        <p class="p11-lockt">${ic('lock')}Se abre al terminar el nivel 2.</p></div>`
+        <p class="p11-lockt">${ic('lock')}Se abre al terminar el nivel 3.</p></div>`
     : st === 'ready'
     ? `<div class="p11-read"><div class="p11-rt"><span class="p11-mini mail"><i></i><i class="k"></i><i></i><i class="k"></i><i></i><i></i></span>
         <div><span class="eb">${ic2('mail')}Lectura de la unidad · nueva</span><b>${R.title}</b><small>${R.kindT} de Ken, de ${R.lines.length} líneas. Te la lee 日.</small></div></div>
@@ -742,21 +743,22 @@ function ladder(v) {
 // ======================================================================
 const GENERAL = [
   '<b>Íconos nuevos</b> para js/icons.js: reproducir, pausa, «lento» (el caracol de P-03), correo y nota.',
-  '<b>Nombre en el juego:</b> la maqueta dice «Lectura de la unidad». ¿Prefieres «Leer de corrido» u otro?',
+  '<b>Nombre en el juego:</b> «Lectura de la unidad».',
 ];
 const SCREENS = [
   { id: 'cuaderno', label: '1 · Dónde se abre', fn: cuaderno, states: [['lock', 'Cerrada'], ['ready', 'Lista'], ['done', 'Leída']], notes: {
     see: ['La lectura vive en la página de la unidad del cuaderno, como una tarjeta propia debajo de la guía: un papel con el tipo de texto (correo), su título, cuántos kanji usa y de cuántas unidades, la palabra nueva y la tinta.',
-      'Cerrada: se abre al terminar el nivel 2 (en la lista de niveles, el nivel 2 lo dice). Lista: «Leer». Leída: queda marcada en verde y se puede releer sin furigana.',
-      'Las lecturas leídas también quedan en el Diario, en «Lecturas» (pantalla 6), donde hoy viven las 18 lecturas en kana.'],
+      'Cerrada: se abre al terminar el nivel 3 (en la lista de niveles, el nivel 3 lo dice). Lista: «Leer». Leída: queda marcada en verde y se puede releer sin furigana.',
+      'Las lecturas leídas también quedan en el Diario, en «Lecturas» (pantalla 7), donde hoy viven las 18 lecturas en kana.'],
     spec: '§12 «Una lectura por unidad» · §3 (niveles) · tarjeta «Guía» de P-03',
-    decide: ['<b>Cuándo se abre.</b> A: al terminar el nivel 2, cuando ya viste las palabras en frases (propuesta). B: al terminar el nivel 4, como cierre antes de la producción. C: desde el principio, como lectura de desafío.',
-      '<b>Dónde va.</b> A: tarjeta propia debajo de la guía (propuesta). B: un paso más dentro de la lista de niveles, entre el 4 y el 5.',
-      '<b>¿Es obligatoria?</b> Propuesta: no. No bloquea el nivel 5 ni el premio; da +10 de tinta la primera vez (READ_INK, como las lecturas del diario de hoy). Alternativa: pedirla para el combate de examen (dorado).'] } },
+    decide: ['<b>Cuándo se abre:</b> al terminar el nivel 3.',
+      '<b>Dónde va:</b> tarjeta propia en la página de la unidad, debajo de la Guía.',
+      '<b>Opcional:</b> no bloquea el nivel 5 ni el premio. Da +10 de tinta la primera vez (READ_INK, como las lecturas del diario de hoy).'] } },
   { id: 'e1', label: '2 · Etapa 1 · Nota', fn: (v, st) => reading(v, 'e1', st), states: [['read', 'Leer'], ['word', 'Palabra nueva 三人'], ['wordk', 'Familia: 七時'], ['wordp', 'Partícula へ']], notes: {
-    see: ['Unidad 1.10. Una nota de 4 líneas de la mamá a Yumi, en japonés real, con kanji y sin espacios: ゆみへ / 母は七時ごろ帰ります。/ ばんごはんは三人で食べます。/ おにぎりはつくえの上にあります。',
+    see: ['Unidad 1.10. Una nota de 4 líneas de la mamá a Yumi, en japonés real, con kanji y sin espacios: ゆみへ / お母さんは七時ごろ帰ります。/ ばんごはんは三人で食べます。/ おにぎりはつくえの上にあります。',
       'Usa 8 kanji de 6 unidades (1.1, 1.3, 1.5, 1.7, 1.9 y 1.10), no solo los de la 1.10. Lo que no se enseñó va en kana: ばんごはん (晩) y つくえ (机).',
       'Furigana solo sobre los 3 kanji que en este ejemplo aún no dominas (母, 帰, 上). El botón あ de arriba la apaga; el interruptor de la página hace lo mismo.',
+      'Dentro de la familia, la nota dice お母さん. En el correo de la etapa 2, Ken escribe 母 porque le habla de su madre a alguien de afuera.',
       'Palabra nueva: 三人 (さんにん). Nunca la viste junta, pero conoces 三 y 人.',
       'Tu KANJŪ 日 te la presenta y su familia se resalta con un trazo de marcador: aquí, 時 (日 + 寺).'],
     spec: '§12 (etapa 1: 2 a 4 líneas, una nota) · §12 «todos los kanji ya enseñados» · §12 «kanji en palabra nueva» · §5',
@@ -768,9 +770,9 @@ const SCREENS = [
       'Escuchar lee el texto entero con la voz japonesa del sistema (speechSynthesis ja-JP), frase por frase, y pinta de azul la frase que suena. «Lento» lo lee a 0,6. Sin voz japonesa, en el juego el botón no aparece.',
       'La familia de 日 en este texto: 曜, 日, 時 y 明.'],
     spec: '§12 (etapa 2: 5 a 10 líneas, un diario o un correo) · §12 «se puede escuchar entera» · §12 «el KANJŪ lee contigo» · §2b',
-    decide: ['<b>Furigana.</b> Propuesta: un interruptor de dos estados (según tu dominio / ninguna). ¿Hace falta un tercero, «en todos los kanji»? Propuesta: no, porque tocar la palabra ya muestra su lectura.',
-      '<b>Traducción.</b> Propuesta: no se muestra mientras lees; aparece en cada respuesta (la línea que importa) y al final, con «Ver la traducción».',
-      '<b>Audio.</b> Frase por frase con resaltado, no palabra por palabra: los eventos por palabra de speechSynthesis no son fiables en todos los teléfonos.'] } },
+    decide: ['<b>Furigana:</b> dos estados (según tu dominio / ninguna). Al abrir la lectura, empieza con el ajuste general de furigana del juego.',
+      '<b>Traducción:</b> no se muestra mientras lees; solo en cada respuesta (la línea que importa) y al final, con «Ver la traducción».',
+      '<b>Audio:</b> frase por frase con resaltado. La palabra suelta se oye desde su hoja.'] } },
   { id: 'word', label: '4 · Tocar una palabra', fn: (v, st) => reading(v, st === 'e1' ? 'e1' : 'e2', 'word'), states: [['e2', '駅前 (etapa 2)'], ['e1', '三人 (etapa 1)']], notes: {
     see: ['Al tocar una palabra se resalta en el texto y sube una hoja: la palabra con furigana completa, su lectura, qué significa, una nota corta (por qué va en kana, de qué verbo viene) y sus kanji con su KANJŪ, su unidad y si ya lo dominas.',
       'Si es una palabra nueva (駅前, 三人), una franja verde explica que la lees con kanji conocidos: 駅 (estación) + 前 (delante).',
@@ -778,15 +780,14 @@ const SCREENS = [
       'Las flechas ‹ › pasan a la palabra anterior o siguiente sin cerrar la hoja; «Escuchar» dice solo esa palabra.',
       'Tu KANJŪ comenta cuando la palabra tiene kanji de su familia («曜 lleva mi 日 adentro») o es nueva.'],
     spec: '§12 «Tocar una palabra muestra su lectura y su significado» · §12 «kanji en palabra nueva» · §2b.1 (los KANJŪ presentan)',
-    decide: ['<b>Toque.</b> Las partículas (は, が) miden menos de 44 px de ancho. Propuesta: línea alta (2,3) para que el toque tenga 44 px de alto, y las flechas ‹ › para ir palabra por palabra sin apuntar.',
-      '<b>Familia.</b> Propuesta: el KANJŪ y los kanji cuya receta lo contiene (recipes de js/data.js). ¿También los que lo contienen de forma indirecta (por ejemplo, a través de 明)?'] } },
+    decide: ['<b>Toque:</b> línea alta (2,3), para que el toque tenga 44 px de alto, y flechas ‹ › para ir palabra por palabra.',
+      '<b>Familia del KANJŪ:</b> solo directa: él mismo y los kanji cuya receta lo contiene (recipes de js/data.js).'] } },
   { id: 'q', label: '5 · Preguntas', fn: questions, states: [['e2:0', 'Etapa 2 · 1 de 3'], ['e2:2', 'Etapa 2 · 3 de 3'], ['e1:0', 'Etapa 1 · 1 de 2']], notes: {
     see: ['Al terminar, 2 o 3 preguntas en español con 3 opciones: 2 en la nota de la etapa 1 y 3 en el correo de la etapa 2.',
       'El texto está a mano con «Ver la lectura»: se mide si lo entendiste, no si lo recuerdas.',
       'Al comprobar, la línea del texto que responde la pregunta, con su traducción, y una pista para cada opción equivocada. La tercera pregunta del correo es sobre la gramática de la unidad (行ってもいいですか).'],
     spec: '§12 «Al final, 2 o 3 preguntas de comprensión en español» · §6 (sin castigo)',
-    decide: ['<b>¿Cuántas preguntas?</b> Propuesta: 2 en la etapa 1 y 3 desde la etapa 2.',
-      '<b>¿Las preguntas cuentan?</b> Propuesta: no restan ni se repiten; la tinta llega igual al terminar. Alternativa: pedir todas bien para el +10 de tinta.'] } },
+    decide: ['<b>Preguntas:</b> 2 en la etapa 1 y 3 desde la etapa 2. No restan ni se repiten.'] } },
   { id: 'end', label: '6 · Final', fn: end, states: [['e2', 'Etapa 2'], ['e1', 'Etapa 1']], notes: {
     see: ['Cierre con tu KANJŪ: respuestas, la palabra nueva que pasa al diario, cuántos kanji leíste sin ayuda y la tinta (+10, solo la primera vez).',
       '«Ver la traducción» abre el texto entero en español. «Leer otra vez sin furigana» vuelve a la lectura con la furigana apagada.'],
@@ -796,7 +797,7 @@ const SCREENS = [
     see: ['En el Diario, «Lecturas» ordena las lecturas por etapa y muestra cómo crecen: nota o mensaje (2 a 4 líneas), diario o correo (5 a 10), aviso o blog (un párrafo), cuento o noticia (una página corta).',
       'Las etapas 1 y 2 abren sus ejemplos. Las etapas 3 y 4 se ven cerradas: sus textos llegan con su contenido (P-13 y siguientes); la maqueta no inventa japonés para ellas.'],
     spec: '§12 «El largo crece con la etapa» · Diario (js/diary.js, pestaña Lecturas)',
-    decide: ['<b>Las 18 lecturas en kana de hoy</b> (READINGS en js/lang.js). Propuesta: se quedan como lecturas de la etapa 0, y las nuevas se suman por unidad. Alternativa: se reescriben al formato nuevo.'] } },
+    decide: ['<b>Las 18 lecturas en kana de hoy</b> (READINGS en js/lang.js) quedan como lecturas de la etapa 0; las nuevas se suman, una por unidad.'] } },
 ];
 
 function nav(cur) {
@@ -816,12 +817,12 @@ function show(id, st) {
   const n = S.notes;
   $('#notes').innerHTML = `<h2>Notas · ${S.label}</h2><h3>Qué ve el jugador</h3><ul>${n.see.map(x => `<li>${x}</li>`).join('')}</ul>
     <p class="spec"><b>Cumple:</b> ${n.spec}</p>
-    ${n.decide.length ? `<div class="dec"><h3>Para decidir</h3><ul>${n.decide.map(x => `<li>${x}</li>`).join('')}</ul></div>` : ''}`;
+    ${n.decide.length ? `<div class="dec"><h3>Decidido</h3><ul>${n.decide.map(x => `<li>${x}</li>`).join('')}</ul></div>` : ''}`;
   try { history.replaceState(null, '', `?p=${S.id}${st ? `&s=${st}` : ''}`); } catch {}
 }
 
 const ALL = [...GENERAL.map(x => ['General', x]), ...SCREENS.flatMap(s => s.notes.decide.map(d => [s.label, d]))];
-$('#dec').innerHTML = `<summary>${ic('question')}Para decidir (${ALL.length})</summary><ol>${ALL.map(([l, d]) => `<li><b>${l}:</b> ${d}</li>`).join('')}</ol>`;
+$('#dec').innerHTML = `<summary>${ic('question')}Decidido (${ALL.length})</summary><ol>${ALL.map(([l, d]) => `<li><b>${l}:</b> ${d}</li>`).join('')}</ol>`;
 
 $('#phone').addEventListener('click', e => {
   const tst = e.target.closest('[data-toast]'); if (tst) { toast(tst.dataset.toast); return; }
