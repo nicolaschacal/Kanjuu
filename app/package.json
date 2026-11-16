@@ -1,0 +1,26 @@
+{
+  "name": "kanjuu-app",
+  "private": true,
+  "type": "module",
+  "description": "Proyecto nativo de KANJŪ (iOS y Android) con Capacitor. Ver docs/APP.md",
+  "scripts": {
+    "build": "node build.mjs",
+    "sync": "node build.mjs && cap sync",
+    "ios": "node build.mjs && cap sync ios && cap open ios",
+    "android": "node build.mjs && cap sync android && cap open android",
+    "assets": "capacitor-assets generate --ios --android --iconBackgroundColor '#E8452C' --splashBackgroundColor '#16132A' --splashBackgroundColorDark '#16132A'"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.6.2",
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/ios": "^8.6.2",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.4"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^4.0.0",
+    "@capacitor/cli": "^8.6.2"
+  }
+}

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">KANJŪ</string>
+    <string name="title_activity_main">KANJŪ</string>
+    <string name="package_name">com.kanjuu.app</string>
+    <string name="custom_url_scheme">com.kanjuu.app</string>
+</resources>

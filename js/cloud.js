@@ -1,12 +1,13 @@
 // Cuenta y guardado en la nube. El juego funciona igual sin conexión.
 export let user = null;
+import { API, CREDS } from './env.js';
 // No se sube nada hasta haber comparado con la partida de la nube
 let ready = false;
 export const setReady = v => ready = v;
 let timer = null, pending = null;
 
 async function api(path, opts = {}) {
-  const r = await fetch(path, { credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, ...opts });
+  const r = await fetch(API + path, { credentials: CREDS, headers: { 'Content-Type': 'application/json' }, ...opts });
   const j = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(j.error || 'Sin conexión');
   return j;

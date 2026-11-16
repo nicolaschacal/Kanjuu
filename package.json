@@ -2,5 +2,10 @@
   "name": "kanjuu",
   "private": true,
   "type": "module",
-  "dependencies": { "@neondatabase/serverless": "^1.0.0" }
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.0"
+  },
+  "scripts": {
+    "app:build": "node app/build.mjs"
+  }
 }

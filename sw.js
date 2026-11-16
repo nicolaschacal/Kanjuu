@@ -11,6 +11,8 @@ FILES.push('js/analytics.js');
 FILES.push('js/gestures.js');
 // Favicon de la cara en PNG (para navegadores sin SVG)
 FILES.push('icons/favicon-32.png', 'icons/favicon-48.png');
+// Dirección de la API (B-03)
+FILES.push('js/env.js');
 // Aprendizaje dentro del juego: lengua, diario, palabras, Camino y ejercicios de palabras
 FILES.push('js/lang.js', 'js/lex.js', 'js/diary.js', 'js/path.js', 'js/wordgames.js');
 // Todo lo demás del juego, para que abra sin conexión (B-01)
