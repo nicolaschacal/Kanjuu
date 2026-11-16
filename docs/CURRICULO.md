@@ -178,6 +178,12 @@ Las palabras concretas de cada sección se cargan en `js/curriculum.js` etapa po
 | 2.10 | Pedir permiso | 〜てもいいですか, 〜てはいけません, 〜てください (つけて / けして / たって) | 入 出 休 開 立 (立 antes que 音) | 休 |
 | 2.11 | Lo que estoy haciendo | 〜ています (acción en curso; estado: すんで / けっこん して / しって います) | 耳 言 話 聞 読 書 (耳 antes que 聞, 言 antes que 話 y 読) | 話 |
 | 2.12 | Mis hobbies | しゅみ は 〜 です, 〜が 好き, よく / ときどき / ぜんぜん, 〜のが 好き con forma de diccionario | 音 楽 歌 見 料 | 音 |
+| 2.13 | Presentar a otros | こちら は 〜 です, 〜と (y), 〜と いっしょに, 〜が つよい / せ が たかい | 力 友 男 名 会 (力 antes que 男) | 友 |
+| 2.14 | Mis costumbres | よく / たいてい / ときどき 〜ます; あまり / ぜんぜん 〜ません; しゅう に 〜かい | 午 分 | 午 |
+| 2.15 | Lo que comemos | pasado de los adjetivos (おいしかった, おいしくなかった), どう でした か | 飯 茶 | 飯 |
+| 2.16 | En la pastelería | contadores つ · こ · まい · ほん / ぼん / ぽん, 〜を 〜つ ください, 〜は いります か | 枚 売 | 売 |
+| 2.17 | Detalles del viaje | 〜から 〜まで, どのくらい かかりますか, 〜ぐらい, のりかえます | 東 西 南 北 | 東 |
+| 2.18 | Lugares nuevos | どんな 〜, ちかい / とおい, 〜に 〜が あります | 町 村 | 町 |
 
 ### Etapa 3 · Ampliar el mundo (A1+ a A2)
 

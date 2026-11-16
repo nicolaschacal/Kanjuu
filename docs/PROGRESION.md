@@ -166,6 +166,7 @@ Respondidas en el chat sobre #47 (P-08a):
 2. **早 y 夕** (kanji del N4) se quedan, porque ordenan los componentes de 朝 y 夜.
 3. **Pasado y negativo:** «Tenemos que enseñar pasado y negativo». Los adjetivos い y な en positivo, negativo, presente y pasado, y です / でした / じゃないです. Es la tarea P-10 (#50).
 4. **«Planes para el finde»** queda así.
+5. **Frases de viaje:** la cobertura mínima del 30 % se mide solo sobre las palabras que no tienen frase propia del currículo (EXTRA); la cobertura total del 70 % se mantiene. Está en `checkCurriculum()` desde P-08c (#56).
 
 Además, pidió: «Es muy importante que el juego enseñe muchas más palabras, frases y cómo armar diálogos en general». Las secciones 1 y 2 de Duolingo le enseñaron lo básico, verbos, forma て, presente, pasado y futuro, y adjetivos な e い en todas sus formas. **Lo que no le enseñó Duolingo fue a leer de corrido.** Podía leer frases sueltas, pero no un texto real en japonés, por la cantidad de kanji y porque Duolingo repite siempre los mismos kanji. Eso es §12.
 
