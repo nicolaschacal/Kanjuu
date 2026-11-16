@@ -23,8 +23,9 @@ let jaVoice = null;
 const pickVoice = () => jaVoice = speechSynthesis?.getVoices().find(v => v.lang?.startsWith('ja')) || null;
 try { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } catch {}
 export const canSpeak = () => !!jaVoice;
-export function speak(text) {
-  try { const u = new SpeechSynthesisUtterance(plain(text)); u.lang = 'ja-JP'; if (jaVoice) u.voice = jaVoice; u.rate = .85; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch {}
+// rate: velocidad (el botón «Lento» de Escuchar y armar usa .55)
+export function speak(text, rate = .85) {
+  try { const u = new SpeechSynthesisUtterance(plain(text)); u.lang = 'ja-JP'; if (jaVoice) u.voice = jaVoice; u.rate = rate; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch {}
 }
 // Tarjeta de historia mnemotécnica: se muestra al descubrir o al fallar
 export function storyHTML(k) {
