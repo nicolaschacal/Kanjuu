@@ -1119,11 +1119,32 @@ const passForms = w => [...masuSet(w.pass), ...masuSet(w.caus)];
 const ADJ_ENDS = ['そう', 'くない', 'かった', 'くなかった', 'くて'];
 const isIAdj = w => w.kind === 'adj' && w.kana.endsWith('い') && !NA_ADJ.has(w.id);
 const adjStem = w => w.id === 'ii' ? 'よ' : w.kana.slice(0, -1);
+// Forma ない (P-14): 〜ない · 〜ないで · 〜なかった sobre la raíz negativa de la forma de diccionario (campo dict).
+// Grupo: ichidan si dict = raíz de ます + る y te = raíz + て (たべる · みる); irregulares する · くる (y ...する); ある → ない;
+// el resto es godan (い-fila → あ-fila: いく → いかない, かう → かわない). La forma た corta ya sale de te (taOf: いって → いった).
+const GODAN_A = { 'う': 'わ', 'く': 'か', 'ぐ': 'が', 'す': 'さ', 'つ': 'た', 'ぬ': 'な', 'ぶ': 'ば', 'む': 'ま', 'る': 'ら' };
+export function verbGroup(w) {
+  if (!w.dict) return null;
+  if (w.dict.endsWith('する') || w.dict.endsWith('くる')) return 'irr';
+  if (w.dict === 'ある') return 'aru';
+  const stem = w.kana.slice(0, -2);
+  return w.dict === stem + 'る' && w.te === stem + 'て' ? 'ichi' : 'godan';
+}
+export function naiStem(w) {
+  const g = verbGroup(w), d = w.dict;
+  if (!g) return null;
+  if (g === 'aru') return '';
+  if (g === 'irr') return d.slice(0, -2) + (d.endsWith('する') ? 'し' : 'こ');
+  if (g === 'ichi') return d.slice(0, -1);
+  return d.slice(0, -1) + GODAN_A[d.slice(-1)];
+}
+const NAI_ENDS = ['ない', 'ないで', 'なかった'];
+const naiForms = w => { const s = naiStem(w); return s === null ? [] : NAI_ENDS.map(e => s + e); };
 export function verbForms(w) {
   if (w.kind === 'adj') return isIAdj(w) ? [w.kana, ...ADJ_ENDS.map(e => adjStem(w) + (w.id === 'ii' && e === 'そう' ? 'さそう' : e))] : [w.kana];
   if (w.kind !== 'v') return [w.kana];
   const stem = w.kana.slice(0, -2), ta = taOf(w.te);
-  return [...VERB_ENDS.map(e => stem + e), ...(w.te ? [w.te, ta, ta + 'り', ta + 'ら'] : []), ...(w.dict ? [w.dict] : []),
+  return [...VERB_ENDS.map(e => stem + e), ...(w.te ? [w.te, ta, ta + 'り', ta + 'ら'] : []), ...(w.dict ? [w.dict] : []), ...naiForms(w),
     ...potForms(w), ...passForms(w), ...(w.vol ? [w.vol] : []), ...(w.ba ? [w.ba] : [])];
 }
 // La misma forma escrita con kanji (para mostrarla cuando el jugador ya los tiene)
@@ -1133,6 +1154,11 @@ export function verbKanji(w, form) {
   if (w.kind === 'adj') return isIAdj(w) ? w.kanji.slice(0, -1) + form.slice(adjStem(w).length) : w.kanji;
   if (w.kind !== 'v') return w.kanji;
   if (form === w.dict) return w.dictk || w.kanji;
+  if (w.dict && naiForms(w).includes(form)) {
+    // 行く → 行かない: la parte con kanji queda y la okurigana se cambia (来る → 来ない)
+    const dk = w.dictk || w.kanji, r = [...dk].reverse().findIndex(c => !/[ぁ-ゟ]/.test(c));
+    return dk.slice(0, dk.length - r) + form.slice(w.dict.length - r);
+  }
   if (form === w.vol) return w.volk || w.kanji;
   if (form === w.ba) return w.bak || w.kanji;
   if (w.pot && potForms(w).includes(form)) {
@@ -1237,6 +1263,30 @@ export function checkLang() {
     for (const id of r.ids) if (byId[id] && !used.has(id)) errs.push(`Lectura ${r.id}: ${id} está en ids pero no en el texto`);
     if (level < prevLevel) errs.push(`Lectura ${r.id}: más fácil que la anterior (las lecturas van graduadas)`);
     prevLevel = level;
+  }
+
+  // P-14: formas ない y た corta de verbos conocidos (docs/PROGRESION.md §14)
+  const NAI = {
+    ikimasu: ['いかない', 'いかないで', 'いかなかった', 'いった'], kimasu: ['こない', 'こないで', 'こなかった', 'きた'],
+    shimasu: ['しない', 'しないで', 'しなかった', 'した'], tabemasu: ['たべない', 'たべないで', 'たべなかった', 'たべた'],
+    nomimasu: ['のまない', 'のまないで', 'のまなかった', 'のんだ'], kaimasu: ['かわない', 'かわないで', 'かわなかった', 'かった'],
+    machimasu: ['またない', 'またないで', 'またなかった', 'まった'], hanashimasu: ['はなさない', 'はなさないで', 'はなさなかった', 'はなした'],
+    kaerimasu: ['かえらない', 'かえらないで', 'かえらなかった', 'かえった'], arimasu: ['ない', 'ないで', 'なかった', 'あった'],
+    imasu: ['いない', 'いないで', 'いなかった', 'いた'], mimasu: ['みない', 'みないで', 'みなかった', 'みた'],
+    oyogimasu: ['およがない', 'およがないで', 'およがなかった', 'およいだ'], asobimasu: ['あそばない', 'あそばないで', 'あそばなかった', 'あそんだ'],
+    shinimasu: ['しなない', 'しなないで', 'しななかった', 'しんだ'],
+  };
+  for (const [id, want] of Object.entries(NAI)) {
+    const w = byId[id];
+    if (!w) continue;
+    const got = [...naiForms(w), taOf(w.te)];
+    if (got.join() !== want.join()) errs.push(`Formas ない/た de ${id}: salió ${got.join('・')} y se esperaba ${want.join('・')}`);
+  }
+  for (const w of LEX) if (w.kind === 'v') {
+    if (!w.dict) { errs.push(`LEX ${w.id}: falta dict (forma de diccionario)`); continue; }
+    if (w.kanji && !w.dictk) errs.push(`LEX ${w.id}: tiene kanji pero no dictk`);
+    if (w.dictk && naiForms(w).length !== 3) errs.push(`LEX ${w.id}: sin formas ない`);
+    for (const f of naiForms(w)) if (!/^[ぁ-ゟ]+$/.test(f)) errs.push(`LEX ${w.id}: forma ない inválida ${f}`);
   }
 
   for (const [k, v] of Object.entries(USE)) if (v !== 'rare' && v !== 'piece') errs.push(`USE ${k}: valor desconocido ${v}`);
