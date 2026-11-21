@@ -218,8 +218,8 @@ Las unidades 2.1 a 2.12 ya existen (P-08a #47, P-08b #48 o #49). Se suman 2.13 a
 | 2.26 | Hábitos sanos | 〜た ほうが いい, 〜ない ほうが いい | 医 | 医 |
 | 2.27 | Mis clases | 〜まえに, 〜た あとで | 室 | 室 |
 | 2.28 | Comprar ropa (2) | 〜が ほしい, 〜は どう ですか | 服 | 服 |
-| 2.29 | Reservar un hotel | Días y noches, 〜を おねがいします, 〜で (precio) | 屋 | 屋 |
-| 2.30 | En el supermercado | 〜は どこ ですか, 〜と 〜と, repaso de la etapa | 理 | 理 |
+| 2.29 | Reservar un hotel | Días y noches, 〜を おねがいします, 〜で (precio) | 洗 (屋 ya se enseña en 2.21) | 屋 (palabra 屋上) |
+| 2.30 | En el supermercado | 〜は どこ ですか, 〜と 〜と, repaso de la etapa | 王 里 理 (componentes antes) | 理 (palabra 無理) |
 
 Notas del mapa:
 - **Componentes antes que compuestos:** si un kanji de la tabla necesita un componente no enseñado, la tarea de contenido lo adelanta o cambia el kanji, y lo anota en su PR.
