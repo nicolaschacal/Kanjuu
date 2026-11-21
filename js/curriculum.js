@@ -1431,7 +1431,7 @@ export const GUIDES = {
   '2.8': { gram: [
     { title: T('Pedir que hagan algo: '), jp: '〜てください', text: T('Para pedir algo, pon el verbo en forma て y agrega ください: まっすぐ いって ください («sigue derecho, por favor»).'),
       form: [['v', T('verbo en forma て')], '+', 'ください', '=', ['e', T('…, por favor')]], te: ['magarimasu', 'watarimasu', 'arukimasu'], ex: ['c_massugu', 'c_magatte', 'c_watatte'],
-      note: T('Fíjate en el final: ります → って, きます → いて. Excepción: いきます → いって.') },
+      note: T('Fíjate en el final: ります → って, きます → いて. Irregulares: します → して, きます («venir») → きて, y いきます → いって.') },
     { title: T('Por dónde pasas: '), jp: 'を', text: T('Cuando te mueves por un lugar (cruzas, doblas en una esquina), el lugar lleva を: みち を わたって, かど を まがって. に o へ marcan la dirección: みぎ に.'),
       ex: ['c_kado', 'c_watatte', 'c_shingou'],
       note: T('を se lee «o». Aquí no marca lo que comes, sino el lugar por el que pasas.') },
@@ -1459,7 +1459,7 @@ export const GUIDES = {
   '2.11': { gram: [
     { title: T('Lo que estás haciendo: '), jp: '〜ています', text: T('Para decir que algo ocurre ahora, pon el verbo en forma て y agrega います: よんで います («estoy leyendo»). Sirve para ti y para otros, y también para el clima: あめ が ふって います.'),
       form: [['v', T('verbo en forma て')], '+', 'います', '=', ['e', T('estoy…ndo')]], ex: ['c_yonde', 'c_kaite', 'c_nanishite'] },
-    { title: T('Cómo se forma la forma て: '), jp: '〜て', text: T('Depende del final del verbo en ます: 〜い, 〜ち, 〜り → って; 〜み, 〜び → んで; 〜き → いて (〜ぎ → いで); 〜し → して. Los verbos en 〜えます (たべます, ねます) y algunos en 〜います/〜きます/〜みます/〜びます (みます, おきます, あびます, います, かります, できます, きます de «ponerse») solo pierden ます: たべて, みて, おきて.'),
+    { title: T('Cómo se forma la forma て: '), jp: '〜て', text: T('Depende del final del verbo en ます (salvo las excepciones de abajo): 〜い, 〜ち, 〜り → って; 〜み, 〜び → んで; 〜き → いて (〜ぎ → いで); 〜し → して. Los verbos en 〜えます (たべます, ねます) y algunos en 〜います/〜きます/〜みます/〜びます (みます, おきます, あびます, います, かります, できます, きます de «ponerse») solo pierden ます: たべて, みて, おきて.'),
       te: ['machimasu', 'yomimasu', 'kakimasu', 'hanashimasu', 'mimasu'], ex: ['c_matte', 'c_hanashite', 'c_hashitte'],
       note: T('Pierden solo ます: たべます, ねます, みます, おきます, あびます, かります, います y できます. Excepción: いきます → いって.') },
     { title: T('Estados: vivir, trabajar, saber: '), jp: 'すんでいます', text: T('Con algunos verbos, 〜て います no es una acción en curso sino un estado: すんで います («vivo»), はたらいて います («trabajo»), けっこん して います («estoy casado») y しって います («conozco»).'),
@@ -1469,7 +1469,7 @@ export const GUIDES = {
   '2.12': { gram: [
     { title: T('Tu pasatiempo: '), jp: 'しゅみはXです', text: T('Para hablar de tu pasatiempo usa しゅみ は X です, donde X es un sustantivo como どくしょ o つり. Para preguntar: しゅみ は なん です か.'),
       form: [['v', 'しゅみ'], ['p', 'は'], ['v', T('actividad')], 'です'], ex: ['c_shuminan', 'c_dokusho', 'c_tsuri'] },
-    { title: T('Me gusta hacer: '), jp: 'Vのがすきです', text: T('Para decir que te gusta una acción, usa el verbo en forma de diccionario + の が すき です. Esa forma se hace quitando ます. Si la raíz termina en sonido e (たべ, ね) o es みます/おきます/あびます/かります/います/できます, solo se agrega る: たべる, みる. Los demás cambian la última sílaba de la raíz a la fila u: のみます → のむ, うたい → うたう, ひき → ひく, およぎ → およぐ, つくり → つくる.'),
+    { title: T('Me gusta hacer: '), jp: 'Vのがすきです', text: T('Para decir que te gusta una acción, usa el verbo en forma de diccionario + の が すき です. Esa forma se hace quitando ます. Si la raíz termina en sonido e (たべ, ね) o es みます/おきます/あびます/かります/います/できます, solo se agrega る: たべる, みる. Los demás cambian la última sílaba de la raíz a la fila u: のみます → のむ, うたい → うたう, ひき → ひく, およぎ → およぐ, つくり → つくる. Irregulares: します → する, きます («venir») → くる.'),
       form: [['v', T('verbo (forma de diccionario)')], ['p', 'の'], ['p', 'が'], 'すき', 'です', '=', ['e', T('me gusta…')]], ex: ['c_utau', 'c_pianohiku', 'c_oyogu'],
       note: T('の convierte la acción en un sustantivo («el cantar»); por eso puedes usar が すき como siempre.') },
     { title: T('Ser bueno en algo: '), jp: 'Xがじょうずです', text: T('じょうず significa «hábil, bueno en». Igual que すき, lleva が: ピアノ が じょうず です. Para tocar instrumentos de teclas o cuerdas se usa ひきます: ピアノ を ひきます, ギター を ひきます.'),
