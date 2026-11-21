@@ -17,7 +17,8 @@ import { PIECES, isPiece, TYPES, typeOf, gradeTag, SRS_HOURS } from './data.js';
 import { useTagHTML, anchorsHTML, bindAnchors } from './diary.js';
 import { t } from './i18n.js';
 import { tr } from './lex.js';
-import { curSection, runRound, endRound, passTest, inkSVG, paintedOf, strokesOf, prizeState, wakeBox, PRIZE_INK } from './round.js';
+import { curSection, runRound, endRound, jumpFrom, inkSVG, paintedOf, strokesOf, prizeState, wakeBox, PRIZE_INK, PASS } from './round.js';
+import { jumpTest } from './jump.js';
 import { sectionById, ROUNDS_PER_LEVEL } from './curriculum.js';
 import { WORD, wordHTML } from './lex.js';
 import { bookCardHTML, openBook } from './book.js';
@@ -59,7 +60,7 @@ export function openCreature(id) {
     ${K.recipes ? `<p class="muted">Composición: ${K.recipes.map(r => r.join(' + ')).join('  ·  ')}${K.note ? ` — ${K.note}` : ''}</p>` : ''}
     <p class="hist">${c.hist.join(' → ')}</p>`, 'cr');
 
-  $('#bookCard', m) && ($('#bookCard', m).onclick = () => { buzz(5); openBook(modal, c); });
+  $('#bookCard', m) && ($('#bookCard', m).onclick = () => { buzz(5); openBook(modal, c, bookActs(c, m)); });
   bindAICard(m, c, () => { go(); openCreature(c.id); });
   $('#pet', m).onclick = async () => {
     buzz(6);
@@ -87,6 +88,22 @@ export function openCreature(id) {
     if (p) { S.pieces[p]--; c.acc = p; buzz(15); toast(`${c.k} se puso ${p} ${PIECES[p].m}`); } else { c.acc = null; toast('Pieza devuelta al inventario'); }
     save(); m.close(); go(); setTimeout(() => openCreature(id), 220);
   });
+  return m;
+}
+// Lo que se puede hacer desde el cuaderno (js/book.js), con el KANJŪ desde cuya ficha se abrió
+const bookActs = (c, parent) => ({
+  play: () => openTraining(c, parent),
+  review: (sec, level) => openTraining(c, parent, { sec, level }),
+  jump: target => openJump(c, target, parent),
+});
+// «Saltar aquí» (P-06): al terminar, se vuelve a la ficha con el cuaderno abierto en la unidad que corresponde
+async function openJump(c, target, parent) {
+  parent?.close();
+  const r = await jumpTest(c, target, $('#layer'));
+  setAid(0); if (r?.passed) save(); go(); hud(); // solo al aprobar se guarda: si no, la partida queda como estaba
+  if (!r?.book || !byId(c.id)) return;
+  const m = openCreature(c.id);
+  openBook(modal, c, bookActs(c, m), r.book);
 }
 export function evoCard(c, t) {
   const need = evoLevel(t), rec = KANJI[t].recipes.find(r => r.includes(c.k));
@@ -118,14 +135,16 @@ export async function petChallenge(c) {
 }
 // Entrenar: abre directo la lección de la sección actual (docs/CURRICULO.md). Los juegos del kanji quedan
 // dentro de la lección (2 ejercicios) y como práctica libre desde el resultado (openPractice).
-export async function openTraining(c, parent) {
-  const sec = curSection(), before = paintedOf(sec.id);
+// review = { sec, level }: repasar un nivel ya terminado desde el cuaderno (P-06). Da EXP y tinta como siempre,
+// pero no avanza la sección ni pinta más.
+export async function openTraining(c, parent, review = null) {
+  const sec = review ? sectionById(review.sec) : curSection(), before = paintedOf(sec.id);
   parent.close();
-  const res = await runRound(c, $('#layer'));
+  const res = await runRound(c, $('#layer'), review || {});
   setAid(0); // por si la ronda se cerró por otro camino: las ayudas del nivel no siguen fuera
   if (!res) return go();
-  if (res.skipTest) return skipTest(c, sec);
-  const r = endRound(sec.id, res.right, res.total);
+  if (res.skipTest) { const to = jumpFrom(sec.id); return to ? openJump(c, to.id) : go(); }
+  const r = review ? { counted: res.total > 0 && res.right / res.total >= PASS, review: true, prizes: [] } : endRound(sec.id, res.right, res.total);
   const painted = paintedOf(sec.id), total = sec.reward ? strokesOf(sec.reward) : 0;
   const asleep = r.completed && prizeState(sec.id) === 'asleep';
   const prizeHTML = sec.reward ? `<div class="rd-prize"><span class="rd-ink-box">${inkSVG(sec.reward, before, painted - before)}</span>
@@ -136,7 +155,7 @@ export async function openTraining(c, parent) {
   const rk = addXP(6 + res.right * 2), ups = giveExp(c, exp), ink = res.right + ups * 6;
   S.ink += ink; c.know += res.kanjiOk ? 1 : 0; emit('train');
   c.mood = Math.max(0, c.mood - .05); S.stats.trainings++; bump('train'); save();
-  const msg = r.completed ? t('round.complete', { title: tr(sec.title) }) + (r.next ? ' ' + t('round.next', { title: tr(r.next.title) }) : '')
+  const msg = r.review ? t(r.counted ? 'round.reviewDone' : 'round.reviewMiss', { l: review.level }) : r.completed ? t('round.complete', { title: tr(sec.title) }) + (r.next ? ' ' + t('round.next', { title: tr(r.next.title) }) : '')
     : r.levelUp ? t('round.levelDone', { l: r.level, next: r.level + 1 }) + (painted > before ? ' ' + t('round.levelInk') : '')
     : r.counted ? t('round.counted', { n: r.rounds, total: ROUNDS_PER_LEVEL, l: r.level }) : t('round.notCounted');
   const out = modal(`<div class="result"><div class="res-art">${creatureSVG(c.k, { mood: r.counted ? 1 : .5 })}</div>
@@ -148,25 +167,12 @@ export async function openTraining(c, parent) {
     ${r.completed && !S.cur.skipped[sec.id] ? `<button class="btn gold wide" id="exam">金 ${t('exam.offer')}</button>` : ''}
     <button class="link" id="practice">${t('round.practice', { k: c.k })}</button></div>`);
   $('#exam', out) && ($('#exam', out).onclick = () => { out.close(); openExam(c, sec.id, modal); });
-  $('#again', out).onclick = () => { out.close(); openTraining(c, { close() {} }); };
+  $('#again', out).onclick = () => { out.close(); openTraining(c, { close() {} }, review); };
   $('#practice', out).onclick = () => { out.close(); openPractice(c, { close() {} }); };
   $('#done', out).onclick = () => { out.close(); go(); openCreature(c.id); if (rk.length) rankUp(rk); };
   hud();
   // Premios que despertaron (de esta sección o de una anterior que estaba dormida)
   for (const p of r.prizes) await prizeBorn(p);
-}
-
-// Prueba «Ya sé esto» (A-05): 10 preguntas sin repetición; con 80 % se saltan sus secciones, sin premio
-async function skipTest(c, sec) {
-  const res = await runRound(c, $('#layer'), { test: true });
-  if (!res) return go();
-  const r = passTest(sec.id, res.right, res.total); save();
-  const out = modal(`<div class="result"><div class="res-art">${creatureSVG(c.k, { mood: r.ok ? 1 : .6 })}</div>
-    <p><b>${res.right}/${res.total}</b></p>
-    <p class="${r.ok ? 'g' : 'muted'}">${r.ok ? t('round.testPass', { n: r.secs.length }) + (r.next ? ' ' + t('round.next', { title: tr(r.next.title) }) : '') : t('round.testFail')}</p>
-    <div class="row"><button class="btn ok" id="done">${t('round.continue')}</button></div></div>`);
-  $('#done', out).onclick = () => { out.close(); go(); };
-  hud();
 }
 
 // El kanji pintado cobra vida: se hunde en una gota de tinta y nace la criatura (propuesta A-02, pantalla 7)

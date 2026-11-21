@@ -24,12 +24,14 @@ export const STAGES = [
 ];
 
 // Niveles dentro de cada sección (docs/PROGRESION.md §3, tarea P-04). Valores provisorios: cambiar uno es una línea
-// (la mezcla de cada nivel está en PLANS de js/round.js; JUMP_ERRORS lo usará P-06).
+// (la mezcla de cada nivel está en PLANS de js/round.js).
 export const LEVELS = 5;            // niveles por sección; cada nivel completo pinta una parte del kanji de tinta
 export const ROUNDS_PER_LEVEL = 3;  // rondas que cuentan para pasar de nivel
 export const ROUND_SIZE = 15;       // ejercicios por ronda (sin contar la apertura)
 export const PRIOR_MIX = .3;        // en el nivel 5, parte de la ronda que repasa secciones anteriores
-export const JUMP_ERRORS = 3;       // «Saltar aquí» (P-06): errores permitidos en la prueba
+export const JUMP_ERRORS = 3;       // «Saltar aquí» (P-06, §8): errores permitidos en la prueba; al siguiente, termina
+export const JUMP_SIZE = 15;        // ejercicios de la prueba para saltar a una unidad
+export const JUMP_STAGE_SIZE = 20;  // ejercicios de la prueba para saltar al principio de la etapa siguiente
 
 // Frases propias del currículo.
 export const EXTRA = [
@@ -1175,6 +1177,25 @@ export const TALKS = {
     opts: [O('きょうと へ いきたい です', ['kyouto', 'ikimasu']), O('きょうと へ いきました', ['kyouto', 'ikimasu']), O('とうきょう です か', ['toukyou'])] },
 };
 
+// ---------- Guía de la unidad (docs/PROGRESION.md §7, tarea P-06; maqueta docs/propuestas/P-03-progresion.html) ----------
+// Por unidad, opcional: `phrases` = frases clave (si falta, las 5 primeras de la unidad) y `gram` = pantallas de gramática.
+// Si una unidad no tiene `gram`, la guía arma una pantalla por cada patrón de `pats` (PATTERNS de js/lang.js); sin
+// patrones, la pestaña Gramática no aparece. En los textos, [kanji:lectura] lleva furigana.
+// Cada pantalla: title (texto) + jp (la forma en japonés), text, form (fórmula: ['v' | 'e', texto] es un cuadro de color,
+// ['p', kana] una partícula, '+' y '=' son signos, otro texto va en japonés), te (verbos para la tabla 〜ます → forma て),
+// ex (frases de ejemplo) y note (una pista al final).
+export const GUIDES = {
+  '2.10': {
+    phrases: ['c_haitte', 'c_mite', 'c_yasunde', 'p_douzo', 'c_tabetewa'],
+    gram: [
+      { title: T('Pedir permiso: '), jp: '〜てもいいですか', text: T('Para preguntar si puedes hacer algo, pon el verbo en forma て y agrega もいいですか.'),
+        form: [['v', T('verbo en forma て')], '+', 'もいいですか', '=', ['e', T('¿Puedo…?')]], te: ['hairimasu', 'mimasu', 'yasumimasu'], ex: ['c_haitte', 'p_douzo'] },
+      { title: T('Decir que no se puede: '), jp: '〜てはいけません', text: T('Con la forma て + はいけません dices que algo no se puede hacer. Aquí は es partícula y se lee «wa».'),
+        form: [['v', T('verbo en forma て')], '+', ['p', 'は'], 'いけません', '=', ['e', T('No se puede…')]], ex: ['c_tabetewa'],
+        note: T('Compara: [入:はい]ってもいいですか pide permiso; [入:はい]ってはいけません dice que no se puede.') },
+    ] },
+};
+
 export const sectionById = id => SECTIONS.find(s => s.id === id);
 export const phraseById = id => PHRASES.find(p => p.id === id) || EXTRA.find(p => p.id === id);
 export const nextSection = id => SECTIONS[SECTIONS.findIndex(s => s.id === id) + 1] || null;
@@ -1288,5 +1309,18 @@ export function checkCurriculum() {
   const bare = LEX.filter(w => !inExtra.has(w.id));
   const travel = bare.length ? bare.filter(w => inTravel.has(w.id)).length / bare.length : 1;
   if (travel < .3) errs.push(`Solo el ${Math.round(travel * 100)} % de las palabras sin frase propia del currículo aparece en alguna frase de viaje (mínimo 30 %)`);
+  // Guías de la unidad: frases y verbos que existen, y solo de la unidad o de las anteriores
+  for (const [id, g] of Object.entries(GUIDES)) {
+    const where = `Guía ${id}`, s = sectionById(id);
+    if (!s) { errs.push(`${where}: la sección no existe`); continue; }
+    const upToHere = new Set(SECTIONS.slice(0, SECTIONS.indexOf(s) + 1).flatMap(x => x.phrases));
+    const wordsHere = new Set(SECTIONS.slice(0, SECTIONS.indexOf(s) + 1).flatMap(x => x.words));
+    const phr = [...(g.phrases || []), ...(g.gram || []).flatMap(p => p.ex || [])];
+    phr.forEach(pid => { if (!phraseById(pid)) errs.push(`${where}: la frase ${pid} no existe`); else if (!upToHere.has(pid)) errs.push(`${where}: la frase ${pid} no es de esta unidad ni de las anteriores`); });
+    (g.gram || []).forEach((p, i) => {
+      if (!p.text?.es || !p.jp) errs.push(`${where}, pantalla ${i + 1}: falta jp o text`);
+      (p.te || []).forEach(w => { if (!lex[w]?.te) errs.push(`${where}, pantalla ${i + 1}: ${w} no es un verbo con forma て`); else if (!wordsHere.has(w)) errs.push(`${where}, pantalla ${i + 1}: ${w} no es de esta unidad ni de las anteriores`); });
+    });
+  }
   return errs;
 }
