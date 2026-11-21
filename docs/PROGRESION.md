@@ -252,17 +252,17 @@ Cuántas palabras hacen falta (P-09): hoy cada unidad de las etapas 3 y 4 trae s
 
 ## 15. Mapa de las etapas 3 y 4 (hasta el N4) — propuesta para aprobar
 
-Las unidades 3.1 a 3.12 y 4.1 a 4.12 ya existen y **conservan su id**. Se suman 12 unidades nuevas después de cada bloque: **3.13 a 3.18** (etapa 3) y **4.13 a 4.18** (etapa 4). Cada etapa queda en 18 unidades. Con eso, el juego cierra la etapa 4 en **~1500 palabras** y **~296 kanji acumulados**, el N5 completo y la gramática del N4 según el orden de Genki II, Marugoto A2 e Irodori.
+Las unidades 3.1 a 3.12 y 4.1 a 4.12 ya existen y **conservan su id**. Se suman 12 unidades nuevas después de cada bloque: **3.13 a 3.18** (etapa 3) y **4.13 a 4.18** (etapa 4). Cada etapa queda en 18 unidades. Con eso, el juego cierra la etapa 4 en **~1500 palabras** y **~295 kanji acumulados**, el N5 completo y la gramática del N4 según el orden de Genki II, Marugoto A2 e Irodori.
 
-Cifras (palabras sin contar repasos; kanji acumulados incluyen 英 字 医 室 de 2.25 a 2.27):
+Cifras (palabras sin contar repasos; kanji acumulados incluyen 央 英 字 医 室 de 2.25 a 2.27):
 
 | Corte | Palabras por unidad | Palabras acumuladas | Kanji acumulados |
 |---|---|---|---|
-| Fin de 2.30 (con 2.25 a 2.27, ~21 palabras cada una) | 18 a 21 | ~790 | 152 |
-| Fin de 3.12 (12 unidades existentes ampliadas) | 19 a 20 | ~1020 a 1030 | 192 |
-| Fin de 3.18 (6 unidades nuevas) | 20 | ~1140 a 1150 | 233 |
-| Fin de 4.12 (12 unidades existentes ampliadas) | 19 a 20 | ~1370 a 1390 | 261 |
-| Fin de 4.18 (6 unidades nuevas) | 20 | **~1490 a 1510** | **296** |
+| Fin de 2.30 (con 2.25 a 2.27, ~21 palabras cada una) | 18 a 21 | ~790 | 153 |
+| Fin de 3.12 (12 unidades existentes ampliadas) | 19 a 20 | ~1020 a 1030 | 193 |
+| Fin de 3.18 (6 unidades nuevas) | 20 | ~1140 a 1150 | 232 |
+| Fin de 4.12 (12 unidades existentes ampliadas) | 19 a 20 | ~1370 a 1390 | 260 |
+| Fin de 4.18 (6 unidades nuevas) | 20 | **~1490 a 1510** | **295** |
 
 ### Etapa 3 · Ampliar el mundo
 
@@ -285,7 +285,7 @@ Cifras (palabras sin contar repasos; kanji acumulados incluyen 英 字 医 室 d
 | 3.13 (nueva) | Ayudar en una mudanza | 〜て くれませんか, 〜て もらえませんか (pedir), 〜て あげましょうか (ofrecer) | 重 軍 運 連 床 居 戸 | 運 (はこびます) |
 | 3.14 (nueva) | Reglas de la escuela y del trabajo | 〜なければ なりません, 〜ないと いけません, 〜なくても いい | 一 同 用 文 作 工 | 作 (つくります) |
 | 3.15 (nueva) | En el restaurante | 〜すぎる, 〜だけ, 〜しか 〜ない, 〜ずつ, 〜やすい / 〜にくい | 皿 貝 未 味 品 豆 玉 | 味 (あじ) |
-| 3.16 (nueva) | Una ciudad nueva | 〜く / 〜に なります, 〜ように なりました, 〜ことに しました / 〜ことに なりました | 主 住 斤 近 所 市 央 | 住 (すみます) |
+| 3.16 (nueva) | Una ciudad nueva | 〜く / 〜に なります, 〜ように なりました (con verbos en forma de diccionario; con la forma potencial se retoma en 4.1), 〜ことに しました / 〜ことに なりました | 主 住 斤 近 所 市 | 住 (すみます) |
 | 3.17 (nueva) | Un taller de manualidades | 〜て みます / 〜て みたい, 〜に します (elegir), 〜は どう でしたか | 糸 絵 衣 毛 皮 刀 切 | 絵 (え) |
 | 3.18 (nueva) | Campamento en el bosque | 〜て あります (algo ya preparado), 〜が あいて います / あけて あります (transitivo e intransitivo) | 林 森 星 焚 杉 暗 羽 | 星 (ほし) |
 
@@ -316,8 +316,8 @@ Cifras (palabras sin contar repasos; kanji acumulados incluyen 英 字 医 室 d
 
 - **Gramática del N4 cubierta, sin repetir:** potencial 4.1; volitiva 4.2; 〜そう (aspecto) 4.3 y 〜そう (oído) 4.14; 〜てしまう y 〜ておく 4.4; 〜と y 〜ば 4.5; 〜たら 3.11; 〜なら 4.15; pasiva 4.7; causativa 4.8; 〜てみる 3.17; 〜てあげる / くれる / もらう 3.10 y 3.13; keigo básico 4.6 y avanzado 4.16; obligación 3.14; 〜すぎる 3.15; cambios 3.16; 〜かもしれない 4.13; 〜んです 4.17; 〜ところです 4.18. Lo que ya enseñan 2.1 a 2.30 (〜て もいい, 〜ては いけません, 〜ないで ください, 〜た ほうが いい, 〜たり, 〜たい, ほしい, 〜まえに, 〜あとで, 〜て から, 〜から 〜まで) no se vuelve a enseñar: solo se repasa.
 - **Cambios declarados en unidades existentes (conservan id, título, kanji y premio):** 3.3, 3.5, 3.7, 3.8 y 4.10 hoy repiten gramática que 2.x ya enseña (2.26, 2.20, 2.19 y 2.28, 2.17, 2.27). Su gramática pasa a la de la tabla. Es lo único que se reordena; las frases actuales que repiten gramática vieja se reemplazan por frases nuevas con el mismo vocabulario.
-- **Sin repetir kanji:** los 76 kanji nuevos (41 en la etapa 3 y 35 en la etapa 4) están en el roster (`KANJI`), no se enseñan antes en `js/curriculum.js` ni en §13 y no se repiten entre unidades. Cada compuesto llega después de sus componentes según `recipes` (o en la misma unidad, listado después): 斤 → 近 · 所; 戸 → 所; 軍 → 運; 車 → 連 (ya enseñado); 糸 → 絵; 刀 → 切; 主 → 住; 豆 → 短 · 登; 矢 → 短; 皮 → 彼 · 疲; 音 y 心 → 意 → 億; 相 → 想; 一 → 同 · 首 · 旦; 元 → 完 → 院; 自 → 首; 夫 → 漢; 艸 → 漢 · 若; 未 → 味. Las piezas (部品) no cuentan como kanji.
-- **Kanji del roster que quedan fuera del curso (33):** 示 寸 炎 晶 杏 朋 加 享 圧 句 盟 枯 視 故 症 延 喿 禁 薪 操 燥 繰 澡 襟 憶 藻 士 欠 周 可 獣 至 尾 (no tienen una palabra cotidiana del N5 o N4 que los use; siguen siendo criaturas de fusión). De los 296 kanji acumulados, 31 (los que llevan *) no están en el roster y no tienen criatura; es la situación de hoy y no se toca aquí.
+- **Sin repetir kanji:** los 75 kanji nuevos (40 en la etapa 3 y 35 en la etapa 4) están en el roster (`KANJI`), no se enseñan antes en `js/curriculum.js` ni en §13 y no se repiten entre unidades. Cada compuesto llega después de sus componentes según `recipes` (o en la misma unidad, listado después): 斤 → 近 · 所; 戸 → 所; 軍 → 運; 車 → 連 (ya enseñado); 糸 → 絵; 刀 → 切; 主 → 住; 豆 → 短 · 登; 矢 → 短; 皮 → 彼 · 疲; 音 y 心 → 意 → 億; 相 → 想; 一 → 同 · 首 · 旦; 元 → 完 → 院; 自 → 首; 夫 → 漢; 艸 → 漢 · 若; 未 → 味. Las piezas (部品) no cuentan como kanji.
+- **Kanji del roster que quedan fuera del curso (33):** 示 寸 炎 晶 杏 朋 加 享 圧 句 盟 枯 視 故 症 延 喿 禁 薪 操 燥 繰 澡 襟 憶 藻 士 欠 周 可 獣 至 尾 (no tienen una palabra cotidiana del N5 o N4 que los use; siguen siendo criaturas de fusión). De los 295 kanji acumulados, 31 (los que llevan *) no están en el roster y no tienen criatura; es la situación de hoy y no se toca aquí.
 - **Kanji sin palabra propia:** 斤 (一斤 いっきん, el pan de molde), 軍 (軍手 ぐんて), 艸 (solo componente) y 士 / 周 (fuera) son los casos dudosos; ver «Necesita tu decisión (§15)».
 - **Premios:** los 12 premios nuevos están en el roster, pertenecen a los kanji de su propia unidad, no coinciden con ningún premio de §13 ni de las etapas 0 a 4 (茶 名 一 本 口 時 円 食 車 好 弟 中 朝 今 買 新 明 雨 家 道 魚 休 話 音 友 午 飯 売 東 町 待 歩 店 働 番 回 服 屋 理 長 鳥 体 旅 海 思 電 学 紙 花 力 風 晴 客 教 始 京, más 英 医 室 de 2.25 a 2.27) y no se repiten entre sí. Los que no tengan arte final se dibujan como borrador simple. Elegirlos es decisión tuya: la columna es una propuesta. Las tres propuestas «sin premio hoy» (物, 間, 目) también cumplen esas reglas; 4.2, 4.4, 4.7 y 4.11 siguen sin premio porque sus kanji no están en el roster.
 - **Situaciones variadas de la vida real:** mudanza, escuela y trabajo, restaurante, ciudad nueva, taller, campamento, cita, oficina, hospital, entrevista, biblioteca y llamada. Ninguna repite una situación de 2.1 a 2.30 con el mismo vocabulario (el hospital de 4.15 va por el lado de la consulta y las recetas; 3.3 es el síntoma).
@@ -326,7 +326,7 @@ Cifras (palabras sin contar repasos; kanji acumulados incluyen 英 字 医 室 d
 
 ## Necesita tu decisión (§15)
 
-1. ¿Apruebas el **mapa de 3.13 a 3.18 y de 4.13 a 4.18** (situaciones, gramática y kanji) y la meta de **~1500 palabras y ~296 kanji**? ¿Cambiarías algún **KANJŪ premio**?
+1. ¿Apruebas el **mapa de 3.13 a 3.18 y de 4.13 a 4.18** (situaciones, gramática y kanji) y la meta de **~1500 palabras y ~295 kanji**? ¿Cambiarías algún **KANJŪ premio**?
 2. ¿Aceptas los **cambios declarados** en 3.3, 3.5, 3.7, 3.8 y 4.10 (cambiar gramática repetida por gramática nueva)?
 3. ¿Quieres **premio** en 3.7 (物), 3.11 (間) y 4.9 (目), que hoy no lo tienen?
 4. Kanji sin vocabulario cotidiano: ¿enseñamos **斤 (一斤), 軍 (軍手) y 艸 (componente)** para poder llegar a 近, 運 y 漢, o preferimos dejarlos fuera con esos tres?
