@@ -1125,7 +1125,7 @@ const adjStem = w => w.id === 'ii' ? 'よ' : w.kana.slice(0, -1);
 const GODAN_A = { 'う': 'わ', 'く': 'か', 'ぐ': 'が', 'す': 'さ', 'つ': 'た', 'ぬ': 'な', 'ぶ': 'ば', 'む': 'ま', 'る': 'ら' };
 export function verbGroup(w) {
   if (!w.dict) return null;
-  if (w.dict.endsWith('する') || w.dict.endsWith('くる')) return 'irr';
+  if (w.dict.endsWith('する') || w.dict === 'くる') return 'irr';
   if (w.dict === 'ある') return 'aru';
   const stem = w.kana.slice(0, -2);
   return w.dict === stem + 'る' && w.te === stem + 'て' ? 'ichi' : 'godan';
@@ -1267,6 +1267,7 @@ export function checkLang() {
 
   // P-14: formas ない y た corta de verbos conocidos (docs/PROGRESION.md §14)
   const NAI = {
+    okurimasu: ['おくらない', 'おくらないで', 'おくらなかった', 'おくった'], tsukurimasu: ['つくらない', 'つくらないで', 'つくらなかった', 'つくった'],
     ikimasu: ['いかない', 'いかないで', 'いかなかった', 'いった'], kimasu: ['こない', 'こないで', 'こなかった', 'きた'],
     shimasu: ['しない', 'しないで', 'しなかった', 'した'], tabemasu: ['たべない', 'たべないで', 'たべなかった', 'たべた'],
     nomimasu: ['のまない', 'のまないで', 'のまなかった', 'のんだ'], kaimasu: ['かわない', 'かわないで', 'かわなかった', 'かった'],
