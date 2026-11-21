@@ -214,7 +214,7 @@ Las unidades 2.1 a 2.12 ya existen (P-08a #47, P-08b #48 o #49). Se suman 2.13 a
 | 2.22 | Horarios de trabajo | 〜時から 〜時まで, 〜ごろ, 〜曜日 | 働 | 働 |
 | 2.23 | Rumbo a una fiesta | 〜て、〜て (secuencia), 〜て から | 番 | 番 |
 | 2.24 | Eventos | Fechas: 〜月 〜日, 〜は いつ ですか | 回 | 回 |
-| 2.25 | Vida en la universidad | Forma ない: 〜ないで ください | 英 字 | 英 |
+| 2.25 | Vida en la universidad | Forma ない: 〜ないで ください | 央 英 字 (央 antes que 英) | 英 |
 | 2.26 | Hábitos sanos | 〜た ほうが いい, 〜ない ほうが いい | 医 | 医 |
 | 2.27 | Mis clases | 〜まえに, 〜た あとで | 室 | 室 |
 | 2.28 | Comprar ropa (2) | 〜が ほしい, 〜は どう ですか | 服 | 服 |
