@@ -184,6 +184,12 @@ Las palabras concretas de cada sección se cargan en `js/curriculum.js` etapa po
 | 2.16 | En la pastelería | contadores つ · こ · まい · ほん / ぼん / ぽん, 〜を 〜つ ください, 〜は いります か | 枚 売 | 売 |
 | 2.17 | Detalles del viaje | 〜から 〜まで, どのくらい かかりますか, 〜ぐらい, のりかえます | 東 西 南 北 | 東 |
 | 2.18 | Lugares nuevos | どんな 〜, ちかい / とおい, 〜に 〜が あります | 町 村 | 町 |
+| 2.19 | Una cita | 〜たい です (いきたい · たべたい · うたいたい), 〜に いきます con sustantivo (しょくじ に いきます), 〜ません か, まだ 〜て いません | 手 寺 待 持 (手 y 寺 antes que 待 y 持) | 待 |
+| 2.20 | Planes de viaje | 〜たり 〜たり します, 〜ましょう, 〜たい です | 止 少 歩 方 (止 y 少 antes que 歩) | 歩 |
+| 2.21 | Mi barrio | 〜の となり / よこ / むかい / まえ / うしろ, A と B の あいだ, この へん に 〜は ありますか, あいて います | 店 屋 | 店 |
+| 2.22 | Horarios de trabajo | 〜じ から 〜じ まで, 〜ごろ, 曜日 y へいじつ · まいしゅう · まいつき, 〜て すみません | 動 働 (動 antes que 働) | 働 |
+| 2.23 | Rumbo a una fiesta | 〜て、〜て (secuencia), 〜て から, 〜て いきます (かって · もって いきます), 〜ましょう か | 番 | 番 |
+| 2.24 | Eventos | fechas: 〜がつ 〜にち, ついたち … とおか, はつか, 〜は いつ ですか, 〜から 〜まで | 回 | 回 |
 
 ### Etapa 3 · Ampliar el mundo (A1+ a A2)
 
