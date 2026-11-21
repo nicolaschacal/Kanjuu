@@ -237,8 +237,96 @@ Notas del mapa:
 | P-12 | Implementación de la lectura por unidad | código, después de P-11 |
 | P-13 | Lecturas de las etapas 1 y 2 (una por unidad) | contenido, después de P-12 |
 | P-14 | Forma ない y forma た (corta) en el motor, para 2.25 y la etapa 3 | código |
+| P-09a | Mapa de las etapas 3 y 4 hasta el N4 (§15) | documentación (este PR) |
+| P-09b · P-09c | Etapa 3, unidades 3.1 a 3.6 y 3.7 a 3.12: de 8 a 20 palabras cada una (6 por PR) | contenido, después de aprobar §15 |
+| P-09d | Etapa 3, unidades nuevas 3.13 a 3.18 | contenido, después de P-14 |
+| P-09e · P-09f | Etapa 4, unidades 4.1 a 4.6 y 4.7 a 4.12: de 8 a 20 palabras cada una (6 por PR) | contenido, después de aprobar §15 |
+| P-09g | Etapa 4, unidades nuevas 4.13 a 4.18 | contenido, después de P-09d |
+
+Cuántas palabras hacen falta (P-09): hoy cada unidad de las etapas 3 y 4 trae solo 8 palabras núcleo y, entre las 24, apenas 66 palabras nuevas. Para llegar a ~1500 al final de la etapa 4 hacen falta **19 a 20 palabras nuevas por unidad** (el tope de 20 sigue vigente, §11) en las 36 unidades: 36 × 19,7 ≈ 710 sobre las ~790 con que cierra la etapa 2 (con 2.25 a 2.27). Cada unidad lleva además 12 a 15 frases, su diálogo (`TALKS`), su guía (`GUIDES`) y 3 rivales. El detalle por corte está en §15.
 
 ## Necesita tu decisión (§13)
 
 1. ¿Apruebas el **mapa de 2.13 a 2.30** (situaciones, gramática y kanji)? ¿Cambiarías algún **KANJŪ premio**?
 2. ¿Te parece bien **«Leer de corrido»** como está descrito en §12, para preparar la propuesta visual P-11?
+
+## 15. Mapa de las etapas 3 y 4 (hasta el N4) — propuesta para aprobar
+
+Las unidades 3.1 a 3.12 y 4.1 a 4.12 ya existen y **conservan su id**. Se suman 12 unidades nuevas después de cada bloque: **3.13 a 3.18** (etapa 3) y **4.13 a 4.18** (etapa 4). Cada etapa queda en 18 unidades. Con eso, el juego cierra la etapa 4 en **~1500 palabras** y **~296 kanji acumulados**, el N5 completo y la gramática del N4 según el orden de Genki II, Marugoto A2 e Irodori.
+
+Cifras (palabras sin contar repasos; kanji acumulados incluyen 英 字 医 室 de 2.25 a 2.27):
+
+| Corte | Palabras por unidad | Palabras acumuladas | Kanji acumulados |
+|---|---|---|---|
+| Fin de 2.30 (con 2.25 a 2.27, ~21 palabras cada una) | 18 a 21 | ~790 | 152 |
+| Fin de 3.12 (12 unidades existentes ampliadas) | 19 a 20 | ~1020 a 1030 | 192 |
+| Fin de 3.18 (6 unidades nuevas) | 20 | ~1140 a 1150 | 233 |
+| Fin de 4.12 (12 unidades existentes ampliadas) | 19 a 20 | ~1370 a 1390 | 261 |
+| Fin de 4.18 (6 unidades nuevas) | 20 | **~1490 a 1510** | **296** |
+
+### Etapa 3 · Ampliar el mundo
+
+«Hoy» es lo que la unidad ya enseña en `js/curriculum.js`; «Suma» es lo que se agrega al ampliarla; «Cambia» es lo único que se reordena (ver «Cambios declarados»). Un asterisco (*) marca un kanji que hoy se enseña sin estar en el roster (sin criatura). «(nueva)» marca las unidades nuevas.
+
+| Unidad | Situación | Gramática N4 | Kanji nuevos | KANJŪ premio |
+|---|---|---|---|---|
+| 3.1 | Comparar | Hoy: 〜より, 〜の ほうが, いちばん · Suma: 〜ほど 〜ない, 〜と おなじ | 多* 長 | 長 |
+| 3.2 | El café de animales | Hoy: います con animales · Suma: contadores 〜ひき · 〜わ · 〜とう | 犬 猫 鳥 馬 牛 | 鳥 |
+| 3.3 | Me siento mal | Cambia: 〜が します / 〜が あります (síntomas) y 〜と いい です (consejo) en lugar de 〜た ほうが いい (2.26) | 体 頭* 足 病 薬 | 体 |
+| 3.4 | ¿Alguna vez…? | Hoy: 〜た こと が あります / ありません · Suma: 〜は はじめて です | 旅 外 | 旅 |
+| 3.5 | Un día en la naturaleza | Cambia: 〜や 〜など y 〜が みえます / きこえます en lugar de 〜たり 〜たり (2.20) | 山 川 海 空 | 海 |
+| 3.6 | Charla casual | Hoy: 〜と おもいます, 〜て います (しって います) · Suma: forma corta + と おもいます, 〜と いいました | 思 知 考* | 思 |
+| 3.7 | Lo que quiero | Cambia: 〜がって います (tercera persona) y 〜て ほしい en lugar de 〜たい y ほしい (2.19, 2.28) | 心 物 欲* | sin premio hoy (propuesta: 物) |
+| 3.8 | Viajar en tren | Cambia: 〜を おります, 〜に のりかえます y 〜ごとに en lugar de 〜から 〜まで (2.17) | 電 乗* 地 鉄* | 電 |
+| 3.9 | Escuela y trabajo | Hoy: 〜ながら, 〜て から (repaso de 2.23) · Suma: 〜し (razones en lista) | 学 校 仕 事 | 学 |
+| 3.10 | Dar y recibir | Hoy: あげます / もらいます / くれます · Suma: 〜て あげます / 〜て くれます / 〜て もらいます | 送* 返* 紙 | 紙 |
+| 3.11 | Cuando y si… | Hoy: 〜とき, 〜たら, 〜から · Suma: sin gramática nueva; cierra con repaso del bloque | 間 由* | sin premio hoy (propuesta: 間) |
+| 3.12 | Fiestas de Japón | Hoy: sin gramática nueva · Suma: 〜と いう (nombrar: 「たなばた」と いう まつり) | 花 祭* 正 | 花 |
+| 3.13 (nueva) | Ayudar en una mudanza | 〜て くれませんか, 〜て もらえませんか (pedir), 〜て あげましょうか (ofrecer) | 重 軍 運 連 床 居 戸 | 運 (はこびます) |
+| 3.14 (nueva) | Reglas de la escuela y del trabajo | 〜なければ なりません, 〜ないと いけません, 〜なくても いい | 一 同 用 文 作 工 | 作 (つくります) |
+| 3.15 (nueva) | En el restaurante | 〜すぎる, 〜だけ, 〜しか 〜ない, 〜ずつ, 〜やすい / 〜にくい | 皿 貝 未 味 品 豆 玉 | 味 (あじ) |
+| 3.16 (nueva) | Una ciudad nueva | 〜く / 〜に なります, 〜ように なりました, 〜ことに しました / 〜ことに なりました | 主 住 斤 近 所 市 央 | 住 (すみます) |
+| 3.17 (nueva) | Un taller de manualidades | 〜て みます / 〜て みたい, 〜に します (elegir), 〜は どう でしたか | 糸 絵 衣 毛 皮 刀 切 | 絵 (え) |
+| 3.18 (nueva) | Campamento en el bosque | 〜て あります (algo ya preparado), 〜が あいて います / あけて あります (transitivo e intransitivo) | 林 森 星 焚 杉 暗 羽 | 星 (ほし) |
+
+### Etapa 4 · Conversación cotidiana
+
+| Unidad | Situación | Gramática N4 | Kanji nuevos | KANJŪ premio |
+|---|---|---|---|---|
+| 4.1 | Lo que puedo hacer | Hoy: forma potencial (できます, 〜れます) · Suma: 〜こと が できます, 〜こと も できます | ninguno | 力 |
+| 4.2 | Mis planes | Hoy: 〜(よ)う と おもいます, 〜つもり · Suma: 〜(よ)う か (proponer) | 予* 定* 約* | sin kanji del roster |
+| 4.3 | Parece que… | Hoy: 〜そう (aspecto), 〜みたい · Suma: 〜なさそう, 〜そうな / 〜そうに | 風 光* 色 | 風 |
+| 4.4 | Se me rompió | Hoy: 〜て しまう, 〜て おく · Suma: forma coloquial 〜ちゃう / 〜とく | 壊* 落* 忘* | sin kanji del roster |
+| 4.5 | Si hace sol, vamos | Hoy: 〜ば, 〜と (condición) · Suma: 〜ば いい, 〜ば 〜ほど | 晴 暑* 寒* | 晴 |
+| 4.6 | Hablar con respeto | Hoy: frases de tienda · Suma: かしこまりました, 〜でございます, お〜ください (los verbos de respeto pasan a 4.16) | 社 員 客 | 客 |
+| 4.7 | Me pasó algo | Hoy: pasiva de molestia · Suma: pasiva neutra (〜で つくられて います, 〜が ひらかれます) | 取* | sin kanji del roster |
+| 4.8 | Hacer que alguien haga | Hoy: 〜(さ)せる · Suma: 〜させて ください, 〜させて いただけませんか | 教 習* | 教 |
+| 4.9 | Para que… | Hoy: 〜ように, 〜ために · Suma: 〜ように して います, 〜ように いいます | 的* 願* | sin premio hoy (propuesta: 目) |
+| 4.10 | Contar una historia | Cambia: conectores (それから, そして, しかし, だから, すると) y 〜はじめる / 〜おわる / 〜つづける en lugar de 〜まえに / 〜あとで (2.27) | 語 始 終 | 始 |
+| 4.11 | Quejarse y disculparse | Hoy: 〜ので, 〜のに · Suma: 〜けど, 〜ば よかった | 遅* 困* | sin kanji del roster |
+| 4.12 | Gran viaje por Japón | Hoy: 〜でしょう · Suma: 〜に ついて y repaso del viaje | 京 都 県 | 京 |
+| 4.13 (nueva) | Esperando a un amigo | 〜かも しれません, 〜はず です / 〜はず が ありません, まだ 〜て いません | 彼 相 想 意 交 走 酒 | 想 (よそう) |
+| 4.14 (nueva) | Lo que dicen en la oficina | 〜そう です (lo oí), 〜よう です, 〜らしい, 〜に よると | 化 全 内 案 占 | 化 (ぶんか) |
+| 4.15 (nueva) | En el hospital | 〜なら, 〜たら どうですか, 〜ても (aunque), 〜なくて (causa) | 元 完 院 疲 者 舌 | 院 (びょういん) |
+| 4.16 (nueva) | Entrevista para un trabajo | Respeto 2: いらっしゃる, めしあがる, おっしゃる; humilde: いたします, まいります, もうします, うかがいます; お〜に なります, お〜します, 〜て いただけませんか | 自 親 孝 夫 姓 億 | 親 (おや) |
+| 4.17 (nueva) | En la biblioteca | 〜んです (explicar), 〜か どうか / 〜か 〜か (preguntas dentro de la frase), 〜の / 〜こと (nominalizar) | 艸 漢 若 厚 | 漢 (かんじ) |
+| 4.18 (nueva) | Una llamada y la despedida | 〜ところ です (a punto, en medio, recién), 〜た ばかり です, 〜までに, 〜あいだに, 〜と つたえて ください; repaso del N4 | 矢 短 登 旬 首 旦 池 | 登 (のぼります) |
+
+### Notas del mapa
+
+- **Gramática del N4 cubierta, sin repetir:** potencial 4.1; volitiva 4.2; 〜そう (aspecto) 4.3 y 〜そう (oído) 4.14; 〜てしまう y 〜ておく 4.4; 〜と y 〜ば 4.5; 〜たら 3.11; 〜なら 4.15; pasiva 4.7; causativa 4.8; 〜てみる 3.17; 〜てあげる / くれる / もらう 3.10 y 3.13; keigo básico 4.6 y avanzado 4.16; obligación 3.14; 〜すぎる 3.15; cambios 3.16; 〜かもしれない 4.13; 〜んです 4.17; 〜ところです 4.18. Lo que ya enseñan 2.1 a 2.30 (〜て もいい, 〜ては いけません, 〜ないで ください, 〜た ほうが いい, 〜たり, 〜たい, ほしい, 〜まえに, 〜あとで, 〜て から, 〜から 〜まで) no se vuelve a enseñar: solo se repasa.
+- **Cambios declarados en unidades existentes (conservan id, título, kanji y premio):** 3.3, 3.5, 3.7, 3.8 y 4.10 hoy repiten gramática que 2.x ya enseña (2.26, 2.20, 2.19 y 2.28, 2.17, 2.27). Su gramática pasa a la de la tabla. Es lo único que se reordena; las frases actuales que repiten gramática vieja se reemplazan por frases nuevas con el mismo vocabulario.
+- **Sin repetir kanji:** los 76 kanji nuevos (41 en la etapa 3 y 35 en la etapa 4) están en el roster (`KANJI`), no se enseñan antes en `js/curriculum.js` ni en §13 y no se repiten entre unidades. Cada compuesto llega después de sus componentes según `recipes` (o en la misma unidad, listado después): 斤 → 近 · 所; 戸 → 所; 軍 → 運; 車 → 連 (ya enseñado); 糸 → 絵; 刀 → 切; 主 → 住; 豆 → 短 · 登; 矢 → 短; 皮 → 彼 · 疲; 音 y 心 → 意 → 億; 相 → 想; 一 → 同 · 首 · 旦; 元 → 完 → 院; 自 → 首; 夫 → 漢; 艸 → 漢 · 若; 未 → 味. Las piezas (部品) no cuentan como kanji.
+- **Kanji del roster que quedan fuera del curso (33):** 示 寸 炎 晶 杏 朋 加 享 圧 句 盟 枯 視 故 症 延 喿 禁 薪 操 燥 繰 澡 襟 憶 藻 士 欠 周 可 獣 至 尾 (no tienen una palabra cotidiana del N5 o N4 que los use; siguen siendo criaturas de fusión). De los 296 kanji acumulados, 31 (los que llevan *) no están en el roster y no tienen criatura; es la situación de hoy y no se toca aquí.
+- **Kanji sin palabra propia:** 斤 (一斤 いっきん, el pan de molde), 軍 (軍手 ぐんて), 艸 (solo componente) y 士 / 周 (fuera) son los casos dudosos; ver «Necesita tu decisión (§15)».
+- **Premios:** los 12 premios nuevos están en el roster, pertenecen a los kanji de su propia unidad, no coinciden con ningún premio de §13 ni de las etapas 0 a 4 (茶 名 一 本 口 時 円 食 車 好 弟 中 朝 今 買 新 明 雨 家 道 魚 休 話 音 友 午 飯 売 東 町 待 歩 店 働 番 回 服 屋 理 長 鳥 体 旅 海 思 電 学 紙 花 力 風 晴 客 教 始 京, más 英 医 室 de 2.25 a 2.27) y no se repiten entre sí. Los que no tengan arte final se dibujan como borrador simple. Elegirlos es decisión tuya: la columna es una propuesta. Las tres propuestas «sin premio hoy» (物, 間, 目) también cumplen esas reglas; 4.2, 4.4, 4.7 y 4.11 siguen sin premio porque sus kanji no están en el roster.
+- **Situaciones variadas de la vida real:** mudanza, escuela y trabajo, restaurante, ciudad nueva, taller, campamento, cita, oficina, hospital, entrevista, biblioteca y llamada. Ninguna repite una situación de 2.1 a 2.30 con el mismo vocabulario (el hospital de 4.15 va por el lado de la consulta y las recetas; 3.3 es el síntoma).
+- **Cada unidad nueva trae** intro, «Puedo…», diálogo (`TALKS`), guía (`GUIDES`), 3 rivales, 19 a 20 palabras y 12 a 15 frases. Las lecturas (§12) de la etapa 3 son un párrafo; las de la etapa 4, una página corta.
+- **Motor:** las unidades nuevas dependen de P-14 (forma ない y た) y pueden pedir formas nuevas en `verbForms` (〜なければ, 〜すぎ, 〜ば, raíz de 〜ます para 〜ながら y 〜やすい). Si falta alguna, el integrador abre una tarea de código antes de P-09d y P-09g.
+
+## Necesita tu decisión (§15)
+
+1. ¿Apruebas el **mapa de 3.13 a 3.18 y de 4.13 a 4.18** (situaciones, gramática y kanji) y la meta de **~1500 palabras y ~296 kanji**? ¿Cambiarías algún **KANJŪ premio**?
+2. ¿Aceptas los **cambios declarados** en 3.3, 3.5, 3.7, 3.8 y 4.10 (cambiar gramática repetida por gramática nueva)?
+3. ¿Quieres **premio** en 3.7 (物), 3.11 (間) y 4.9 (目), que hoy no lo tienen?
+4. Kanji sin vocabulario cotidiano: ¿enseñamos **斤 (一斤), 軍 (軍手) y 艸 (componente)** para poder llegar a 近, 運 y 漢, o preferimos dejarlos fuera con esos tres?

@@ -152,6 +152,35 @@ Cada tarea de contenido: frases de manual (Genki, Marugoto, Irodori), kanji orde
 ### P-13 · Lecturas de las etapas 1 y 2 *(después de P-12)*
 ### P-14 · Forma ない y forma た corta en el motor
 
+*Agregado el 21 de noviembre de 2026 (mapa en docs/PROGRESION.md §15; plan en §14):*
+
+### P-09a · Mapa de las etapas 3 y 4 hasta el N4 *(documentación)*
+- Sección nueva §15: 12 unidades nuevas (3.13 a 3.18 y 4.13 a 4.18), gramática del N4 sin repetir, 76 kanji nuevos del roster y 12 premios nuevos
+- Meta: ~1500 palabras y ~296 kanji al cerrar la etapa 4; 19 a 20 palabras nuevas por unidad
+
+**Aceptación:** Nicolás aprueba el mapa o pide cambios; sin código.
+
+### P-09b · P-09c · Etapa 3, unidades 3.1 a 3.6 y 3.7 a 3.12 *(después de aprobar §15)*
+- Cada unidad pasa de 8 a 19–20 palabras nuevas y a 12–15 frases; conservan id, título, kanji y premio
+- Cambios declarados de gramática: 3.3, 3.5, 3.7 y 3.8 (hoy repiten 2.x)
+
+**Aceptación:** `tools/check_curriculo.mjs` sin errores; una partida vieja carga en su unidad; la etapa 3 existente llega a ~1030 palabras acumuladas.
+
+### P-09d · Etapa 3, unidades nuevas 3.13 a 3.18 *(después de P-14 y de aprobar §15)*
+- 6 unidades con 20 palabras, 12–15 frases, diálogo, guía, rivales y premio, según §15
+
+**Aceptación:** ~1150 palabras y ~233 kanji acumulados; `tools/check_curriculo.mjs` sin errores.
+
+### P-09e · P-09f · Etapa 4, unidades 4.1 a 4.6 y 4.7 a 4.12 *(después de aprobar §15)*
+- Igual que P-09b y P-09c; cambio declarado de gramática en 4.10 (hoy repite 2.27)
+
+**Aceptación:** ~1390 palabras y ~261 kanji acumulados.
+
+### P-09g · Etapa 4, unidades nuevas 4.13 a 4.18 *(después de P-09d)*
+- 6 unidades nuevas; cierra el N4 con la llamada y la despedida (4.18)
+
+**Aceptación:** ~1500 palabras y ~296 kanji acumulados; `tools/check_curriculo.mjs` sin errores; una partida vieja carga en su unidad.
+
 ---
 
 ## Bloque A · Aprendizaje en el entrenamiento *(va primero: decidido por Nicolás el 13 de noviembre de 2026)*
