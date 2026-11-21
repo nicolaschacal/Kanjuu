@@ -370,6 +370,30 @@ export const LEX = [
   { id: 'okashi', kana: 'おかし', kanji: 'お菓子', es: 'dulces · golosinas', en: 'sweets · snacks', sit: 'spring', kind: 'n' },
   { id: 'wain', kana: 'ワイン', kanji: null, es: 'vino', en: 'wine', sit: 'spring', kind: 'n' },
   { id: 'biiru', kana: 'ビール', kanji: null, es: 'cerveza', en: 'beer', sit: 'spring', kind: 'n' },
+  // Etapa 2 del currículo (P-08e1: 2.30)
+  { id: 'suupaa', kana: 'スーパー', kanji: null, es: 'supermercado', en: 'supermarket', sit: 'spring', kind: 'n' },
+  { id: 'kago', kana: 'かご', kanji: null, es: 'cesta (de compras)', en: 'basket (for shopping)', sit: 'spring', kind: 'n' },
+  { id: 'reji', kana: 'レジ', kanji: null, es: 'caja (donde se paga)', en: 'checkout · register', sit: 'spring', kind: 'n' },
+  { id: 'tamanegi', kana: 'たまねぎ', kanji: '玉ねぎ', es: 'cebolla', en: 'onion', sit: 'spring', kind: 'n' },
+  { id: 'ninjin', kana: 'にんじん', kanji: '人参', es: 'zanahoria', en: 'carrot', sit: 'spring', kind: 'n' },
+  { id: 'jagaimo', kana: 'じゃがいも', kanji: null, es: 'papa · patata', en: 'potato', sit: 'spring', kind: 'n' },
+  { id: 'kyabetsu', kana: 'キャベツ', kanji: null, es: 'repollo · col', en: 'cabbage', sit: 'spring', kind: 'n' },
+  { id: 'daikon', kana: 'だいこん', kanji: '大根', es: 'rábano daikon (un rábano blanco y largo)', en: 'daikon (a long white radish)', sit: 'spring', kind: 'n' },
+  { id: 'satoimo', kana: 'さといも', kanji: '里芋', es: 'taro (una raíz parecida a la papa)', en: 'taro (a root like a potato)', sit: 'spring', kind: 'n' },
+  { id: 'tofu', kana: 'とうふ', kanji: '豆腐', es: 'tofu', en: 'tofu', sit: 'spring', kind: 'n' },
+  { id: 'shouyu', kana: 'しょうゆ', kanji: '醤油', es: 'salsa de soja', en: 'soy sauce', sit: 'spring', kind: 'n' },
+  { id: 'shio', kana: 'しお', kanji: '塩', es: 'sal', en: 'salt', sit: 'spring', kind: 'n' },
+  { id: 'chiizu', kana: 'チーズ', kanji: null, es: 'queso', en: 'cheese', sit: 'spring', kind: 'n' },
+  { id: 'meron', kana: 'メロン', kanji: null, es: 'melón', en: 'melon', sit: 'spring', kind: 'n' },
+  { id: 'ousama', kana: 'おうさま', kanji: '王様', es: 'rey', en: 'king', sit: 'spring', kind: 'n' },
+  { id: 'uriba', kana: 'うりば', kanji: '売り場', es: 'sección · zona de venta (さかな の うりば: la sección de pescado)', en: 'section · sales floor (さかな の うりば: the fish section)', sit: 'spring', kind: 'n' },
+  { id: 'genkin', kana: 'げんきん', kanji: '現金', es: 'dinero en efectivo', en: 'cash', sit: 'spring', kind: 'n' },
+  { id: 'kaado', kana: 'カード', kanji: null, es: 'tarjeta', en: 'card', sit: 'spring', kind: 'n' },
+  { id: 'haraimasu', kana: 'はらいます', kanji: '払います', te: 'はらって', tek: '払って', dict: 'はらう', dictk: '払う', es: 'pagar', en: 'to pay', sit: 'spring', kind: 'v' },
+  { id: 'sagashimasu', kana: 'さがします', kanji: '探します', te: 'さがして', tek: '探して', dict: 'さがす', dictk: '探す', es: 'buscar', en: 'to look for', sit: 'spring', kind: 'v' },
+  { id: 'iremasu', kana: 'いれます', kanji: '入れます', te: 'いれて', tek: '入れて', dict: 'いれる', dictk: '入れる', es: 'meter · poner dentro', en: 'to put in', sit: 'spring', kind: 'v' },
+  { id: 'narabimasu', kana: 'ならびます', kanji: '並びます', te: 'ならんで', tek: '並んで', dict: 'ならぶ', dictk: '並ぶ', es: 'hacer fila · ponerse en la fila', en: 'to line up', sit: 'spring', kind: 'v' },
+  { id: 'muri', kana: 'むり', kanji: '無理', es: 'imposible · demasiado difícil (むり です: no puedo)', en: 'impossible · too much (むり です: I cannot)', sit: 'spring', kind: 'expr' },
   // ── post · Compras y ciudad ──
   { id: 'kore', kana: 'これ', kanji: null, es: 'esto', en: 'this', sit: 'post', kind: 'n' },
   { id: 'ikura', kana: 'いくら', kanji: null, es: 'cuánto cuesta', en: 'how much', sit: 'post', kind: 'q' },
@@ -478,6 +502,31 @@ export const LEX = [
   { id: 'kyoukai', kana: 'きょうかい', kanji: '教会', es: 'iglesia', en: 'church', sit: 'post', kind: 'n' },
   { id: 'puuru', kana: 'プール', kanji: null, es: 'piscina', en: 'swimming pool', sit: 'post', kind: 'n' },
   { id: 'akimasu', kana: 'あきます', kanji: '開きます', te: 'あいて', tek: '開いて', dict: 'あく', dictk: '開く', es: 'abrirse (la tienda abre; あいて います: está abierto)', en: 'to open (the shop opens; あいて います: it is open)', sit: 'post', kind: 'v' },
+  // Etapa 2 del currículo (P-08e1: 2.28)
+  { id: 'youfuku', kana: 'ようふく', kanji: '洋服', es: 'ropa (de estilo occidental; la ropa de todos los días)', en: 'clothes (Western-style; everyday clothing)', sit: 'post', kind: 'n' },
+  { id: 'wanpiisu', kana: 'ワンピース', kanji: null, es: 'vestido (de una sola pieza)', en: 'dress (one-piece)', sit: 'post', kind: 'n' },
+  { id: 'jaketto', kana: 'ジャケット', kanji: null, es: 'chaqueta', en: 'jacket', sit: 'post', kind: 'n' },
+  { id: 'jiinzu', kana: 'ジーンズ', kanji: null, es: 'jeans · pantalón vaquero', en: 'jeans', sit: 'post', kind: 'n' },
+  { id: 'buutsu', kana: 'ブーツ', kanji: null, es: 'botas', en: 'boots', sit: 'post', kind: 'n' },
+  { id: 'sandaru', kana: 'サンダル', kanji: null, es: 'sandalias', en: 'sandals', sit: 'post', kind: 'n' },
+  { id: 'sunikaa', kana: 'スニーカー', kanji: null, es: 'zapatillas deportivas', en: 'sneakers', sit: 'post', kind: 'n' },
+  { id: 'nekutai', kana: 'ネクタイ', kanji: null, es: 'corbata', en: 'necktie', sit: 'post', kind: 'n' },
+  { id: 'tebukuro', kana: 'てぶくろ', kanji: '手袋', es: 'guantes', en: 'gloves', sit: 'post', kind: 'n' },
+  { id: 'megane', kana: 'めがね', kanji: '眼鏡', es: 'gafas · anteojos', en: 'glasses', sit: 'post', kind: 'n' },
+  { id: 'saizu', kana: 'サイズ', kanji: null, es: 'talla · tamaño', en: 'size', sit: 'post', kind: 'n' },
+  { id: 'shichaku', kana: 'しちゃく', kanji: '試着', es: 'probarse una prenda (しちゃく します: probarse)', en: 'trying clothes on (しちゃく します: to try on)', sit: 'post', kind: 'n' },
+  { id: 'kiru', kana: 'きます', kanji: '着ます', te: 'きて', tek: '着て', dict: 'きる', dictk: '着る', es: 'ponerse · llevar puesta (ropa del cuerpo: camisa, suéter, abrigo). No es 来ます, que también se lee きます', en: 'to wear · put on (clothes on the body). Not 来ます, which is also read きます', sit: 'post', kind: 'v' },
+  { id: 'hakimasu', kana: 'はきます', kanji: '履きます', te: 'はいて', tek: '履いて', dict: 'はく', dictk: '履く', es: 'ponerse · llevar (calzado y pantalones: くつ を はきます)', en: 'to wear · put on (shoes and trousers)', sit: 'post', kind: 'v' },
+  { id: 'nugimasu', kana: 'ぬぎます', kanji: '脱ぎます', te: 'ぬいで', tek: '脱いで', dict: 'ぬぐ', dictk: '脱ぐ', es: 'quitarse (ropa, zapatos)', en: 'to take off (clothes, shoes)', sit: 'post', kind: 'v' },
+  { id: 'niaimasu', kana: 'にあいます', kanji: '似合います', te: 'にあって', tek: '似合って', dict: 'にあう', dictk: '似合う', es: 'quedar bien · favorecer (la ropa te queda bien)', en: 'to suit · look good on', sit: 'post', kind: 'v' },
+  { id: 'kaburimasu', kana: 'かぶります', kanji: '被ります', te: 'かぶって', tek: '被って', dict: 'かぶる', dictk: '被る', es: 'ponerse en la cabeza (ぼうし を かぶります)', en: 'to put on (a hat, on the head)', sit: 'post', kind: 'v' },
+  { id: 'kakemasu', kana: 'かけます', kanji: '掛けます', te: 'かけて', tek: '掛けて', dict: 'かける', dictk: '掛ける', es: 'ponerse las gafas (めがね を かけます) · colgar', en: 'to put on glasses (めがね を かけます) · to hang', sit: 'post', kind: 'v' },
+  { id: 'kitsui', kana: 'きつい', kanji: null, es: 'apretado · ajustado', en: 'tight', sit: 'post', kind: 'adj' },
+  { id: 'yurui', kana: 'ゆるい', kanji: '緩い', es: 'flojo · holgado', en: 'loose', sit: 'post', kind: 'adj' },
+  { id: 'pittari', kana: 'ぴったり', kanji: null, es: 'justo · a la medida (ぴったり です: queda perfecto)', en: 'a perfect fit (ぴったり です: fits perfectly)', sit: 'post', kind: 'expr' },
+  { id: 'onaji', kana: 'おなじ', kanji: '同じ', es: 'igual · el mismo (おなじ いろ: el mismo color)', en: 'same (おなじ いろ: the same color)', sit: 'post', kind: 'adj' },
+  { id: 'motto', kana: 'もっと', kanji: null, es: 'más (todavía más)', en: 'more (even more)', sit: 'post', kind: 'expr' },
+  { id: 'nedan', kana: 'ねだん', kanji: '値段', es: 'precio', en: 'price', sit: 'post', kind: 'n' },
   // ── ruins · Objetos y estudio ──
   { id: 'hon', kana: 'ほん', kanji: '本', es: 'libro', en: 'book', sit: 'ruins', kind: 'n' },
   { id: 'sensei', kana: 'せんせい', kanji: '先生', es: 'profesor · maestra', en: 'teacher', sit: 'ruins', kind: 'n' },
@@ -731,6 +780,28 @@ export const LEX = [
   { id: 'hen', kana: 'へん', kanji: '辺', es: 'zona (この へん: por aquí)', en: 'area (この へん: around here)', sit: 'lake', kind: 'n' },
   { id: 'mayoimasu', kana: 'まよいます', kanji: '迷います', te: 'まよって', tek: '迷って', dict: 'まよう', dictk: '迷う', es: 'perderse (みち に まよいます: perderse en el camino) · dudar', en: 'to get lost · to hesitate', sit: 'lake', kind: 'v' },
   { id: 'tochuu', kana: 'とちゅう', kanji: '途中', es: 'en el camino (とちゅう で: de camino)', en: 'on the way (とちゅう で: on the way)', sit: 'lake', kind: 'n' },
+  // Etapa 2 del currículo (P-08e1: 2.29)
+  { id: 'yoyaku', kana: 'よやく', kanji: '予約', es: 'reserva (よやく します: reservar)', en: 'reservation (よやく します: to book)', sit: 'lake', kind: 'n' },
+  { id: 'chekkuin', kana: 'チェックイン', kanji: null, es: 'check-in · registro de entrada', en: 'check-in', sit: 'lake', kind: 'n' },
+  { id: 'chekkuauto', kana: 'チェックアウト', kanji: null, es: 'check-out · salida del hotel', en: 'check-out', sit: 'lake', kind: 'n' },
+  { id: 'furonto', kana: 'フロント', kanji: null, es: 'recepción (del hotel)', en: 'front desk', sit: 'lake', kind: 'n' },
+  { id: 'shinguru', kana: 'シングル', kanji: null, es: 'habitación individual', en: 'single room', sit: 'lake', kind: 'n' },
+  { id: 'tsuin', kana: 'ツイン', kanji: null, es: 'habitación doble (con dos camas)', en: 'twin room', sit: 'lake', kind: 'n' },
+  { id: 'ippaku', kana: 'いっぱく', kanji: '一泊', es: 'una noche (de alojamiento)', en: 'one night (of a stay)', sit: 'lake', kind: 'num' },
+  { id: 'nihaku', kana: 'にはく', kanji: '二泊', es: 'dos noches (にはく みっか: dos noches y tres días)', en: 'two nights (にはく みっか: two nights, three days)', sit: 'lake', kind: 'num' },
+  { id: 'sanpaku', kana: 'さんぱく', kanji: '三泊', es: 'tres noches (después de さん suena ぱく)', en: 'three nights (after さん it sounds ぱく)', sit: 'lake', kind: 'num' },
+  { id: 'nanpaku', kana: 'なんぱく', kanji: '何泊', es: 'cuántas noches', en: 'how many nights', sit: 'lake', kind: 'q' },
+  { id: 'tomaru', kana: 'とまります', kanji: '泊まります', te: 'とまって', tek: '泊まって', dict: 'とまる', dictk: '泊まる', es: 'alojarse · pasar la noche (ホテル に とまります). No es 止まります, que también se lee とまります', en: 'to stay overnight (ホテル に とまります). Not 止まります, which is also read とまります', sit: 'lake', kind: 'v' },
+  { id: 'ryokan', kana: 'りょかん', kanji: '旅館', es: 'ryokan · posada tradicional japonesa', en: 'ryokan · traditional Japanese inn', sit: 'lake', kind: 'n' },
+  { id: 'ryoukin', kana: 'りょうきん', kanji: '料金', es: 'tarifa · precio de un servicio', en: 'fee · rate', sit: 'lake', kind: 'n' },
+  { id: 'choushoku', kana: 'ちょうしょく', kanji: '朝食', es: 'desayuno (más formal que あさごはん)', en: 'breakfast (more formal than あさごはん)', sit: 'lake', kind: 'n' },
+  { id: 'yuushoku', kana: 'ゆうしょく', kanji: '夕食', es: 'cena (más formal que ばんごはん)', en: 'dinner (more formal than ばんごはん)', sit: 'lake', kind: 'n' },
+  { id: 'daiyokujou', kana: 'だいよくじょう', kanji: '大浴場', es: 'baño público grande (del hotel)', en: 'large public bath (in a hotel)', sit: 'lake', kind: 'n' },
+  { id: 'otearai', kana: 'おてあらい', kanji: 'お手洗い', es: 'baño · servicio (el lugar donde te lavas las manos)', en: 'restroom', sit: 'lake', kind: 'n' },
+  { id: 'okujou', kana: 'おくじょう', kanji: '屋上', es: 'azotea', en: 'rooftop', sit: 'lake', kind: 'n' },
+  { id: 'kuushitsu', kana: 'くうしつ', kanji: '空室', es: 'habitación libre', en: 'vacancy · empty room', sit: 'lake', kind: 'n' },
+  { id: 'manshitsu', kana: 'まんしつ', kanji: '満室', es: 'completo · sin habitaciones libres', en: 'no vacancy · fully booked', sit: 'lake', kind: 'n' },
+  { id: 'kakunin', kana: 'かくにん', kanji: '確認', es: 'confirmación · comprobación (かくにん します: confirmar)', en: 'confirmation · check (かくにん します: to confirm)', sit: 'lake', kind: 'n' },
   // ── shrine · Rutina diaria ──
   { id: 'asa', kana: 'あさ', kanji: '朝', es: 'mañana (parte del día)', en: 'morning', sit: 'shrine', kind: 'n' },
   { id: 'okimasu', kana: 'おきます', kanji: '起きます', te: 'おきて', tek: '起きて', dict: 'おきる', dictk: '起きる', es: 'levantarse', en: 'to get up', sit: 'shrine', kind: 'v' },
@@ -1119,11 +1190,32 @@ const passForms = w => [...masuSet(w.pass), ...masuSet(w.caus)];
 const ADJ_ENDS = ['そう', 'くない', 'かった', 'くなかった', 'くて'];
 const isIAdj = w => w.kind === 'adj' && w.kana.endsWith('い') && !NA_ADJ.has(w.id);
 const adjStem = w => w.id === 'ii' ? 'よ' : w.kana.slice(0, -1);
+// Forma ない (P-14): 〜ない · 〜ないで · 〜なかった sobre la raíz negativa de la forma de diccionario (campo dict).
+// Grupo: ichidan si dict = raíz de ます + る y te = raíz + て (たべる · みる); irregulares する · くる (y ...する); ある → ない;
+// el resto es godan (い-fila → あ-fila: いく → いかない, かう → かわない). La forma た corta ya sale de te (taOf: いって → いった).
+const GODAN_A = { 'う': 'わ', 'く': 'か', 'ぐ': 'が', 'す': 'さ', 'つ': 'た', 'ぬ': 'な', 'ぶ': 'ば', 'む': 'ま', 'る': 'ら' };
+export function verbGroup(w) {
+  if (!w.dict) return null;
+  if (w.dict.endsWith('する') || w.dict === 'くる') return 'irr';
+  if (w.dict === 'ある') return 'aru';
+  const stem = w.kana.slice(0, -2);
+  return w.dict === stem + 'る' && w.te === stem + 'て' ? 'ichi' : 'godan';
+}
+export function naiStem(w) {
+  const g = verbGroup(w), d = w.dict;
+  if (!g) return null;
+  if (g === 'aru') return '';
+  if (g === 'irr') return d.slice(0, -2) + (d.endsWith('する') ? 'し' : 'こ');
+  if (g === 'ichi') return d.slice(0, -1);
+  return d.slice(0, -1) + GODAN_A[d.slice(-1)];
+}
+const NAI_ENDS = ['ない', 'ないで', 'なかった'];
+const naiForms = w => { const s = naiStem(w); return s === null ? [] : NAI_ENDS.map(e => s + e); };
 export function verbForms(w) {
   if (w.kind === 'adj') return isIAdj(w) ? [w.kana, ...ADJ_ENDS.map(e => adjStem(w) + (w.id === 'ii' && e === 'そう' ? 'さそう' : e))] : [w.kana];
   if (w.kind !== 'v') return [w.kana];
   const stem = w.kana.slice(0, -2), ta = taOf(w.te);
-  return [...VERB_ENDS.map(e => stem + e), ...(w.te ? [w.te, ta, ta + 'り', ta + 'ら'] : []), ...(w.dict ? [w.dict] : []),
+  return [...VERB_ENDS.map(e => stem + e), ...(w.te ? [w.te, ta, ta + 'り', ta + 'ら'] : []), ...(w.dict ? [w.dict] : []), ...naiForms(w),
     ...potForms(w), ...passForms(w), ...(w.vol ? [w.vol] : []), ...(w.ba ? [w.ba] : [])];
 }
 // La misma forma escrita con kanji (para mostrarla cuando el jugador ya los tiene)
@@ -1133,6 +1225,11 @@ export function verbKanji(w, form) {
   if (w.kind === 'adj') return isIAdj(w) ? w.kanji.slice(0, -1) + form.slice(adjStem(w).length) : w.kanji;
   if (w.kind !== 'v') return w.kanji;
   if (form === w.dict) return w.dictk || w.kanji;
+  if (w.dict && naiForms(w).includes(form)) {
+    // 行く → 行かない: la parte con kanji queda y la okurigana se cambia (来る → 来ない)
+    const dk = w.dictk || w.kanji, r = [...dk].reverse().findIndex(c => !/[ぁ-ゟ]/.test(c));
+    return dk.slice(0, dk.length - r) + form.slice(w.dict.length - r);
+  }
   if (form === w.vol) return w.volk || w.kanji;
   if (form === w.ba) return w.bak || w.kanji;
   if (w.pot && potForms(w).includes(form)) {
@@ -1237,6 +1334,31 @@ export function checkLang() {
     for (const id of r.ids) if (byId[id] && !used.has(id)) errs.push(`Lectura ${r.id}: ${id} está en ids pero no en el texto`);
     if (level < prevLevel) errs.push(`Lectura ${r.id}: más fácil que la anterior (las lecturas van graduadas)`);
     prevLevel = level;
+  }
+
+  // P-14: formas ない y た corta de verbos conocidos (docs/PROGRESION.md §14)
+  const NAI = {
+    okurimasu: ['おくらない', 'おくらないで', 'おくらなかった', 'おくった'], tsukurimasu: ['つくらない', 'つくらないで', 'つくらなかった', 'つくった'],
+    ikimasu: ['いかない', 'いかないで', 'いかなかった', 'いった'], kimasu: ['こない', 'こないで', 'こなかった', 'きた'],
+    shimasu: ['しない', 'しないで', 'しなかった', 'した'], tabemasu: ['たべない', 'たべないで', 'たべなかった', 'たべた'],
+    nomimasu: ['のまない', 'のまないで', 'のまなかった', 'のんだ'], kaimasu: ['かわない', 'かわないで', 'かわなかった', 'かった'],
+    machimasu: ['またない', 'またないで', 'またなかった', 'まった'], hanashimasu: ['はなさない', 'はなさないで', 'はなさなかった', 'はなした'],
+    kaerimasu: ['かえらない', 'かえらないで', 'かえらなかった', 'かえった'], arimasu: ['ない', 'ないで', 'なかった', 'あった'],
+    imasu: ['いない', 'いないで', 'いなかった', 'いた'], mimasu: ['みない', 'みないで', 'みなかった', 'みた'],
+    oyogimasu: ['およがない', 'およがないで', 'およがなかった', 'およいだ'], asobimasu: ['あそばない', 'あそばないで', 'あそばなかった', 'あそんだ'],
+    shinimasu: ['しなない', 'しなないで', 'しななかった', 'しんだ'],
+  };
+  for (const [id, want] of Object.entries(NAI)) {
+    const w = byId[id];
+    if (!w) continue;
+    const got = [...naiForms(w), taOf(w.te)];
+    if (got.join() !== want.join()) errs.push(`Formas ない/た de ${id}: salió ${got.join('・')} y se esperaba ${want.join('・')}`);
+  }
+  for (const w of LEX) if (w.kind === 'v') {
+    if (!w.dict) { errs.push(`LEX ${w.id}: falta dict (forma de diccionario)`); continue; }
+    if (w.kanji && !w.dictk) errs.push(`LEX ${w.id}: tiene kanji pero no dictk`);
+    if (w.dictk && naiForms(w).length !== 3) errs.push(`LEX ${w.id}: sin formas ない`);
+    for (const f of naiForms(w)) if (!/^[ぁ-ゟ]+$/.test(f)) errs.push(`LEX ${w.id}: forma ない inválida ${f}`);
   }
 
   for (const [k, v] of Object.entries(USE)) if (v !== 'rare' && v !== 'piece') errs.push(`USE ${k}: valor desconocido ${v}`);

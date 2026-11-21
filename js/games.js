@@ -28,6 +28,22 @@ export const canSpeak = () => !!jaVoice;
 export function speak(text, rate = .85) {
   try { const u = new SpeechSynthesisUtterance(plain(text)); u.lang = 'ja-JP'; if (jaVoice) u.voice = jaVoice; u.rate = rate; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch {}
 }
+// Varias frases seguidas (lectura de la unidad, P-12): onStart(i) al empezar cada una y onEnd() al terminar la última.
+// Devuelve una función que la detiene.
+let seqTok = null;
+export function speakSeq(list, rate = .9, { onStart, onEnd } = {}) {
+  const tok = seqTok = {};
+  try {
+    speechSynthesis.cancel();
+    list.forEach((text, i) => {
+      const u = new SpeechSynthesisUtterance(plain(text)); u.lang = 'ja-JP'; if (jaVoice) u.voice = jaVoice; u.rate = rate;
+      u.onstart = () => seqTok === tok && onStart?.(i);
+      u.onend = () => { if (seqTok === tok && i === list.length - 1) { seqTok = null; onEnd?.(); } };
+      speechSynthesis.speak(u);
+    });
+  } catch {}
+  return () => { if (seqTok === tok) seqTok = null; try { speechSynthesis.cancel(); } catch {} };
+}
 // Tarjeta de historia mnemotécnica: se muestra al descubrir o al fallar
 export function storyHTML(k) {
   const K = KANJI[k];

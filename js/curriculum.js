@@ -14,6 +14,7 @@
 // - `intro` = la frase con la que la criatura presenta la sección (en tú).
 import { LEX, PHRASES, PATTERNS, PARTICLES, verbForms } from './lang.js';
 import { KANJI } from './data.js';
+import { UNIT_READINGS, questionsFor, LINES, segs, plainOf, readOf, keyOf, analyze, kanjiOf, newWordsOf } from './readings.js';
 
 export const STAGES = [
   { id: 'e0', title: { es: 'Sonidos y kana', en: 'Sounds and kana' }, level: 'kana' },
@@ -578,6 +579,60 @@ export const EXTRA = [
   { id: 'c_nanoka', ja: 'コンサート は なのか と ここのか に あります', ids: ['konsaato', 'nanoka', 'kokonoka', 'arimasu'], pat: null, es: 'Hay concierto el 7 y el 9.', en: 'There are concerts on the 7th and the 9th.' },
   { id: 'c_juuichinichi', ja: 'じゅう いち にち は ひま です か', ids: ['juu', 'ichi', 'nichi', 'hima'], pat: 'ka', es: '¿Estás libre el 11?', en: 'Are you free on the 11th?' },
   { id: 'c_yokka', ja: 'よっか は ちょっと いそがしい です', ids: ['yokka', 'chotto', 'isogashii'], pat: 'adj', es: 'El 4 estoy un poco ocupado.', en: 'I am a little busy on the 4th.' },
+  // 2.28 (〜が ほしい, 〜は どう ですか)
+  { id: 'c_youfuku', ja: 'おなじ いろ の ようふく が ほしい です', ids: ['onaji', 'iro', 'youfuku', 'hoshii'], pat: null, es: 'Quiero ropa del mismo color.', en: 'I want clothes in the same color.' },
+  { id: 'c_wanpiisu', ja: 'あおい ワンピース が ほしい です', ids: ['aoi', 'wanpiisu', 'hoshii'], pat: null, es: 'Quiero un vestido azul.', en: 'I want a blue dress.' },
+  { id: 'c_jaketto', ja: 'この ジャケット は どう です か', ids: ['kono', 'jaketto', 'dou'], pat: 'ka', es: '¿Qué te parece esta chaqueta?', en: 'How about this jacket?' },
+  { id: 'c_jiinzu', ja: 'この ジーンズ は ちょっと きつい です', ids: ['kono', 'jiinzu', 'chotto', 'kitsui'], pat: 'adj', es: 'Estos jeans me quedan un poco apretados.', en: 'These jeans are a little tight.' },
+  { id: 'c_saizu', ja: 'もっと おおきい サイズ は ありません か', ids: ['motto', 'ookii', 'saizu', 'arimasu'], pat: null, es: '¿No tienes una talla más grande?', en: "Don't you have a bigger size?" },
+  { id: 'c_buutsu', ja: 'ブーツ と サンダル が ほしい です', ids: ['buutsu', 'sandaru', 'hoshii'], pat: null, es: 'Quiero unas botas y unas sandalias.', en: 'I want boots and sandals.' },
+  { id: 'c_hakimasu', ja: 'ふゆ は ブーツ を はきます', ids: ['fuyu', 'buutsu', 'hakimasu'], pat: 'masu', es: 'En invierno me pongo botas.', en: 'In winter I wear boots.' },
+  { id: 'c_sunikaa', ja: 'この スニーカー は とても かるい です', ids: ['kono', 'sunikaa', 'totemo', 'karui'], pat: 'adj', es: 'Estas zapatillas deportivas son muy ligeras.', en: 'These sneakers are very light.' },
+  { id: 'c_nekutai', ja: 'あした は ネクタイ を します', ids: ['ashita', 'nekutai', 'shimasu'], pat: 'masu', es: 'Mañana me pongo corbata.', en: 'Tomorrow I will wear a tie.' },
+  { id: 'c_tebukuro', ja: 'さむい から てぶくろ が ほしい です', ids: ['samui', 'tebukuro', 'hoshii'], pat: null, es: 'Como hace frío, quiero unos guantes.', en: 'Because it is cold, I want gloves.' },
+  { id: 'c_megane', ja: 'ぼうし を かぶって めがね を かけて います', ids: ['boushi', 'kaburimasu', 'megane', 'kakemasu', 'imasu'], pat: null, es: 'Lleva puestos un sombrero y gafas.', en: 'He is wearing a hat and glasses.' },
+  { id: 'c_kiru', ja: 'きょう は あかい セーター を きます', ids: ['kyou', 'akai', 'seetaa', 'kiru'], pat: 'masu', es: 'Hoy me pongo un suéter rojo.', en: 'Today I will wear a red sweater.' },
+  { id: 'c_nugu', ja: 'ここ で くつ を ぬいで ください', ids: ['koko', 'kutsu', 'nugimasu', 'kudasai'], pat: null, es: 'Quítate los zapatos aquí, por favor.', en: 'Please take off your shoes here.' },
+  { id: 'c_shichaku', ja: 'しちゃく して も いい です か', ids: ['shichaku', 'shimasu', 'ii'], pat: null, es: '¿Puedo probármelo?', en: 'May I try it on?' },
+  { id: 'c_niau', ja: 'この ふく は よく にあいます ね', ids: ['kono', 'fuku', 'yoku', 'niaimasu'], pat: null, es: 'Esta ropa te queda muy bien.', en: 'This outfit looks great on you.' },
+  { id: 'c_pittari', ja: 'この シャツ は ぴったり です が この ズボン は ゆるい です', ids: ['kono', 'shatsu', 'pittari', 'zubon', 'yurui'], pat: null, es: 'Esta camisa me queda perfecta, pero este pantalón me queda flojo.', en: 'This shirt fits perfectly, but these trousers are loose.' },
+  { id: 'c_nedan', ja: 'この ふく の ねだん は いくら です か', ids: ['kono', 'fuku', 'nedan', 'ikura'], pat: 'ka', es: '¿Cuánto cuesta esta ropa?', en: 'How much is this clothing?' },
+  // 2.29 (días y noches, 〜を おねがいします, 〜で precio)
+  { id: 'c_yoyaku', ja: 'ふたり の へや を よやく したい です', ids: ['futari', 'heya', 'yoyaku', 'shimasu'], pat: null, es: 'Quiero reservar una habitación para dos.', en: 'I would like to book a room for two.' },
+  { id: 'c_nanpaku', ja: 'なんぱく です か', ids: ['nanpaku'], pat: 'ka', es: '¿Cuántas noches te quedas?', en: 'How many nights are you staying?' },
+  { id: 'c_nihaku', ja: 'にはく みっか の りょこう です', ids: ['nihaku', 'mikka', 'ryokou'], pat: 'no', es: 'Es un viaje de dos noches y tres días.', en: 'It is a two-night, three-day trip.' },
+  { id: 'c_sanpaku', ja: 'さんぱく よっか で きょうと に いきます', ids: ['sanpaku', 'yokka', 'kyouto', 'ikimasu'], pat: null, es: 'Voy a Kioto tres noches y cuatro días.', en: 'I am going to Kyoto for three nights and four days.' },
+  { id: 'c_ippaku', ja: 'ふたり で いっぱく ご せん えん です', ids: ['futari', 'ippaku', 'go', 'sen', 'en'], pat: null, es: 'Para dos personas, una noche son cinco mil yenes.', en: 'For two people, one night is five thousand yen.' },
+  { id: 'c_chekkuin', ja: 'チェックイン は なん じ から です か', ids: ['chekkuin', 'nan', 'ji'], pat: 'ka', es: '¿Desde qué hora es el check-in?', en: 'What time does check-in start?' },
+  { id: 'c_chekkuauto', ja: 'チェックアウト は じゅう じ まで です', ids: ['chekkuauto', 'juu', 'ji'], pat: null, es: 'El check-out es hasta las diez.', en: 'Check-out is until ten o\'clock.' },
+  { id: 'c_ryokan', ja: 'おんせん の りょかん に とまりました', ids: ['onsen', 'ryokan', 'tomaru'], pat: null, es: 'Me alojé en una posada tradicional con aguas termales.', en: 'I stayed at a traditional inn with a hot spring.' },
+  { id: 'c_furonto', ja: 'へや から フロント に でんわ します', ids: ['heya', 'furonto', 'denwa', 'shimasu'], pat: null, es: 'Llamo a recepción desde la habitación.', en: 'I call the front desk from the room.' },
+  { id: 'c_shinguru', ja: 'シングル と ツイン の どちら が いい です か', ids: ['shinguru', 'tsuin', 'dochira', 'ii'], pat: null, es: '¿Prefieres una individual o una doble?', en: 'Would you prefer a single or a twin?' },
+  { id: 'c_tsuin', ja: 'ツイン の へや を おねがいします', ids: ['tsuin', 'heya', 'onegaishimasu'], pat: null, es: 'Una habitación doble, por favor.', en: 'A twin room, please.' },
+  { id: 'c_manshitsu', ja: 'きょう は まんしつ で くうしつ は ありません', ids: ['kyou', 'manshitsu', 'kuushitsu', 'arimasu'], pat: null, es: 'Hoy está completo y no hay habitaciones libres.', en: 'Today we are fully booked and there are no vacancies.' },
+  { id: 'c_ryoukin', ja: 'りょうきん は ぜんぶ で いくら です か', ids: ['ryoukin', 'zenbu', 'ikura'], pat: 'ka', es: '¿Cuánto es la tarifa en total?', en: 'How much is the rate in total?' },
+  { id: 'c_choushoku', ja: 'ちょうしょく と ゆうしょく は ホテル の しょくどう で たべます', ids: ['choushoku', 'yuushoku', 'hoteru', 'shokudou', 'tabemasu'], pat: 'de', es: 'El desayuno y la cena los tomo en el comedor del hotel.', en: 'I have breakfast and dinner in the hotel dining room.' },
+  { id: 'c_okujou', ja: 'おくじょう に だいよくじょう が あります', ids: ['okujou', 'daiyokujou', 'arimasu'], pat: 'arimasu', es: 'En la azotea hay un baño público grande.', en: 'There is a large public bath on the rooftop.' },
+  { id: 'c_otearai', ja: 'すみません おてあらい は どこ です か', ids: ['sumimasen', 'otearai', 'doko'], pat: 'ka', es: 'Disculpa, ¿dónde está el baño?', en: 'Excuse me, where is the restroom?' },
+  { id: 'c_kakunin', ja: 'よやく の ばんごう を かくにん して ください', ids: ['yoyaku', 'bangou', 'kakunin', 'shimasu', 'kudasai'], pat: null, es: 'Comprueba el número de la reserva, por favor.', en: 'Please check the reservation number.' },
+  // 2.30 (〜は どこ ですか, 〜と 〜と, repaso de la etapa)
+  { id: 'c_suupaa', ja: 'この ちかく に スーパー は あります か', ids: ['kono', 'chikaku', 'suupaa', 'arimasu'], pat: null, es: '¿Hay algún supermercado por aquí cerca?', en: 'Is there a supermarket near here?' },
+  { id: 'c_uriba', ja: 'さかな の うりば は どこ です か', ids: ['sakana', 'uriba', 'doko'], pat: 'ka', es: '¿Dónde está la sección de pescado?', en: 'Where is the fish section?' },
+  { id: 'c_reji', ja: 'すみません レジ は どこ です か', ids: ['sumimasen', 'reji', 'doko'], pat: 'ka', es: 'Disculpa, ¿dónde está la caja?', en: 'Excuse me, where is the checkout?' },
+  { id: 'c_kago', ja: 'かご に やさい と くだもの を いれます', ids: ['kago', 'yasai', 'kudamono', 'iremasu'], pat: null, es: 'Pongo verduras y fruta en la cesta.', en: 'I put vegetables and fruit in the basket.' },
+  { id: 'c_tamanegi', ja: 'たまねぎ と にんじん と じゃがいも を ください', ids: ['tamanegi', 'ninjin', 'jagaimo', 'kudasai'], pat: null, es: 'Quiero cebollas, zanahorias y papas, por favor.', en: 'Onions, carrots and potatoes, please.' },
+  { id: 'c_kyabetsu', ja: 'キャベツ は ひとつ ひゃく ご じゅう えん です', ids: ['kyabetsu', 'hitotsu', 'hyaku', 'go', 'juu', 'en'], pat: null, es: 'Un repollo cuesta ciento cincuenta yenes.', en: 'One cabbage is a hundred and fifty yen.' },
+  { id: 'c_satoimo', ja: 'さといも と だいこん で みそしる を つくります', ids: ['satoimo', 'daikon', 'misoshiru', 'tsukurimasu'], pat: null, es: 'Hago sopa de miso con taro y rábano daikon.', en: 'I make miso soup with taro and daikon.' },
+  { id: 'c_tofu', ja: 'とうふ と しょうゆ と しお を かいます', ids: ['tofu', 'shouyu', 'shio', 'kaimasu'], pat: 'masu', es: 'Compro tofu, salsa de soja y sal.', en: 'I buy tofu, soy sauce and salt.' },
+  { id: 'c_chiizu', ja: 'チーズ は ぎゅうにゅう の となり に あります', ids: ['chiizu', 'gyuunyuu', 'tonari', 'arimasu'], pat: 'arimasu', es: 'El queso está al lado de la leche.', en: 'The cheese is next to the milk.' },
+  { id: 'c_meron', ja: 'メロン は くだもの の おうさま です', ids: ['meron', 'kudamono', 'ousama'], pat: 'desu', es: 'El melón es el rey de las frutas.', en: 'Melon is the king of fruits.' },
+  { id: 'c_sagashimasu', ja: 'しょうゆ を さがして います', ids: ['shouyu', 'sagashimasu', 'imasu'], pat: null, es: 'Estoy buscando la salsa de soja.', en: 'I am looking for soy sauce.' },
+  { id: 'c_narabimasu', ja: 'レジ に ならんで ください', ids: ['reji', 'narabimasu', 'kudasai'], pat: null, es: 'Ponte en la fila de la caja, por favor.', en: 'Please line up at the checkout.' },
+  { id: 'c_genkin', ja: 'げんきん で はらいます', ids: ['genkin', 'haraimasu'], pat: 'de', es: 'Pago en efectivo.', en: 'I pay in cash.' },
+  { id: 'c_kaado', ja: 'カード で はらって も いい です か', ids: ['kaado', 'haraimasu', 'ii'], pat: null, es: '¿Puedo pagar con tarjeta?', en: 'May I pay by card?' },
+  { id: 'c_muri', ja: 'ひとり で ぜんぶ は むり です', ids: ['hitori', 'zenbu', 'muri'], pat: null, es: 'Yo solo no puedo con todo.', en: 'I cannot do it all by myself.' },
+  { id: 'c_repaso1', ja: 'きのう ともだち と スーパー に かいもの に いきました', ids: ['kinou', 'tomodachi', 'suupaa', 'kaimono', 'ikimasu'], pat: 'mashita', es: 'Ayer fui de compras al supermercado con un amigo.', en: 'Yesterday I went shopping at the supermarket with a friend.' },
+  { id: 'c_repaso2', ja: 'あした スーパー で ケーキ と ジュース を かって から パーティー に いきます', ids: ['ashita', 'suupaa', 'keeki', 'juusu', 'kaimasu', 'paatii', 'ikimasu'], pat: null, es: 'Mañana compro un pastel y jugo en el supermercado y después voy a la fiesta.', en: 'Tomorrow I will buy a cake and juice at the supermarket and then go to the party.' },
   // ── etapa 3 ──
   { id: 'c_yori', ja: 'いぬ は ねこ より おおきい です', ids: ['inu', 'neko', 'ookii'], pat: null, es: 'El perro es más grande que el gato.', en: 'The dog is bigger than the cat.' },
   { id: 'c_hou', ja: 'なつ より ふゆ の ほう が すき です', ids: ['natsu', 'fuyu', 'hou', 'suki'], pat: null, es: 'Me gusta más el invierno que el verano.', en: 'I like winter more than summer.' },
@@ -921,6 +976,24 @@ export const SECTIONS = [
     words: ['itsu', 'gatsu', 'shi', 'nichi', 'tsuitachi', 'futsuka', 'mikka', 'yokka', 'itsuka', 'muika', 'nanoka', 'youka', 'kokonoka', 'tooka', 'hatsuka', 'hanabi', 'taikai', 'shiai', 'undoukai', 'chuushi', 'kaijou', 'sanka', 'konkai'],
     phrases: ['c_itsu', 'c_shigatsu', 'c_nangatsu', 'c_itsuka', 'c_hanabi', 'c_shiai', 'c_chuushi', 'c_undoukai', 'c_kaijou', 'c_konkai', 'c_tsuitachi', 'c_youka', 'c_futsuka', 'c_nanoka', 'c_juuichinichi', 'c_yokka'], pats: [],
     kanji: ['回'], reward: '回', rewardWord: 'konkai', rival: ['口', '四', '日'] },
+  // P-08e1 · unidades 2.28 a 2.30 del mapa docs/PROGRESION.md §13. Las 2.25 a 2.27 esperan el motor de forma ない / た (P-14):
+  // cuando existan van aquí, entre 2.24 y 2.28. El orden de la etapa lo da la posición en este arreglo (nextSection, round.js y
+  // el chequeo no suponen ids contiguos) y el avance se guarda por id, así que insertarlas no cambia las partidas existentes.
+  { id: '2.28', stage: 'e2', title: T('Comprar ropa (2)', 'Buying clothes (2)'), cando: T('Puedo decir qué ropa quiero y pedir una opinión', 'I can say what clothes I want and ask for an opinion'),
+    intro: T('¡Hoy vamos de tiendas! ¿Me ayudas a elegir qué ponerme?', "Today we are going shopping! Will you help me choose what to wear?"),
+    words: ['fuku', 'hoshii', 'youfuku', 'wanpiisu', 'jaketto', 'jiinzu', 'buutsu', 'sandaru', 'sunikaa', 'nekutai', 'tebukuro', 'megane', 'saizu', 'shichaku', 'kiru', 'hakimasu', 'nugimasu', 'niaimasu', 'kaburimasu', 'kakemasu', 'kitsui', 'yurui', 'pittari', 'onaji', 'motto', 'nedan'],
+    phrases: ['c_youfuku', 'c_wanpiisu', 'c_jaketto', 'c_jiinzu', 'c_saizu', 'c_buutsu', 'c_hakimasu', 'c_sunikaa', 'c_nekutai', 'c_tebukuro', 'c_megane', 'c_kiru', 'c_nugu', 'c_shichaku', 'c_niau', 'c_pittari', 'c_nedan'], pats: [],
+    kanji: ['服'], reward: '服', rewardWord: 'fuku', rival: ['衣', '毛', '皮'] },
+  { id: '2.29', stage: 'e2', title: T('Reservar un hotel', 'Booking a hotel'), cando: T('Puedo reservar una habitación y preguntar por las noches y el precio', 'I can book a room and ask about the nights and the price'),
+    intro: T('Vamos a pasar unas noches fuera. ¿Reservamos juntos el hotel?', 'We are spending a few nights away. Shall we book the hotel together?'),
+    words: ['yoyaku', 'chekkuin', 'chekkuauto', 'furonto', 'shinguru', 'tsuin', 'ippaku', 'nihaku', 'sanpaku', 'nanpaku', 'tomaru', 'ryokan', 'ryoukin', 'choushoku', 'yuushoku', 'daiyokujou', 'otearai', 'okujou', 'kuushitsu', 'manshitsu', 'kakunin'],
+    phrases: ['c_yoyaku', 'c_nanpaku', 'c_nihaku', 'c_sanpaku', 'c_ippaku', 'c_chekkuin', 'c_chekkuauto', 'c_ryokan', 'c_furonto', 'c_shinguru', 'c_tsuin', 'c_manshitsu', 'c_ryoukin', 'c_choushoku', 'c_okujou', 'c_otearai', 'c_kakunin'], pats: [],
+    kanji: ['洗'], reward: '屋', rewardWord: 'okujou', rival: ['居', '尾', '室'] },
+  { id: '2.30', stage: 'e2', title: T('En el supermercado', 'At the supermarket'), cando: T('Puedo preguntar dónde está algo, pedir varias cosas y pagar', 'I can ask where something is, ask for several things and pay'),
+    intro: T('Hay que hacer la compra de la semana. ¡Y de paso repasamos todo lo que sabes!', 'We need to do the weekly shopping. And we will review everything you know on the way!'),
+    words: ['suupaa', 'kago', 'reji', 'tamanegi', 'ninjin', 'jagaimo', 'kyabetsu', 'daikon', 'satoimo', 'tofu', 'shouyu', 'shio', 'chiizu', 'meron', 'ousama', 'uriba', 'genkin', 'kaado', 'haraimasu', 'sagashimasu', 'iremasu', 'narabimasu', 'muri'],
+    phrases: ['c_suupaa', 'c_uriba', 'c_reji', 'c_kago', 'c_tamanegi', 'c_kyabetsu', 'c_satoimo', 'c_tofu', 'c_chiizu', 'c_meron', 'c_sagashimasu', 'c_narabimasu', 'c_genkin', 'c_kaado', 'c_muri', 'c_repaso1', 'c_repaso2'], pats: [],
+    kanji: ['王', '里', '理'], reward: '理', rewardWord: 'muri', rival: ['里', '黒', '重'] },
   // ───────── Etapa 3 · Ampliar el mundo ─────────
   { id: '3.1', stage: 'e3', title: T('Comparar', 'Comparing'), cando: T('Puedo comparar cosas y decir cuál me gusta más', 'I can compare things and say which I like most'),
     intro: T('¿Qué es más fuerte, el sol o la luna? ¡Vamos a comparar!', "What is stronger, the sun or the moon? Let's compare!"),
@@ -1130,6 +1203,12 @@ export const TALKS = {
     opts: [O('えき を でて みぎ に まがります', ['eki', 'demasu', 'migi', 'magarimasu']), O('えき を でて から ねます', ['eki', 'demasu', 'nemasu']), O('みぎ に まがって います', ['migi', 'magarimasu', 'imasu'])] },
   '2.24': { who: '回', ja: 'はなび たいかい は いつ です か', ids: ['hanabi', 'taikai', 'itsu'], es: '¿Cuándo es el festival de fuegos artificiales?', en: 'When is the fireworks festival?', hint: T('Es el 20 de julio.', 'It is on July 20th.'),
     opts: [O('しち がつ はつか です', ['shichi', 'gatsu', 'hatsuka']), O('しち じ はん です', ['shichi', 'ji', 'han']), O('はつか に いきました', ['hatsuka', 'ikimasu'])] },
+  '2.28': { who: '服', ja: 'どんな ふく が ほしい です か', ids: ['donna', 'fuku', 'hoshii'], es: '¿Qué ropa quieres?', en: 'What kind of clothes do you want?', hint: T('Quieres una chaqueta negra.', 'You want a black jacket.'),
+    opts: [O('くろい ジャケット が ほしい です', ['kuroi', 'jaketto', 'hoshii']), O('くろい ジャケット を ぬぎます', ['kuroi', 'jaketto', 'nugimasu']), O('くろい ジャケット は ちいさい です か', ['kuroi', 'jaketto', 'chiisai'])] },
+  '2.29': { who: '屋', ja: 'なんぱく です か', ids: ['nanpaku'], es: '¿Cuántas noches te quedas?', en: 'How many nights are you staying?', hint: T('Dos noches.', 'Two nights.'),
+    opts: [O('にはく です', ['nihaku']), O('ふたり です', ['futari']), O('ごご ろく じ です', ['gogo', 'roku', 'ji'])] },
+  '2.30': { who: '理', ja: 'すみません たまご は どこ です か', ids: ['sumimasen', 'tamago', 'doko'], es: 'Disculpa, ¿dónde están los huevos?', en: 'Excuse me, where are the eggs?', hint: T('Al lado de la leche.', 'Next to the milk.'),
+    opts: [O('ぎゅうにゅう の となり です', ['gyuunyuu', 'tonari']), O('ぎゅうにゅう の となり に います', ['gyuunyuu', 'tonari', 'imasu']), O('ぎゅうにゅう は ひゃく えん です', ['gyuunyuu', 'hyaku', 'en'])] },
   '3.1': { who: '大', ja: 'なに が いちばん すき です か', ids: ['nani', 'ichiban', 'suki'], es: '¿Qué es lo que más te gusta?', en: 'What do you like the most?', hint: T('El ramen.', 'Ramen.'),
     opts: [O('ラーメン が いちばん すき です', ['raamen', 'ichiban', 'suki']), O('ラーメン より おおきい です', ['raamen', 'ookii']), O('いちばん です か', ['ichiban'])] },
   '3.2': { who: '犬', ja: 'どうぶつ が すき です か', ids: ['doubutsu', 'suki'], es: '¿Te gustan los animales?', en: 'Do you like animals?', hint: T('Sí, sobre todo los gatos.', 'Yes, especially cats.'),
@@ -1636,6 +1715,54 @@ export function checkCurriculum() {
     (g.gram || []).forEach((p, i) => {
       if (!p.text?.es || !p.jp) errs.push(`${where}, pantalla ${i + 1}: falta jp o text`);
       (p.te || []).forEach(w => { if (!lex[w]?.te) errs.push(`${where}, pantalla ${i + 1}: ${w} no es un verbo con forma て`); else if (!wordsHere.has(w)) errs.push(`${where}, pantalla ${i + 1}: ${w} no es de esta unidad ni de las anteriores`); });
+    });
+  }
+  // Lecturas por unidad (P-12, docs/PROGRESION.md §12): fichas con texto en la tabla de palabras, solo kanji y palabras
+  // enseñados hasta esa unidad, ids que existen, traducción por línea y 2 (etapa 1) o 3 (desde la etapa 2) preguntas
+  const kana = /^[぀-ヿー]+$/;
+  for (const [id, R] of Object.entries(UNIT_READINGS)) {
+    const where = `Lectura ${id}`, s = sectionById(id);
+    if (!s) { errs.push(`${where}: la unidad no existe`); continue; }
+    const upTo = SECTIONS.slice(0, SECTIONS.indexOf(s) + 1);
+    const taughtWords = new Set(upTo.flatMap(x => x.words)), taughtKanji = new Set(upTo.flatMap(x => [...x.kanji]));
+    if (!LINES[R.kind]) { errs.push(`${where}: tipo desconocido ${R.kind}`); continue; }
+    if (!R.title?.es || !R.say?.es) errs.push(`${where}: falta título o frase de apertura`);
+    if (R.kind === 'mail' && (!R.from || !R.to?.es)) errs.push(`${where}: el correo necesita from y to`);
+    const [lo, hi] = LINES[R.kind];
+    if (R.lines.length < lo || R.lines.length > hi) errs.push(`${where}: ${R.lines.length} líneas (un${R.kind === 'note' ? 'a nota' : ' correo'} lleva ${lo} a ${hi})`);
+    if (R.es?.length !== R.lines.length || R.es.some(x => !x)) errs.push(`${where}: se espera una traducción por línea`);
+    const { lines, sents } = analyze(R), used = new Set();
+    if (!sents.length) errs.push(`${where}: no tiene frases`);
+    for (const tok of lines.flat()) {
+      if (tok.pu) { if (!'。、！？'.includes(tok.p)) errs.push(`${where}: puntuación desconocida «${tok.p}»`); continue; }
+      const w = R.words[tok.key], plain = plainOf(tok.raw);
+      used.add(tok.key);
+      if (!w) { errs.push(`${where}: la ficha «${tok.key}» no está en words`); continue; }
+      for (const g of segs(tok.raw.replace(/#\w+$/, ''))) if (g.k && !kana.test(g.r)) errs.push(`${where}: la furigana de «${g.k}» debe ir en kana`);
+      if (!readOf(tok.raw) || /[\[\]:]/.test(readOf(tok.raw))) errs.push(`${where}: la ficha «${tok.raw}» está mal escrita`);
+      const ks = [...plain].filter(c => /[一-鿿]/.test(c));
+      ks.forEach(c => { if (!taughtKanji.has(c)) errs.push(`${where}: el kanji ${c} de «${plain}» no se enseña hasta esta unidad`); });
+      if (w.id) { if (!lex[w.id]) errs.push(`${where}: la palabra ${w.id} no existe en LEX`); else if (!taughtWords.has(w.id)) errs.push(`${where}: la palabra ${w.id} no se enseña hasta esta unidad`); }
+      else if (!ks.length && !PARTICLES.includes(plain) && !['name', 'gram'].includes(w.kind)) errs.push(`${where}: «${plain}» está en kana, no es una partícula y no tiene id de palabra`);
+    }
+    for (const [k, w] of Object.entries(R.words)) {
+      if (!used.has(k)) errs.push(`${where}: words trae «${k}», que no está en el texto`);
+      if (!w.m?.es || !w.kind) errs.push(`${where}: «${k}» necesita m y kind`);
+      if (!['name', 'particle', 'noun', 'time', 'expr', 'verb', 'number', 'adji', 'form', 'gram'].includes(w.kind)) errs.push(`${where}: «${k}» tiene un kind desconocido (${w.kind})`);
+      (w.nw || []).forEach(c => { if (!taughtKanji.has(c)) errs.push(`${where}: nw de «${k}»: el kanji ${c} no se enseña hasta esta unidad`); });
+    }
+    kanjiOf(R).forEach(c => { if (!KANJI[c] && !R.km?.[c]?.es) errs.push(`${where}: falta el significado de ${c} (no es KANJŪ: va en km)`); });
+    if (!newWordsOf(R).length) errs.push(`${where}: debe traer una palabra nueva (nw)`);
+    const n = questionsFor(s.stage);
+    if (R.Q?.length !== n) errs.push(`${where}: ${R.Q?.length} preguntas (la etapa pide ${n})`);
+    (R.Q || []).forEach((q, i) => {
+      const w2 = `${where}, pregunta ${i + 1}`;
+      if (!q.q?.es || !q.ok?.es) errs.push(`${w2}: falta texto`);
+      if (q.o?.length !== 3 || q.o.some(o => !o.es)) errs.push(`${w2}: se esperan 3 opciones`);
+      else if (new Set(q.o.map(o => o.es)).size !== 3) errs.push(`${w2}: opciones repetidas`);
+      if (![0, 1, 2].includes(q.a)) errs.push(`${w2}: respuesta correcta inválida`);
+      if (!(q.line >= 0 && q.line < R.lines.length)) errs.push(`${w2}: la línea ${q.line} no existe`);
+      if (q.tip?.length !== 3 || q.tip.some((x, j) => j !== q.a && !x.es)) errs.push(`${w2}: falta una pista por cada opción equivocada`);
     });
   }
   return errs;
