@@ -70,6 +70,11 @@ const P = {
   arrowUp: '<path d="M12 19V5M6 11l6-6 6 6"/>',
   // P-03/P-05: «lento» (caracol) para Escuchar y armar, y «borrar» (tecla de retroceso) para el teclado kana
   slow: '<path d="M3 18h15.5a2.5 2.5 0 0 0 2.5-2.5V11"/><path d="m19 11-1.2-3.2M21 11l1-3.2"/><circle cx="11" cy="12.5" r="5.5"/><path d="M11 12.5a2 2 0 1 1 2-2"/>',
+  // P-12: lectura de la unidad (reproducir, pausa, correo y nota)
+  play: '<path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"/>',
+  pause: '<rect x="6" y="4.5" width="4" height="15" rx="1.5"/><rect x="14" y="4.5" width="4" height="15" rx="1.5"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/>',
+  note: '<path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M8.5 12.5h7M8.5 16h5"/>',
   back: '<path d="M8.5 5H20a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H8.5L2.5 12z"/><path d="m11.5 9 6 6M17.5 9l-6 6"/>',
 };
 export const ic = (name, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[name] || P.question}</svg>`;

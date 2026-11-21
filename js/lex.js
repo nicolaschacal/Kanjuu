@@ -6,6 +6,7 @@ import { S, bump } from './state.js';
 import { lang } from './i18n.js';
 import { kanaHTML, helpOn, aidLevel } from './help.js';
 import { SECTIONS } from './curriculum.js';
+import { UNIT_READINGS } from './readings.js';
 
 export const WORD = Object.fromEntries(LEX.map(w => [w.id, w]));
 // Textos de lang.js: { es, en } (o una palabra con sus campos es/en)
@@ -81,6 +82,15 @@ export function finishReading(r) {
   if (first) S.ink += READ_INK;
   if (st?.day !== day) r.ids.forEach(id => meet(id, 'read'));
   S.read[r.id] = { n: (st?.n || 0) + 1, t: st?.t || Date.now(), day };
+  return first;
+}
+
+// Lectura por unidad (P-12): la tinta se cobra solo la primera vez que se termina; las palabras con id suman un encuentro (una vez por día)
+export function finishUnitReading(id, right, of) {
+  const day = new Date().toISOString().slice(0, 10), st = S.uread[id], first = !st;
+  if (first) S.ink += READ_INK;
+  if (st?.day !== day) Object.values(UNIT_READINGS[id]?.words || {}).forEach(w => w.id && meet(w.id, 'read'));
+  S.uread[id] = { n: (st?.n || 0) + 1, t: st?.t || Date.now(), day, ok: Math.max(st?.ok || 0, right), of };
   return first;
 }
 

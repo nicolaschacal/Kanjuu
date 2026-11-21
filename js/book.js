@@ -5,7 +5,7 @@
 // en las unidades que vienen, «Saltar aquí».
 import { t } from './i18n.js';
 import { ic } from './icons.js';
-import { tr, WORD, jaHTML, wordHTML, showsKanji, patOf } from './lex.js';
+import { tr, WORD, jaHTML, wordHTML, showsKanji, patOf, READ_INK } from './lex.js';
 import { SECTIONS, STAGES, LEVELS, ROUNDS_PER_LEVEL, ROUND_SIZE, PRIOR_MIX, GUIDES, phraseById } from './curriculum.js';
 import { cur, curSection, levelOf, levelRounds, inkSVG, paintedOf, partsOf, prizeState, canJump, jumpSize } from './round.js';
 import { creatureSVG } from './creature.js';
@@ -15,6 +15,8 @@ import { verbKanji } from './lang.js';
 import { speak, canSpeak } from './games.js';
 import { helpOn, kanaHTML } from './help.js';
 import { readsHTML } from './exercises.js';
+import { readingOf, readingDone, readingOpen, openUnitReading, leaveUnitReading } from './unitread.js';
+import { kanjiOf, newWordsOf } from './readings.js';
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 // [kanji:lectura] lleva furigana (textos de la guía en js/curriculum.js)
@@ -85,7 +87,7 @@ function mapHTML(s, openLv, mon) {
       : t('book.roundsLock', { n: ROUNDS_PER_LEVEL, ex: ROUND_SIZE });
     return `<div class="p3-lv ${state}">
       <button class="p3-lvh" data-lv="${n}" aria-expanded="${open}"><span class="p3-med">${state === 'done' ? ic('check') : state === 'lock' && ahead ? ic('lock') : n}</span>
-        <span class="p3-lvt"><b>${t('book.lvName', { n, name: t(L.name) })}</b><small><span class="p3-rd">${Array.from({ length: ROUNDS_PER_LEVEL }, (_, k) => `<i class="${k < r ? 'on' : ''}"></i>`).join('')}</span>${sub}</small></span>
+        <span class="p3-lvt"><b>${t('book.lvName', { n, name: t(L.name) })}</b>${n === 3 && readingOf(s.id) ? `<span class="p11-tag">${ic('book')}${t('uread.tag')}</span>` : ''}<small><span class="p3-rd">${Array.from({ length: ROUNDS_PER_LEVEL }, (_, k) => `<i class="${k < r ? 'on' : ''}"></i>`).join('')}</span>${sub}</small></span>
         <span class="p3-mini" aria-hidden="true">${mini}</span></button>
       ${open ? `<div class="p3-lvb"><p>${t(L.what, { p: Math.round(PRIOR_MIX * 100) })}</p>
         <div class="p3-chips">${L.aids.map(a => `<span class="p3-chip">${ic(a === 'book.aidNoTr' || a === 'book.aidNone' ? 'eye' : 'kana')}${t(a)}</span>`).join('')}</div>
@@ -104,10 +106,26 @@ function mapHTML(s, openLv, mon) {
         <div><b>${heroB}</b>${heroS ? `<small>${heroS}</small>` : ''}
           <div class="p3-parts">${Array.from({ length: LEVELS }, (_, k) => `<i class="${k + 1 <= parts && !skipped ? 'on' : k + 1 === curLv ? 'now' : ''}"></i>`).join('')}</div>
           ${castHTML ? `<div class="p3-cast">${castHTML}</div>` : ''}</div></div>
-      ${exam}${jump}${guide}
+      ${exam}${jump}${guide}${readCardHTML(s, st, curLv, mon)}
       <h4 class="p3-lvh4">${t('book.levels')} <small>${t('book.levelsSub', { n: LEVELS, r: ROUNDS_PER_LEVEL })}</small></h4>
       <div class="p3-lvs">${Array.from({ length: LEVELS }, (_, i) => row(lvInfo(i + 1), i)).join('')}</div>
     </div></div>`;
+}
+
+// ---------- Lectura de la unidad (P-12, §12): tarjeta propia debajo de la guía; se abre al terminar el nivel 3 ----------
+const unitsOfKanji = R => new Set(kanjiOf(R).map(k => SECTIONS.find(x => x.kanji.includes(k))?.id).filter(Boolean)).size;
+function readCardHTML(s, state, curLv, mon) {
+  const R = readingOf(s.id); if (!R) return '';
+  const open = readingOpen(s, state, curLv), done = readingDone(s.id), k = mon?.k || hostOf(s, mon), mail = R.kind === 'mail';
+  const mini = `<span class="p11-mini${mail ? ' mail' : ''}">${(mail ? ['', 'k', '', 'k', '', ''] : ['k', '', 'k', '']).map(c => `<i class="${c}"></i>`).join('')}</span>`;
+  const title = esc(tr(R.title)), n = R.lines.length, nw = newWordsOf(R).length;
+  if (!open) return `<div class="p11-read lock"><div class="p11-rt">${mini}<div><span class="eb">${ic('lock')}${t('uread.name')}</span><b>${title}</b><small>${t(mail ? 'uread.lockMail' : 'uread.lockNote', { n })}</small></div></div>
+    <p class="p3-lockt">${ic('lock')}${t('book.lockLv', { n: 3 })}</p></div>`;
+  if (done) return `<div class="p11-read done"><div class="p11-rt">${mini}<div><span class="eb">${ic('check')}${t('uread.eyDone')}</span><b>${title}</b><small>${t('uread.doneS', { a: done.ok, b: done.of })}</small></div></div>
+    <button class="btn ghost wide" data-read="nofg">${ic('refresh')}${t('uread.again')}</button></div>`;
+  return `<div class="p11-read"><div class="p11-rt">${mini}<div><span class="eb">${ic(mail ? 'mail' : 'note')}${t('uread.eyNew')}</span><b>${title}</b><small>${t(mail ? 'uread.readyMail' : 'uread.readyNote', { n, k })}</small></div></div>
+    <div class="p11-chips"><span class="p11-chip">${ic('kana')}${t('uread.chipKanji', { k: kanjiOf(R).length, n: unitsOfKanji(R) })}</span>${nw ? `<span class="p11-chip nw">${ic('sparkle')}${t('uread.chipNew', { n: nw })}</span>` : ''}<span class="p11-chip">${ic('ink')}${t('uread.chipInk', { n: READ_INK })}</span></div>
+    <button class="btn ok wide" data-read="1">${ic('book')}${t('uread.read')}</button></div>`;
 }
 
 // ---------- Guía de la unidad (§7): frases clave, gramática y kanji. Opcional. ----------
@@ -174,17 +192,19 @@ function guideHTML(s, tab, page, mon) {
 export function openBook(modal, mon, acts = {}, at = cur().sec) {
   const m = modal('', 'p3-bkm'), sheet = m.querySelector('.sheet');
   sheet.classList.add('pn-card');
-  let sec = units().some(u => u.id === at) ? at : cur().sec, view = 'map', tab = 'frases', page = 0, openLv = null;
+  let sec = units().some(u => u.id === at) ? at : cur().sec, view = 'map', tab = 'frases', page = 0, openLv = null, readFg;
   const draw = (keep = false) => {
     const s = SECTIONS.find(x => x.id === sec), sc = keep ? sheet.querySelector('.pn-body')?.scrollTop || 0 : 0;
     if (openLv === null) openLv = stateOf(s) === 'cur' ? levelOf(s.id) : 0;
+    if (view === 'read') return openUnitReading(sheet, { sec: s, mon, fg: readFg, hud: acts.hud, back: () => { view = 'map'; draw(); } });
+    leaveUnitReading(sheet);
     sheet.innerHTML = view === 'guide' ? guideHTML(s, tab, page, mon) : mapHTML(s, openLv, mon);
     const body = sheet.querySelector('.pn-body'); if (body) body.scrollTop = sc;
     if (view === 'map') sheet.querySelector('.p3-unit.on')?.scrollIntoView({ block: 'nearest', inline: 'center' });
   };
-  const close = () => m.close();
+  const close = () => { leaveUnitReading(sheet); m.close(); };
   // Atrás o tocar fuera: desde la guía se vuelve al mapa; desde el mapa se cierra
-  m.onclick = e => { if (e.target !== m) return; if (view === 'guide') { view = 'map'; draw(); } else close(); };
+  m.onclick = e => { if (e.target !== m) return; if (view === 'guide' || view === 'read') { view = 'map'; draw(); } else close(); };
   sheet.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b || b.disabled) return;
     const d = b.dataset;
@@ -194,6 +214,7 @@ export function openBook(modal, mon, acts = {}, at = cur().sec) {
     if ('lv' in d) { const n = +d.lv; openLv = openLv === n ? 0 : n; return draw(true); }
     if ('guide' in d) { view = 'guide'; tab = 'frases'; page = 0; return draw(); }
     if ('map' in d) { view = 'map'; return draw(); }
+    if ('read' in d) { view = 'read'; readFg = d.read === 'nofg' ? false : undefined; return draw(); }
     if ('tab' in d) { tab = d.tab; page = 0; return draw(); }
     if ('page' in d) { page = +d.page; return draw(); }
     if ('play' in d) { close(); return acts.play?.(); }
