@@ -1331,7 +1331,7 @@ export const GUIDES = {
       note: T('Regla rápida: に = destino o persona; で = lugar de la acción o medio.') },
   ] },
   '1.8': { gram: [
-    { title: T('Lo que te gusta: '), jp: 'Xがすきです', text: T('Con すき («gustar») lo que te gusta lleva が, no を: さかな が すき です. だいすき es «me encanta» y きらい es «no me gusta» (más fuerte que decir que no te gusta). Se usan igual.'),
+    { title: T('Lo que te gusta: '), jp: 'Xがすきです', text: T('Con すき («gustar») lo que te gusta lleva が, no を: さかな が すき です. だいすき es «me encanta» y きらい significa «me desagrada, no me gusta nada»; es más fuerte que すきじゃない. Se usan igual.'),
       form: [['v', T('lo que te gusta')], ['p', 'が'], 'すき', 'です', '=', ['e', T('me gusta X')]], ex: ['p_sakana', 'c_daisuki', 'c_kirai'],
       note: T('Error típico: さかな を すき です. Con すき se usa が.') },
     { title: T('Tema y gusto: '), jp: 'Xは Yがすき', text: T('Primero puedes presentar el tema con は y después decir qué te gusta con が: スポーツ は サッカー が すき です, «de los deportes, me gusta el fútbol». Para unir dos cosas usa と: アニメ と まんが.'),
@@ -1411,7 +1411,7 @@ export const GUIDES = {
   '2.6': { gram: [
     { title: T('Lluvia y nieve: '), jp: 'あめがふります', text: T('Para llover o nevar, el japonés dice «la lluvia cae»: あめ が ふります. El sujeto lleva が. Para describir el tiempo con un adjetivo, presenta el tema con は: ふゆ は かぜ が つよい です.'),
       form: [['v', T('あめ / ゆき')], ['p', 'が'], 'ふります', '=', ['e', T('llueve / nieva')]], ex: ['p_ame', 'c_yuki', 'c_kazefuyu'] },
-    { title: T('Pronóstico: '), jp: 'でしょう', text: T('でしょう significa «probablemente» y es la forma de los pronósticos. Ocupa el lugar de です: あした は あめ でしょう. たぶん («quizás») refuerza la duda. También va después de adjetivos: さむい でしょう.'),
+    { title: T('Pronóstico: '), jp: 'でしょう', text: T('でしょう significa «probablemente» y es la forma de los pronósticos. Ocupa el lugar de です: あした は あめ でしょう. たぶん («probablemente») suele ir con でしょう. También va después de adjetivos: さむい でしょう.'),
       form: [['v', T('X')], ['p', 'は'], ['v', T('Y')], 'でしょう', '=', ['e', T('probablemente X es Y')]], ex: ['c_deshou', 'c_kumori', 'c_tabun'] },
     { title: T('Adjetivos en pasado: '), jp: 'さむかった', text: T('En los adjetivos い, cambia い por かった para hablar del pasado: さむい → さむかった です («hizo frío»).'),
       form: [['v', T('adjetivo い sin い')], 'かった', 'です', '=', ['e', T('era…')]], ex: ['c_samukatta', 'p_fuyu'],
@@ -1429,7 +1429,7 @@ export const GUIDES = {
       note: T('El tercer piso es さん がい, no «さん かい»: cambia el sonido.') },
   ] },
   '2.8': { gram: [
-    { title: T('Pedir que hagan algo: '), jp: '〜てください', text: T('Para pedir algo, pon el verbo en forma て y agrega ください: まっすぐ いって ください («siga derecho, por favor»).'),
+    { title: T('Pedir que hagan algo: '), jp: '〜てください', text: T('Para pedir algo, pon el verbo en forma て y agrega ください: まっすぐ いって ください («sigue derecho, por favor»).'),
       form: [['v', T('verbo en forma て')], '+', 'ください', '=', ['e', T('…, por favor')]], te: ['magarimasu', 'watarimasu', 'arukimasu'], ex: ['c_massugu', 'c_magatte', 'c_watatte'],
       note: T('Fíjate en el final: ります → って, きます → いて. Excepción: いきます → いって.') },
     { title: T('Por dónde pasas: '), jp: 'を', text: T('Cuando te mueves por un lugar (cruzas, doblas en una esquina), el lugar lleva を: みち を わたって, かど を まがって. に o へ marcan la dirección: みぎ に.'),
@@ -1439,11 +1439,11 @@ export const GUIDES = {
       ex: ['c_banme', 'c_tooi', 'c_aruite'] },
   ] },
   '2.9': { gram: [
-    { title: T('Elegir: '), jp: 'Xにします', text: T('に します significa «me quedo con» o «voy a pedir»: ラーメン に します. El mesero pregunta なに に します か («¿qué va a pedir?»).'),
+    { title: T('Elegir: '), jp: 'Xにします', text: T('に します significa «me quedo con» o «voy a pedir»: ラーメン に します. El mesero pregunta なに に します か («¿qué vas a pedir?»).'),
       form: [['v', T('lo que eliges')], ['p', 'に'], 'します', '=', ['e', T('voy a pedir X')]], ex: ['c_raamen', 'c_gohansakana', 'c_nomimono'] },
-    { title: T('Pedir con cortesía: '), jp: 'ください・おねがいします', text: T('X を ください significa «deme X»: おちゃ を ふたつ ください. おねがいします significa «por favor» y suena un poco más formal; se usa con lo que pides: メニュー を おねがいします, おかいけい おねがいします.'),
+    { title: T('Pedir con cortesía: '), jp: 'ください・おねがいします', text: T('X を ください significa «dame X»: おちゃ を ふたつ ください. おねがいします significa «por favor» y suena un poco más formal; se usa con lo que pides: メニュー を おねがいします, おかいけい おねがいします.'),
       ex: ['c_ochafutatsu', 'c_menyuu', 'c_okaikei'] },
-    { title: T('Frases del restaurante: '), jp: 'いらっしゃいませ', text: T('Algunas expresiones son frases hechas: aprende cada una como un bloque. Escucharás いらっしゃいませ al entrar, しょうしょう おまちください («espere un momento») y かしこまりました («muy bien, enseguida»).'),
+    { title: T('Frases del restaurante: '), jp: 'いらっしゃいませ', text: T('Algunas expresiones son frases hechas: aprende cada una como un bloque. Escucharás いらっしゃいませ al entrar, しょうしょう おまちください («espera un momento») y かしこまりました («muy bien, enseguida»).'),
       ex: ['c_irasshai', 'c_omachi', 'c_kashikomari'],
       note: T('けっこうです, después de いいえ, significa «no, gracias»: いいえ けっこう です.') },
   ] },
@@ -1459,9 +1459,9 @@ export const GUIDES = {
   '2.11': { gram: [
     { title: T('Lo que estás haciendo: '), jp: '〜ています', text: T('Para decir que algo ocurre ahora, pon el verbo en forma て y agrega います: よんで います («estoy leyendo»). Sirve para ti y para otros, y también para el clima: あめ が ふって います.'),
       form: [['v', T('verbo en forma て')], '+', 'います', '=', ['e', T('estoy…ndo')]], ex: ['c_yonde', 'c_kaite', 'c_nanishite'] },
-    { title: T('Cómo se forma la forma て: '), jp: '〜て', text: T('Depende del final del verbo en ます: 〜い, 〜ち, 〜り → って; 〜み, 〜び → んで; 〜き → いて (〜ぎ → いで); 〜し → して. Los verbos como たべます solo pierden ます: たべて.'),
+    { title: T('Cómo se forma la forma て: '), jp: '〜て', text: T('Depende del final del verbo en ます: 〜い, 〜ち, 〜り → って; 〜み, 〜び → んで; 〜き → いて (〜ぎ → いで); 〜し → して. Los verbos en 〜えます (たべます, ねます) y algunos en 〜います/〜きます/〜みます/〜びます (みます, おきます, あびます, います, かります, できます, きます de «ponerse») solo pierden ます: たべて, みて, おきて.'),
       te: ['machimasu', 'yomimasu', 'kakimasu', 'hanashimasu', 'mimasu'], ex: ['c_matte', 'c_hanashite', 'c_hashitte'],
-      note: T('Pierden solo ます: たべます, ねます, みます, おきます y あびます. Excepción: いきます → いって.') },
+      note: T('Pierden solo ます: たべます, ねます, みます, おきます, あびます, かります, います y できます. Excepción: いきます → いって.') },
     { title: T('Estados: vivir, trabajar, saber: '), jp: 'すんでいます', text: T('Con algunos verbos, 〜て います no es una acción en curso sino un estado: すんで います («vivo»), はたらいて います («trabajo»), けっこん して います («estoy casado») y しって います («conozco»).'),
       ex: ['c_sunde', 'c_hataraite', 'c_tanakashitte'],
       note: T('Error típico: «しって いません». «No lo conozco» se dice しりません.') },
@@ -1469,7 +1469,7 @@ export const GUIDES = {
   '2.12': { gram: [
     { title: T('Tu pasatiempo: '), jp: 'しゅみはXです', text: T('Para hablar de tu pasatiempo usa しゅみ は X です, donde X es un sustantivo como どくしょ o つり. Para preguntar: しゅみ は なん です か.'),
       form: [['v', 'しゅみ'], ['p', 'は'], ['v', T('actividad')], 'です'], ex: ['c_shuminan', 'c_dokusho', 'c_tsuri'] },
-    { title: T('Me gusta hacer: '), jp: 'Vのがすきです', text: T('Para decir que te gusta una acción, usa el verbo en forma de diccionario + の が すき です. Esa forma se hace quitando ます y pasando la última sílaba de い a う: うたい → うたう, ひき → ひく, およぎ → およぐ, つくり → つくる. Con みます solo se agrega る: みる.'),
+    { title: T('Me gusta hacer: '), jp: 'Vのがすきです', text: T('Para decir que te gusta una acción, usa el verbo en forma de diccionario + の が すき です. Esa forma se hace quitando ます. Si la raíz termina en sonido e (たべ, ね) o es みます/おきます/あびます/かります/います/できます, solo se agrega る: たべる, みる. Los demás cambian la última sílaba de la raíz a la fila u: のみます → のむ, うたい → うたう, ひき → ひく, およぎ → およぐ, つくり → つくる.'),
       form: [['v', T('verbo (forma de diccionario)')], ['p', 'の'], ['p', 'が'], 'すき', 'です', '=', ['e', T('me gusta…')]], ex: ['c_utau', 'c_pianohiku', 'c_oyogu'],
       note: T('の convierte la acción en un sustantivo («el cantar»); por eso puedes usar が すき como siempre.') },
     { title: T('Ser bueno en algo: '), jp: 'Xがじょうずです', text: T('じょうず significa «hábil, bueno en». Igual que すき, lleva が: ピアノ が じょうず です. Para tocar instrumentos de teclas o cuerdas se usa ひきます: ピアノ を ひきます, ギター を ひきます.'),
@@ -1494,7 +1494,7 @@ export const GUIDES = {
     { title: T('Veces por semana: '), jp: 'しゅうにXかい', text: T('Para decir cuántas veces: período に número + かい. しゅう に さん かい significa «tres veces por semana». Para preguntar: しゅう に なん かい.'),
       form: [['v', T('período')], ['p', 'に'], ['v', T('número')], 'かい', '=', ['e', T('… veces por …')]], ex: ['c_shuuikkai', 'c_shuunikai', 'c_nankai'],
       note: T('かい cambia con 1, 6, 8 y 10: いっかい, ろっかい, はっかい, じゅっかい.') },
-    { title: T('Hora y duración: '), jp: 'じ・じかん', text: T('Xじ dice qué hora es (いち じ es la una); X じかん dice cuánto dura (いち じかん es una hora). Los minutos de duración también cambian: さん じゅっぷん son treinta minutos. La duración no lleva に.'),
+    { title: T('Hora y duración: '), jp: 'じ・じかん', text: T('Xじ dice qué hora es (いち じ es la una); X じかん dice cuánto dura (いち じかん es una hora). Los minutos cambian igual (ふん/ぷん) para la hora y la duración: さん じゅっぷん son treinta minutos. La duración no lleva に.'),
       ex: ['c_gogoichiji', 'c_ichijikan', 'c_juppun'] },
   ] },
   '2.15': { gram: [
@@ -1508,7 +1508,7 @@ export const GUIDES = {
       note: T('すきました («tengo hambre») no tiene que ver con すき («me gusta»), aunque se lean casi igual.') },
   ] },
   '2.16': { gram: [
-    { title: T('Pedir cantidades: '), jp: 'Nをふたつください', text: T('Cuando pides varias unidades, pon la cantidad después del sustantivo y antes de ください, sin otra partícula: ケーキ を ふたつ ください. Los números ひとつ, ふたつ, みっつ, よっつ, いつつ sirven para contar casi cualquier objeto pequeño hasta nueve.'),
+    { title: T('Pedir cantidades: '), jp: 'Nをふたつください', text: T('Cuando pides varias unidades, pon la cantidad después del sustantivo y antes de ください, sin otra partícula: ケーキ を ふたつ ください. Los números ひとつ, ふたつ, みっつ, よっつ, いつつ sirven para contar casi cualquier objeto pequeño hasta diez (とお).'),
       form: [['v', T('cosa')], ['p', 'を'], ['v', T('cantidad')], 'ください'], ex: ['c_keekifutatsu', 'c_kukkii', 'c_itsutsu'] },
     { title: T('Contadores こ y まい: '), jp: 'こ・まい', text: T('Con こ cuentas piezas pequeñas: に こ, さん こ. Con まい cuentas cosas planas, como platos, boletos o papeles: に まい. なん こ y なん まい preguntan «cuántos».'),
       form: [['v', T('número')], '+', ['v', T('contador')]], ex: ['c_purin', 'c_osara', 'c_nanko'],
