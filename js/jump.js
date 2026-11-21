@@ -12,12 +12,13 @@ const name = s => `${s.id} · ${tr(s.title)}`;
 const list = ids => ids.length > 3 ? t('jump.range', { a: ids[0], b: ids.at(-1) }) : new Intl.ListFormat('es', { type: 'conjunction' }).format(ids);
 const blank = `<span class="rd-ink-box"><span class="rd-inkk q">？</span></span>`;
 
-// Resuelve { book: unidad } para volver a abrir el cuaderno ahí, o null
+// Resuelve { book: unidad, passed } para volver a abrir el cuaderno ahí, o null
 export function jumpTest(c, target, root) {
   return new Promise(resolve => {
     const v = document.createElement('div'); v.className = 'p3-jscr';
     root.append(v);
-    const leave = to => { v.remove(); resolve(to ? { book: to } : null); };
+    const passed = { v: false };
+    const leave = to => { v.remove(); resolve(to ? { book: to, passed: passed.v } : null); };
     const entry = () => {
       const s = sectionById(target), here = sectionById(cur().sec), skips = jumpSkips(target).map(x => x.id), n = jumpSize(target);
       v.hidden = false;
@@ -39,6 +40,7 @@ export function jumpTest(c, target, root) {
       const res = await runRound(c, root, { jump: target });
       if (!res) return entry(); // salió de la prueba: vuelve a la entrada
       const ok = res.errors <= JUMP_ERRORS && res.total >= jumpSize(target);
+      passed.v = ok;
       end(ok, res, ok ? passJump(target).map(x => x.id) : []);
     };
     const end = (ok, res, skipped) => {

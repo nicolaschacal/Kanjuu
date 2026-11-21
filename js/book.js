@@ -67,7 +67,7 @@ function mapHTML(s, openLv, mon) {
   const heroB = ahead ? t('book.blank') : skipped ? t('book.skipped') : done ? (got === 'asleep' ? t('book.asleep') : s.reward && got ? t('book.alive') : t('book.done'))
     : t('book.parts', { n: parts, total: LEVELS });
   const heroS = !s.reward ? t('book.noPrize') : skipped ? t('book.skippedSub') : ahead ? t('book.inkAhead', { k: s.reward }) : done ? '' : t('book.inkLead', { k: s.reward });
-  const cast = castOf(s).slice(0, s.reward ? 2 : 3);
+  const cast = castOf(s); // todos los KANJŪ de la unidad; la fila se ajusta sola (flex-wrap)
   const castHTML = `${cast.map(k => `<span><span class="art">${creatureSVG(k)}</span>${k}</span>`).join('')}${s.reward && !skipped ? `<span><span class="rd-ink-box">${inkSVG(s.reward, ahead ? 0 : paintedOf(s.id))}</span>${t('book.prize')}</span>` : ''}`;
   const exam = done && canExam(s.id) && !c.gold[s.id] ? `<button class="btn gold wide p3-exam" data-exam="${s.id}">金 ${t('exam.title')}</button>` : '';
   const jump = ahead && canJump(s.id) ? `<div class="p3-jump"><div class="row"><i>${ic('key')}</i><div><b>${t('jump.cardT')}</b><small>${t('jump.cardS', { here: `${curSection().id} · ${tr(curSection().title)}`, n: jumpSize(s.id) })}</small></div></div>
@@ -164,7 +164,7 @@ function guideHTML(s, tab, page, mon) {
   }
   return `<div class="pn-head"><div class="pn-tabs" role="tablist">${tabs.map(([id, i, k]) => `<button class="${tab === id ? 'on' : ''}" role="tab" aria-selected="${tab === id}" data-tab="${id}">${ic(i)}<span>${t(k)}</span></button>`).join('')}</div>
       <button class="pn-x" data-map aria-label="${t('sheet.close')}">${ic('x')}</button></div>
-    <div class="pn-body view"><div>${html}</div></div>
+    <div class="pn-body view p3-norom"><div>${html}</div></div>
     <div class="p3-gfoot"><button class="btn ${tab === 'gram' ? 'ghost' : 'ok'} wide" data-map>${t('guide.done')}</button></div>`;
 }
 

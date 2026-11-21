@@ -100,7 +100,7 @@ const bookActs = (c, parent) => ({
 async function openJump(c, target, parent) {
   parent?.close();
   const r = await jumpTest(c, target, $('#layer'));
-  setAid(0); save(); go(); hud();
+  setAid(0); if (r?.passed) save(); go(); hud(); // solo al aprobar se guarda: si no, la partida queda como estaba
   if (!r?.book || !byId(c.id)) return;
   const m = openCreature(c.id);
   openBook(modal, c, bookActs(c, m), r.book);
