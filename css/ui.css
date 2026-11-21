@@ -1399,3 +1399,170 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{-webkit-touch-callout:none;overscroll-behavior:none}
 img,svg,a{-webkit-user-drag:none;user-drag:none}
 input,textarea{-webkit-touch-callout:default}
+.p11-ht { flex: 1; min-width: 0; padding-left: 4px }
+.p11-ht small { display: block; font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--muted) }
+.p11-ht b { display: block; font-family: var(--f-title); font-size: 18px; font-weight: 800; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+/* P-12 · Lectura de la unidad: copia fiel de la maqueta docs/propuestas/P-11-lectura.html (prefijo p11-), dentro de la hoja del cuaderno */
+.p11-hb { width: 44px; height: 44px; flex: none; border-radius: 22px; display: grid; place-items: center; background: var(--paper3); color: var(--line); box-shadow: inset 0 0 0 2px #1A122014 }
+.p11-hb .ic { width: 20px; height: 20px }
+.p11-hb.fg { font-family: var(--f-jp); font-weight: 900; font-size: 15px; position: relative }
+.p11-hb.fg[aria-pressed="true"] { background: #FFF3C9; box-shadow: inset 0 0 0 2px var(--gold) }
+.p11-hb.fg[aria-pressed="false"] { color: var(--muted) }
+.p11-hb.fg[aria-pressed="false"]::after { content: ''; position: absolute; width: 26px; height: 3px; border-radius: 2px; background: var(--muted); transform: rotate(-40deg) }
+.p11-body { flex: 1; min-height: 0; overflow-y: auto; padding: 12px 16px 16px; scroll-padding-bottom: 300px }
+.p11-foot { flex: none; display: grid; gap: 8px; padding: 12px 16px calc(16px + var(--safe-b)); background: var(--paper); box-shadow: 0 -1px 0 #1A12200F }
+.p11-foot .btn.wide { margin: 0 }
+.p11-foot .p11-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px }
+.p11-foot .p11-row .btn { margin: 0; min-height: 48px; display: flex; align-items: center; justify-content: center }
+.p11-foot .p11-row .btn.on { background: #DCEEFB; box-shadow: inset 0 0 0 2px var(--blue) }
+/* Tu KANJŪ lee contigo */
+.p11-host { display: grid; grid-template-columns: 64px 1fr; gap: 10px; align-items: end; margin: 0 0 12px }
+.p11-host .art { width: 64px; height: 64px }
+.p11-bub { position: relative; min-height: 52px; padding: 8px 12px; border-radius: 18px 18px 18px 4px; background: var(--paper3); box-shadow: var(--sh) }
+.p11-bub .who { display: block; font-size: 11px; font-weight: 800; color: #4A3A8C; letter-spacing: .06em }
+.p11-bub p { margin: 0; font-size: 13.5px; font-weight: 700; line-height: 1.4 }
+.p11-bub.pop { animation: p11-pop .25s ease-out }
+@keyframes p11-pop { from { transform: scale(.96); opacity: .6 } }
+.p11-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px }
+.p11-chip { display: inline-flex; align-items: center; gap: 4px; min-height: 26px; padding: 0 10px; border-radius: 13px; background: #1A12200A; font-size: 11.5px; font-weight: 800; color: var(--line) }
+.p11-chip .ic { width: 13px; height: 13px }
+.p11-chip.nw { background: #5DB84F26; color: #2F7A25 }
+.p11-chip.fgc { background: #4AA3E81F }
+/* ---------- La hoja de lectura ---------- */
+.p11-paper { position: relative; margin: 6px 0 0; padding: 20px 18px 18px; border-radius: 16px; background: #FFFDF6; box-shadow: var(--sh) }
+/* Nota (etapa 1): papel suelto con cinta */
+.p11-paper.note { padding-top: 26px; background: #FFFBEF }
+.p11-paper.note::before { content: ''; position: absolute; left: 50%; top: -9px; width: 92px; height: 22px; margin-left: -46px; border-radius: 4px; background: #F2B54488 }
+/* Correo (etapa 2): cabecera de remitente y renglones suaves */
+.p11-mail { display: flex; align-items: center; gap: 10px; margin: -4px 0 12px; padding: 0 0 12px; box-shadow: 0 1px 0 #1A122014 }
+.p11-mail > i { width: 36px; height: 36px; flex: none; border-radius: 18px; display: grid; place-items: center; background: #4AA3E833; font-style: normal; font-family: var(--f-jp); font-weight: 900; font-size: 15px; color: #1F5F92 }
+.p11-mail span { flex: 1; min-width: 0 }
+.p11-mail b { display: block; font-size: 13.5px; font-weight: 800 }
+.p11-mail small { display: block; font-size: 11.5px; color: var(--muted); font-weight: 700 }
+.p11-txt { font-family: var(--f-jp); font-weight: 700; font-size: 21px; line-height: 2.35; letter-spacing: .02em; line-break: strict; color: var(--line) }
+.p11-paper.note .p11-txt { font-size: 20px; letter-spacing: 0 }
+.p11-paper.mail .p11-txt { font-size: 19.5px; line-height: 2.3; background: repeating-linear-gradient(transparent 0 calc(2.3em - 2px), #1A12200F calc(2.3em - 2px) 2.3em); background-position: 0 -.15em }
+.p11-l { margin: 0 }
+.p11-l.sign { text-align: right }
+.p11-l + .p11-l { margin-top: 2px }
+.p11-w { border-radius: 8px; cursor: pointer; padding: 3px 0; transition: background .15s }
+.p11-w.on { background: #FFF3C9; box-shadow: 0 0 0 3px #FFF3C9, inset 0 -3px 0 var(--gold) }
+.p11-w.p11-say { background: #DCEEFB; box-shadow: 0 0 0 3px #DCEEFB }
+.p11-pu { color: var(--muted) }
+.p11-fam { background: linear-gradient(transparent 58%, #F2B5448C 58%, #F2B5448C 92%, transparent 92%); border-radius: 2px }
+.p11-txt ruby rt { font-size: .48em; font-weight: 700; color: #7A6A55; letter-spacing: 0 }
+.p11-nofg .p11-txt ruby rt { display: none }
+.p11-legend { display: flex; flex-wrap: wrap; gap: 10px 14px; margin: 12px 0 0; font-size: 11.5px; font-weight: 700; color: var(--muted) }
+.p11-legend span { display: inline-flex; align-items: center; gap: 6px }
+.p11-legend i { width: 18px; height: 12px; border-radius: 3px; flex: none }
+.p11-legend .lf { background: linear-gradient(transparent 40%, #F2B5448C 40%) }
+.p11-legend .ln { background: #5DB84F55 }
+.p11-legend .lt { background: #FFF3C9; box-shadow: inset 0 -3px 0 var(--gold) }
+.p11-hint { display: flex; align-items: center; gap: 8px; margin: 12px 0 0; padding: 10px 12px; border-radius: 16px; background: #F2B54426; font-size: 13px; line-height: 1.4 }
+.p11-hint .ic { width: 18px; height: 18px; flex: none }
+/* ---------- Hoja de la palabra tocada ---------- */
+.p11-sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 8; padding: 8px 16px calc(16px + var(--safe-b)); border-radius: 24px 24px 0 0; background: var(--paper3); box-shadow: 0 -8px 24px rgba(26, 18, 32, .16); animation: p11-up .26s cubic-bezier(.2, 1.2, .4, 1) }
+.p11-sheet::before { content: ''; display: block; width: 40px; height: 5px; margin: 0 auto 8px; border-radius: 3px; background: #1A12201F }
+@keyframes p11-up { from { transform: translateY(40px); opacity: 0 } }
+.p11-wh { display: grid; grid-template-columns: 1fr 44px; gap: 8px; align-items: start }
+.p11-wk { font-family: var(--f-jp); font-size: 34px; font-weight: 900; line-height: 1.6 }
+.p11-wk ruby rt { font-size: .42em; font-weight: 700; color: #7A6A55 }
+.p11-wm { margin: 6px 0 0; font-family: var(--f-title); font-size: 18px; font-weight: 800; line-height: 1.3 }
+.p11-wg { margin: 4px 0 0; font-size: 13px; line-height: 1.45; color: var(--line) }
+.p11-new { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; margin: 10px 0 0; padding: 10px 12px; border-radius: 16px; background: #E6F4DE }
+.p11-new > i { width: 32px; height: 32px; border-radius: 16px; display: grid; place-items: center; background: var(--green); color: #fff }
+.p11-new > i .ic { width: 18px; height: 18px }
+.p11-new b { display: block; font-size: 13.5px; color: #2F7A25 }
+.p11-new small { display: block; font-size: 12.5px; line-height: 1.4 }
+.p11-ks { display: flex; gap: 8px; margin: 12px 0 0; overflow-x: auto; scrollbar-width: none }
+.p11-k { flex: 1 0 96px; max-width: 132px; display: grid; justify-items: center; gap: 2px; padding: 8px 6px; border-radius: 16px; background: var(--paper2); text-align: center }
+.p11-k .art, .p11-k .p11-tile { width: 52px; height: 52px }
+.p11-k .p11-tile { display: grid; place-items: center; border-radius: 14px; background: #FFFDF6; font-family: var(--f-jp); font-size: 30px; font-weight: 900 }
+.p11-k b { font-family: var(--f-jp); font-size: 15px; font-weight: 900; line-height: 1.2 }
+.p11-k small { font-size: 11px; font-weight: 700; color: var(--muted); line-height: 1.25 }
+.p11-k em { font-style: normal; font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 10px; background: #1A12200D }
+.p11-k em.ok { background: #5DB84F26; color: #2F7A25 }
+.p11-k em.fg { background: #4AA3E826; color: #1F5F92 }
+.p11-k.kf { box-shadow: inset 0 0 0 2px #F2B544AA }
+.p11-wnav { display: grid; grid-template-columns: 48px 1fr 48px; gap: 8px; margin: 14px 0 0 }
+.p11-wnav .btn { margin: 0; min-height: 48px; padding: 0; display: flex; align-items: center; justify-content: center }
+.p11-wnav .btn .ic { margin-right: 0 }
+.p11-wnav .btn.p11-ws .ic { margin-right: 6px }
+/* ---------- Preguntas ---------- */
+.p11-qbar { display: flex; gap: 6px; margin: 0 0 14px }
+.p11-qbar i { flex: 1; height: 6px; border-radius: 3px; background: #1A12201A }
+.p11-qbar i.on { background: var(--red) } .p11-qbar i.ok { background: var(--green) } .p11-qbar i.no { background: #E8452C80 }
+.p11-q { margin: 0 0 14px; font-family: var(--f-title); font-size: 20px; font-weight: 800; line-height: 1.3 }
+.p11-opts { display: grid; gap: 10px }
+.p11-opt { display: grid; grid-template-columns: 32px 1fr; gap: 10px; align-items: center; min-height: 56px; padding: 8px 14px 8px 10px; border-radius: 18px; background: var(--paper3); box-shadow: var(--sh); font-size: 15.5px; font-weight: 700; text-align: left; color: var(--line) }
+.p11-opt > i { width: 32px; height: 32px; border-radius: 16px; display: grid; place-items: center; background: var(--paper2); font-style: normal; font-size: 13px; font-weight: 800; color: var(--muted) }
+.p11-opt.on { background: #FFF3C9; box-shadow: inset 0 0 0 3px var(--gold), var(--sh) }
+.p11-opt.on > i { background: var(--gold); color: var(--line) }
+.p11-opt.right { background: #DDF2D6; box-shadow: none } .p11-opt.right > i { background: var(--green); color: #fff }
+.p11-opt.wrong { background: #F9DED6; box-shadow: none } .p11-opt.wrong > i { background: var(--red); color: #fff }
+.p11-peek { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 48px; margin: 16px 0 0; padding: 0 14px; border-radius: 24px; background: var(--paper2); font-size: 13.5px; font-weight: 800; color: var(--line) }
+.p11-peek .ic { width: 18px; height: 18px }
+.p11-peek > .ic:last-child { margin-left: auto; color: var(--muted) }
+.p11-peekbox { margin: 10px 0 0; padding: 12px 14px; border-radius: 16px; background: #FFFDF6; box-shadow: inset 0 0 0 2px #1A12200F }
+.p11-peekbox .p11-txt { font-size: 17px; line-height: 2.2 }
+.p11-res { position: absolute; left: 0; right: 0; bottom: 0; z-index: 6; max-height: 70%; overflow-y: auto; padding: 16px 16px calc(16px + var(--safe-b)); border-radius: 24px 24px 0 0; box-shadow: 0 -8px 24px rgba(26, 18, 32, .14); animation: p11-up .28s cubic-bezier(.2, 1.2, .4, 1) }
+.p11-res.ok { background: #E6F4DE } .p11-res.no { background: #FBEAE3 }
+.p11-rh { display: flex; align-items: center; gap: 12px; margin: 0 0 10px }
+.p11-rh i { width: 40px; height: 40px; flex: none; border-radius: 20px; display: grid; place-items: center; background: var(--green); color: #fff }
+.p11-res.no .p11-rh i { background: var(--red) }
+.p11-rh b { font-family: var(--f-title); font-size: 19px; font-weight: 800; color: #2F7A25 }
+.p11-res.no .p11-rh b { color: #B8321F }
+.p11-quote { margin: 0; padding: 10px 12px; border-radius: 16px; background: #FFFFFF99 }
+.p11-quote small { display: block; font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--muted) }
+.p11-quote .p11-txt { font-size: 18px; line-height: 2.1 }
+.p11-quote p.es { margin: 2px 0 0; font-size: 14px; line-height: 1.4 }
+.p11-tip { display: flex; gap: 8px; align-items: flex-start; margin: 10px 0 0; font-size: 13.5px; line-height: 1.45 }
+.p11-tip .ic { width: 18px; height: 18px; flex: none; margin-top: 1px }
+.p11-res .btn.wide { margin-top: 14px }
+/* ---------- Final ---------- */
+.p11-end { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 48px 20px 20px; text-align: center; color: var(--paper); background: radial-gradient(80% 50% at 50% 26%, #3A2E66 0%, #16132A 70%); overflow-y: auto }
+.p11-end h2 { font-family: var(--f-title); font-size: 26px; font-weight: 800; margin: 8px 0 4px }
+.p11-end > p { margin: 0; font-size: 14px; color: var(--muted-d); line-height: 1.45 }
+.p11-endart { width: 104px; height: 104px; margin: 0 auto }
+.p11-endc { display: grid; gap: 8px; margin: 18px 0 0; padding: 12px; border-radius: 20px; background: var(--paper); color: var(--line); text-align: left }
+.p11-er { display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center; min-height: 52px }
+.p11-er > i { width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center; background: var(--paper2); font-style: normal }
+.p11-er > i .ic { width: 20px; height: 20px }
+.p11-er b { display: block; font-size: 14px }
+.p11-er small { display: block; font-size: 12px; color: var(--muted); line-height: 1.35 }
+.p11-er em { font-style: normal; font-family: var(--f-title); font-weight: 800; font-size: 16px }
+.p11-er .jp { font-size: 16px }
+.p11-acts { margin-top: auto; padding-top: 18px; display: grid; gap: 10px }
+.p11-end .btn.wide { margin: 0 }
+.p11-tr { display: grid; gap: 8px; margin: 10px 0 0; text-align: left }
+.p11-tr p { margin: 0; padding: 8px 12px; border-radius: 14px; background: #F6EBD014; font-size: 13px; line-height: 1.4; color: #E9DCC0 }
+/* ---------- Cuaderno ---------- */
+.p11-read { margin: 0 0 16px; padding: 12px; border-radius: 22px; background: var(--paper3); box-shadow: inset 0 0 0 2px #4AA3E866, var(--sh) }
+.p11-read.lock { background: #FFFDF6B0; box-shadow: inset 0 0 0 2px #1A122010 }
+.p11-read.done { box-shadow: inset 0 0 0 2px #5DB84F66, var(--sh) }
+.p11-rt { display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: center }
+.p11-mini { position: relative; width: 64px; height: 80px; padding: 14px 9px 8px; border-radius: 10px; background: #FFFBEF; box-shadow: 0 3px 10px rgba(26, 18, 32, .12); display: grid; align-content: start; gap: 5px }
+.p11-mini::before { content: ''; position: absolute; left: 18px; top: -5px; width: 28px; height: 10px; border-radius: 2px; background: #F2B54488 }
+.p11-mini i { height: 4px; border-radius: 2px; background: #1A122026 }
+.p11-mini i.k { background: #1A122040 }
+.p11-mini.mail::before { display: none }
+.p11-mini.mail i:first-child { background: #4AA3E866 }
+.p11-read.lock .p11-mini { opacity: .55 }
+.p11-rt .eb { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: #1F5F92 }
+.p11-rt .eb .ic { width: 14px; height: 14px }
+.p11-read.lock .p11-rt .eb { color: var(--muted) }
+.p11-read.done .p11-rt .eb { color: #2F7A25 }
+.p11-rt b { display: block; margin: 2px 0 2px; font-family: var(--f-title); font-size: 17px; font-weight: 800 }
+.p11-rt small { display: block; font-size: 12.5px; color: var(--muted); line-height: 1.4 }
+.p11-read .p11-chips { margin: 10px 0 0 }
+.p11-read .btn.wide { margin-top: 10px }
+.p11-read .p3-lockt { margin: 10px 0 0 }
+/* P-12: lectura de la unidad dentro del cuaderno (maqueta docs/propuestas/P-11-lectura.html) */
+.modal.p3-bkm .sheet{position:relative}
+.p11-tag { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; padding: 4px 10px; border-radius: 12px; background: #4AA3E81F; font-size: 11px; font-weight: 800; color: #1F5F92 }
+.p11-tag .ic { width: 12px; height: 12px; margin: 0 }
+
+@media (prefers-reduced-motion: reduce) {
+  .p11-sheet, .p11-res, .p11-bub.pop { animation: none }
+  .p11-w { transition: none }
+}

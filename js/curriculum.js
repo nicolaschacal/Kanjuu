@@ -14,6 +14,7 @@
 // - `intro` = la frase con la que la criatura presenta la sección (en tú).
 import { LEX, PHRASES, PATTERNS, PARTICLES, verbForms } from './lang.js';
 import { KANJI } from './data.js';
+import { UNIT_READINGS, questionsFor, LINES, segs, plainOf, readOf, keyOf, analyze, kanjiOf, newWordsOf } from './readings.js';
 
 export const STAGES = [
   { id: 'e0', title: { es: 'Sonidos y kana', en: 'Sounds and kana' }, level: 'kana' },
@@ -1320,6 +1321,54 @@ export function checkCurriculum() {
     (g.gram || []).forEach((p, i) => {
       if (!p.text?.es || !p.jp) errs.push(`${where}, pantalla ${i + 1}: falta jp o text`);
       (p.te || []).forEach(w => { if (!lex[w]?.te) errs.push(`${where}, pantalla ${i + 1}: ${w} no es un verbo con forma て`); else if (!wordsHere.has(w)) errs.push(`${where}, pantalla ${i + 1}: ${w} no es de esta unidad ni de las anteriores`); });
+    });
+  }
+  // Lecturas por unidad (P-12, docs/PROGRESION.md §12): fichas con texto en la tabla de palabras, solo kanji y palabras
+  // enseñados hasta esa unidad, ids que existen, traducción por línea y 2 (etapa 1) o 3 (desde la etapa 2) preguntas
+  const kana = /^[぀-ヿー]+$/;
+  for (const [id, R] of Object.entries(UNIT_READINGS)) {
+    const where = `Lectura ${id}`, s = sectionById(id);
+    if (!s) { errs.push(`${where}: la unidad no existe`); continue; }
+    const upTo = SECTIONS.slice(0, SECTIONS.indexOf(s) + 1);
+    const taughtWords = new Set(upTo.flatMap(x => x.words)), taughtKanji = new Set(upTo.flatMap(x => [...x.kanji]));
+    if (!LINES[R.kind]) { errs.push(`${where}: tipo desconocido ${R.kind}`); continue; }
+    if (!R.title?.es || !R.say?.es) errs.push(`${where}: falta título o frase de apertura`);
+    if (R.kind === 'mail' && (!R.from || !R.to?.es)) errs.push(`${where}: el correo necesita from y to`);
+    const [lo, hi] = LINES[R.kind];
+    if (R.lines.length < lo || R.lines.length > hi) errs.push(`${where}: ${R.lines.length} líneas (un${R.kind === 'note' ? 'a nota' : ' correo'} lleva ${lo} a ${hi})`);
+    if (R.es?.length !== R.lines.length || R.es.some(x => !x)) errs.push(`${where}: se espera una traducción por línea`);
+    const { lines, sents } = analyze(R), used = new Set();
+    if (!sents.length) errs.push(`${where}: no tiene frases`);
+    for (const tok of lines.flat()) {
+      if (tok.pu) { if (!'。、！？'.includes(tok.p)) errs.push(`${where}: puntuación desconocida «${tok.p}»`); continue; }
+      const w = R.words[tok.key], plain = plainOf(tok.raw);
+      used.add(tok.key);
+      if (!w) { errs.push(`${where}: la ficha «${tok.key}» no está en words`); continue; }
+      for (const g of segs(tok.raw.replace(/#\w+$/, ''))) if (g.k && !kana.test(g.r)) errs.push(`${where}: la furigana de «${g.k}» debe ir en kana`);
+      if (!readOf(tok.raw) || /[\[\]:]/.test(readOf(tok.raw))) errs.push(`${where}: la ficha «${tok.raw}» está mal escrita`);
+      const ks = [...plain].filter(c => /[一-鿿]/.test(c));
+      ks.forEach(c => { if (!taughtKanji.has(c)) errs.push(`${where}: el kanji ${c} de «${plain}» no se enseña hasta esta unidad`); });
+      if (w.id) { if (!lex[w.id]) errs.push(`${where}: la palabra ${w.id} no existe en LEX`); else if (!taughtWords.has(w.id)) errs.push(`${where}: la palabra ${w.id} no se enseña hasta esta unidad`); }
+      else if (!ks.length && !PARTICLES.includes(plain) && !['name', 'gram'].includes(w.kind)) errs.push(`${where}: «${plain}» está en kana, no es una partícula y no tiene id de palabra`);
+    }
+    for (const [k, w] of Object.entries(R.words)) {
+      if (!used.has(k)) errs.push(`${where}: words trae «${k}», que no está en el texto`);
+      if (!w.m?.es || !w.kind) errs.push(`${where}: «${k}» necesita m y kind`);
+      if (!['name', 'particle', 'noun', 'time', 'expr', 'verb', 'number', 'adji', 'form', 'gram'].includes(w.kind)) errs.push(`${where}: «${k}» tiene un kind desconocido (${w.kind})`);
+      (w.nw || []).forEach(c => { if (!taughtKanji.has(c)) errs.push(`${where}: nw de «${k}»: el kanji ${c} no se enseña hasta esta unidad`); });
+    }
+    kanjiOf(R).forEach(c => { if (!KANJI[c] && !R.km?.[c]?.es) errs.push(`${where}: falta el significado de ${c} (no es KANJŪ: va en km)`); });
+    if (!newWordsOf(R).length) errs.push(`${where}: debe traer una palabra nueva (nw)`);
+    const n = questionsFor(s.stage);
+    if (R.Q?.length !== n) errs.push(`${where}: ${R.Q?.length} preguntas (la etapa pide ${n})`);
+    (R.Q || []).forEach((q, i) => {
+      const w2 = `${where}, pregunta ${i + 1}`;
+      if (!q.q?.es || !q.ok?.es) errs.push(`${w2}: falta texto`);
+      if (q.o?.length !== 3 || q.o.some(o => !o.es)) errs.push(`${w2}: se esperan 3 opciones`);
+      else if (new Set(q.o.map(o => o.es)).size !== 3) errs.push(`${w2}: opciones repetidas`);
+      if (![0, 1, 2].includes(q.a)) errs.push(`${w2}: respuesta correcta inválida`);
+      if (!(q.line >= 0 && q.line < R.lines.length)) errs.push(`${w2}: la línea ${q.line} no existe`);
+      if (q.tip?.length !== 3 || q.tip.some((x, j) => j !== q.a && !x.es)) errs.push(`${w2}: falta una pista por cada opción equivocada`);
     });
   }
   return errs;

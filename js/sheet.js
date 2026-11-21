@@ -95,6 +95,7 @@ const bookActs = (c, parent) => ({
   play: () => openTraining(c, parent),
   review: (sec, level) => openTraining(c, parent, { sec, level }),
   jump: target => openJump(c, target, parent),
+  hud: () => { save(); hud(); }, // tinta de la lectura de la unidad (P-12)
 });
 // «Saltar aquí» (P-06): al terminar, se vuelve a la ficha con el cuaderno abierto en la unidad que corresponde
 async function openJump(c, target, parent) {

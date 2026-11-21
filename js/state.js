@@ -18,6 +18,7 @@ export function norm(s) {
   s.lang ??= 'auto'; // idioma: 'auto' sigue al dispositivo (js/i18n.js)
   // Aprendizaje (docs/APRENDIZAJE.md): palabras halladas, frases vistas, lecturas leídas, aciertos por kana, nivelación y camino
   s.lex ??= {}; s.phr ??= {}; s.read ??= {}; s.kana ??= {};
+  s.uread ??= {}; // lecturas por unidad ya leídas (P-12): { '2.10': { n, t, day, ok, of } }
   s.level ??= s.creatures?.length ? 0 : null; // null = todavía no se preguntó "¿Qué sabes ya?"
   s.path ??= { claimed: [] }; s.path.claimed ??= [];
   s.ai ??= { lib: [], flavor: {} }; s.ai.lib ??= []; s.ai.flavor ??= {}; // cuentos y frases de sabor con IA (A-11b)
